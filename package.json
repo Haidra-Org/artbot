@@ -3,11 +3,14 @@
   "version": "0.0.1",
   "description": "A front-end GUI for interacting with AI Horde's distributed cluster of Stable Diffusion workers",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "engines": {
     "npm": ">=9.5.1",
-    "node": ">=18.17.0"
+    "node": ">=18.18.0"
   },
   "keywords": [
     "ai",
@@ -20,7 +23,20 @@
   ],
   "author": "Dave Schumaker <daveschumaker@users.noreply.github.com>",
   "license": "AGPL-3.0",
+  "dependencies": {
+    "next": "14.2.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
   "devDependencies": {
-    "prettier": "3.2.5"
+    "@types/node": "20",
+    "@types/react-dom": "18",
+    "@types/react": "18",
+    "eslint-config-next": "14.2.3",
+    "eslint": "8.57.0",
+    "postcss": "8.4.38",
+    "prettier": "3.2.5",
+    "tailwindcss": "3.4.3",
+    "typescript": "5.4.5"
   }
 }
