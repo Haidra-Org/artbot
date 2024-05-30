@@ -3,30 +3,38 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-color: black;
+  --background-color: #EDECED;
+  --primary-color: rgb(20, 184, 166);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-color: white;
+    --background-color: #242424;
   }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--foreground-color);
+  background-color: var(--background-color);
+}
+
+@layer components {
+  .col {
+    @apply flex flex-col gap-2
+  }
+
+  .row {
+    @apply flex flex-row gap-2 items-center
+  }
 }
 
 @layer utilities {
+  .primary-color {
+    color: var(--primary-color);
+  }
+
   .text-balance {
     text-wrap: balance;
   }
