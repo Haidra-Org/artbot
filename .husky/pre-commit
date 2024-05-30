@@ -1,1 +1,7 @@
-npm run lint
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd "$(git rev-parse --show-toplevel)"
+
+npx lint-staged
+npm test
