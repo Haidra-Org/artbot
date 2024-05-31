@@ -8,6 +8,8 @@ A front-end GUI for interacting with AI Horde's distributed cluster of Stable Di
 - [Setup](#setup)
   - [Requirements](#requirements)
   - [Installing](#installing)
+- [Contributions](#contributions)
+- [Acknowledgements](#acknowledgements)
 
 ## Intro
 
@@ -59,7 +61,8 @@ Let me know if you have any questions. I'm more than happy to help.
 
 ArtBot makes use of a number of resources provided by designers and developers who make their work freely available. Without these tools, ArtBot and many other projects on the Internet would not be able to exist. We are very grateful!
 
-- ArtBot logo: ["AI free icon" via Flaticon](https://www.flaticon.com/free-icon/ai_2814666?related_id=2814650)
+- ["AI free icon" via Flaticon](https://www.flaticon.com/free-icon/ai_2814666?related_id=2814650) - used for the ArtBot logo
 - [Next.js](https://nextjs.org/)
+- [Statery](https://github.com/hmans/statery) - Simple global state management
 - [Tabler Icons](https://tabler-icons.io/)
 - [Tailwind CSS](https://tailwindcss.com/)
