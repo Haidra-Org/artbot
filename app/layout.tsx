@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col justify-center min-h-screen" id="__app">
-        <div className="flex flex-col flex-1 pt-[50px] p-[8px]">
+        <div className="flex flex-col flex-1 pt-[42px] p-[8px]">
           <HeaderNav />
           <main className="flex flex-col gap-4 w-full flex-1 sm:p-1">
             {children}
