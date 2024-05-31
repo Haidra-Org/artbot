@@ -1,6 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
+import HamburgerNavButton from './HamburgerNavButton'
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -12,6 +13,7 @@ export default function HeaderNav() {
       style={{ backgroundColor: `var(--background-color)` }}
     >
       <div className="row gap-1 pl-2">
+        <HamburgerNavButton />
         <Link href="/">
           <div className="row items-center p-2 text-white h-[42px]">
             <Image

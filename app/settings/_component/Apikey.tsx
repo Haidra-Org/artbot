@@ -22,7 +22,7 @@ export default function Apikey() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      AppSettings.set('apiKey', apikey)
+      AppSettings.set('apiKey', apikey.trim())
     }
   }
 
@@ -38,18 +38,26 @@ export default function Apikey() {
       />
       <div className="row gap-1">
         <Button
+          disabled={!apikey}
           onClick={() => {
             setApikey('')
             AppSettings.set('apiKey', '')
           }}
           theme="danger"
+          title="Reset API key"
         >
           <IconArrowBarLeft />
         </Button>
-        <Button onClick={() => setShowKey(!showKey)}>
+        <Button
+          onClick={() => setShowKey(!showKey)}
+          title={!showKey ? 'Show API key' : 'Hide API key'}
+        >
           {showKey ? <IconEyeOff /> : <IconEye />}
         </Button>
-        <Button onClick={() => AppSettings.set('apiKey', apikey)}>
+        <Button
+          onClick={() => AppSettings.set('apiKey', apikey.trim())}
+          title="Save API key"
+        >
           <IconDeviceFloppy />
         </Button>
       </div>
