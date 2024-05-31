@@ -1,0 +1,82 @@
+.Button {
+  align-items: center !important;
+  background-color: rgb(106, 183, 198);
+  border: 1px solid rgb(106, 183, 198);
+  border-radius: 4px;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  height: 42px;
+  padding: 2px 8px;
+}
+
+.ButtonText {
+  flex-direction: row;
+  justify-content: center;
+  display: flex;
+  font-size: 12px;
+  line-height: 20px;
+  width: 100%;
+}
+
+.Button:active {
+  transform: scale(0.96);
+}
+
+.Button:hover {
+  background-color: #8ac5d1;
+}
+
+/* Additional types and classes */
+
+.danger {
+  background-color: #f25657;
+  border-color: #f25657;
+  color: white;
+  font-weight: 700;
+}
+
+.danger:hover {
+  background-color: #f9595a;
+}
+
+.warning {
+  background-color: #e6ae06;
+  border-color: #e6ae06;
+  font-weight: 700;
+  color: white;
+}
+
+.warning:hover {
+  background-color: #FFC107;
+}
+
+.disabled {
+  cursor: default;
+  background-color: #d1dbe4;
+  border-color: #d1dbe4;
+}
+
+.disabled:hover {
+  cursor: default;
+  background-color: #d1dbe4;
+}
+
+.disabled:active {
+  transform: unset;
+}
+
+/* Generic modifiers that can apply to whole button */
+.outline {
+  background-color: transparent;
+  border: 1px solid rgb(106, 183, 198);
+  color: rgb(106, 183, 198);
+}
+
+.outline:hover {
+  background-color: #24454b;
+  /* Example for different hover background color */
+  /* color: #ffffff; */
+  /* Example for hover text color */
+}
