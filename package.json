@@ -31,7 +31,8 @@
     "clsx": "2.1.1",
     "next": "14.2.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "statery": "0.7.1"
   },
   "devDependencies": {
     "@types/jest": "29.5.12",
