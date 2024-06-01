@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import HamburgerNavButton from './HamburgerNavButton'
+import UserKudos from './HeaderNavUserKudos'
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -50,6 +51,7 @@ export default function HeaderNav() {
             Settings
           </Link>
         </div>
+        <UserKudos />
       </div>
     </header>
   )
