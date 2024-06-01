@@ -20,7 +20,7 @@ export default function RootLayout({
         <AppInit />
         <div className="flex flex-col flex-1 pt-[42px] p-[8px]">
           <HeaderNav />
-          <main className="flex flex-col gap-4 w-full flex-1 sm:p-1">
+          <main className="flex flex-col gap-2 w-full flex-1 sm:p-1">
             {children}
           </main>
         </div>

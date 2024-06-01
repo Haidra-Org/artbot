@@ -5,18 +5,13 @@ import {
   IconHelp,
   IconHourglass,
   IconInfoCircle,
-  IconLayoutDashboard,
   IconMenuDeep,
   IconNotes,
-  IconPencil,
   IconPhoto,
   IconPointFilled,
   IconQuestionMark,
-  IconRobot,
   IconSettings,
-  IconStars,
-  IconX,
-  IconZoomQuestion
+  IconX
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
