@@ -27,11 +27,16 @@
   "author": "Dave Schumaker <daveschumaker@users.noreply.github.com>",
   "license": "AGPL-3.0",
   "dependencies": {
+    "@ebay/nice-modal-react": "1.2.13",
+    "@szhsin/react-accordion": "1.2.4",
     "@tabler/icons-react": "3.5.0",
     "clsx": "2.1.1",
     "next": "14.2.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-loader-spinner": "6.1.6",
+    "react-responsive-modal": "6.4.2",
+    "react-textarea-autosize": "8.5.3",
     "statery": "0.7.1"
   },
   "devDependencies": {

@@ -1,5 +1,8 @@
 import { Metadata } from 'next'
 import PageTitle from '../_components/PageTitle'
+import { PromptInputProvider } from '../_providers/PromptInputProvider'
+import PromptInputForm from './_component/PromptInputForm'
+import PromptActionPanel from './_component/PromptActionPanel'
 
 export const metadata: Metadata = {
   title: 'Create | ArtBot for Stable Diffusion'
@@ -7,9 +10,12 @@ export const metadata: Metadata = {
 
 export default async function CreatePage() {
   return (
-    <div>
+    <PromptInputProvider>
       <PageTitle>Create</PageTitle>
-      Placeholder for Create
-    </div>
+      <div className="w-full max-w-[576px] col gap-2">
+        <PromptInputForm />
+        <PromptActionPanel />
+      </div>
+    </PromptInputProvider>
   )
 }

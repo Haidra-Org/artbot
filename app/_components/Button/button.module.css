@@ -54,13 +54,13 @@
 
 .disabled {
   cursor: default;
-  background-color: #d1dbe4;
+  background-color: #a9b1b9;
   border-color: #d1dbe4;
 }
 
 .disabled:hover {
   cursor: default;
-  background-color: #d1dbe4;
+  background-color: #a9b1b9;
 }
 
 .disabled:active {

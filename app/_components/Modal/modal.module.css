@@ -1,0 +1,34 @@
+.CustomModalContainer {
+  width: 100vw;
+}
+
+.CustomModal {
+  background-color: white;
+  border-radius: 8px;
+  color: black;
+  max-width: calc(100% - 16px);
+  width: 100%;
+  padding: 8px !important;
+  margin: 16px 0;
+}
+
+.CustomCloseButton {
+  top: 8px;
+  right: 8px;
+}
+
+@media (min-width: 640px) {
+  .CustomModal {
+    max-width: calc(100% - 32px);
+    min-width: 320px;
+    padding: 16px !important;
+    width: auto;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .CustomModal {
+    background-color: black;
+    color: white;
+  }
+}
