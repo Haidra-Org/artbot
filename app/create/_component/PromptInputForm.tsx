@@ -76,7 +76,7 @@ export default function PromptInputForm() {
         <div>
           <ReactTextareaAutosize
             className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-            placeholder="Describe the image you want to generate..."
+            placeholder="Describe the image you want to generate"
             minRows={3}
             maxRows={8}
             onChange={(e) => {
@@ -197,7 +197,7 @@ export default function PromptInputForm() {
               <div>
                 <ReactTextareaAutosize
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-                  placeholder="Words to de-prioritize from the image..."
+                  placeholder="Words to de-prioritize from the image"
                   minRows={3}
                   maxRows={8}
                   onChange={(e) => {
