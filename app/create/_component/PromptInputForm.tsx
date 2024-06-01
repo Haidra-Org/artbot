@@ -38,7 +38,7 @@ const AccordionItem = ({
     header={({ state: { isEnter } }) => (
       <>
         <IconChevronDown
-          className={`transition-transform duration-200 ease-out ${
+          className={`transition-transform duration-200 ease-out text-white ${
             isEnter && 'rotate-180'
           }`}
         />
@@ -70,7 +70,7 @@ export default function PromptInputForm() {
   return (
     <div className="col bg-[#1d4d74] w-full rounded-md p-2">
       <div className="col gap-1">
-        <div className="row font-bold text-sm">
+        <div className="row font-bold text-sm text-white">
           <IconPlaylistAdd /> Prompt
         </div>
         <div>
@@ -175,7 +175,7 @@ export default function PromptInputForm() {
           <AccordionItem
             header={
               <div
-                className="row font-bold text-sm gap-1"
+                className="row font-bold text-sm gap-1 text-white"
                 onClick={() => {
                   AppSettings.set(
                     'negativePanelOpen',
