@@ -18,6 +18,7 @@ import { AppSettings } from '@/app/_data-models/AppSettings'
 import useUndoPrompt from '@/app/_hooks/useUndoPrompt'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import Button from '@/app/_components/Button'
+import NiceModal from '@ebay/nice-modal-react'
 
 const AccordionItem = ({
   children,
@@ -96,7 +97,13 @@ export default function PromptInputForm() {
           <div className="row gap-2">
             <Button
               className="!h-[36px]"
-              onClick={() => {}}
+              onClick={() => {
+                NiceModal.show('modal', {
+                  children: (
+                    <div className="text-[20px]">LoRA / TI keywords....</div>
+                  )
+                })
+              }}
               title="Suggested keywords from LoRA or TIs"
               style={{
                 width: '36px'
@@ -106,7 +113,11 @@ export default function PromptInputForm() {
             </Button>
             <Button
               className="!h-[36px]"
-              onClick={() => {}}
+              onClick={() => {
+                NiceModal.show('modal', {
+                  children: <div className="text-[20px]">Prompt library...</div>
+                })
+              }}
               title="Recently used prompts"
             >
               <span className="row gap-1">
@@ -115,7 +126,11 @@ export default function PromptInputForm() {
             </Button>
             <Button
               className="!h-[36px]"
-              onClick={() => {}}
+              onClick={() => {
+                NiceModal.show('modal', {
+                  children: <div className="text-[20px]">Style tags...</div>
+                })
+              }}
               title="Suggested tags to help add additional styles to an image"
             >
               <span className="row gap-1">
@@ -222,7 +237,15 @@ export default function PromptInputForm() {
                   </Button>
                   <Button
                     className="!h-[36px]"
-                    onClick={() => {}}
+                    onClick={() => {
+                      NiceModal.show('modal', {
+                        children: (
+                          <div className="text-[20px]">
+                            Negative prompt library...
+                          </div>
+                        )
+                      })
+                    }}
                     title="Load previously saved negative prompt"
                   >
                     <span className="row gap-1">

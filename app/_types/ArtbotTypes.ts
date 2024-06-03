@@ -29,6 +29,13 @@ export interface HordeJob {
   images_failed: number
 }
 
+export interface ImagesForGallery extends HordeJob {
+  image_id: string
+  width: number
+  height: number
+  image_count: number
+}
+
 export type ImageOrientations =
   | 'landscape_16x9'
   | 'landscape_3x2'

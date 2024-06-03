@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 export default async function SettingsPage() {
   return (
-    <div className="max-w-[800px]">
+    <>
       <PageTitle>Settings</PageTitle>
       <Apikey />
-    </div>
+    </>
   )
 }
