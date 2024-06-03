@@ -16,7 +16,7 @@ export default async function CreatePage() {
     <PromptInputProvider>
       <PageTitle>Create</PageTitle>
       <div className="col md:row justify-start !items-start !gap-4">
-        <div className="w-full max-w-[576px] col gap-2">
+        <div className="sm:min-w-[448px] w-full md:max-w-[512px] col gap-2">
           <PromptInputForm />
           <PromptActionPanel />
         </div>

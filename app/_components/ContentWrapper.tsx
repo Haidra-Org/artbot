@@ -3,5 +3,9 @@ export default function ContentWrapper({
 }: {
   children: React.ReactNode
 }) {
-  return <div className="w-full max-w-[1200px] mx-auto">{children}</div>
+  return (
+    <div className="w-full max-w-[1200px] 2xl:max-w-[1440px] 4xl:max-w-[1600px] mx-auto">
+      {children}
+    </div>
+  )
 }

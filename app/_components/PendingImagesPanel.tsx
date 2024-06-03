@@ -146,10 +146,10 @@ export default function PendingImagesPanel() {
           singleRowMaxHeight: 256
         }}
         columns={(containerWidth) => {
-          if (containerWidth < 512) return 1
-          if (containerWidth < 800) return 2
-          if (containerWidth < 1200) return 3
-          if (containerWidth < 1600) return 4
+          if (containerWidth <= 512) return 1
+          if (containerWidth <= 800) return 2
+          if (containerWidth <= 1200) return 3
+          if (containerWidth <= 1600) return 4
           return 5
         }}
       />
