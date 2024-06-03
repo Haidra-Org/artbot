@@ -8,6 +8,8 @@ A front-end GUI for interacting with AI Horde's distributed cluster of Stable Di
 - [Setup](#setup)
   - [Requirements](#requirements)
   - [Installing](#installing)
+- [Usage](#usage)
+  - [Development](#development)
 - [Contributions](#contributions)
 - [Acknowledgements](#acknowledgements)
 
@@ -45,6 +47,18 @@ Once you have your Node.js environment setup, you can clone this repository and 
 > cd artbot
 > npm install
 ```
+
+## Usage
+
+### Development
+
+Alright, you should now be able to run the ArtBot web app! To run in development mode (which uses NextJS's hot reloading feature -- where you can see updates live on the site as you make changes)
+
+```bash
+> npm run dev
+```
+
+Then, open your browser and visit `http://localhost:3000`, you should now be able to immediately make image requests to the Stable Horde. Head over to `http://localhost:3000/settings` and enter your Stable Horde API key for faster generation times.
 
 ## Contributions
 
