@@ -1,16 +1,18 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-// import PhotoAlbum from 'react-photo-album'
+import PhotoAlbum from 'react-photo-album'
 import { useStore } from 'statery'
-// import { PendingImagesStore } from '@/app/_store/PendingImagesStore'
 import { useCallback, useEffect, useState } from 'react'
-// import { fetchCompletedJobsByArtbotIdsFromDexie } from '@/app/_db/hordeJobs'
-// import Image from './Image'
 import NiceModal from '@ebay/nice-modal-react'
+import { IconPhotoBolt } from '@tabler/icons-react'
+
+import { fetchCompletedJobsByArtbotIdsFromDexie } from '../_db/hordeJobs'
 import { JobStatus } from '../_types/ArtbotTypes'
+import { PendingImagesStore } from '../_stores/PendingImagesStore'
+import ImageThumbnail from './ImageThumbnail'
+import PendingImageOverlay from './PendingImageOverlay'
 // import ImageViewer from '@/app/_components/modules/ImageViewer/imageViewer'
-// import PendingImageOverlay from './PendingImageOverlay/pendingImageOverlay'
 
 interface PhotoData {
   artbot_id: string
@@ -50,96 +52,107 @@ export default function PendingImagesPanel() {
     fetchImages()
   }, [fetchImages, pendingImages])
 
-  if (images.length === 0) {
-    return <div>Try creating an image!</div>
-  }
-
   return (
-    <PhotoAlbum
-      layout="masonry"
-      // photos={photos}
-      spacing={4}
-      photos={images}
-      renderPhoto={(renderPhotoProps) => {
-        const { layout, layoutOptions, photo, imageProps } =
-          renderPhotoProps || {}
-        const { alt, style, ...restImageProps } = imageProps || {}
+    <div
+      className="w-full rounded-md p-2 hidden md:col min-h-[364px] relative"
+      style={{ border: '1px solid #7e5a6c' }}
+    >
+      <h2 className="row font-bold">
+        <IconPhotoBolt />
+        Pending images
+      </h2>
+      {images.length === 0 && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center">
+          <p className="text-gray-400 w-full text-center  ">
+            No pending images. Create something new!
+          </p>
+        </div>
+      )}
+      <PhotoAlbum
+        layout="masonry"
+        spacing={4}
+        photos={images}
+        renderPhoto={(renderPhotoProps) => {
+          const { layout, layoutOptions, photo, imageProps } =
+            renderPhotoProps || {}
+          const { alt, style, ...restImageProps } = imageProps || {}
 
-        // @ts-expect-error Deleting this due to using custom image component.
-        delete restImageProps.src
+          // @ts-expect-error Deleting this due to using custom image component.
+          delete restImageProps.src
 
-        if (photo.hordeStatus !== JobStatus.Done) {
-          return (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-                height: layout.height,
-                width: layout.width,
-                marginBottom: layoutOptions.spacing
-              }}
-            >
-              <img
-                alt={alt}
+          if (photo.hordeStatus !== JobStatus.Done) {
+            return (
+              <div
                 style={{
-                  ...style,
-                  borderRadius: '8px',
-                  width: '100%',
-                  height: 'auto',
-                  marginBottom: '0 !important'
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  position: 'relative',
+                  height: layout.height,
+                  width: layout.width,
+                  marginBottom: layoutOptions.spacing
                 }}
-                {...restImageProps}
-                src="data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw=="
-              />
-              <PendingImageOverlay
-                artbot_id={photo.artbot_id}
-                status={photo.hordeStatus}
-              />
-            </div>
-          )
-        } else {
-          return (
-            <div
-              key={photo.artbot_id}
-              style={{
-                alignItems: 'center',
-                cursor: 'pointer',
-                display: 'flex',
-                height: layout.height,
-                justifyContent: 'center',
-                marginBottom: layoutOptions.spacing,
-                position: 'relative',
-                width: layout.width
-              }}
-              onClick={() => {
-                NiceModal.show('modal', {
-                  children: <ImageViewer artbot_id={photo.artbot_id} />
-                })
-              }}
-            >
-              <Image alt={alt} artbot_id={photo.artbot_id} />
-              <PendingImageOverlay
-                artbot_id={photo.artbot_id}
-                imageCount={photo.image_count}
-                status={photo.hordeStatus}
-              />
-            </div>
-          )
-        }
-      }}
-      targetRowHeight={256}
-      rowConstraints={{
-        singleRowMaxHeight: 256
-      }}
-      columns={(containerWidth) => {
-        if (containerWidth < 512) return 1
-        if (containerWidth < 800) return 2
-        if (containerWidth < 1200) return 3
-        if (containerWidth < 1600) return 4
-        return 5
-      }}
-    />
+              >
+                <img
+                  alt={alt}
+                  style={{
+                    ...style,
+                    borderRadius: '8px',
+                    width: '100%',
+                    height: 'auto',
+                    marginBottom: '0 !important'
+                  }}
+                  {...restImageProps}
+                  src="data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw=="
+                />
+                <PendingImageOverlay
+                  artbot_id={photo.artbot_id}
+                  status={photo.hordeStatus}
+                />
+              </div>
+            )
+          } else {
+            return (
+              <div
+                key={photo.artbot_id}
+                style={{
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  height: layout.height,
+                  justifyContent: 'center',
+                  marginBottom: layoutOptions.spacing,
+                  position: 'relative',
+                  width: layout.width
+                }}
+                onClick={() => {
+                  NiceModal.show('modal', {
+                    // children: <ImageViewer artbot_id={photo.artbot_id} />
+                  })
+                }}
+              >
+                <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
+                <PendingImageOverlay
+                  artbot_id={photo.artbot_id}
+                  imageCount={photo.image_count}
+                  status={photo.hordeStatus}
+                />
+              </div>
+            )
+          }
+        }}
+        targetRowHeight={256}
+        rowConstraints={{
+          singleRowMaxHeight: 256
+        }}
+        columns={(containerWidth) => {
+          if (containerWidth < 512) return 1
+          if (containerWidth < 800) return 2
+          if (containerWidth < 1200) return 3
+          if (containerWidth < 1600) return 4
+          return 5
+        }}
+      />
+    </div>
   )
 }

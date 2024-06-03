@@ -81,8 +81,6 @@ export const searchPromptsFromDexie = async ({
         matchingPrompts = await promptsQuery.limit(limit).sortBy('id')
       }
 
-      console.log(`matchingPrompts:`, matchingPrompts)
-
       // @ts-expect-error Oh, but "id" does exist!
       const promptIds = matchingPrompts.map((prompt) => prompt.id)
 
@@ -107,13 +105,10 @@ export const searchPromptsFromDexie = async ({
       // In theory, there should not be multiple artbot_ids associated with multiple prompts.
       // So we can skip any check for duplicate jobs here.
       const artbotIds = jobMaps.map((entry) => entry.artbot_id)
-      console.log(`artbotIds`, artbotIds)
       const artbotIdsFlat = artbotIds.flat()
 
       // Flatten the array of artbot_id arrays and remove duplicates
       const uniqueArtbotIds = artbotIdsFlat.slice(offset, offset + limit)
-
-      console.log(`uniqueArtbotIds`, uniqueArtbotIds)
 
       // Step 2: Fetch image data for the filtered artbot_ids
       const imageData = await Promise.all(
