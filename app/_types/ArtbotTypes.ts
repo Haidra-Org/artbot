@@ -6,6 +6,22 @@ export interface AiHordeEmbedding extends Embedding {
   inject_ti?: InjectTi
 }
 
+export interface HordeJob {
+  id?: number
+  artbot_id: string
+  horde_id: string
+  created_timestamp: number
+  updated_timestamp: number
+  status: JobStatus
+  errors?: Array<{ [key: string]: string }> | null
+  queue_position: number | null
+  init_wait_time: number | null
+  wait_time: number | null
+  images_requested: number
+  images_completed: number
+  images_failed: number
+}
+
 export type ImageOrientations =
   | 'landscape_16x9'
   | 'landscape_3x2'
@@ -14,6 +30,15 @@ export type ImageOrientations =
   | 'ultrawide_21x9'
   | 'square'
   | 'custom'
+
+export enum JobStatus {
+  Waiting = 'waiting', // waiting to submit to stable horde api
+  Requested = 'requested', // Job sent to API, waiting for response.
+  Queued = 'queued', // submitted and waiting
+  Processing = 'processing', // image has been sent to a worker and is in-process
+  Done = 'done', // finished
+  Error = 'error' // something unfortunate has happened
+}
 
 export enum JobType {
   ControlNet = 'controlnet',
