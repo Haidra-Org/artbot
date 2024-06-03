@@ -8,6 +8,7 @@
 import useHordeApiKey from './_hooks/useHordeApiKey'
 import { AppSettings } from './_data-models/AppSettings'
 import { useEffectOnce } from './_hooks/useEffectOnce'
+import { initDexie } from './_db/dexie'
 
 export default function AppInit() {
   const [handleLogin] = useHordeApiKey()
@@ -22,6 +23,7 @@ export default function AppInit() {
 
   useEffectOnce(() => {
     console.log(`ArtBot v2.0.0_beta is online: ${new Date().toLocaleString()}`)
+    initDexie()
     getUserInfoOnLoad()
   })
 

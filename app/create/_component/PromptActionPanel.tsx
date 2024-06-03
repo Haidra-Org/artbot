@@ -2,8 +2,15 @@
 
 import Button from '@/app/_components/Button'
 import PromptInput from '@/app/_data-models/PromptInput'
+import {
+  duplicateAndModifyArtbotId,
+  getImagesForArtbotJobFromDexie
+} from '@/app/_db/ImageFiles'
+import { addPendingJobToDexie } from '@/app/_db/jobTransactions'
+import { addPromptToDexie } from '@/app/_db/promptsHistory'
 import usePromptInputValidation from '@/app/_hooks/usePromptInputValidation'
 import { useInput } from '@/app/_providers/PromptInputProvider'
+import { addPendingImageToAppState } from '@/app/_stores/PendingImagesStore'
 import {
   IconHourglass,
   IconInfoTriangle,
@@ -22,9 +29,25 @@ export default function PromptActionPanel() {
 
     setRequestPending(true)
 
-    setTimeout(async () => {
-      setRequestPending(false)
-    }, 2000)
+    const pendingJob = await addPendingJobToDexie({ ...input })
+
+    const uploadedImages = await getImagesForArtbotJobFromDexie(
+      '__TEMP_USER_IMG_UPLOAD__'
+    )
+
+    if (uploadedImages && uploadedImages.length > 0) {
+      await duplicateAndModifyArtbotId(
+        '__TEMP_USER_IMG_UPLOAD__',
+        pendingJob.artbot_id
+      )
+    }
+
+    if (pendingJob) {
+      addPendingImageToAppState(pendingJob)
+    }
+
+    await addPromptToDexie(pendingJob.artbot_id, input.prompt)
+    setRequestPending(false)
   }, [input])
 
   const emptyInput = !input.prompt.trim() && !input.negative.trim()

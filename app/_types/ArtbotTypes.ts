@@ -1,9 +1,16 @@
+import PromptInput from '../_data-models/PromptInput'
 import { Embedding } from './CivitaiTypes'
 import { InjectTi } from './HordeTypes'
 
 export interface AiHordeEmbedding extends Embedding {
   strength: number
   inject_ti?: InjectTi
+}
+
+export interface FavoriteImage {
+  artbot_id: string
+  image_id: string
+  favorited: boolean
 }
 
 export interface HordeJob {
@@ -31,6 +38,10 @@ export type ImageOrientations =
   | 'square'
   | 'custom'
 
+export interface ImageRequest extends PromptInput {
+  artbot_id: string
+}
+
 export enum JobStatus {
   Waiting = 'waiting', // waiting to submit to stable horde api
   Requested = 'requested', // Job sent to API, waiting for response.
@@ -48,6 +59,18 @@ export enum JobType {
   Remix = 'remix',
   Text2Img = 'text2img',
   Upscaling = 'upscaling'
+}
+
+export interface PromptsHistory {
+  artbot_id: string
+  hash_id: string
+  prompt: string // Not indexed
+  promptWords: string[]
+}
+
+export interface PromptsJobMap {
+  artbot_id: string
+  prompt_id: number
 }
 
 export interface SavedLora {
