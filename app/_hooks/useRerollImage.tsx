@@ -1,5 +1,5 @@
 // import { Store } from 'react-notifications-component'
-import { addPromptToDexie } from '../_db/PromptsHistory'
+import { addPromptToDexie } from '../_db/promptsHistory'
 import { getImageRequestsFromDexieById } from '../_db/imageRequests'
 import { addPendingJobToDexie } from '../_db/jobTransactions'
 import { addPendingImageToAppState } from '../_stores/PendingImagesStore'
