@@ -1,0 +1,46 @@
+.ImageViewer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+}
+
+.ImageViewImage {
+  max-width: unset;
+  object-fit: contain;
+  width: 'auto';
+}
+
+.ImageInfoContainer {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 0.25rem;
+  margin-top: 12px;
+  width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .ImageViewer {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  .ImageViewImage {
+    max-width: 683px;
+  }
+
+  .ImageInfoContainer {
+    margin-top: 0;
+    width: 388px;
+  }
+}
+
+@media (min-width: 1532px) {
+  .ImageViewImage {
+    max-width: 1024px;
+  }
+}
