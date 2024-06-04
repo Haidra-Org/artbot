@@ -5,7 +5,20 @@ import { db } from './dexie'
 import { getImageFileFromDexie } from './ImageFiles'
 import PromptInput from '../_data-models/PromptInput'
 import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
-import { ImageType } from '../_data-models/ImageFile_Dexie'
+import { ImageFileInterface, ImageType } from '../_data-models/ImageFile_Dexie'
+
+export const addImageAndDefaultFavToDexie = async (
+  image: ImageFileInterface
+) => {
+  return await db.transaction('rw', [db.imageFiles, db.favorites], async () => {
+    await db.imageFiles.add(image)
+    await db.favorites.add({
+      artbot_id: image.artbot_id,
+      image_id: image.image_id,
+      favorited: false
+    })
+  })
+}
 
 export const addPendingJobToDexie = async (input: PromptInput) => {
   const updatedInput = cloneDeep(input)
