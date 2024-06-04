@@ -16,6 +16,22 @@ export enum ControlTypes {
   hough = 'hough'
 }
 
+export interface HordeGeneration {
+  img: string
+  seed: string
+  id: string
+  censored: boolean
+  gen_metadata: Array<{
+    type: string
+    value: string
+    ref?: string
+  }>
+  worker_id: string
+  worker_name: string
+  model: string
+  state: string
+}
+
 export interface HordeUser {
   username: string
   id: number
@@ -78,6 +94,19 @@ export enum InjectTi {
   NegPrompt = 'negprompt'
 }
 
+export interface Lora {
+  /** "label" is specifically added by ArtBot in order to store a
+   * "nice" name to display on the front-end, or with shared image
+   * settings. It should be stripped out when passing an image
+   * request to the Horde API.
+   */
+  label?: string
+  name: string
+  model: number
+  clip: number
+  is_version?: boolean
+}
+
 export enum SourceProcessing {
   // ArtBot specific
   // Delete before sending to API.
@@ -89,4 +118,10 @@ export enum SourceProcessing {
   InPainting = 'inpainting',
   OutPainting = 'outpainting',
   Remix = 'remix'
+}
+
+export interface TextualInversion {
+  name: string
+  inject_ti?: string
+  strength?: number
 }
