@@ -12,6 +12,7 @@ import { JobStatus } from '../_types/ArtbotTypes'
 import { PendingImagesStore } from '../_stores/PendingImagesStore'
 import ImageThumbnail from './ImageThumbnail'
 import PendingImageOverlay from './PendingImageOverlay'
+import ImageViewer from './ImageView'
 // import ImageViewer from '@/app/_components/modules/ImageViewer/imageViewer'
 
 interface PhotoData {
