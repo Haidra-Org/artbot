@@ -1,5 +1,5 @@
 import { clientHeader } from '@/app/_data-models/ClientHeader'
-import { HordeGeneration } from '@/app/_types/horde'
+import { HordeGeneration } from '@/app/_types/HordeTypes'
 
 interface HordeSuccessResponse {
   generations: HordeGeneration[]
