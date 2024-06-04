@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
-import Image from 'next/image'
 import Link from 'next/link'
 import HamburgerNavButton from './HamburgerNavButton'
 import UserKudos from './HeaderNavUserKudos'
@@ -17,7 +17,7 @@ export default function HeaderNav() {
         <HamburgerNavButton />
         <Link href="/">
           <div className="row items-center p-2 text-white h-[42px]">
-            <Image
+            <img
               src={`/artbot-logo.png`}
               height={30}
               width={30}

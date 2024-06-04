@@ -3,6 +3,7 @@ import HeaderNav from './_components/HeaderNav'
 import './globals.css'
 import AppInit from './AppInit'
 import ModalProvider from './_providers/ModalProvider'
+import ContentWrapper from './_components/ContentWrapper'
 
 export const metadata: Metadata = {
   title: 'ArtBot for Stable Diffusion',
@@ -23,7 +24,7 @@ export default function RootLayout({
           <div className="flex flex-col flex-1 pt-[42px] p-[8px]">
             <HeaderNav />
             <main className="flex flex-col gap-2 w-full flex-1 sm:p-1">
-              {children}
+              <ContentWrapper>{children}</ContentWrapper>
             </main>
           </div>
         </ModalProvider>

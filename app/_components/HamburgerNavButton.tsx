@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 import useLockedBody from '@/app/_hooks/useLockedBody'
 import {
@@ -45,9 +46,9 @@ export default function HamburgerNavButton() {
     setOpen(false)
   }
 
-  const MenuOptionCss = `row font-bold text-lg tracking-wide cursor-pointer hover:primary-color`
+  const MenuOptionCss = `row font-bold text-md tracking-wide cursor-pointer hover:primary-color`
   const MenuSubOptionsCss = `col pl-4 w-full mb-2`
-  const MenuSubOptionCss = `row cursor-pointer hover:primary-color`
+  const MenuSubOptionCss = `row text-sm cursor-pointer hover:primary-color`
 
   return (
     <div className="inline-flex relative items-center">
@@ -74,7 +75,16 @@ export default function HamburgerNavButton() {
         }`}
       >
         <div className="col w-full items-start">
-          <div className="p-2">
+          <div className="row w-full justify-between p-2">
+            <div onClick={handleCloseMenu}>
+              <img
+                src={`/artbot-logo.png`}
+                height={30}
+                width={30}
+                alt="AI ArtBot logo"
+                className="min-w-[30px] max-w-[30px]"
+              />
+            </div>
             <button
               onClick={handleCloseMenu}
               className="cursor-pointer hover:primary-color select-none"
@@ -84,7 +94,7 @@ export default function HamburgerNavButton() {
             </button>
           </div>
           <div
-            className="col gap-3 pl-6 max-h-screen overflow-y-auto w-full pb-[156px] md:pb-[72px]"
+            className="col gap-3 pl-3 max-h-screen overflow-y-auto w-full pb-[156px] md:pb-[72px]"
             id="menu-links-list"
           >
             <Link

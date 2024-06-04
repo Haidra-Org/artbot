@@ -1,16 +1,19 @@
 'use client'
 
 import Button from '@/app/_components/Button'
+import DeleteConfirmation from '@/app/_components/Modal_DeleteConfirmation'
 import PromptInput from '@/app/_data-models/PromptInput'
 import {
+  deleteImageFileByArtbotIdTx,
   duplicateAndModifyArtbotId,
   getImagesForArtbotJobFromDexie
 } from '@/app/_db/ImageFiles'
 import { addPendingJobToDexie } from '@/app/_db/jobTransactions'
-import { addPromptToDexie } from '@/app/_db/promptsHistory'
+import { addPromptToDexie } from '@/app/_db/PromptsHistory'
 import usePromptInputValidation from '@/app/_hooks/usePromptInputValidation'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import { addPendingImageToAppState } from '@/app/_stores/PendingImagesStore'
+import NiceModal from '@ebay/nice-modal-react'
 import {
   IconHourglass,
   IconInfoTriangle,
@@ -57,10 +60,32 @@ export default function PromptActionPanel() {
       <Button
         theme="danger"
         onClick={async () => {
-          setInput({ ...new PromptInput() })
-          // await deleteImageFileByArtbotIdTx('__TEMP_USER_IMG_UPLOAD__')
-          setSourceImages([])
-          window.scrollTo(0, 0)
+          NiceModal.show('delete', {
+            children: (
+              <DeleteConfirmation
+                deleteButtonTitle="Reset"
+                title="Reset prompt?"
+                message={
+                  <>
+                    <p>
+                      Are you sure you want to reset all image generation
+                      settings to their default values?
+                    </p>
+                    <p>This cannot be undone.</p>
+                  </>
+                }
+                onDelete={async () => {
+                  setInput({ ...new PromptInput() })
+                  await deleteImageFileByArtbotIdTx('__TEMP_USER_IMG_UPLOAD__')
+                  setSourceImages([])
+                  window.scrollTo(0, 0)
+
+                  // For now, just close modal on delete
+                  NiceModal.remove('modal')
+                }}
+              />
+            )
+          })
         }}
       >
         <span className="row gap-1">
