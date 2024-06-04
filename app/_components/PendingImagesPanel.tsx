@@ -128,7 +128,7 @@ export default function PendingImagesPanel() {
                 }}
                 onClick={() => {
                   NiceModal.show('modal', {
-                    // children: <ImageViewer artbot_id={photo.artbot_id} />
+                    children: <ImageViewer artbot_id={photo.artbot_id} />
                   })
                 }}
               >
