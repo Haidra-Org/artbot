@@ -12,8 +12,7 @@ import { JobStatus } from '../_types/ArtbotTypes'
 import { PendingImagesStore } from '../_stores/PendingImagesStore'
 import ImageThumbnail from './ImageThumbnail'
 import PendingImageOverlay from './PendingImageOverlay'
-import ImageViewer from './ImageView'
-// import ImageViewer from '@/app/_components/modules/ImageViewer/imageViewer'
+import ImageView from './ImageView'
 
 interface PhotoData {
   artbot_id: string
@@ -128,7 +127,7 @@ export default function PendingImagesPanel() {
                 }}
                 onClick={() => {
                   NiceModal.show('modal', {
-                    children: <ImageViewer artbot_id={photo.artbot_id} />
+                    children: <ImageView artbot_id={photo.artbot_id} />
                   })
                 }}
               >

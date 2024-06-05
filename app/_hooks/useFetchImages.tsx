@@ -34,7 +34,17 @@ export default function useFetchImages({
   currentPage: number
   groupImages: boolean
   sortBy: 'asc' | 'desc'
-}): [PhotoData[], number, () => void, Dispatch<SetStateAction<string>>] {
+}): [
+  PhotoData[],
+  number,
+  () => void,
+  Dispatch<SetStateAction<string>>,
+  boolean
+] {
+  // Handle initial load of page
+  // so we don't flash "No Images Found" if images actually exist.
+  const [initLoad, setInitLoad] = useState(true)
+
   const [offset, setOffset] = useState(0)
   const [totalImages, setTotalImages] = useState(0)
   const [images, setImages] = useState<PhotoData[]>([])
@@ -92,6 +102,7 @@ export default function useFetchImages({
 
     setTotalImages(count)
     setImages(imagesArray)
+    setInitLoad(false)
   }, [groupImages, offset, sortBy])
 
   useEffect(() => {
@@ -108,5 +119,5 @@ export default function useFetchImages({
 
   const debounceSearchInput = debounce(setSearchInput, 250)
 
-  return [images, totalImages, fetchImages, debounceSearchInput]
+  return [images, totalImages, fetchImages, debounceSearchInput, initLoad]
 }
