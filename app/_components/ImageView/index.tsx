@@ -5,7 +5,7 @@ import styles from './imageView.module.css'
 import { ImageViewProvider } from './ImageViewProvider'
 import ImageViewInfoContainer from './ImageViewInfoContainer'
 
-export default function ImageViewer({
+export default function ImageView({
   artbot_id,
   image_id,
   onDelete = () => {}

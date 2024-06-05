@@ -9,7 +9,7 @@ import {
   getImagesForArtbotJobFromDexie
 } from '@/app/_db/ImageFiles'
 import { addPendingJobToDexie } from '@/app/_db/jobTransactions'
-import { addPromptToDexie } from '@/app/_db/PromptsHistory'
+import { addPromptToDexie } from '@/app/_db/promptsHistory'
 import usePromptInputValidation from '@/app/_hooks/usePromptInputValidation'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import { addPendingImageToAppState } from '@/app/_stores/PendingImagesStore'
