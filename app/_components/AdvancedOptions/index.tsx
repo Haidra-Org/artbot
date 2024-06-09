@@ -6,7 +6,9 @@ import ImageCount from './ImageCount'
 import ImageOrientation from './ImageOrientation'
 import ModelSelect from './ModelSelect'
 import SamplerSelect from './SamplerSelect'
+import Seed from './Seed'
 import Steps from './Steps'
+import Upscalers from './Upscalers'
 
 export default function AdvancedOptions() {
   return (
@@ -26,6 +28,12 @@ export default function AdvancedOptions() {
       </Section>
       <Section>
         <FaceFixers />
+      </Section>
+      <Section>
+        <Upscalers />
+      </Section>
+      <Section>
+        <Seed />
       </Section>
     </div>
   )

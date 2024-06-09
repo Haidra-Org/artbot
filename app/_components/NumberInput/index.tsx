@@ -67,7 +67,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
   return (
     <div className="row gap-0 items-start">
       <input
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2 rounded-r-none"
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 rounded-r-none"
         onBlur={onBlur}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}

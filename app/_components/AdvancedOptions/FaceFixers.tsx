@@ -38,7 +38,7 @@ export default function FaceFixers() {
   }, [input.post_processing])
 
   return (
-    <>
+    <div className="col">
       <OptionLabel
         title={
           <span className="row font-bold text-sm text-white gap-1">
@@ -135,6 +135,6 @@ export default function FaceFixers() {
           </div>
         </OptionLabel>
       )}
-    </>
+    </div>
   )
 }
