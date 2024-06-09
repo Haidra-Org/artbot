@@ -1,5 +1,6 @@
 import Section from '../Section'
 import ImageCount from './ImageCount'
+import ImageOrientation from './ImageOrientation'
 import ModelSelect from './ModelSelect'
 import SamplerSelect from './SamplerSelect'
 
@@ -12,6 +13,7 @@ export default function AdvancedOptions() {
       </Section>
       <Section>
         <ImageCount />
+        <ImageOrientation />
       </Section>
     </div>
   )
