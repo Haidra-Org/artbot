@@ -1,0 +1,78 @@
+.NumberInputWrapper {
+  background-color: #edf2f7;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+}
+
+.InputField {
+  background-color: #edf2f7;
+  border: 2px solid #edf2f7;
+  border-radius: 4px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 100%;
+  padding: 2px 4px;
+  font-size: 16px;
+  line-height: 24px;
+  color: #4b5563;
+  outline: 0;
+  text-align: center;
+}
+
+.InputField:focus {
+  border-color: rgb(168 85 247);
+}
+
+.ButtonsWrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  width: 80px;
+}
+
+.Button {
+  align-items: center;
+  background-color: rgba(106, 183, 198, 1);
+  justify-content: center;
+  display: flex;
+  height: 32px;
+  width: 40px;
+}
+
+.ButtonDisabled {
+  background-color: rgb(189, 189, 189);
+}
+
+.Button:active:not(:disabled):not(.disabled) {
+  position: relative;
+  top: 1px;
+}
+
+.Button:hover:not(:disabled):not(.disabled) {
+  opacity: 0.85;
+}
+
+.Button:nth-child(1) {
+  border-right: 1px solid rgb(229 231 235);
+}
+
+.Button:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-right: 1px solid white;
+}
+
+@media (min-width: 640px) {
+  .InputField {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .Button {
+    height: 24px;
+    width: 30px;
+  }
+}

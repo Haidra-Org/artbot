@@ -91,6 +91,8 @@ export const downloadImages = async ({
 
       downloadImagesPromise.push(downloadImage(generation.img))
       generationsList.push(generation)
+    } else {
+      continue
     }
   }
 
