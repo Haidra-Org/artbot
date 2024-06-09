@@ -1,7 +1,9 @@
 import Section from '../Section'
+import AdditionalOptions from './AdditionalOptions'
 import ClipSkip from './ClipSkip'
 import FaceFixers from './FaceFixers'
 import Guidance from './Guidance'
+import HordeSettings from './HordeSettings'
 import ImageCount from './ImageCount'
 import ImageOrientation from './ImageOrientation'
 import ModelSelect from './ModelSelect'
@@ -35,6 +37,8 @@ export default function AdvancedOptions() {
       <Section>
         <Seed />
       </Section>
+      <AdditionalOptions />
+      <HordeSettings />
     </div>
   )
 }
