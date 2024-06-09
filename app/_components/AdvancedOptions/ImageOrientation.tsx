@@ -4,6 +4,10 @@ import { useInput } from '@/app/_providers/PromptInputProvider'
 import { ImageOrientations } from '@/app/_types/ArtbotTypes'
 import Select from '../Select'
 import OptionLabel from './OptionLabel'
+import Button from '../Button'
+import { IconCrop } from '@tabler/icons-react'
+import NiceModal from '@ebay/nice-modal-react'
+import CustomImageOrientation from './ImageOrientation_Custom'
 
 interface Option {
   id: ImageOrientations
@@ -73,27 +77,43 @@ export default function ImageOrientation() {
   const { input, setInput } = useInput()
 
   return (
-    <OptionLabel
-      title={
-        <span className="row font-bold text-sm text-white gap-1">Aspect</span>
-      }
-    >
-      <div className="w-full">
-        <Select
-          onChange={(option) => {
-            setInput({
-              imageOrientation: option.value as ImageOrientations,
-              height: options[option.value as ImageOrientations].height,
-              width: options[option.value as ImageOrientations].width
+    <div className="col">
+      <OptionLabel
+        title={
+          <span className="row font-bold text-sm text-white gap-1">Aspect</span>
+        }
+      >
+        <div className="col w-full">
+          <Select
+            onChange={(option) => {
+              setInput({
+                imageOrientation: option.value as ImageOrientations,
+                height: options[option.value as ImageOrientations].height,
+                width: options[option.value as ImageOrientations].width
+              })
+            }}
+            options={transformedOptions}
+            value={{
+              value: input.imageOrientation,
+              label: options[input.imageOrientation].label
+            }}
+          />
+        </div>
+        <Button
+          onClick={() => {
+            NiceModal.show('modal', {
+              children: (
+                <CustomImageOrientation input={input} setInput={setInput} />
+              )
             })
           }}
-          options={transformedOptions}
-          value={{
-            value: input.imageOrientation,
-            label: options[input.imageOrientation].label
-          }}
-        />
+        >
+          <IconCrop />
+        </Button>
+      </OptionLabel>
+      <div className="text-sm font-mono w-full text-right">
+        {input.width}w x {input.height}h
       </div>
-    </OptionLabel>
+    </div>
   )
 }
