@@ -1,4 +1,5 @@
 import Section from '../Section'
+import ImageCount from './ImageCount'
 import ModelSelect from './ModelSelect'
 import SamplerSelect from './SamplerSelect'
 
@@ -8,6 +9,9 @@ export default function AdvancedOptions() {
       <Section>
         <ModelSelect />
         <SamplerSelect />
+      </Section>
+      <Section>
+        <ImageCount />
       </Section>
     </div>
   )

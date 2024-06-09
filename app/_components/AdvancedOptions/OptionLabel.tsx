@@ -10,7 +10,7 @@ export default function OptionLabel({
   title: ReactNode
 }) {
   return (
-    <label className="col md:row justify-between gap-0">
+    <label className="col md:row justify-between gap-2">
       <span style={{ minWidth }}>{title}</span>
       {children}
     </label>
