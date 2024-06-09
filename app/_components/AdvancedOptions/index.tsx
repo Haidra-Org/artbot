@@ -6,10 +6,12 @@ import Guidance from './Guidance'
 import HordeSettings from './HordeSettings'
 import ImageCount from './ImageCount'
 import ImageOrientation from './ImageOrientation'
+import ImageProcessing from './ImageProcessing'
 import ModelSelect from './ModelSelect'
 import SamplerSelect from './SamplerSelect'
 import Seed from './Seed'
 import Steps from './Steps'
+import UploadImage from './UploadImage'
 import Upscalers from './Upscalers'
 
 export default function AdvancedOptions() {
@@ -39,6 +41,8 @@ export default function AdvancedOptions() {
       </Section>
       <AdditionalOptions />
       <HordeSettings />
+      <ImageProcessing />
+      <UploadImage />
     </div>
   )
 }

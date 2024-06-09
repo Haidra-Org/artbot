@@ -9,21 +9,10 @@ import React, {
   useState
 } from 'react'
 
-// import { ImageFileInterface } from '@/app/_data-models/dexie/ImageFile'
-// import { getImagesForArtbotJobFromDexie } from '@/app/_db/imageFiles'
 import PromptInput from '../_data-models/PromptInput'
 import { debounce } from '../_utils/debounce'
-
-// TODO: REMOVE ME. This is temporary placeholder for Dexie methods
-interface ImageFileInterface {
-  name: string
-}
-
-// TODO: REMOVE ME. This is temporary placeholder for Dexie methods
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getImagesForArtbotJobFromDexie = async (str: string) => {
-  return [{ name: str }]
-}
+import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
+import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles'
 
 type PromptInputContextType = {
   input: PromptInput
