@@ -1,3 +1,13 @@
+export interface AvailableImageModel {
+  count: number
+  eta: number
+  jobs: number
+  name: string
+  performance: number
+  queued: number
+  type: string
+}
+
 export enum ControlTypes {
   // ArtBot specific
   // Delete before sending to API.
