@@ -1,8 +1,11 @@
 import Section from '../Section'
+import ClipSkip from './ClipSkip'
+import Guidance from './Guidance'
 import ImageCount from './ImageCount'
 import ImageOrientation from './ImageOrientation'
 import ModelSelect from './ModelSelect'
 import SamplerSelect from './SamplerSelect'
+import Steps from './Steps'
 
 export default function AdvancedOptions() {
   return (
@@ -12,8 +15,13 @@ export default function AdvancedOptions() {
         <SamplerSelect />
       </Section>
       <Section>
-        <ImageCount />
         <ImageOrientation />
+        <ImageCount />
+      </Section>
+      <Section>
+        <Steps />
+        <Guidance />
+        <ClipSkip />
       </Section>
     </div>
   )
