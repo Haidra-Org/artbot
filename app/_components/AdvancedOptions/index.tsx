@@ -1,5 +1,6 @@
 import Section from '../Section'
 import ClipSkip from './ClipSkip'
+import FaceFixers from './FaceFixers'
 import Guidance from './Guidance'
 import ImageCount from './ImageCount'
 import ImageOrientation from './ImageOrientation'
@@ -22,6 +23,9 @@ export default function AdvancedOptions() {
         <Steps />
         <Guidance />
         <ClipSkip />
+      </Section>
+      <Section>
+        <FaceFixers />
       </Section>
     </div>
   )
