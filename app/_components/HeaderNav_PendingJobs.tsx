@@ -3,7 +3,7 @@ import {
   PendingJobsStore,
   updatePendingJobsStore
 } from '../_stores/PendingJobsStore'
-import { IconPhotoBolt } from '@tabler/icons-react'
+import { IconPhotoCheck } from '@tabler/icons-react'
 import Link from 'next/link'
 
 export default function HeaderNavPendingJobs() {
@@ -29,7 +29,7 @@ export default function HeaderNavPendingJobs() {
         }}
       >
         <div className="relative">
-          <IconPhotoBolt stroke={1.5} />
+          <IconPhotoCheck stroke={1.5} />
           <span
             style={{
               position: 'absolute',
