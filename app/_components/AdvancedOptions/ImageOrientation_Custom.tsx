@@ -27,7 +27,7 @@ export default function CustomImageOrientation({
   const handleSetDimensions = (w: number, h: number) => {
     setHeight(h)
     setWidth(w)
-    setInput({ height: h, width: w })
+    setInput({ height: h, width: w, imageOrientation: 'custom' })
   }
 
   return (
@@ -43,12 +43,24 @@ export default function CustomImageOrientation({
             min={64}
             max={3072}
             onBlur={() => {
-              if (isNaN(width)) {
-                setWidth(1024)
-                setInput({ width: 1024 })
+              if (isNaN(width) || !width) {
+                handleSetDimensions(1024, height)
+                updateAspectRatio(1024, height)
               } else {
-                setWidth(parseFloat(Number(width).toFixed(0)))
-                setInput({ width: parseFloat(Number(width).toFixed(0)) })
+                if (lockRatio) {
+                  const { adjustedWidth, adjustedHeight } = getNewDimensions({
+                    w: width,
+                    h: height,
+                    size: parseFloat(Number(width).toFixed(0)),
+                    side: 'width'
+                  })
+                  handleSetDimensions(adjustedWidth, adjustedHeight)
+                } else {
+                  handleSetDimensions(
+                    parseFloat(Number(width).toFixed(0)),
+                    height
+                  )
+                }
               }
             }}
             onChange={(num) => {
@@ -102,14 +114,24 @@ export default function CustomImageOrientation({
             min={64}
             max={3072}
             onBlur={() => {
-              if (isNaN(height)) {
-                setHeight(1024)
-                setInput({ height: 1024 })
+              if (isNaN(height) || !height) {
+                handleSetDimensions(width, 1024)
+                updateAspectRatio(width, 1024)
               } else {
-                setHeight(parseFloat(Number(height).toFixed(0)))
-                setInput({
-                  height: parseFloat(Number(height).toFixed(0))
-                })
+                if (lockRatio) {
+                  const { adjustedWidth, adjustedHeight } = getNewDimensions({
+                    w: width,
+                    h: height,
+                    size: parseFloat(Number(height).toFixed(0)),
+                    side: 'height'
+                  })
+                  handleSetDimensions(adjustedWidth, adjustedHeight)
+                } else {
+                  handleSetDimensions(
+                    parseFloat(Number(width).toFixed(0)),
+                    parseFloat(Number(height).toFixed(0))
+                  )
+                }
               }
             }}
             onChange={(num) => {

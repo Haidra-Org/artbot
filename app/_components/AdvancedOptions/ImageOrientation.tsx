@@ -63,15 +63,24 @@ const options: Options = {
     orientation: 'square',
     height: 1024,
     width: 1024
+  },
+  custom: {
+    id: 'custom',
+    label: 'Custom',
+    orientation: 'custom',
+    height: 1024,
+    width: 1024
   }
 }
 
 // Transforming the structure to Array<{id, label}>
 const transformedOptions: Array<{ value: string; label: string }> =
-  Object.values(options).map((option) => ({
-    value: option.id,
-    label: option.label
-  }))
+  Object.values(options)
+    .map((option) => ({
+      value: option.id,
+      label: option.label
+    }))
+    .filter((option) => option.value !== 'custom')
 
 export default function ImageOrientation() {
   const { input, setInput } = useInput()
