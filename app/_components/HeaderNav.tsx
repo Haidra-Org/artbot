@@ -2,7 +2,8 @@
 'use client'
 import Link from 'next/link'
 import HamburgerNavButton from './HamburgerNavButton'
-import UserKudos from './HeaderNavUserKudos'
+import UserKudos from './HeaderNav_UserKudos'
+import HeaderNavPendingJobs from './HeaderNav_PendingJobs'
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -51,7 +52,10 @@ export default function HeaderNav() {
             Settings
           </Link>
         </div>
-        <UserKudos />
+        <div className="row gap-4">
+          <HeaderNavPendingJobs />
+          <UserKudos />
+        </div>
       </div>
     </header>
   )

@@ -22,6 +22,7 @@ import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
 import generateImage from '../_api/horde/generate'
 import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
+import { updateCompletedJobInPendingStore } from '../_stores/PendingJobsStore'
 
 const MAX_JOBS = 5
 
@@ -187,6 +188,8 @@ export const checkPendingJobs = async () => {
         await updatePendingImage(pendingJobs[index].artbot_id, {
           status: JobStatus.Done
         })
+
+        updateCompletedJobInPendingStore()
       } else {
         let status = JobStatus.Queued
 
