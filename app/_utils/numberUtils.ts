@@ -19,3 +19,14 @@ export const formatKudos = (num: number) => {
     return (num / 1000000000).toFixed(1) + 'B'
   }
 }
+
+export const nearestWholeMultiple = (input: number, X = 64) => {
+  let output = Math.round(input / X)
+  if (output === 0 && input > 0) {
+    output += 1
+  }
+
+  output *= X
+
+  return output
+}

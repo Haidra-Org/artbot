@@ -1,3 +1,4 @@
+import { nearestWholeMultiple } from './imageUtils'
 import { formatKudos } from './numberUtils'
 
 describe('formatKudos', () => {
@@ -30,5 +31,36 @@ describe('formatKudos', () => {
     expect(formatKudos(1000000)).toBe('1.0M')
     expect(formatKudos(999999999)).toBe('1.0B')
     expect(formatKudos(1000000000)).toBe('1.0B')
+  })
+})
+
+describe('nearestWholeMultiple', () => {
+  test('returns nearest whole multiple for a positive number', () => {
+    expect(nearestWholeMultiple(130)).toBe(128)
+    expect(nearestWholeMultiple(195)).toBe(192)
+  })
+
+  test('returns zero when input is zero', () => {
+    expect(nearestWholeMultiple(0)).toBe(0)
+  })
+
+  test('returns nearest whole multiple for a negative number', () => {
+    expect(nearestWholeMultiple(-130)).toBe(-128)
+    expect(nearestWholeMultiple(-195)).toBe(-192)
+  })
+
+  test('rounds correctly when input is just below a multiple of X', () => {
+    expect(nearestWholeMultiple(127)).toBe(128)
+    expect(nearestWholeMultiple(191)).toBe(192)
+  })
+
+  test('rounds correctly when input is just above a multiple of X', () => {
+    expect(nearestWholeMultiple(129)).toBe(128)
+    expect(nearestWholeMultiple(193)).toBe(192)
+  })
+
+  test('returns nearest whole multiple for a given X', () => {
+    expect(nearestWholeMultiple(130, 50)).toBe(150)
+    expect(nearestWholeMultiple(195, 50)).toBe(200)
   })
 })
