@@ -33,3 +33,13 @@ export interface Embedding {
     thumbsDownCount: number
   }
 }
+
+export interface CivitAiApiResponse {
+  items: Embedding[]
+  metadata: {
+    nextCursor: string
+    nextPage: string
+    currentPage: number
+    pageSize: number
+  }
+}
