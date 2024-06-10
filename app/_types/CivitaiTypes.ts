@@ -9,9 +9,11 @@ export interface ModelVersion {
     sizeKB: number
   }>
   images: Array<{
-    nsfw: boolean
+    height: number
+    nsfwLevel: number
     type: string
     url: string
+    width: number
   }>
   trainedWords: string[]
 }
@@ -23,4 +25,11 @@ export interface Embedding {
   name: string
   nsfw: boolean
   tags: string[]
+  stats: {
+    downloadCount: number
+    ratingCount: number
+    rating: number
+    thumbsUpCount: number
+    thumbsDownCount: number
+  }
 }
