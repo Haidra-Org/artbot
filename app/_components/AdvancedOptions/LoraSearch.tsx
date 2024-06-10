@@ -26,8 +26,6 @@ export default function LoraSearch() {
     return photoData
   })
 
-  console.log(transformedData)
-
   return (
     <div className="col w-full">
       <h2 className="row font-bold">
