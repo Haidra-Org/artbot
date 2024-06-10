@@ -2,11 +2,15 @@ import { AppSettings, AppSettingsParams, rootSettingsKey } from './AppSettings'
 
 describe('AppSettings', () => {
   const initialSettings: AppSettingsParams = {
+    civitaiShowNsfw: false,
     allowedWorkers: [{ value: 'worker1' }],
     allowNsfwImages: false,
     apiKey: 'testApiKey',
     autoDowngrade: true,
     blockedWorkers: [{ value: 'worker2' }],
+    civitaiShowSD15: true,
+    civitaiShowSD21: true,
+    civitaiShowSDXL: true,
     negativePanelOpen: false,
     runInBackground: true,
     saveInputOnCreate: false,

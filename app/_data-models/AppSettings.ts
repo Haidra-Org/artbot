@@ -21,9 +21,39 @@ export interface AppSettingsParams {
   useBlockedWorkers: boolean
   useReplacementFilter: boolean
   useTrusted: boolean
+
+  // CivitAi Filters
+  civitaiShowNsfw: boolean
+  civitaiShowSDXL: boolean
+  civitaiShowSD15: boolean
+  civitaiShowSD21: boolean
 }
 
 class AppSettings {
+  // Default values to fallback to if key is undefined
+  static defaultValues: AppSettingsParams = {
+    allowedWorkers: [],
+    allowNsfwImages: false,
+    apiKey: '0000000000', // Default API key
+    autoDowngrade: true,
+    blockedWorkers: [],
+    negativePanelOpen: false,
+    runInBackground: true,
+    saveInputOnCreate: true,
+    slow_workers: true,
+    useAllowedWorkers: false,
+    useBeta: false,
+    useBlockedWorkers: false,
+    useReplacementFilter: true,
+    useTrusted: true,
+
+    // CivitAi Filters
+    civitaiShowNsfw: false,
+    civitaiShowSDXL: true,
+    civitaiShowSD15: true,
+    civitaiShowSD21: true
+  }
+
   static delete(key: string) {
     const data = this.load()
     delete data[key]
@@ -31,14 +61,16 @@ class AppSettings {
   }
 
   static apikey() {
-    // Return AI Horde's anonymous API key if no API key is set
-    return this.get('apiKey') || '0000000000'
+    return this.get('apiKey') || this.defaultValues.apiKey
   }
 
   static get<K extends keyof AppSettingsParams>(item: K): AppSettingsParams[K] {
     const data = this.load()
 
-    return data[item]
+    // Check if the item is undefined using typeof
+    return typeof data[item] !== 'undefined'
+      ? data[item]
+      : this.defaultValues[item]
   }
 
   static load() {
