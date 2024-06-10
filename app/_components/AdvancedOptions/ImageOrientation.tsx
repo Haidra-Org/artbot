@@ -92,7 +92,7 @@ export default function ImageOrientation() {
           <span className="row font-bold text-sm text-white gap-1">Aspect</span>
         }
       >
-        <div className="col w-full">
+        <div className="row w-full">
           <Select
             onChange={(option) => {
               setInput({
@@ -107,18 +107,18 @@ export default function ImageOrientation() {
               label: options[input.imageOrientation].label
             }}
           />
+          <Button
+            onClick={() => {
+              NiceModal.show('modal', {
+                children: (
+                  <CustomImageOrientation input={input} setInput={setInput} />
+                )
+              })
+            }}
+          >
+            <IconCrop />
+          </Button>
         </div>
-        <Button
-          onClick={() => {
-            NiceModal.show('modal', {
-              children: (
-                <CustomImageOrientation input={input} setInput={setInput} />
-              )
-            })
-          }}
-        >
-          <IconCrop />
-        </Button>
       </OptionLabel>
       <div className="text-sm font-mono w-full text-right">
         {input.width}w x {input.height}h
