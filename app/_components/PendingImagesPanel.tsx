@@ -36,7 +36,7 @@ export default function PendingImagesPanel() {
       return {
         artbot_id: image.artbot_id,
         image_id: image.image_id,
-        key: `image-${image.image_id}`,
+        key: `image-${image.artbot_id || image.image_id}`,
         src: '', // PhotoAlbum library requires this but we're not using it.
         image_count: image.image_count || 1,
         hordeStatus: image.status,
@@ -83,6 +83,7 @@ export default function PendingImagesPanel() {
           if (photo.hordeStatus !== JobStatus.Done) {
             return (
               <div
+                key={photo.artbot_id}
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
