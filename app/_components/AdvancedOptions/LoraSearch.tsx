@@ -3,13 +3,48 @@ import PhotoAlbum from 'react-photo-album'
 import LORAS from './_LORAs.json'
 import { Embedding } from '@/app/_types/CivitaiTypes'
 import Button from '../Button'
-import { IconArrowBarLeft, IconFilter } from '@tabler/icons-react'
+import {
+  IconArrowBarLeft,
+  IconBox,
+  IconDeviceFloppy,
+  IconFilter,
+  IconGrid3x3
+} from '@tabler/icons-react'
+import { useEffect, useMemo, useState } from 'react'
+import useCivitAi from '@/app/_hooks/useCivitai'
+import { debounce } from '@/app/_utils/debounce'
+import NiceModal from '@ebay/nice-modal-react'
+import LoraFilter from './LoraFilter'
 
 // TODO: Delete LoRA import once search works.
 
 export default function LoraSearch() {
+  const {
+    fetchCivitAiResults,
+    pendingSearch,
+    searchResults,
+    setPendingSearch
+  } = useCivitAi({
+    type: 'LORA'
+  })
+  const [inputVersionId, setInputVersionId] = useState(false)
+  const [searchInput, setSearchInput] = useState('')
+  const [showFilter, setShowFilter] = useState(false)
+
+  // Memoize the debounced function so it doesn't get recreated on every render
+  const debouncedSearchRequest = useMemo(() => {
+    return debounce(fetchCivitAiResults, 750)
+  }, [fetchCivitAiResults])
+
+  useEffect(() => {
+    if (inputVersionId || !searchInput.trim()) return
+    debouncedSearchRequest(searchInput)
+  }, [debouncedSearchRequest, inputVersionId, searchInput])
+
+  const resultsArray = !searchInput.trim() ? LORAS.items : searchResults
+
   // @ts-expect-error TODO: Need to properly type this later
-  const transformedData = LORAS.items.map((embedding: Embedding) => {
+  const transformedData = resultsArray.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
     // Extracting the first model version and its first image
     const firstModelVersion = embedding.modelVersions[0]
@@ -18,6 +53,7 @@ export default function LoraSearch() {
     const photoData = {
       key: String(embedding.id), // Ensuring the key is a string
       name: embedding.name,
+      baseModel: firstModelVersion.baseModel,
       src: firstImage.url,
       width: firstImage.width,
       height: firstImage.height
@@ -32,71 +68,160 @@ export default function LoraSearch() {
         LoRA Search <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
       <div className="row w-full">
+        <Button
+          outline={!inputVersionId}
+          onClick={() => {
+            setSearchInput('')
+            setInputVersionId(!inputVersionId)
+          }}
+          title="Input by version ID"
+        >
+          <IconGrid3x3 />
+        </Button>
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Search for LoRA or Lycoris"
-          // onChange={(e) => setInput({ seed: e.target.value })}
-          // onKeyDown={handleKeyDown}
-          // value={input.seed}
+          placeholder={
+            inputVersionId
+              ? 'Enter CivitAI version ID'
+              : 'Search for LoRA or Lycoris'
+          }
+          onChange={(e) => {
+            if (e.target.value.trim()) {
+              setPendingSearch(true)
+            }
+
+            setSearchInput(e.target.value)
+          }}
+          value={searchInput}
         />
-        <Button theme="danger" onClick={() => {}}>
+        <Button
+          theme="danger"
+          onClick={() => {
+            setSearchInput('')
+          }}
+        >
           <IconArrowBarLeft />
         </Button>
-        <Button onClick={() => {}}>
-          <IconFilter />
-        </Button>
+        {inputVersionId && (
+          <Button
+            disabled={!searchInput.trim()}
+            onClick={() => {
+              NiceModal.remove('modal')
+            }}
+            title="Use LoRA by Version ID"
+          >
+            <IconDeviceFloppy />
+          </Button>
+        )}
+        {!inputVersionId && (
+          <Button
+            outline={!showFilter}
+            onClick={() => {
+              setShowFilter(!showFilter)
+            }}
+          >
+            <IconFilter />
+          </Button>
+        )}
       </div>
-      <div>
-        <PhotoAlbum
-          layout="columns"
-          spacing={8}
-          photos={transformedData}
-          renderPhoto={(renderPhotoProps) => {
-            const { layoutOptions, photo, imageProps } = renderPhotoProps || {}
-            const { alt, style, ...restImageProps } = imageProps || {}
-
-            console.log(`renderPhotoProps`, renderPhotoProps)
-
-            return (
-              <div
-                key={photo.key}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  position: 'relative',
-                  marginBottom: layoutOptions.spacing
-                }}
-              >
-                <img
-                  alt={alt}
-                  style={{
-                    ...style,
-                    width: '100%',
-                    height: 'auto',
-                    marginBottom: '0 !important'
-                  }}
-                  {...restImageProps}
-                  src={imageProps.src}
-                />
-                <div
-                  className="row items-center justify-center font-bold text-xs px-2"
-                  style={{
-                    backdropFilter: 'blur(10px)',
-                    bottom: 0,
-                    height: '64px',
-                    left: 0,
-                    position: 'absolute',
-                    right: 0
-                  }}
-                >
-                  <div>{photo.name}</div>
-                </div>
-              </div>
-            )
+      {showFilter && !inputVersionId && (
+        <LoraFilter
+          onSelectionChange={() => {
+            if (!searchInput.trim()) return
+            debouncedSearchRequest(searchInput)
           }}
         />
-      </div>
+      )}
+      {inputVersionId && (
+        <div>Enter CivitAI version ID in order to directly use LoRA.</div>
+      )}
+      {!inputVersionId &&
+        !pendingSearch &&
+        searchInput.trim() &&
+        searchResults.length === 0 && (
+          <div className="w-full row justify-center items-center">
+            No results found.
+          </div>
+        )}
+      {!inputVersionId && pendingSearch && (
+        <div className="w-full row justify-center items-center">
+          Loading results...
+        </div>
+      )}
+      {!inputVersionId && !pendingSearch && (
+        <div>
+          <PhotoAlbum
+            layout="columns"
+            spacing={8}
+            photos={transformedData}
+            renderPhoto={(renderPhotoProps) => {
+              const { layoutOptions, photo, imageProps } =
+                renderPhotoProps || {}
+              const { alt, style, ...restImageProps } = imageProps || {}
+
+              return (
+                <div
+                  key={photo.key}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'relative',
+                    marginBottom: layoutOptions.spacing
+                  }}
+                >
+                  <img
+                    alt={alt}
+                    style={{
+                      ...style,
+                      width: '100%',
+                      height: 'auto',
+                      marginBottom: '0 !important'
+                    }}
+                    {...restImageProps}
+                    src={imageProps.src}
+                  />
+
+                  <div
+                    style={{
+                      alignItems: 'center',
+                      backgroundColor: 'black',
+                      bottom: '64px',
+                      color: 'white',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      gap: '8px',
+                      height: '24px',
+                      padding: '4px',
+                      left: 0,
+                      position: 'absolute',
+                      opacity: 0.9
+                    }}
+                  >
+                    <IconBox stroke={1} />
+                    {photo.baseModel}
+                  </div>
+                  <div
+                    className="row items-center justify-center font-bold text-xs px-2 text-center"
+                    style={{
+                      backdropFilter: 'blur(10px)',
+                      bottom: 0,
+                      height: '64px',
+                      left: 0,
+                      position: 'absolute',
+                      right: 0
+                    }}
+                  >
+                    <div>{photo.name}</div>
+                  </div>
+                </div>
+              )
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

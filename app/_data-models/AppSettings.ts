@@ -4,6 +4,8 @@
  * Save and load settings from browser's localStorage
  */
 
+import { CivitAiBaseModels } from '../_types/ArtbotTypes'
+
 export const rootSettingsKey = 'ArtBotSettings'
 
 export interface AppSettingsParams {
@@ -12,6 +14,7 @@ export interface AppSettingsParams {
   apiKey: string
   autoDowngrade: boolean
   blockedWorkers: Array<{ value: string }>
+  civitAiBaseModelFilter: CivitAiBaseModels[]
   negativePanelOpen: boolean
   runInBackground: boolean
   saveInputOnCreate: boolean
@@ -21,12 +24,6 @@ export interface AppSettingsParams {
   useBlockedWorkers: boolean
   useReplacementFilter: boolean
   useTrusted: boolean
-
-  // CivitAi Filters
-  civitaiShowNsfw: boolean
-  civitaiShowSDXL: boolean
-  civitaiShowSD15: boolean
-  civitaiShowSD21: boolean
 }
 
 class AppSettings {
@@ -37,6 +34,7 @@ class AppSettings {
     apiKey: '0000000000', // Default API key
     autoDowngrade: true,
     blockedWorkers: [],
+    civitAiBaseModelFilter: ['SD 1.x', 'SD 2.x', 'SDXL'],
     negativePanelOpen: false,
     runInBackground: true,
     saveInputOnCreate: true,
@@ -45,13 +43,7 @@ class AppSettings {
     useBeta: false,
     useBlockedWorkers: false,
     useReplacementFilter: true,
-    useTrusted: true,
-
-    // CivitAi Filters
-    civitaiShowNsfw: false,
-    civitaiShowSDXL: true,
-    civitaiShowSD15: true,
-    civitaiShowSD21: true
+    useTrusted: true
   }
 
   static delete(key: string) {

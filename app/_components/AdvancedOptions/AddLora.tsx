@@ -17,7 +17,10 @@ export default function AddLora() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <LoraSearch />
+                children: <LoraSearch />,
+                modalStyle: {
+                  width: '100%'
+                }
               })
             }}
           >
