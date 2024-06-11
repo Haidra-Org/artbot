@@ -19,6 +19,8 @@ export default function AddLora() {
               NiceModal.show('modal', {
                 children: <LoraSearch />,
                 modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
                   width: '100%'
                 }
               })
