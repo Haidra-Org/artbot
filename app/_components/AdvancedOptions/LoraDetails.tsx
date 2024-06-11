@@ -5,16 +5,30 @@ import Carousel from '../Carousel'
 import Button from '../Button'
 import { IconBox, IconDeviceFloppy, IconHeart } from '@tabler/icons-react'
 import NiceModal from '@ebay/nice-modal-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Section from '../Section'
 import OptionLabel from './OptionLabel'
 import Select from '../Select'
+import { SavedLora } from '@/app/_types/ArtbotTypes'
 
 export default function LoraDetails({ details }: { details: Embedding }) {
   console.log(`details?`, details)
   const { modelVersions = [] } = details
   const [initModel = {} as ModelVersion] = modelVersions
   const [modelVersion, setModelVersion] = useState<ModelVersion>(initModel)
+
+  const handleUseLoraClick = useCallback(() => {
+    const savedLora: SavedLora = {
+      ...details,
+      versionId: modelVersion.id,
+      modelVersions: [modelVersion],
+      strength: 1,
+      clip: 1
+    }
+
+    console.log(`savedLora`, savedLora)
+    return savedLora
+  }, [details, modelVersion])
 
   const versionOptions = modelVersions.map((version) => {
     return {
@@ -97,6 +111,7 @@ export default function LoraDetails({ details }: { details: Embedding }) {
                   />
                   <Button
                     onClick={() => {
+                      handleUseLoraClick()
                       NiceModal.remove('embeddingDetails')
                     }}
                   >
@@ -156,6 +171,7 @@ export default function LoraDetails({ details }: { details: Embedding }) {
           </Button>
           <Button
             onClick={() => {
+              handleUseLoraClick()
               NiceModal.remove('embeddingDetails')
             }}
           >
