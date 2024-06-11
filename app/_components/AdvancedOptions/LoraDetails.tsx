@@ -95,7 +95,11 @@ export default function LoraDetails({ details }: { details: Embedding }) {
                       label: modelVersion.name
                     }}
                   />
-                  <Button onClick={() => {}}>
+                  <Button
+                    onClick={() => {
+                      NiceModal.remove('embeddingDetails')
+                    }}
+                  >
                     <IconDeviceFloppy />
                   </Button>
                 </div>
@@ -150,7 +154,11 @@ export default function LoraDetails({ details }: { details: Embedding }) {
           >
             <div className="row">Cancel</div>
           </Button>
-          <Button onClick={() => {}}>
+          <Button
+            onClick={() => {
+              NiceModal.remove('embeddingDetails')
+            }}
+          >
             <div className="row">
               <IconDeviceFloppy /> Use LoRA
             </div>

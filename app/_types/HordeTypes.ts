@@ -112,7 +112,7 @@ export interface Lora {
    */
   label?: string
   name: string
-  model: number
+  model: number // AKA "strength"
   clip: number
   is_version?: boolean
 }

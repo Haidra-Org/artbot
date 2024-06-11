@@ -83,17 +83,11 @@ export interface PromptsJobMap {
   prompt_id: number
 }
 
-export interface SavedLora {
-  parentModelId: number
-  name: string | number
-  label: string
-  versionLabel: string
-  description: string
-  baseModel: string
-  trainedWords: string[]
-  image: string
-  sizeKb: number
-  model: number // Strength
+export interface SavedLora extends Embedding {
+  id: number | string // parentID of Embedding (e.g., Embedding.id)
+  versionId: number | string // id of ModelVersion,
+
+  // Config params used for AI Horde image requests
+  strength: number // AKA "model" field for AI Horde
   clip: number
-  is_version: boolean
 }
