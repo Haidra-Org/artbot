@@ -7,6 +7,9 @@ export interface AiHordeEmbedding extends Embedding {
   inject_ti?: InjectTi
 }
 
+// Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
+export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW'
+
 export interface FavoriteImage {
   artbot_id: string
   image_id: string

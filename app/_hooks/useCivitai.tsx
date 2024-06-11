@@ -26,10 +26,7 @@ const getCivitaiSearchResults = async ({
 
     pendingRequest = true
 
-    const nsfw = AppSettings.get('civitaiShowNsfw')
-    const sdxl = AppSettings.get('civitaiShowSDXL')
-    const sd15 = AppSettings.get('civitaiShowSD15')
-    const sd21 = AppSettings.get('civitaiShowSD21')
+    const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter')
 
     // Use AbortController to timeout long responses from CivitAI
     const controller = new AbortController()
@@ -44,21 +41,24 @@ const getCivitaiSearchResults = async ({
     // Per this discussion on GitHub, this is an undocumented feature:
     // https://github.com/orgs/civitai/discussions/733
     // API response gives me the following valid values:
-    //  "'SD 1.4' | 'SD 1.5' | 'SD 1.5 LCM' | 'SD 2.0' | 'SD 2.0 768' | 'SD 2.1' | 'SD 2.1 768' | 'SD 2.1 Unclip' | 'SDXL 0.9' | 'SDXL 1.0' | 'SDXL 1.0 LCM' | 'SDXL Distilled' | 'SDXL Turbo' | 'SVD' | 'SVD XT' | 'Playground v2' | 'PixArt a' | 'Other'"
+    //  "'SD 1.4' | 'SD 1.5' | 'SD 1.5 LCM' | 'SD 2.0' | 'SD 2.0 768' | 'SD 2.1' | 'SD 2.1 768' | 'SD 2.1 Unclip' | 'SDXL 0.9' | 'SDXL 1.0' | 'SDXL 1.0 LCM' | 'SDXL Distilled' | 'SDXL Turbo' | 'SVD' | 'SVD XT' | 'Playground v2' | 'PixArt a' | 'Pony' | 'Other'"
     let baseModelFilter
 
-    baseModelFilter = sdxl
+    baseModelFilter = userBaseModelFilters.includes('SD 1.x')
+      ? ['1.4', '1.5', '1.5 LCM'].map((e) => '&baseModels=SD ' + e).join('')
+      : ''
+    baseModelFilter += userBaseModelFilters.includes('SD 2.x')
+      ? ['2.0', '2.0 768', '2.1', '2.1 768', '2.1 Unclip']
+          .map((e) => '&baseModels=SD ' + e)
+          .join('')
+      : ''
+    baseModelFilter += userBaseModelFilters.includes('SDXL')
       ? ['0.9', '1.0', '1.0 LCM', 'Turbo']
           .map((e) => '&baseModels=SDXL ' + e)
           .join('')
       : ''
-    baseModelFilter += sd15
-      ? ['1.4', '1.5', '1.5 LCM'].map((e) => '&baseModels=SD ' + e).join('')
-      : ''
-    baseModelFilter += sd21
-      ? ['2.0', '2.0 768', '2.1', '2.1 768', '2.1 Unclip']
-          .map((e) => '&baseModels=SD ' + e)
-          .join('')
+    baseModelFilter += userBaseModelFilters.includes('Pony')
+      ? '&baseModels=Pony'
       : ''
     baseModelFilter = baseModelFilter.replace(/ /g, '%20')
 
@@ -69,7 +69,7 @@ const getCivitaiSearchResults = async ({
     }
 
     const query = input ? `&query=${input}` : ''
-    const searchKey = `limit=${limit}${query}&page=${page}&nsfw=${nsfw}${baseModelFilter}`
+    const searchKey = `limit=${limit}${query}&page=${page}&nsfw=${userBaseModelFilters.includes('NSFW')}${baseModelFilter}`
 
     if (searchCache.get(searchKey)) {
       const data = searchCache.get<CivitAiApiResponse>(searchKey)
@@ -86,7 +86,7 @@ const getCivitaiSearchResults = async ({
       console.error('CivitAi Search Error - Request timed out.')
     }, 5000)
 
-    const searchParams = `${searchTypes}&sort=Highest Rated&${searchKey}`
+    const searchParams = `${searchTypes}&sort=Highest%20Rated&${searchKey}`
 
     const response = await fetch(
       `https://civitai.com/api/v1/models?${searchParams}`,
@@ -154,7 +154,7 @@ export default function useCivitAi({
   const debouncedSearchRequest = debounce(fetchCivitAiResults, 500)
 
   useEffect(() => {
-    fetchCivitAiResults()
+    // fetchCivitAiResults()
     // Ignore dependency array warning - we only want to fetch models once on initial load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -162,10 +162,12 @@ export default function useCivitAi({
   return {
     currentPage,
     debouncedSearchRequest,
+    fetchCivitAiResults,
     hasError,
     pendingSearch,
     searchResults,
     setCurrentPage,
+    setPendingSearch,
     totalItems,
     totalPages
   }
