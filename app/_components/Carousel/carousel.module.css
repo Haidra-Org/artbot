@@ -35,10 +35,12 @@
 }
 
 .embla__controls {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  justify-content: space-between;
-  gap: 1.2rem;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  /* grid-template-columns: auto 1fr;
+  justify-content: flex-start;
+  gap: 1.2rem; */
 }
 
 .embla__buttons {
@@ -82,7 +84,9 @@
 
 .embla__dots {
   display: flex;
+  padding-left: 8px;
   flex-wrap: wrap;
+  font-size: 12px;
   justify-content: flex-end;
   align-items: center;
 }
