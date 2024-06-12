@@ -157,7 +157,7 @@ export default function UploadImage() {
       try {
         reader.readAsDataURL(acceptedFile)
       } catch (err) {
-        console.log(`OOPS!`)
+        console.error(`Upload image error: ${err}`)
       }
     },
     [handleUpload]

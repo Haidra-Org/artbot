@@ -18,11 +18,11 @@ export default function AppInit() {
   const [handleLogin] = useHordeApiKey()
 
   const getUserInfoOnLoad = async () => {
-    const apiKey = AppSettings.get('apiKey')
+    const apikey = AppSettings.get('apiKey')
 
-    if (apiKey === '0000000000') return
+    if (!apikey || !apikey.trim() || apikey === '0000000000') return
 
-    await handleLogin(apiKey)
+    await handleLogin(apikey)
   }
 
   useEffectOnce(() => {

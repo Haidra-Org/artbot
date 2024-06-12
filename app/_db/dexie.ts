@@ -1,8 +1,10 @@
 import Dexie, { Table } from 'dexie'
 
 import {
+  AppSettingsTable,
   FavoriteImage,
   HordeJob,
+  ImageEnhancementModulesTable,
   ImageRequest,
   PromptsHistory,
   PromptsJobMap
@@ -10,18 +12,26 @@ import {
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 
 class ArtBot_v2 extends Dexie {
-  public favorites!: Table<FavoriteImage, number>
-  public hordeJobs!: Table<HordeJob, number>
-  public imageFiles!: Table<ImageFileInterface, number>
-  public imageRequests!: Table<ImageRequest, number>
-  public promptsHistory!: Table<PromptsHistory, number>
-  public promptsJobMap!: Table<PromptsJobMap, number>
+  public declare appSettings: Table<AppSettingsTable, number>
+  public declare favorites: Table<FavoriteImage, number>
+  public declare hordeJobs: Table<HordeJob, number>
+  public declare imageEnhancementModules: Table<
+    ImageEnhancementModulesTable,
+    number
+  >
+  public declare imageFiles: Table<ImageFileInterface, number>
+  public declare imageRequests: Table<ImageRequest, number>
+  public declare promptsHistory: Table<PromptsHistory, number>
+  public declare promptsJobMap: Table<PromptsJobMap, number>
 
   public constructor() {
     super('ArtBot_v2')
     this.version(1).stores({
+      appSettings: '++id, key',
       favorites: '++id, artbot_id, image_id, favorited',
       hordeJobs: '++id, artbot_id, horde_id, status',
+      imageEnhancementModules:
+        '++id, version_id, modifier, type, [modifier+type], [version_id+modifier], [version_id+type]',
       imageFiles:
         '++id, artbot_id, horde_id, image_id, imageType, imageStatus, [artbot_id+imageType], [image_id+imageType], [imageStatus+imageType], model, sampler',
       imageRequests: '++id, artbot_id, jobType',

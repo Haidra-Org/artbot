@@ -42,7 +42,7 @@ export default function FaceFixers() {
       <OptionLabel
         title={
           <span className="row font-bold text-sm text-white gap-1">
-            Face processor
+            Face fixer
           </span>
         }
       >

@@ -7,6 +7,12 @@ export interface AiHordeEmbedding extends Embedding {
   inject_ti?: InjectTi
 }
 
+// Holds various types of settings that may be used throughout the web app.
+export interface AppSettingsTable {
+  key: string // indexed for quick lookups
+  value: unknown
+}
+
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
 export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW'
 
@@ -37,6 +43,16 @@ export interface ImagesForGallery extends HordeJob {
   width: number
   height: number
   image_count: number
+}
+
+export type ImageEnhancementModulesModifier = 'lora' | 'ti'
+
+export interface ImageEnhancementModulesTable {
+  version_id: string // Format: civitai_lora_[versionId] e.g., "civitai_lora_12345"
+  timestamp: number
+  modifier: ImageEnhancementModulesModifier
+  type: 'favorite' | 'recent'
+  model: Embedding
 }
 
 export type ImageOrientations =
@@ -83,17 +99,11 @@ export interface PromptsJobMap {
   prompt_id: number
 }
 
-export interface SavedLora {
-  parentModelId: number
-  name: string | number
-  label: string
-  versionLabel: string
-  description: string
-  baseModel: string
-  trainedWords: string[]
-  image: string
-  sizeKb: number
-  model: number // Strength
+export interface SavedLora extends Embedding {
+  id: number | string // parentID of Embedding (e.g., Embedding.id)
+  versionId: number | string // id of ModelVersion,
+
+  // Config params used for AI Horde image requests
+  strength: number // AKA "model" field for AI Horde
   clip: number
-  is_version: boolean
 }

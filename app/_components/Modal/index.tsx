@@ -10,6 +10,7 @@ import styles from './modal.module.css'
 interface ModalProps {
   children: ReactNode
   fullscreen?: boolean
+  id?: string
   modalStyle?: React.CSSProperties
   onClose: () => void
 }
@@ -17,6 +18,7 @@ interface ModalProps {
 function Modal({
   children,
   fullscreen = false,
+  id,
   modalStyle = {},
   onClose = () => {}
 }: ModalProps) {
@@ -55,6 +57,7 @@ function Modal({
         modal: styles.CustomModal,
         closeButton: styles.CustomCloseButton
       }}
+      modalId={id}
       styles={{
         modal: { ...modalStyle }
       }}

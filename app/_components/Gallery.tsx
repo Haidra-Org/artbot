@@ -222,7 +222,6 @@ export default function Gallery() {
                 breakLabel="..."
                 nextLabel="⇢"
                 onPageChange={(val) => {
-                  console.log(`val`, val)
                   setCurrentPage(val.selected)
                   window.scrollTo(0, 0)
                 }}

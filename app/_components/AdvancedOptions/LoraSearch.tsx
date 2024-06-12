@@ -15,10 +15,17 @@ import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
 import NiceModal from '@ebay/nice-modal-react'
 import LoraFilter from './LoraFilter'
+import LoraImage from './LoraImage'
+import LoraDetails from './LoraDetails'
+import { SavedLora } from '@/app/_types/ArtbotTypes'
 
 // TODO: Delete LoRA import once search works.
 
-export default function LoraSearch() {
+export default function LoraSearch({
+  onUseLoraClick = () => {}
+}: {
+  onUseLoraClick?: (savedLora: SavedLora) => void
+}) {
   const {
     fetchCivitAiResults,
     pendingSearch,
@@ -56,14 +63,15 @@ export default function LoraSearch() {
       baseModel: firstModelVersion.baseModel,
       src: firstImage.url,
       width: firstImage.width,
-      height: firstImage.height
+      height: firstImage.height,
+      details: embedding
     }
 
     return photoData
   })
 
   return (
-    <div className="col w-full">
+    <div className="col w-full h-full">
       <h2 className="row font-bold">
         LoRA Search <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
@@ -106,6 +114,15 @@ export default function LoraSearch() {
           <Button
             disabled={!searchInput.trim()}
             onClick={() => {
+              const savedLora = {
+                id: searchInput.trim(),
+                versionId: searchInput.trim(),
+                name: searchInput.trim(),
+                strength: 1,
+                clip: 1
+              }
+
+              onUseLoraClick(savedLora as unknown as SavedLora)
               NiceModal.remove('modal')
             }}
             title="Use LoRA by Version ID"
@@ -157,31 +174,37 @@ export default function LoraSearch() {
             renderPhoto={(renderPhotoProps) => {
               const { layoutOptions, photo, imageProps } =
                 renderPhotoProps || {}
-              const { alt, style, ...restImageProps } = imageProps || {}
+              const { alt } = imageProps || {}
 
               return (
                 <div
                   key={photo.key}
                   style={{
                     display: 'flex',
+                    cursor: 'pointer',
                     justifyContent: 'center',
                     alignItems: 'center',
                     position: 'relative',
                     marginBottom: layoutOptions.spacing
                   }}
+                  onClick={() => {
+                    NiceModal.show('embeddingDetails', {
+                      children: (
+                        <LoraDetails
+                          details={photo.details}
+                          onUseLoraClick={onUseLoraClick}
+                        />
+                      ),
+                      id: 'LoraDetails'
+                    })
+                  }}
                 >
-                  <img
+                  <LoraImage
                     alt={alt}
-                    style={{
-                      ...style,
-                      width: '100%',
-                      height: 'auto',
-                      marginBottom: '0 !important'
-                    }}
-                    {...restImageProps}
-                    src={imageProps.src}
+                    height={renderPhotoProps.layout.height}
+                    width={renderPhotoProps.layout.width}
+                    imageProps={imageProps}
                   />
-
                   <div
                     style={{
                       alignItems: 'center',
@@ -215,6 +238,19 @@ export default function LoraSearch() {
                     }}
                   >
                     <div>{photo.name}</div>
+                    {/* <div
+                      className="z-1"
+                      style={{
+                        backdropFilter: 'blur(10px)',
+                        backgroundColor: 'black',
+                        opacity: 0.7,
+                        bottom: 0,
+                        height: '64px',
+                        left: 0,
+                        position: 'absolute',
+                        right: 0
+                      }}
+                    ></div> */}
                   </div>
                 </div>
               )

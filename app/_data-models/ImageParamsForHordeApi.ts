@@ -212,15 +212,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     if (loras && Array.isArray(loras) && loras.length > 0) {
       this.apiParams.params.loras = loras.map((lora: SavedLora) => {
         const loraObj: Lora = {
-          name: String(lora.name),
-          model: lora.model,
-          clip: lora.clip
-        }
-
-        if (lora.parentModelId && lora.parentModelId !== lora.name) {
-          loraObj.is_version = true
-        } else {
-          delete loraObj.is_version
+          name: String(lora.versionId),
+          model: lora.strength,
+          clip: lora.clip,
+          is_version: true
         }
 
         return loraObj
