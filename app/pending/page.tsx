@@ -5,7 +5,7 @@ export default function PendingPage() {
   return (
     <div className="col">
       <PageTitle>Pending Images</PageTitle>
-      <PendingImagesPanel showBorder={false} />
+      <PendingImagesPanel showBorder={false} showTitle={false} />
     </div>
   )
 }

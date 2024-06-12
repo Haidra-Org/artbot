@@ -5,7 +5,14 @@ import PhotoAlbum from 'react-photo-album'
 import { useStore } from 'statery'
 import { useCallback, useEffect, useState } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
-import { IconPhotoBolt } from '@tabler/icons-react'
+import {
+  IconAffiliate,
+  IconClearAll,
+  IconFilter,
+  IconPhotoBolt,
+  IconSettings,
+  IconSortDescending
+} from '@tabler/icons-react'
 
 import { fetchCompletedJobsByArtbotIdsFromDexie } from '../_db/hordeJobs'
 import { JobStatus } from '../_types/ArtbotTypes'
@@ -13,9 +20,12 @@ import { PendingImagesStore } from '../_stores/PendingImagesStore'
 import ImageThumbnail from './ImageThumbnail'
 import PendingImageOverlay from './PendingImageOverlay'
 import ImageView from './ImageView'
+import Section from './Section'
+import Button from './Button'
 
 interface PendingImagesPanelProps {
   showBorder?: boolean
+  showTitle?: boolean
 }
 
 interface PhotoData {
@@ -29,7 +39,8 @@ interface PhotoData {
 }
 
 export default function PendingImagesPanel({
-  showBorder = true
+  showBorder = true,
+  showTitle = true
 }: PendingImagesPanelProps) {
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
@@ -60,15 +71,34 @@ export default function PendingImagesPanel({
 
   return (
     <div
-      className="w-full rounded-md p-2 hidden md:col min-h-[364px] relative"
+      className="w-full rounded-md p-2 col min-h-[364px] relative"
       style={{ border: showBorder ? '1px solid #7e5a6c' : 'none' }}
     >
-      <h2 className="row font-bold">
-        <IconPhotoBolt />
-        Pending images
-      </h2>
+      {showTitle && (
+        <h2 className="row font-bold">
+          <IconPhotoBolt />
+          Pending images
+        </h2>
+      )}
+      <Section className="justify-end gap-2 row z-10 sticky top-[42px]">
+        <Button onClick={() => {}} style={{ width: '42px' }}>
+          <IconClearAll />
+        </Button>
+        <Button onClick={() => {}} style={{ width: '42px' }}>
+          <IconAffiliate />
+        </Button>
+        <Button onClick={() => {}} style={{ width: '42px' }}>
+          <IconSortDescending />
+        </Button>
+        <Button onClick={() => {}} style={{ width: '42px' }}>
+          <IconFilter />
+        </Button>
+        <Button onClick={() => {}} style={{ width: '42px' }}>
+          <IconSettings />
+        </Button>
+      </Section>
       {images.length === 0 && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center">
+        <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center z-[1]">
           <p className="text-gray-400 w-full text-center  ">
             No pending images. Create something new!
           </p>

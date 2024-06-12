@@ -11,6 +11,7 @@ import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
 import {
   addPendingImageToAppState,
   getPendingImagesByStatusFromAppState,
+  updateCompletedJobInPendingImagesStore,
   updatePendingImageInAppState
 } from '../_stores/PendingImagesStore'
 import { HordeGeneration } from '../_types/HordeTypes'
@@ -22,7 +23,6 @@ import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
 import generateImage from '../_api/horde/generate'
 import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
-import { updateCompletedJobInPendingStore } from '../_stores/PendingJobsStore'
 
 const MAX_JOBS = 5
 
@@ -189,7 +189,7 @@ export const checkPendingJobs = async () => {
           status: JobStatus.Done
         })
 
-        updateCompletedJobInPendingStore()
+        updateCompletedJobInPendingImagesStore()
       } else {
         let status = JobStatus.Queued
 

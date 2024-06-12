@@ -22,7 +22,12 @@ export default async function CreatePage() {
           <PromptActionPanel />
           <AdvancedOptions />
         </div>
-        <div className="hidden md:w-full md:flex">
+        <div
+          className="hidden md:w-full md:flex md:sticky md:top-[42px]"
+          style={{
+            minHeight: 'calc(100vh - 56px)'
+          }}
+        >
           <PendingImagesPanel />
         </div>
       </div>
