@@ -7,6 +7,12 @@ export interface AiHordeEmbedding extends Embedding {
   inject_ti?: InjectTi
 }
 
+// Holds various types of settings that may be used throughout the web app.
+export interface AppSettingsTable {
+  key: string // indexed for quick lookups
+  value: unknown
+}
+
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
 export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW'
 
