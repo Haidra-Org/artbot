@@ -50,7 +50,17 @@ export default function AddLora() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <div>Favorite LoRAs - hello!</div>
+                children: (
+                  <LoraSearch
+                    onUseLoraClick={handleUseLoraClick}
+                    searchType="favorite"
+                  />
+                ),
+                modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
+                  width: '100%'
+                }
               })
             }}
           >
@@ -59,7 +69,17 @@ export default function AddLora() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <div>Recently used LoRAs- hello!</div>
+                children: (
+                  <LoraSearch
+                    onUseLoraClick={handleUseLoraClick}
+                    searchType="recent"
+                  />
+                ),
+                modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
+                  width: '100%'
+                }
               })
             }}
           >

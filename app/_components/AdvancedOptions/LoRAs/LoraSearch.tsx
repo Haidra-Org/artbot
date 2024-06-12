@@ -23,9 +23,11 @@ import LORAS from './_LORAs.json'
 // TODO: Delete LoRA import once search works.
 
 export default function LoraSearch({
-  onUseLoraClick = () => {}
+  onUseLoraClick = () => {},
+  searchType = 'search'
 }: {
   onUseLoraClick?: (savedLora: SavedLora) => void
+  searchType?: 'search' | 'favorite' | 'recent'
 }) {
   const {
     fetchCivitAiResults,
@@ -72,22 +74,32 @@ export default function LoraSearch({
     return photoData
   })
 
+  let title = 'LoRA Search'
+
+  if (searchType === 'favorite') {
+    title = 'Favorite LoRAs'
+  } else if (searchType === 'recent') {
+    title = 'Recently used LoRAs'
+  }
+
   return (
     <div className="col w-full h-full">
       <h2 className="row font-bold">
-        LoRA Search <span className="text-xs font-normal">(via CivitAI)</span>
+        {title} <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
       <div className="row w-full">
-        <Button
-          outline={!inputVersionId}
-          onClick={() => {
-            setSearchInput('')
-            setInputVersionId(!inputVersionId)
-          }}
-          title="Input by version ID"
-        >
-          <IconGrid3x3 />
-        </Button>
+        {searchType === 'search' && (
+          <Button
+            outline={!inputVersionId}
+            onClick={() => {
+              setSearchInput('')
+              setInputVersionId(!inputVersionId)
+            }}
+            title="Input by version ID"
+          >
+            <IconGrid3x3 />
+          </Button>
+        )}
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder={
