@@ -17,10 +17,15 @@ import NiceModal from '@ebay/nice-modal-react'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import LoraDetails from './LoraDetails'
+import { SavedLora } from '@/app/_types/ArtbotTypes'
 
 // TODO: Delete LoRA import once search works.
 
-export default function LoraSearch() {
+export default function LoraSearch({
+  onUseLoraClick = () => {}
+}: {
+  onUseLoraClick?: (savedLora: SavedLora) => void
+}) {
   const {
     fetchCivitAiResults,
     pendingSearch,
@@ -109,6 +114,15 @@ export default function LoraSearch() {
           <Button
             disabled={!searchInput.trim()}
             onClick={() => {
+              const savedLora = {
+                id: searchInput.trim(),
+                versionId: searchInput.trim(),
+                name: searchInput.trim(),
+                strength: 1,
+                clip: 1
+              }
+
+              onUseLoraClick(savedLora as unknown as SavedLora)
               NiceModal.remove('modal')
             }}
             title="Use LoRA by Version ID"
@@ -175,7 +189,13 @@ export default function LoraSearch() {
                   }}
                   onClick={() => {
                     NiceModal.show('embeddingDetails', {
-                      children: <LoraDetails details={photo.details} />
+                      children: (
+                        <LoraDetails
+                          details={photo.details}
+                          onUseLoraClick={onUseLoraClick}
+                        />
+                      ),
+                      id: 'LoraDetails'
                     })
                   }}
                 >

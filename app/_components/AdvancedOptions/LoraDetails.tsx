@@ -11,8 +11,13 @@ import OptionLabel from './OptionLabel'
 import Select from '../Select'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
 
-export default function LoraDetails({ details }: { details: Embedding }) {
-  console.log(`details?`, details)
+export default function LoraDetails({
+  details,
+  onUseLoraClick = () => {}
+}: {
+  details: Embedding
+  onUseLoraClick?: (savedLora: SavedLora) => void
+}) {
   const { modelVersions = [] } = details
   const [initModel = {} as ModelVersion] = modelVersions
   const [modelVersion, setModelVersion] = useState<ModelVersion>(initModel)
@@ -26,9 +31,9 @@ export default function LoraDetails({ details }: { details: Embedding }) {
       clip: 1
     }
 
-    console.log(`savedLora`, savedLora)
+    onUseLoraClick(savedLora)
     return savedLora
-  }, [details, modelVersion])
+  }, [details, modelVersion, onUseLoraClick])
 
   const versionOptions = modelVersions.map((version) => {
     return {
@@ -60,7 +65,7 @@ export default function LoraDetails({ details }: { details: Embedding }) {
   }, [])
 
   return (
-    <div id="LoraDetails">
+    <div>
       <div className="col w-full">
         <h2 className="row font-bold">
           LoRA Details{' '}
@@ -112,6 +117,7 @@ export default function LoraDetails({ details }: { details: Embedding }) {
                   <Button
                     onClick={() => {
                       handleUseLoraClick()
+                      NiceModal.remove('modal')
                       NiceModal.remove('embeddingDetails')
                     }}
                   >
@@ -172,6 +178,7 @@ export default function LoraDetails({ details }: { details: Embedding }) {
           <Button
             onClick={() => {
               handleUseLoraClick()
+              NiceModal.remove('modal')
               NiceModal.remove('embeddingDetails')
             }}
           >
