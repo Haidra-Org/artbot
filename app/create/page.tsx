@@ -22,7 +22,7 @@ export default async function CreatePage() {
           <PromptActionPanel />
           <AdvancedOptions />
         </div>
-        <div className="w-full">
+        <div className="hidden md:w-full md:flex">
           <PendingImagesPanel />
         </div>
       </div>

@@ -14,6 +14,10 @@ import ImageThumbnail from './ImageThumbnail'
 import PendingImageOverlay from './PendingImageOverlay'
 import ImageView from './ImageView'
 
+interface PendingImagesPanelProps {
+  showBorder?: boolean
+}
+
 interface PhotoData {
   artbot_id: string
   key: string
@@ -24,7 +28,9 @@ interface PhotoData {
   height: number
 }
 
-export default function PendingImagesPanel() {
+export default function PendingImagesPanel({
+  showBorder = true
+}: PendingImagesPanelProps) {
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
 
@@ -55,7 +61,7 @@ export default function PendingImagesPanel() {
   return (
     <div
       className="w-full rounded-md p-2 hidden md:col min-h-[364px] relative"
-      style={{ border: '1px solid #7e5a6c' }}
+      style={{ border: showBorder ? '1px solid #7e5a6c' : 'none' }}
     >
       <h2 className="row font-bold">
         <IconPhotoBolt />
