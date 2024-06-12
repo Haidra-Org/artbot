@@ -9,7 +9,7 @@ export default function AddEmbedding() {
   return (
     <Section>
       <div className="row justify-between">
-        <h2 className="row font-bold">Textual Inversions</h2>
+        <h2 className="row font-bold text-white">Textual Inversions</h2>
         <div className="row gap-1">
           <Button
             onClick={() => {

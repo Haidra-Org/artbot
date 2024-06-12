@@ -12,9 +12,12 @@ export default function Section({
 }) {
   return (
     <div
-      className={clsx('col px-2 py-3 rounded-md bg-zinc-700 gap-2', className)}
+      className={clsx(
+        'col px-2 py-3 rounded-md bg-zinc-400 dark:bg-zinc-700 gap-2',
+        className
+      )}
     >
-      {title && <h2 className="row font-bold">{title}</h2>}
+      {title && <h2 className="row font-bold text-white">{title}</h2>}
       {children}
     </div>
   )

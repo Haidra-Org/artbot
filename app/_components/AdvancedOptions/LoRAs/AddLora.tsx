@@ -34,7 +34,7 @@ export default function AddLora() {
   return (
     <Section>
       <div className="row justify-between">
-        <h2 className="row font-bold">
+        <h2 className="row font-bold text-white">
           LoRAs{' '}
           <span className="text-xs font-normal">
             ({input.loras.length} / {MAX_LORAS})
