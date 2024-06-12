@@ -17,7 +17,8 @@ import Select from '../Select'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
 import {
   getFavoriteImageEnhancementModule,
-  toggleImageEnhancementFavorite
+  toggleImageEnhancementFavorite,
+  updateRecentlyUsedImageEnhancement
 } from '@/app/_db/imageEnhancementModules'
 
 export default function LoraDetails({
@@ -69,6 +70,14 @@ export default function LoraDetails({
       clip: 1
     }
 
+    updateRecentlyUsedImageEnhancement({
+      model: {
+        ...details,
+        modelVersions: [modelVersion]
+      },
+      modifier: 'lora',
+      versionId: modelVersion.id as string
+    })
     onUseLoraClick(savedLora)
     return savedLora
   }, [details, modelVersion, onUseLoraClick])
