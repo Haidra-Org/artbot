@@ -8,20 +8,28 @@ import LoraSearch from './LoraSearch'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
 import LoraSettingsCard from './LoraSettingsCard'
+import { useCallback } from 'react'
+
+const MAX_LORAS = 5
 
 export default function AddLora() {
   const { input, setInput } = useInput()
 
-  const handleUseLoraClick = (savedLora: SavedLora) => {
-    const found =
-      input.loras.filter(
-        (lora) => String(lora.name) === String(savedLora.versionId)
-      ) || ([] as unknown as SavedLora)
-    if (found.length > 0) return
+  const handleUseLoraClick = useCallback(
+    (savedLora: SavedLora) => {
+      if (input.loras.length >= MAX_LORAS) return
 
-    const updateLoras = [...input.loras, savedLora]
-    setInput({ loras: updateLoras })
-  }
+      const found =
+        input.loras.filter(
+          (lora) => String(lora.name) === String(savedLora.versionId)
+        ) || ([] as unknown as SavedLora)
+      if (found.length > 0) return
+
+      const updateLoras = [...input.loras, savedLora]
+      setInput({ loras: updateLoras })
+    },
+    [input, setInput]
+  )
 
   return (
     <Section>
@@ -29,11 +37,12 @@ export default function AddLora() {
         <h2 className="row font-bold">
           LoRAs{' '}
           <span className="text-xs font-normal">
-            ({input.loras.length} / 5)
+            ({input.loras.length} / {MAX_LORAS})
           </span>
         </h2>
         <div className="row gap-1">
           <Button
+            disabled={input.loras.length >= MAX_LORAS}
             onClick={() => {
               NiceModal.show('modal', {
                 children: <LoraSearch onUseLoraClick={handleUseLoraClick} />,

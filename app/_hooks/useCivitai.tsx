@@ -4,7 +4,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { AppSettings } from '../_data-models/AppSettings'
 import { debounce } from '../_utils/debounce'
 import CacheMap from '../_data-models/CacheMap'
-import { CivitAiApiResponse } from '../_types/CivitaiTypes'
+import { CivitAiApiResponse, Embedding } from '../_types/CivitaiTypes'
+import {
+  getFavoriteEnhancements,
+  getRecentlyUsedEnhancements
+} from '../_db/imageEnhancementModules'
+import LORAS from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
 
 const searchCache = new CacheMap({ limit: 30, expireMinutes: 20 })
 
@@ -108,17 +113,29 @@ const getCivitaiSearchResults = async ({
 }
 
 export default function useCivitAi({
+  searchType = 'search',
   type
 }: {
+  searchType?: 'search' | 'favorite' | 'recent'
   type: 'LORA' | 'TextualInversion'
 }) {
   const [pendingSearch, setPendingSearch] = useState(false)
-  const [searchResults, setSearchResults] = useState([])
+  const [searchResults, setSearchResults] = useState<Embedding[]>([])
 
   const [hasError, setHasError] = useState<string | boolean>(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalItems, setTotalItems] = useState(-1) // Setting 0 here causes brief flash between loading finished and totalItems populated
   const [totalPages, setTotalPages] = useState(0)
+
+  const fetchRecentOrFavoriteLoras = async (type: 'favorite' | 'recent') => {
+    const results =
+      type === 'favorite'
+        ? await getFavoriteEnhancements('lora')
+        : await getRecentlyUsedEnhancements('lora')
+    const models = results.map((f) => f.model)
+
+    setSearchResults(models as unknown as Embedding[])
+  }
 
   const fetchCivitAiResults = useCallback(
     async (input?: string) => {
@@ -152,6 +169,16 @@ export default function useCivitAi({
   )
 
   const debouncedSearchRequest = debounce(fetchCivitAiResults, 500)
+
+  useEffect(() => {
+    if (searchType === 'favorite') {
+      fetchRecentOrFavoriteLoras('favorite')
+    } else if (searchType === 'recent') {
+      fetchRecentOrFavoriteLoras('recent')
+    } else if (searchType === 'search') {
+      setSearchResults(LORAS.items as unknown as Embedding[])
+    }
+  }, [searchType])
 
   useEffect(() => {
     // fetchCivitAiResults()

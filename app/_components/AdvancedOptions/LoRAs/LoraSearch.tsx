@@ -18,9 +18,6 @@ import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import LoraDetails from './LoraDetails'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
-import LORAS from './_LORAs.json'
-
-// TODO: Delete LoRA import once search works.
 
 export default function LoraSearch({
   onUseLoraClick = () => {},
@@ -35,6 +32,7 @@ export default function LoraSearch({
     searchResults,
     setPendingSearch
   } = useCivitAi({
+    searchType,
     type: 'LORA'
   })
   const [inputVersionId, setInputVersionId] = useState(false)
@@ -51,11 +49,7 @@ export default function LoraSearch({
     debouncedSearchRequest(searchInput)
   }, [debouncedSearchRequest, inputVersionId, searchInput])
 
-  const resultsArray = !searchInput.trim()
-    ? (LORAS.items as unknown as Embedding[])
-    : searchResults
-
-  const transformedData = resultsArray.map((embedding: Embedding) => {
+  const transformedData = searchResults.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
     // Extracting the first model version and its first image
     const firstModelVersion = embedding.modelVersions[0]
