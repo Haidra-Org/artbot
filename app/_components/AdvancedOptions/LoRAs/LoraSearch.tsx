@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import PhotoAlbum from 'react-photo-album'
-import LORAS from './_LORAs.json'
 import { Embedding } from '@/app/_types/CivitaiTypes'
-import Button from '../Button'
+import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
   IconBox,
@@ -10,21 +9,22 @@ import {
   IconFilter,
   IconGrid3x3
 } from '@tabler/icons-react'
+
+import Button from '../../Button'
 import { useEffect, useMemo, useState } from 'react'
 import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
-import NiceModal from '@ebay/nice-modal-react'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import LoraDetails from './LoraDetails'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
 
-// TODO: Delete LoRA import once search works.
-
 export default function LoraSearch({
-  onUseLoraClick = () => {}
+  onUseLoraClick = () => {},
+  searchType = 'search'
 }: {
   onUseLoraClick?: (savedLora: SavedLora) => void
+  searchType?: 'search' | 'favorite' | 'recent'
 }) {
   const {
     fetchCivitAiResults,
@@ -32,6 +32,7 @@ export default function LoraSearch({
     searchResults,
     setPendingSearch
   } = useCivitAi({
+    searchType,
     type: 'LORA'
   })
   const [inputVersionId, setInputVersionId] = useState(false)
@@ -48,10 +49,7 @@ export default function LoraSearch({
     debouncedSearchRequest(searchInput)
   }, [debouncedSearchRequest, inputVersionId, searchInput])
 
-  const resultsArray = !searchInput.trim() ? LORAS.items : searchResults
-
-  // @ts-expect-error TODO: Need to properly type this later
-  const transformedData = resultsArray.map((embedding: Embedding) => {
+  const transformedData = searchResults.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
     // Extracting the first model version and its first image
     const firstModelVersion = embedding.modelVersions[0]
@@ -70,22 +68,32 @@ export default function LoraSearch({
     return photoData
   })
 
+  let title = 'LoRA Search'
+
+  if (searchType === 'favorite') {
+    title = 'Favorite LoRAs'
+  } else if (searchType === 'recent') {
+    title = 'Recently used LoRAs'
+  }
+
   return (
     <div className="col w-full h-full">
       <h2 className="row font-bold">
-        LoRA Search <span className="text-xs font-normal">(via CivitAI)</span>
+        {title} <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
       <div className="row w-full">
-        <Button
-          outline={!inputVersionId}
-          onClick={() => {
-            setSearchInput('')
-            setInputVersionId(!inputVersionId)
-          }}
-          title="Input by version ID"
-        >
-          <IconGrid3x3 />
-        </Button>
+        {searchType === 'search' && (
+          <Button
+            outline={!inputVersionId}
+            onClick={() => {
+              setSearchInput('')
+              setInputVersionId(!inputVersionId)
+            }}
+            title="Input by version ID"
+          >
+            <IconGrid3x3 />
+          </Button>
+        )}
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder={

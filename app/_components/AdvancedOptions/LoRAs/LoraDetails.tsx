@@ -1,8 +1,8 @@
 import { sanitize } from 'isomorphic-dompurify'
 import { Embedding, ModelVersion } from '@/app/_types/CivitaiTypes'
-import PageTitle from '../PageTitle'
-import Carousel from '../Carousel'
-import Button from '../Button'
+import PageTitle from '../../PageTitle'
+import Carousel from '../../Carousel'
+import Button from '../../Button'
 import {
   IconBox,
   IconDeviceFloppy,
@@ -11,9 +11,9 @@ import {
 } from '@tabler/icons-react'
 import NiceModal from '@ebay/nice-modal-react'
 import { useCallback, useEffect, useState } from 'react'
-import Section from '../Section'
-import OptionLabel from './OptionLabel'
-import Select from '../Select'
+import Section from '../../Section'
+import OptionLabel from '../OptionLabel'
+import Select from '../../Select'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
 import {
   getFavoriteImageEnhancementModule,

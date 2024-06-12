@@ -1,6 +1,6 @@
 import Section from '../Section'
 import AddEmbedding from './AddEmbedding'
-import AddLora from './AddLora'
+import AddLora from './LoRAs/AddLora'
 import AdditionalOptions from './AdditionalOptions'
 import ClipSkip from './ClipSkip'
 import FaceFixers from './FaceFixers'

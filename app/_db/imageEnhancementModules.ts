@@ -2,6 +2,30 @@ import { ImageEnhancementModulesModifier } from '../_types/ArtbotTypes'
 import { Embedding } from '../_types/CivitaiTypes'
 import { db } from './dexie'
 
+export const getFavoriteEnhancements = async (
+  modifier: ImageEnhancementModulesModifier
+) => {
+  const favorites = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, 'favorite'])
+    .toArray()
+
+  return favorites || []
+}
+
+export const getRecentlyUsedEnhancements = async (
+  modifier: ImageEnhancementModulesModifier
+) => {
+  const recent = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, 'recent'])
+    .toArray()
+
+  recent.reverse()
+
+  return recent || []
+}
+
 export const getFavoriteImageEnhancementModule = async (
   versionId: string,
   type: ImageEnhancementModulesModifier
@@ -69,18 +93,24 @@ export const updateRecentlyUsedImageEnhancement = async ({
       .reverse()
       .toArray()
 
-    // Step 2: Delete excess rows beyond the most recent 20
+    // Step 2: Delete excess rows beyond the most recent 20 where type is 'recent'
     if (recentlyViewed.length > 20) {
       const excess = recentlyViewed.slice(20)
       for (const row of excess) {
-        await db.imageEnhancementModules
-          .where({ version_id: row.version_id })
-          .delete()
+        if (row.type === 'recent') {
+          // Ensure we are deleting only rows with type 'recent'
+          await db.imageEnhancementModules
+            .where({ version_id: row.version_id })
+            .delete()
+        }
       }
     }
 
     // Step 3: Filter out/delete any row where versionId matches
-    await db.imageEnhancementModules.where({ version_id: id }).delete()
+    await db.imageEnhancementModules
+      .where('[version_id+type]')
+      .equals([id, 'recent'])
+      .delete()
 
     // Step 4: Add the new model to the table
     await db.imageEnhancementModules.add({
