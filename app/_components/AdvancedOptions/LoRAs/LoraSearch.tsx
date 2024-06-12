@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import PhotoAlbum from 'react-photo-album'
 import { Embedding } from '@/app/_types/CivitaiTypes'
 import NiceModal from '@ebay/nice-modal-react'
 import {
@@ -18,6 +17,7 @@ import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import LoraDetails from './LoraDetails'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
+import MasonryLayout from '../../MasonryLayout'
 
 export default function LoraSearch({
   onUseLoraClick = () => {},
@@ -173,99 +173,13 @@ export default function LoraSearch({
           Loading results...
         </div>
       )}
-      {!inputVersionId && !pendingSearch && (
-        <div>
-          <PhotoAlbum
-            layout="columns"
-            spacing={8}
-            photos={transformedData}
-            renderPhoto={(renderPhotoProps) => {
-              const { layoutOptions, photo, imageProps } =
-                renderPhotoProps || {}
-              const { alt } = imageProps || {}
-
-              return (
-                <div
-                  key={photo.key}
-                  style={{
-                    display: 'flex',
-                    cursor: 'pointer',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative',
-                    marginBottom: layoutOptions.spacing
-                  }}
-                  onClick={() => {
-                    NiceModal.show('embeddingDetails', {
-                      children: (
-                        <LoraDetails
-                          details={photo.details}
-                          onUseLoraClick={onUseLoraClick}
-                        />
-                      ),
-                      id: 'LoraDetails'
-                    })
-                  }}
-                >
-                  <LoraImage
-                    alt={alt}
-                    height={renderPhotoProps.layout.height}
-                    width={renderPhotoProps.layout.width}
-                    imageProps={imageProps}
-                  />
-                  <div
-                    style={{
-                      alignItems: 'center',
-                      backgroundColor: 'black',
-                      bottom: '64px',
-                      color: 'white',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      gap: '8px',
-                      height: '24px',
-                      padding: '4px',
-                      left: 0,
-                      position: 'absolute',
-                      opacity: 0.9
-                    }}
-                  >
-                    <IconBox stroke={1} />
-                    {photo.baseModel}
-                  </div>
-                  <div
-                    className="row items-center justify-center font-bold text-xs px-2 text-center"
-                    style={{
-                      backdropFilter: 'blur(10px)',
-                      bottom: 0,
-                      height: '64px',
-                      left: 0,
-                      position: 'absolute',
-                      right: 0
-                    }}
-                  >
-                    <div>{photo.name}</div>
-                    {/* <div
-                      className="z-1"
-                      style={{
-                        backdropFilter: 'blur(10px)',
-                        backgroundColor: 'black',
-                        opacity: 0.7,
-                        bottom: 0,
-                        height: '64px',
-                        left: 0,
-                        position: 'absolute',
-                        right: 0
-                      }}
-                    ></div> */}
-                  </div>
-                </div>
-              )
-            }}
-          />
-        </div>
-      )}
+      <div>
+        <MasonryLayout>
+          {transformedData.map((photo) => (
+            <LoraImage key={`${photo.key}`} photo={photo} />
+          ))}
+        </MasonryLayout>
+      </div>
     </div>
   )
 }

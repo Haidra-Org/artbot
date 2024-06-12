@@ -78,7 +78,7 @@ export default function Select({
                 className={({ active }) =>
                   classNames(
                     active ? 'bg-indigo-600 ' : '',
-                    'text-white relative cursor-default select-none py-2 pl-0 pr-9 hover:bg-indigo-600 hover:text-white'
+                    'text-black dark:text-white relative cursor-default select-none py-2 pl-0 pr-9 hover:bg-indigo-600 hover:text-white'
                   )
                 }
                 value={option}

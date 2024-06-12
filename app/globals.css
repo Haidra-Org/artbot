@@ -4,7 +4,7 @@
 
 :root {
   --foreground-color: black;
-  --background-color: #EDECED;
+  --background-color: rgb(242, 242, 242);
   --primary-color: rgb(20, 184, 166);
 }
 

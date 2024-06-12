@@ -49,7 +49,7 @@ export default function AddLora() {
                 modalStyle: {
                   maxWidth: '1600px',
                   minHeight: `calc(100vh - 32px)`,
-                  width: '100%'
+                  width: 'calc(100% - 32px)'
                 }
               })
             }}
