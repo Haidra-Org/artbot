@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import PhotoAlbum from 'react-photo-album'
-import LORAS from './_LORAs.json'
 import { Embedding } from '@/app/_types/CivitaiTypes'
-import Button from '../Button'
+import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
   IconBox,
@@ -10,14 +9,16 @@ import {
   IconFilter,
   IconGrid3x3
 } from '@tabler/icons-react'
+
+import Button from '../../Button'
 import { useEffect, useMemo, useState } from 'react'
 import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
-import NiceModal from '@ebay/nice-modal-react'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import LoraDetails from './LoraDetails'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
+import LORAS from './_LORAs.json'
 
 // TODO: Delete LoRA import once search works.
 
@@ -48,9 +49,10 @@ export default function LoraSearch({
     debouncedSearchRequest(searchInput)
   }, [debouncedSearchRequest, inputVersionId, searchInput])
 
-  const resultsArray = !searchInput.trim() ? LORAS.items : searchResults
+  const resultsArray = !searchInput.trim()
+    ? (LORAS.items as unknown as Embedding[])
+    : searchResults
 
-  // @ts-expect-error TODO: Need to properly type this later
   const transformedData = resultsArray.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
     // Extracting the first model version and its first image

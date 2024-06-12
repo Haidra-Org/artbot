@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Section from '../Section'
+import Section from '../../Section'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import { CivitAiBaseModels } from '@/app/_types/ArtbotTypes'
 

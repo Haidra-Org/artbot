@@ -1,8 +1,8 @@
 'use client'
 
 import { IconHeartSearch, IconHistory, IconPlus } from '@tabler/icons-react'
-import Button from '../Button'
-import Section from '../Section'
+import Button from '../../Button'
+import Section from '../../Section'
 import NiceModal from '@ebay/nice-modal-react'
 import LoraSearch from './LoraSearch'
 import { useInput } from '@/app/_providers/PromptInputProvider'
