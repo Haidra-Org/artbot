@@ -3,13 +3,22 @@ import { Embedding, ModelVersion } from '@/app/_types/CivitaiTypes'
 import PageTitle from '../PageTitle'
 import Carousel from '../Carousel'
 import Button from '../Button'
-import { IconBox, IconDeviceFloppy, IconHeart } from '@tabler/icons-react'
+import {
+  IconBox,
+  IconDeviceFloppy,
+  IconHeart,
+  IconHeartFilled
+} from '@tabler/icons-react'
 import NiceModal from '@ebay/nice-modal-react'
 import { useCallback, useEffect, useState } from 'react'
 import Section from '../Section'
 import OptionLabel from './OptionLabel'
 import Select from '../Select'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
+import {
+  getFavoriteImageEnhancementModule,
+  toggleImageEnhancementFavorite
+} from '@/app/_db/imageEnhancementModules'
 
 export default function LoraDetails({
   details,
@@ -21,6 +30,35 @@ export default function LoraDetails({
   const { modelVersions = [] } = details
   const [initModel = {} as ModelVersion] = modelVersions
   const [modelVersion, setModelVersion] = useState<ModelVersion>(initModel)
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  useEffect(() => {
+    if (!modelVersion.id) return
+
+    async function getIsFavorite() {
+      const savedLoras = await getFavoriteImageEnhancementModule(
+        modelVersion.id as string,
+        'lora'
+      )
+
+      if (savedLoras && savedLoras.length > 0) {
+        setIsFavorite(true)
+      }
+    }
+
+    getIsFavorite()
+  }, [modelVersion.id])
+
+  const handleFavoriteClick = async () => {
+    await toggleImageEnhancementFavorite({
+      model: {
+        ...details,
+        modelVersions: [modelVersion]
+      },
+      type: 'lora',
+      versionId: modelVersion.id as string
+    })
+  }
 
   const handleUseLoraClick = useCallback(() => {
     const savedLora: SavedLora = {
@@ -73,8 +111,14 @@ export default function LoraDetails({
         </h2>
         <PageTitle>{details.name}</PageTitle>
         <div className="row w-full gap-4">
-          <Button outline onClick={() => {}}>
-            <IconHeart />
+          <Button
+            outline
+            onClick={async () => {
+              await handleFavoriteClick()
+              setIsFavorite(!isFavorite)
+            }}
+          >
+            {isFavorite ? <IconHeartFilled color={'red'} /> : <IconHeart />}
           </Button>
           <div className="row gap-2 rounded-md bg-slate-500 p-1 pr-2">
             <IconBox stroke={1.5} />

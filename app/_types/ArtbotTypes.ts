@@ -45,11 +45,14 @@ export interface ImagesForGallery extends HordeJob {
   image_count: number
 }
 
+export type ImageEnhancementModulesModifier = 'lora' | 'ti'
+
 export interface ImageEnhancementModulesTable {
   version_id: string // Format: civitai_lora_[versionId] e.g., "civitai_lora_12345"
   timestamp: number
-  modifier: 'lora' | 'ti'
+  modifier: ImageEnhancementModulesModifier
   type: 'favorite' | 'recent'
+  model: Embedding
 }
 
 export type ImageOrientations =
