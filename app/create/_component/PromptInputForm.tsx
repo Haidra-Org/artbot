@@ -19,6 +19,7 @@ import useUndoPrompt from '@/app/_hooks/useUndoPrompt'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import Button from '@/app/_components/Button'
 import NiceModal from '@ebay/nice-modal-react'
+import PromptLibrary from '@/app/_components/PromptLibrary'
 
 const AccordionItem = ({
   children,
@@ -115,7 +116,14 @@ export default function PromptInputForm() {
               className="!h-[36px]"
               onClick={() => {
                 NiceModal.show('modal', {
-                  children: <div className="text-[20px]">Prompt library...</div>
+                  children: (
+                    <PromptLibrary
+                      setPrompt={(prompt) => {
+                        setUndoPrompt(input.prompt)
+                        setInput({ prompt })
+                      }}
+                    />
+                  )
                 })
               }}
               title="Recently used prompts"

@@ -66,8 +66,7 @@ export default function PromptActionPanel() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [handleCreateClick])
 
   const emptyInput = !input.prompt.trim() && !input.negative.trim()
 
