@@ -6,9 +6,11 @@ import LoraDetails from './LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
 import { useState } from 'react'
 import Spinner from '../../Spinner'
+import { SavedLora } from '@/app/_types/ArtbotTypes'
 
 interface LoraImageProps {
   columnWidth?: number // Optional prop to receive columnWidth
+  onUseLoraClick?: (savedLora: SavedLora) => void
   photo: {
     key: string
     name: string
@@ -20,11 +22,15 @@ interface LoraImageProps {
   }
 }
 
-export default function LoraImage({ columnWidth, photo }: LoraImageProps) {
+export default function LoraImage({
+  columnWidth,
+  onUseLoraClick,
+  photo
+}: LoraImageProps) {
   const calculatedWidth = columnWidth
     ? Math.min(columnWidth, photo.width)
     : photo.width
-  const calculatedHeight = photo.height * (calculatedWidth / photo.width)
+  let calculatedHeight = photo.height * (calculatedWidth / photo.width)
   const [loading, setLoading] = useState(true)
   const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>(
     { threshold: 0.01 },
@@ -36,15 +42,19 @@ export default function LoraImage({ columnWidth, photo }: LoraImageProps) {
     setLoading(false)
   }
 
+  if (calculatedHeight < 300) {
+    calculatedHeight += 64
+  }
+
   return (
     <div
       ref={ref}
       style={{
-        backgroundColor: '#c2c2c2',
+        backgroundColor: '#E6E6E6',
         display: 'flex',
         cursor: 'pointer',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         position: 'relative',
         width: calculatedWidth,
         height: calculatedHeight
@@ -54,19 +64,13 @@ export default function LoraImage({ columnWidth, photo }: LoraImageProps) {
           children: (
             <LoraDetails
               details={photo.details}
-              // onUseLoraClick={onUseLoraClick}
+              onUseLoraClick={onUseLoraClick}
             />
           ),
           id: 'LoraDetails'
         })
       }}
     >
-      {/* <Image
-        src={photo.src}
-        alt={photo.name}
-        width={calculatedWidth}
-        height={calculatedHeight}
-      /> */}
       {loading && (
         <div className="absolute top-0 left-0 right-0 bottom-0 row items-center justify-center text-center">
           <Spinner />

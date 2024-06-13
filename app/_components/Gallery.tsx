@@ -44,7 +44,11 @@ export default function Gallery() {
             image_id={!groupImages ? image_id : undefined}
             onDelete={fetchImages}
           />
-        )
+        ),
+        modalStyle: {
+          maxWidth: '1536px',
+          width: 'calc(100% - 32px)'
+        }
       })
     },
     [fetchImages, groupImages]

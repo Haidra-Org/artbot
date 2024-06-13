@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { sanitize } from 'isomorphic-dompurify'
 import { Embedding, ModelVersion } from '@/app/_types/CivitaiTypes'
 import PageTitle from '../../PageTitle'
@@ -20,6 +21,7 @@ import {
   toggleImageEnhancementFavorite,
   updateRecentlyUsedImageEnhancement
 } from '@/app/_db/imageEnhancementModules'
+import { useWindowSize } from '@/app/_hooks/useWindowSize'
 
 export default function LoraDetails({
   details,
@@ -28,6 +30,7 @@ export default function LoraDetails({
   details: Embedding
   onUseLoraClick?: (savedLora: SavedLora) => void
 }) {
+  const { height } = useWindowSize()
   const { modelVersions = [] } = details
   const [initModel = {} as ModelVersion] = modelVersions
   const [modelVersion, setModelVersion] = useState<ModelVersion>(initModel)
@@ -138,11 +141,38 @@ export default function LoraDetails({
         <div className="col md:row gap-4 !items-start justify-start">
           <div className="w-full md:max-w-[512px]">
             <Carousel
-              controls={'top'}
-              slides={modelVersion.images.map((image) => {
-                return { src: image.url }
+              controls="top"
+              numSlides={modelVersion.images.length}
+              options={{ loop: true, containScroll: 'trimSnaps' }}
+            >
+              {modelVersion.images.map((image, idx) => {
+                return (
+                  <div
+                    key={`image-${idx}`}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flex: '0 0 auto',
+                      position: 'relative',
+                      minWidth: 0,
+                      width: '100%'
+                    }}
+                  >
+                    <img
+                      src={image.url}
+                      alt=""
+                      style={{
+                        maxWidth: 'calc(100% - 16px)',
+                        objectFit: 'contain',
+                        width: 'auto',
+                        height: 'auto',
+                        maxHeight: height ? `${height - 256}px` : 'unset'
+                      }}
+                    />
+                  </div>
+                )
               })}
-            />
+            </Carousel>
           </div>
           <div className="col w-full max-w-[768px]">
             <Section>

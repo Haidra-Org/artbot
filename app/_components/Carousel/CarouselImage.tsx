@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 
 interface CarouselImageProps {
   imageBlob: Blob
+  maxHeight?: number
+  maxWidth?: number
 }
 
 const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlob }) => {
@@ -23,7 +25,19 @@ const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlob }) => {
 
   if (!imageUrl) return null
 
-  return <img src={imageUrl} alt="Carousel Slide" />
+  return (
+    <img
+      src={imageUrl}
+      alt="Carousel Slide"
+      style={{
+        maxWidth: '100%',
+        maxHeight: '100%',
+        width: 'auto',
+        height: 'auto',
+        objectFit: 'contain'
+      }}
+    />
+  )
 }
 
 export default CarouselImage

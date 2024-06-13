@@ -3,7 +3,6 @@ import { Embedding } from '@/app/_types/CivitaiTypes'
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
-  IconBox,
   IconDeviceFloppy,
   IconFilter,
   IconGrid3x3
@@ -15,7 +14,6 @@ import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
-import LoraDetails from './LoraDetails'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
 import MasonryLayout from '../../MasonryLayout'
 
@@ -176,7 +174,11 @@ export default function LoraSearch({
       <div>
         <MasonryLayout>
           {transformedData.map((photo) => (
-            <LoraImage key={`${photo.key}`} photo={photo} />
+            <LoraImage
+              key={`${photo.key}`}
+              photo={photo}
+              onUseLoraClick={onUseLoraClick}
+            />
           ))}
         </MasonryLayout>
       </div>
