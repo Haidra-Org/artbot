@@ -8,7 +8,7 @@ export default function AdditionalOptions() {
 
   return (
     <Section title="Additional options">
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={input.post_processing.includes('strip_background')}
           onChange={() => {
@@ -27,7 +27,7 @@ export default function AdditionalOptions() {
         />
         Strip background
       </label>
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={input.karras}
           onChange={() => {
@@ -36,7 +36,7 @@ export default function AdditionalOptions() {
         />
         Karras
       </label>
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={input.hires}
           onChange={() => {
@@ -45,7 +45,7 @@ export default function AdditionalOptions() {
         />
         Hi-res fix
       </label>
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={input.tiling}
           onChange={() => {

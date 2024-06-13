@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from 'react'
 import { useImageView } from './ImageViewProvider'
+import CarouselImage from '../Carousel/CarouselImage'
 import Carousel from '../Carousel'
 
 const defaultImage =
@@ -39,7 +40,17 @@ const ImageViewImage = React.memo(() => {
 
   if (!imageBlob) return null
 
-  return <Carousel slides={imageFiles} options={{ loop: true }} />
+  return (
+    <Carousel numSlides={imageFiles.length} options={{ loop: true }}>
+      {imageFiles.map((image) => (
+        <CarouselImage
+          key={image.image_id}
+          imageBlob={image.imageBlob as Blob}
+          maxWidth={imageData?.imageRequest?.width}
+        />
+      ))}
+    </Carousel>
+  )
 })
 
 ImageViewImage.displayName = 'ImageViewImage'

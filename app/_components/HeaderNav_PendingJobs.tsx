@@ -1,18 +1,18 @@
 import { useStore } from 'statery'
-import {
-  PendingJobsStore,
-  updatePendingJobsStore
-} from '../_stores/PendingJobsStore'
 import { IconPhotoCheck } from '@tabler/icons-react'
 import Link from 'next/link'
+import {
+  PendingImagesStore,
+  viewedPendingPage
+} from '../_stores/PendingImagesStore'
 
 export default function HeaderNavPendingJobs() {
-  const { completedJobs, pendingJobCompletedTimestamp, pendingPageTimestamp } =
-    useStore(PendingJobsStore)
+  const { completedJobsNotViewed, pendingImages } = useStore(PendingImagesStore)
 
   if (
-    completedJobs === 0 ||
-    pendingJobCompletedTimestamp < pendingPageTimestamp
+    pendingImages.length === 0 &&
+    completedJobsNotViewed === 0
+    // pendingJobCompletedTimestamp < pendingPageTimestamp
   ) {
     return null
   }
@@ -20,36 +20,35 @@ export default function HeaderNavPendingJobs() {
   return (
     <div>
       <Link
-        href="/create"
+        href="/pending"
         onClick={() => {
-          updatePendingJobsStore({
-            completedJobs: 0,
-            pendingPageTimestamp: Date.now()
-          })
+          viewedPendingPage()
         }}
       >
         <div className="relative">
           <IconPhotoCheck stroke={1.5} />
-          <span
-            style={{
-              position: 'absolute',
-              top: '-4px',
-              right: '-5px',
-              backgroundColor: 'red',
-              borderRadius: '8px',
-              fontSize: '10px',
-              height: '14px',
-              padding: '0 4px',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: '500',
-              fontFamily: 'monospace'
-            }}
-          >
-            {completedJobs}
-          </span>
+          {completedJobsNotViewed > 0 && (
+            <span
+              style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-5px',
+                backgroundColor: 'red',
+                borderRadius: '8px',
+                fontSize: '10px',
+                height: '14px',
+                padding: '0 4px',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '500',
+                fontFamily: 'monospace'
+              }}
+            >
+              {completedJobsNotViewed}
+            </span>
+          )}
         </div>
       </Link>
     </div>

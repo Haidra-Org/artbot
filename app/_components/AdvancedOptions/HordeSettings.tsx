@@ -52,7 +52,7 @@ export default function HordeSettings() {
 
   return (
     <Section title="Horde settings">
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={downgrade}
           onChange={() => {
@@ -61,7 +61,7 @@ export default function HordeSettings() {
         />
         Auto downgrade
       </label>
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={slowWorkers}
           onChange={() => {
@@ -70,7 +70,7 @@ export default function HordeSettings() {
         />
         Allow slow workers
       </label>
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={allowNsfw}
           onChange={() => {
@@ -79,7 +79,7 @@ export default function HordeSettings() {
         />
         Allow NSFW generations
       </label>
-      <label className="row gap-2">
+      <label className="row gap-2 text-white">
         <Switch
           checked={promptReplacement}
           onChange={() => {

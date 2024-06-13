@@ -2,12 +2,40 @@ import { makeStore } from 'statery'
 import { HordeJob, JobStatus } from '@/app/_types/ArtbotTypes'
 
 interface PendingImagesStoreInterface {
+  completedJobsNotViewed: number
   pendingImages: HordeJob[]
+  pendingJobCompletedTimestamp: number
+  pendingPageTimestamp: number
 }
 
 export const PendingImagesStore = makeStore<PendingImagesStoreInterface>({
-  pendingImages: []
+  completedJobsNotViewed: 0,
+  pendingImages: [],
+  pendingJobCompletedTimestamp: 0,
+  pendingPageTimestamp: Date.now()
 })
+
+export const updateCompletedJobInPendingImagesStore = () => {
+  // In this instance, the user is on a larger screen device and can see the pending images panel.
+  if (
+    (window.innerWidth >= 768 && window.location.pathname === '/create') ||
+    window.location.pathname === '/pending'
+  ) {
+    return
+  }
+
+  PendingImagesStore.set((state) => ({
+    completedJobsNotViewed: state.completedJobsNotViewed + 1,
+    pendingJobCompletedTimestamp: Date.now()
+  }))
+}
+
+export const viewedPendingPage = () => {
+  PendingImagesStore.set(() => ({
+    completedJobsNotViewed: 0,
+    pendingPageTimestamp: Date.now()
+  }))
+}
 
 export const addPendingImageToAppState = (pendingJob: HordeJob) => {
   PendingImagesStore.set((state) => ({

@@ -1,30 +1,23 @@
-/* eslint-disable @next/next/no-img-element */
-import React from 'react'
-import { EmblaOptionsType } from 'embla-carousel'
-import { useDotButton } from '@/app/_hooks/useCarouselDots'
-import {
-  PrevButton,
-  NextButton,
-  usePrevNextButtons
-} from './CarouselArrowButtons'
 import useEmblaCarousel from 'embla-carousel-react'
+import { EmblaOptionsType } from 'embla-carousel'
+
+import { useDotButton } from '@/app/_hooks/useCarouselDots'
 import styles from './carousel.module.css'
-import { ImageFileInterface } from '@/app/_data-models/ImageFile_Dexie'
-import CarouselImage from './CarouselImage'
-export interface ImageWithSrc {
-  src: string
-}
+import CarouselControls from './CarouselControls'
+import { usePrevNextButtons } from './CarouselArrowButtons'
 
-type PropType = {
+export default function CarouselV2({
+  children,
+  controls = 'bottom',
+  numSlides,
+  options = {}
+}: {
+  children: React.ReactNode
   controls?: 'top' | 'bottom'
-  slides: ImageFileInterface[] | ImageWithSrc[]
+  numSlides: number
   options?: EmblaOptionsType
-}
-
-const Carousel: React.FC<PropType> = (props) => {
-  const { controls = 'bottom', slides, options } = props
+}) {
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
-
   const { selectedIndex, scrollSnaps } = useDotButton(emblaApi)
 
   const {
@@ -34,60 +27,31 @@ const Carousel: React.FC<PropType> = (props) => {
     onNextButtonClick
   } = usePrevNextButtons(emblaApi)
 
-  function isImageWithSrc(
-    image: ImageWithSrc | ImageFileInterface
-  ): image is ImageWithSrc {
-    return (image as ImageWithSrc).src !== undefined
-  }
-
-  function renderControls() {
-    return (
-      <>
-        {slides.length > 1 && (
-          <div className={styles.embla__controls}>
-            <div className={styles.embla__buttons}>
-              <PrevButton
-                onClick={onPrevButtonClick}
-                disabled={prevBtnDisabled}
-              />
-              <NextButton
-                onClick={onNextButtonClick}
-                disabled={nextBtnDisabled}
-              />
-            </div>
-
-            <div className={styles.embla__dots}>
-              <div className="row">
-                {selectedIndex + 1} / {scrollSnaps.length}
-              </div>
-            </div>
-          </div>
-        )}
-      </>
-    )
-  }
-
   return (
     <section className={styles.embla}>
-      {slides.length > 1 && controls === 'top' && renderControls()}
+      {numSlides > 1 && controls === 'top' && (
+        <CarouselControls
+          selectedIndex={selectedIndex}
+          scrollSnaps={scrollSnaps}
+          prevBtnDisabled={prevBtnDisabled}
+          nextBtnDisabled={nextBtnDisabled}
+          onPrevButtonClick={onPrevButtonClick}
+          onNextButtonClick={onNextButtonClick}
+        />
+      )}
       <div className={styles.embla__viewport} ref={emblaRef}>
-        <div className={styles.embla__container}>
-          {slides.map((image, index) => (
-            <div className={styles.embla__slide} key={index}>
-              <div>
-                {isImageWithSrc(image) ? (
-                  <img src={image.src} alt="Carousel Slide" />
-                ) : (
-                  <CarouselImage imageBlob={image.imageBlob as Blob} />
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className={styles.embla__container}>{children}</div>
       </div>
-      {slides.length > 1 && controls === 'bottom' && renderControls()}
+      {numSlides > 1 && controls === 'bottom' && (
+        <CarouselControls
+          selectedIndex={selectedIndex}
+          scrollSnaps={scrollSnaps}
+          prevBtnDisabled={prevBtnDisabled}
+          nextBtnDisabled={nextBtnDisabled}
+          onPrevButtonClick={onPrevButtonClick}
+          onNextButtonClick={onNextButtonClick}
+        />
+      )}
     </section>
   )
 }
-
-export default Carousel

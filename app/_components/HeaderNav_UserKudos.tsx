@@ -40,10 +40,7 @@ export default function UserKudos() {
 
   return (
     <button
-      className="row text-xs py-[4px] px-[6px] rounded-md"
-      style={{
-        backgroundColor: '#676767'
-      }}
+      className="row text-xs py-[4px] px-[6px] rounded-md bg-zinc-400 dark:bg-zinc-700"
       onClick={() => {
         NiceModal.show('modal', {
           children: <UserKudosModal />

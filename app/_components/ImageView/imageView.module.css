@@ -21,7 +21,7 @@
   width: 100%;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 950px) {
   .ImageViewer {
     flex-direction: row;
     align-items: flex-start;

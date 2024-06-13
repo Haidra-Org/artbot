@@ -2,14 +2,13 @@
 
 import NiceModal from '@ebay/nice-modal-react'
 import PhotoAlbum from 'react-photo-album'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import ReactPaginate from 'react-paginate'
 import {
   IconAffiliate,
   IconAffiliateFilled,
   IconChevronRight,
   IconCircleCheck,
-  // IconFilter,
   IconSearch,
   IconSettings,
   IconSortAscending,
@@ -21,6 +20,7 @@ import ImageView from './ImageView'
 import Button from './Button'
 import ImageThumbnail from './ImageThumbnail'
 import GalleryImageCardOverlay from './GalleryImageCardOverlay'
+import { viewedPendingPage } from '../_stores/PendingImagesStore'
 
 export default function Gallery() {
   const [groupImages, setGroupImages] = useState(true)
@@ -44,7 +44,11 @@ export default function Gallery() {
             image_id={!groupImages ? image_id : undefined}
             onDelete={fetchImages}
           />
-        )
+        ),
+        modalStyle: {
+          maxWidth: '1536px',
+          width: 'calc(100% - 32px)'
+        }
       })
     },
     [fetchImages, groupImages]
@@ -61,6 +65,11 @@ export default function Gallery() {
       handleImageOpen(artbot_id, image_id)
     }
   }
+
+  // On initial load of the gallery page, let's go ahead and reset viewed completed images to 0, since they should appear here.
+  useEffect(() => {
+    viewedPendingPage()
+  }, [])
 
   return (
     <div className="w-full">

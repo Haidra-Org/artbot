@@ -34,7 +34,7 @@ export default function AddLora() {
   return (
     <Section>
       <div className="row justify-between">
-        <h2 className="row font-bold">
+        <h2 className="row font-bold text-white">
           LoRAs{' '}
           <span className="text-xs font-normal">
             ({input.loras.length} / {MAX_LORAS})
@@ -49,7 +49,7 @@ export default function AddLora() {
                 modalStyle: {
                   maxWidth: '1600px',
                   minHeight: `calc(100vh - 32px)`,
-                  width: '100%'
+                  width: 'calc(100% - 32px)'
                 }
               })
             }}
