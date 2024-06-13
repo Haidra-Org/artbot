@@ -58,7 +58,6 @@ const MasonryLayout: React.FC<MasonryLayoutProps> = ({ children, gap = 8 }) => {
     React.Children.forEach(children, (child, index) => {
       const columnIndex = index % columns
       if (React.isValidElement<ChildProps>(child)) {
-        console.log(`columnWidth?`, columnWidth)
         wrapper[`column${columnIndex}`].push(
           <div
             style={{ marginBottom: `${gap}px` }}

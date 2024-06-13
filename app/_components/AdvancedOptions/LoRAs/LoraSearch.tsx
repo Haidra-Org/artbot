@@ -57,6 +57,7 @@ export default function LoraSearch({
       key: String(embedding.id), // Ensuring the key is a string
       name: embedding.name,
       baseModel: firstModelVersion.baseModel,
+      nsfwLevel: firstImage.nsfwLevel,
       src: firstImage.url,
       width: firstImage.width,
       height: firstImage.height,

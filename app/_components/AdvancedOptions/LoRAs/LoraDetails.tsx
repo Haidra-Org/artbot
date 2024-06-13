@@ -22,6 +22,7 @@ import {
   updateRecentlyUsedImageEnhancement
 } from '@/app/_db/imageEnhancementModules'
 import { useWindowSize } from '@/app/_hooks/useWindowSize'
+import { AppSettings } from '@/app/_data-models/AppSettings'
 
 export default function LoraDetails({
   details,
@@ -30,6 +31,7 @@ export default function LoraDetails({
   details: Embedding
   onUseLoraClick?: (savedLora: SavedLora) => void
 }) {
+  const [baseFilters] = useState(AppSettings.get('civitAiBaseModelFilter'))
   const { height } = useWindowSize()
   const { modelVersions = [] } = details
   const [initModel = {} as ModelVersion] = modelVersions
@@ -166,7 +168,11 @@ export default function LoraDetails({
                         objectFit: 'contain',
                         width: 'auto',
                         height: 'auto',
-                        maxHeight: height ? `${height - 256}px` : 'unset'
+                        maxHeight: height ? `${height - 256}px` : 'unset',
+                        filter:
+                          !baseFilters.includes('NSFW') && image.nsfwLevel > 6
+                            ? 'blur(12px)'
+                            : 'none'
                       }}
                     />
                   </div>

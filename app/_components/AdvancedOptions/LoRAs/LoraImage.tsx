@@ -7,6 +7,7 @@ import NiceModal from '@ebay/nice-modal-react'
 import { useState } from 'react'
 import Spinner from '../../Spinner'
 import { SavedLora } from '@/app/_types/ArtbotTypes'
+import { AppSettings } from '@/app/_data-models/AppSettings'
 
 interface LoraImageProps {
   columnWidth?: number // Optional prop to receive columnWidth
@@ -19,6 +20,7 @@ interface LoraImageProps {
     width: number
     height: number
     details: Embedding
+    nsfwLevel: number
   }
 }
 
@@ -27,6 +29,7 @@ export default function LoraImage({
   onUseLoraClick,
   photo
 }: LoraImageProps) {
+  const [baseFilters] = useState(AppSettings.get('civitAiBaseModelFilter'))
   const calculatedWidth = columnWidth
     ? Math.min(columnWidth, photo.width)
     : photo.width
@@ -82,6 +85,12 @@ export default function LoraImage({
           alt={photo.name}
           width={calculatedWidth}
           height={calculatedHeight}
+          style={{
+            filter:
+              !baseFilters.includes('NSFW') && photo.nsfwLevel > 6
+                ? 'blur(12px)'
+                : 'none'
+          }}
           onLoad={() => {
             if (loading) {
               handleImageLoad()
@@ -138,73 +147,3 @@ export default function LoraImage({
     </div>
   )
 }
-
-// interface LoraImageProps {
-//   alt: string
-//   src: string
-//   containerWidth: number
-//   width: number
-//   height: number
-// }
-// export default function LoraImage({
-//   alt,
-//   containerWidth,
-//   src,
-//   width,
-//   height
-// }: LoraImageProps) {
-//   const [loading, setLoading] = useState(true)
-
-//   const handleImageLoad = () => {
-//     setLoading(false)
-//   }
-
-//   console.log(`containerWidth?`, containerWidth)
-
-//   // eslint-disable-next-line jsx-a11y/alt-text
-//   return <img src={src} />
-
-//   return (
-//     <div style={{ position: 'relative' }}>
-//       {loading && (
-//         <div
-//           style={{
-//             width: '100%',
-//             height: '100%',
-//             backgroundColor: '#424242',
-//             display: 'flex',
-//             alignItems: 'center',
-//             justifyContent: 'center',
-//             position: 'absolute',
-//             top: 0,
-//             left: 0,
-//             zIndex: 1 // Ensure the placeholder is above the image
-//           }}
-//         >
-//           {/* You can add a spinner or any loading indicator here */}
-//           {/* <span>Loading...</span> */}
-//         </div>
-//       )}
-//       <img
-//         alt={alt}
-//         style={{
-//           width,
-//           height,
-//           marginBottom: '0 !important',
-//           opacity: loading ? 0 : 1, // Initial opacity 0 for fade-in effect
-//           transition: 'opacity 0.5s ease-in-out', // Transition effect for fading
-//           position: 'absolute', // Position absolutely to match placeholder position
-//           top: 0,
-//           left: 0,
-//           visibility: loading ? 'hidden' : 'visible'
-//         }}
-//         src={src}
-//         onLoad={() => {
-//           if (loading) {
-//             handleImageLoad()
-//           }
-//         }}
-//       />
-//     </div>
-//   )
-// }

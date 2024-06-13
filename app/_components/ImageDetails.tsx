@@ -53,8 +53,6 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
       //   }
       // })
 
-      console.log(`Image request parameters:`)
-      console.log(prettyJson)
       return
     }
 
