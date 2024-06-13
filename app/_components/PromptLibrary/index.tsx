@@ -1,14 +1,6 @@
 import { getPromptHistoryFromDexie } from '@/app/_db/promptsHistory'
 import { PromptsHistory } from '@/app/_types/ArtbotTypes'
 import { useEffect, useState } from 'react'
-import Button from '../Button'
-import {
-  IconCopy,
-  IconCornerDownRight,
-  IconHeart,
-  IconTrash
-} from '@tabler/icons-react'
-import NiceModal from '@ebay/nice-modal-react'
 import PromptHistoryCard from './PromptHistoryCard'
 
 interface PromptLibraryProps {
@@ -31,9 +23,11 @@ export default function PromptLibrary({
     getPrompts()
   }, [])
 
+  const title = type === 'prompt' ? 'Prompt Libary' : 'Negative Prompt Libary'
+
   return (
     <div className="col w-full h-full">
-      <h2 className="row font-bold">Prompt Libary</h2>
+      <h2 className="row font-bold">{title}</h2>
       <div className="col gap-4">
         {prompts.map((prompt) => {
           return (

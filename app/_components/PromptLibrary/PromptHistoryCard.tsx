@@ -37,7 +37,7 @@ export default function PromptHistoryCard({
           {formatTimestamp(prompt.timestamp)}
         </div>
         <div className="row">
-          <Button outline>
+          <Button onClick={() => {}} outline>
             <IconHeart />
           </Button>
           <Button
@@ -55,7 +55,7 @@ export default function PromptHistoryCard({
           >
             <IconCornerDownRight />
           </Button>
-          <Button theme="danger">
+          <Button onClick={() => {}} theme="danger">
             <IconTrash />
           </Button>
         </div>
