@@ -17,7 +17,24 @@ function getAllWords(prompt: string) {
   return Array.from(wordSet)
 }
 
-export const addPromptToDexie = async (artbot_id: string, prompt: string) => {
+export const getPromptHistoryFromDexie = async (
+  offset: number = 0,
+  limit: number = 20,
+  promptType: 'prompt' | 'negative' = 'prompt'
+) => {
+  return await db.promptsHistory
+    // .where({ promptType }) // TODO: FIXME!
+    .offset(offset)
+    .limit(limit)
+    .reverse()
+    .toArray()
+}
+
+export const addPromptToDexie = async (
+  artbot_id: string,
+  prompt: string,
+  promptType: 'prompt' | 'negative' = 'prompt'
+) => {
   const hash_id = sha256(prompt.trim().toLowerCase())
   const uniqueWords = getAllWords(prompt)
 
@@ -28,19 +45,25 @@ export const addPromptToDexie = async (artbot_id: string, prompt: string) => {
       async () => {
         const exists = await db.promptsHistory.where({ hash_id }).first()
 
-        if (exists && 'prompt_id' in exists) {
+        if (exists && 'id' in exists) {
           await db.promptsJobMap.add({
             artbot_id,
-            prompt_id: exists.prompt_id as number
+            prompt_id: exists.id as number
           })
+          await db.promptsHistory
+            .where({ id: exists.id })
+            .modify({ timestamp: Date.now() })
           return
         }
 
         const prompt_id = await db.promptsHistory.add({
           artbot_id,
           hash_id,
+          timestamp: Date.now(),
+          favorited: false,
           prompt,
-          promptWords: uniqueWords
+          promptWords: uniqueWords,
+          promptType
         })
 
         if (prompt_id) {

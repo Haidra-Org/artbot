@@ -35,7 +35,8 @@ class ArtBot_v2 extends Dexie {
       imageFiles:
         '++id, artbot_id, horde_id, image_id, imageType, imageStatus, [artbot_id+imageType], [image_id+imageType], [imageStatus+imageType], model, sampler',
       imageRequests: '++id, artbot_id, jobType',
-      promptsHistory: '++id, artbot_id, hash_id, *promptWords',
+      promptsHistory:
+        '++id, artbot_id, hash_id, *promptWords, promptType, favorited, [promptType+favorited]',
       promptsJobMap: '++id, artbot_id, prompt_id'
     })
   }
