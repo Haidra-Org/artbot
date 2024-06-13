@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React from 'react'
+import React, { useEffect } from 'react'
 import { PrevButton, NextButton } from './CarouselArrowButtons'
 import styles from './carousel.module.css'
 
@@ -20,6 +20,25 @@ const CarouselControls: React.FC<CarouselControlsProps> = ({
   onPrevButtonClick,
   onNextButtonClick
 }) => {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault()
+        if (event.key === 'ArrowLeft') {
+          onPrevButtonClick()
+        } else if (event.key === 'ArrowRight') {
+          onNextButtonClick()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onNextButtonClick, onPrevButtonClick])
+
   return (
     <div className={styles.embla__controls}>
       <div className={styles.embla__buttons}>
