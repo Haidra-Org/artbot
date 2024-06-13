@@ -20,7 +20,7 @@ import {
   IconSquarePlus,
   IconTrash
 } from '@tabler/icons-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export default function PromptActionPanel() {
   const { input, setInput, setSourceImages } = useInput()
@@ -52,6 +52,22 @@ export default function PromptActionPanel() {
     await addPromptToDexie(pendingJob.artbot_id, input.prompt)
     setRequestPending(false)
   }, [input])
+
+  useEffect(() => {
+    // Function to handle keydown events
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        handleCreateClick()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const emptyInput = !input.prompt.trim() && !input.negative.trim()
 
