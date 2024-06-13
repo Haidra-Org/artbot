@@ -77,7 +77,7 @@ export default function HordeSettings() {
             handleToggleSetting('allowNsfw')
           }}
         />
-        Allow NSFW generations
+        Allow NSFW
       </label>
       <label className="row gap-2 text-white">
         <Switch
@@ -86,7 +86,7 @@ export default function HordeSettings() {
             handleToggleSetting('promptReplacement')
           }}
         />
-        Use prompt replacement
+        Prompt filter
       </label>
     </Section>
   )
