@@ -1,3 +1,19 @@
+export const formatTimestamp = (timestamp: number): string => {
+  const date = new Date(timestamp)
+
+  // Format date to YYYY/MM/DD
+  const formattedDate = date.toLocaleDateString('en-CA') // "en-CA" gives "YYYY-MM-DD"
+
+  // Format time to h:mm AM/PM
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  })
+
+  return `${formattedDate.replace(/-/g, '/')} ${formattedTime}`
+}
+
 export const formatKudos = (num: number) => {
   if (num === 0) {
     return '...'
