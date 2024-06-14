@@ -23,6 +23,7 @@ import PromptLibrary from '@/app/_components/PromptLibrary'
 import { addPromptToDexie } from '@/app/_db/promptsHistory'
 import { toastController } from '@/app/_controllers/toastController'
 import StyleTags from '@/app/_components/StyleTags'
+import LoraKeywords from '@/app/_components/AdvancedOptions/LoRAs/LoraKeywords'
 
 const AccordionItem = ({
   children,
@@ -118,9 +119,7 @@ export default function PromptInputForm() {
                 className="!h-[36px]"
                 onClick={() => {
                   NiceModal.show('modal', {
-                    children: (
-                      <div className="text-[20px]">LoRA / TI keywords....</div>
-                    )
+                    children: <LoraKeywords input={input} setInput={setInput} />
                   })
                 }}
                 title="Suggested keywords from LoRA or TIs"
