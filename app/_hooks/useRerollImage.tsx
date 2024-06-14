@@ -3,6 +3,7 @@ import { addPromptToDexie } from '../_db/promptsHistory'
 import { getImageRequestsFromDexieById } from '../_db/imageRequests'
 import { addPendingJobToDexie } from '../_db/jobTransactions'
 import { addPendingImageToAppState } from '../_stores/PendingImagesStore'
+import { toastController } from '../_controllers/toastController'
 
 export default function useRerollImage() {
   const rerollImage = async (artbot_id: string) => {
@@ -31,23 +32,18 @@ export default function useRerollImage() {
       addPendingImageToAppState(pendingJob)
     }
 
-    await addPromptToDexie(pendingJob.artbot_id, imageRequest.prompt)
+    await addPromptToDexie({
+      artbot_id: pendingJob.artbot_id,
+      prompt: imageRequest.prompt
+    })
+
+    toastController({
+      message: 'Re-rolled! Creating new image request.',
+      type: 'success'
+    })
 
     // TODO: Add a temporary job ID so images can be associated with previous job?
     // TODO: Need to check for / handle image uploads
-
-    // Store.addNotification({
-    //   title: 'Re-roll Success!',
-    //   message: 'Created new image request.',
-    //   type: 'success',
-    //   insert: 'top',
-    //   container: 'top-right',
-    //   dismiss: {
-    //     duration: 2500,
-    //     showIcon: true,
-    //     onScreen: true
-    //   }
-    // })
   }
 
   return [rerollImage]
