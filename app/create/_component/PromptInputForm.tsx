@@ -76,6 +76,14 @@ export default function PromptInputForm() {
     setOpenNegativePrompt(negOpen)
   }, [])
 
+  const hasTrainedWords = input.loras.some((embedding) => {
+    if (!embedding) return false
+
+    return embedding.modelVersions.some(
+      (modelVersion) => modelVersion.trainedWords.length > 0
+    )
+  })
+
   return (
     <div className="col bg-[#1d4d74] w-full rounded-md p-2">
       <div className="col gap-1">
@@ -103,22 +111,26 @@ export default function PromptInputForm() {
         </div>
         <div className="row w-full justify-between">
           <div className="row gap-2">
-            <Button
-              className="!h-[36px]"
-              onClick={() => {
-                NiceModal.show('modal', {
-                  children: (
-                    <div className="text-[20px]">LoRA / TI keywords....</div>
-                  )
-                })
-              }}
-              title="Suggested keywords from LoRA or TIs"
-              style={{
-                width: '36px'
-              }}
-            >
-              <IconCodePlus stroke={1.5} />
-            </Button>
+            {(input.loras.length > 0 ||
+              input.tis.length > 0 ||
+              hasTrainedWords) && (
+              <Button
+                className="!h-[36px]"
+                onClick={() => {
+                  NiceModal.show('modal', {
+                    children: (
+                      <div className="text-[20px]">LoRA / TI keywords....</div>
+                    )
+                  })
+                }}
+                title="Suggested keywords from LoRA or TIs"
+                style={{
+                  width: '36px'
+                }}
+              >
+                <IconCodePlus stroke={1.5} />
+              </Button>
+            )}
             <Button
               className="!h-[36px]"
               onClick={() => {
