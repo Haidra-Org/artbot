@@ -20,7 +20,7 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
 
     // Check for LoRA or Embedding keywords
     const keywordTags: string[] = flattenKeywords(input.loras)
-    let missingKeywords = true
+    let missingKeywords = keywordTags.length > 0 ? true : false
     keywordTags.forEach((tag) => {
       if (input.prompt.includes(tag)) {
         missingKeywords = false

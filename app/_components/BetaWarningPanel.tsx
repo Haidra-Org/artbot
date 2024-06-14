@@ -16,7 +16,7 @@ export default function BetaWarningPanel() {
         create images you like, save them to your machine. Otherwise, they will
         be lost forever. Please report issues and leave feedback in the{' '}
         <Link
-          href="https://discord.com/channels/781145214752129095/1250513940530597908"
+          href="https://discord.com/channels/781145214752129095/1251316910117748817"
           className="primary-color font-bold"
           target="_blank"
         >
