@@ -123,7 +123,11 @@ export default function PromptInputForm() {
                         setInput({ prompt })
                       }}
                     />
-                  )
+                  ),
+                  modalStyle: {
+                    maxWidth: '1024px',
+                    width: 'calc(100% - 32px)'
+                  }
                 })
               }}
               title="Recently used prompts"

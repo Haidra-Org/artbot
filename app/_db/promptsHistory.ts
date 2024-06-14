@@ -1,7 +1,12 @@
 import { sha256 } from 'js-sha256'
 import { db } from './dexie'
+import { PromptsHistory } from '../_types/ArtbotTypes'
 
-function getAllWords(prompt: string) {
+export const getAllWords = (prompt: string = '') => {
+  if (!prompt.trim()) return []
+
+  prompt = prompt.trim()
+
   // Split the text into words, removing punctuation and splitting on any amount of whitespace
   const allWords = prompt.split(/\W+/).filter(Boolean)
 
@@ -17,13 +22,112 @@ function getAllWords(prompt: string) {
   return Array.from(wordSet)
 }
 
-export const getPromptHistoryFromDexie = async (
+export const updateFavoritePrompt = async (id: number, status: boolean) => {
+  await db.promptsHistory
+    .where('id')
+    .equals(id)
+    .modify({ favorited: status ? 1 : 0 })
+}
+
+export const getPromptHistoryCountFromDexie = async (
+  promptType: 'prompt' | 'negative' = 'prompt',
+  showFavorites: boolean = false
+): Promise<number> => {
+  if (showFavorites) {
+    const query: [string, number] = [promptType, showFavorites ? 1 : 0]
+    return await db.promptsHistory
+      .where('[promptType+favorited]')
+      .equals(query)
+      .count()
+  }
+
+  return await db.promptsHistory.where({ promptType }).count()
+}
+
+/**
+ * Get prompts that contain all elements in the input array within the promptWords field,
+ * supporting pagination and filtering by promptType.
+ *
+ * @param {string[]} input - Array of words to match against the promptWords field.
+ * @param {number} offset - Number of items to skip for pagination.
+ * @param {number} limit - Number of items to return for pagination.
+ * @param {'prompt' | 'negative'} promptType - Type of prompt to filter.
+ * @returns {Promise<PromptsHistory[]>} - Array of matching prompt rows.
+ */
+export const getPromptsByWordsWithPagination = async (
+  input: string[],
   offset: number = 0,
   limit: number = 20,
-  promptType: 'prompt' | 'negative' = 'prompt'
-) => {
+  promptType: 'prompt' | 'negative' = 'prompt',
+  count = false
+): Promise<PromptsHistory[] | number> => {
+  // Ensure input array is not empty
+  if (input.length === 0) return []
+
+  // Get results for the first word to start
+  let results = await db.promptsHistory
+    .where('promptWords')
+    .equals(input[0])
+    .filter((prompt) => prompt.promptType === promptType) // Filter by promptType initially
+    .toArray()
+
+  // Intersect results for each subsequent word
+  for (let i = 1; i < input.length; i++) {
+    const wordResults = await db.promptsHistory
+      .where('promptWords')
+      .equals(input[i])
+      .filter((prompt) => prompt.promptType === promptType) // Filter by promptType at each step
+      .toArray()
+
+    // Intersect current results with new results
+    results = results.filter((item) =>
+      wordResults.some((wr) => wr.id === item.id)
+    )
+  }
+
+  if (count) return results.length
+
+  // Apply pagination: slice results according to offset and limit
+  const paginatedResults = results.slice(offset, offset + limit)
+
+  return paginatedResults
+}
+
+/**
+ * Get prompt history with optional filtering by prompt type, pagination, and favorites.
+ *
+ * @param {object} params - Object containing parameters for the query.
+ * @param {number} params.offset - Number of items to skip for pagination.
+ * @param {number} params.limit - Number of items to return for pagination.
+ * @param {'prompt' | 'negative'} params.promptType - Type of prompt to filter.
+ * @param {boolean} [params.showFavorites] - Optional flag to show only favorited prompts.
+ * @returns {Promise<PromptsHistory[]>} - Array of prompt history records.
+ */
+export const getPromptHistoryFromDexie = async ({
+  offset = 0,
+  limit = 20,
+  promptType = 'prompt',
+  showFavorites = false
+}: {
+  offset?: number
+  limit?: number
+  promptType?: 'prompt' | 'negative'
+  showFavorites?: boolean
+} = {}): Promise<PromptsHistory[]> => {
+  // If showFavorites is true, filter by favorited prompts with the specified prompt type
+  if (showFavorites) {
+    return await db.promptsHistory
+      .where('[promptType+favorited]')
+      .equals([promptType, 1])
+      .offset(offset)
+      .limit(limit)
+      .reverse()
+      .toArray()
+  }
+
+  // Otherwise, filter by promptType only
   return await db.promptsHistory
-    // .where({ promptType }) // TODO: FIXME!
+    .where({ promptType })
     .offset(offset)
     .limit(limit)
     .reverse()
@@ -60,7 +164,7 @@ export const addPromptToDexie = async (
           artbot_id,
           hash_id,
           timestamp: Date.now(),
-          favorited: false,
+          favorited: 0,
           prompt,
           promptWords: uniqueWords,
           promptType
@@ -113,20 +217,19 @@ export const searchPromptsFromDexie = async ({
           matchingPrompts = await promptsQuery.limit(limit).sortBy('id')
         }
 
-        // @ts-expect-error Oh, but "id" does exist!
         const promptIds = matchingPrompts.map((prompt) => prompt.id)
 
         let jobMaps
         if (sortDirection === 'desc') {
           jobMaps = await db.promptsJobMap
-            .where('prompt_id')
-            .anyOf(promptIds)
+            .where('id')
+            .anyOf(promptIds as number[])
             .reverse()
             .toArray()
         } else if (sortDirection === 'asc') {
           jobMaps = await db.promptsJobMap
-            .where('prompt_id')
-            .anyOf(promptIds)
+            .where('id')
+            .anyOf(promptIds as number[])
             .toArray()
         }
 
@@ -195,4 +298,15 @@ export const searchPromptsFromDexie = async ({
     console.error('Error searching prompts:', err)
     throw err
   }
+}
+
+export const deletePromptFromDexie = async (id: number) => {
+  await db.transaction(
+    'rw',
+    [db.promptsHistory, db.promptsJobMap],
+    async () => {
+      await db.promptsJobMap.where('prompt_id').equals(id).delete()
+      await db.promptsHistory.delete(id)
+    }
+  )
 }
