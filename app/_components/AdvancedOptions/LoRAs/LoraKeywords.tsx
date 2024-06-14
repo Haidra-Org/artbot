@@ -36,7 +36,7 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
       if (embedding.modelVersions.length > 0) {
         acc[embedding.name] = embedding.modelVersions[0].trainedWords
       } else {
-        acc[embedding.name] = []
+        acc[embedding.name] = [] // If no model versions, return an empty array
       }
       return acc
     },
@@ -81,7 +81,7 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
           </div>
         </Section>
       )}
-      {categories.map((category) => (
+      {categories?.map((category) => (
         <div key={category} className="w-full col mb-4">
           <h3 className="font-[700] text-[16px] row gap-2">
             {category}
@@ -102,7 +102,7 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
           </h3>
           <div className="row w-full gap-2 flex-wrap">
             {tags[category] &&
-              tags[category].map((tag) => {
+              tags[category]?.map((tag) => {
                 const active = usedTags.includes(tag)
                 return (
                   <div

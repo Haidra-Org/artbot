@@ -1,3 +1,5 @@
+import { SavedLora } from '../_types/ArtbotTypes'
+
 interface JsonData {
   [key: string]: string[]
 }
@@ -10,4 +12,14 @@ export const mergeArrays = (jsonData: JsonData): string[] => {
   })
 
   return mergedArray
+}
+
+export const flattenKeywords = (jsonData: SavedLora[] = []): string[] => {
+  return jsonData.reduce((acc: string[], embedding: SavedLora) => {
+    if (embedding.modelVersions.length > 0) {
+      // Flatten and concatenate the trainedWords of the first model version to the accumulator
+      acc = acc.concat(embedding.modelVersions[0].trainedWords)
+    }
+    return acc
+  }, [])
 }

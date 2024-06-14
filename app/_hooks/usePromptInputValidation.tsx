@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useInput } from '../_providers/PromptInputProvider'
 import { SourceProcessing } from '../_types/HordeTypes'
+import { flattenKeywords } from '../_utils/arrayUtils'
+import { AppSettings } from '../_data-models/AppSettings'
 
-interface PromptError {
+export interface PromptError {
   message: string
   type: 'critical' | 'warning'
 }
@@ -16,10 +18,26 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
     let updateCriticalError = false
     const updateErrors: PromptError[] = []
 
-    if (input.prompt.length > 1000) {
+    // Check for LoRA or Embedding keywords
+    const keywordTags: string[] = flattenKeywords(input.loras)
+    let missingKeywords = true
+    keywordTags.forEach((tag) => {
+      if (input.prompt.includes(tag)) {
+        missingKeywords = false
+      }
+    })
+
+    if (missingKeywords) {
       updateErrors.push({
-        message: 'Prompt is too long. Max 1000 characters.',
+        message: `Keyword for LoRA or embedding not found in prompt.`,
         type: 'warning'
+      })
+    }
+
+    if (input.prompt.length > 1000 && AppSettings.get('useReplacementFilter')) {
+      updateErrors.push({
+        message: `Prompt is too long for replacement filter. Max 1,000 characters. Please shorten prompt or disable replacement filter. Current length: ${input.prompt.length}`,
+        type: 'critical'
       })
     }
 
