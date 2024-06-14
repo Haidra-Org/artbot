@@ -147,7 +147,11 @@ export default function PromptInputForm() {
               className="!h-[36px]"
               onClick={() => {
                 NiceModal.show('modal', {
-                  children: <StyleTagsWrapper />
+                  children: <StyleTagsWrapper />,
+                  modalStyle: {
+                    maxWidth: '1600px',
+                    width: 'calc(100% - 32px)'
+                  }
                 })
               }}
               title="Suggested tags to help add additional styles to an image"
