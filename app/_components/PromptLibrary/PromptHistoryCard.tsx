@@ -27,6 +27,7 @@ export default function PromptHistoryCard({
   setPrompt: (prompt: string) => void
 }) {
   const [isFavorite, setIsFavorite] = useState(prompt.favorited ? true : false)
+  const suggested = prompt.artbot_id === '_suggestion'
 
   return (
     <div
@@ -46,19 +47,21 @@ export default function PromptHistoryCard({
             fontSize: '12px'
           }}
         >
-          {formatTimestamp(prompt.timestamp)}
+          {!suggested ? formatTimestamp(prompt.timestamp) : ''}
         </div>
         <div className="row">
-          <Button
-            onClick={() => {
-              const updatedStatus = !isFavorite
-              setIsFavorite(updatedStatus)
-              updateFavoritePrompt(prompt.id as number, updatedStatus)
-            }}
-            outline
-          >
-            {isFavorite ? <IconHeartFilled color={'red'} /> : <IconHeart />}
-          </Button>
+          {!suggested && (
+            <Button
+              onClick={() => {
+                const updatedStatus = !isFavorite
+                setIsFavorite(updatedStatus)
+                updateFavoritePrompt(prompt.id as number, updatedStatus)
+              }}
+              outline
+            >
+              {isFavorite ? <IconHeartFilled color={'red'} /> : <IconHeart />}
+            </Button>
+          )}
           <Button
             onClick={() => {
               navigator.clipboard.writeText(prompt.prompt)
@@ -77,39 +80,41 @@ export default function PromptHistoryCard({
           >
             <IconCornerDownRight />
           </Button>
-          <Button
-            onClick={() => {
-              NiceModal.show('delete', {
-                children: (
-                  <DeleteConfirmation
-                    deleteButtonTitle="Delete"
-                    title="Delete prompt?"
-                    message={
-                      <>
-                        <p>
-                          Are you sure you want to delete this prompt from your
-                          prompt library?
-                        </p>
-                        <p>This cannot be undone.</p>
-                        <p>NOTE: No images will be harmed in this process.</p>
-                      </>
-                    }
-                    onDelete={async () => {
-                      await deletePromptFromDexie(prompt.id as number)
-                      await onDelete()
-                      toastController({
-                        message: 'Prompt deleted!',
-                        type: 'success'
-                      })
-                    }}
-                  />
-                )
-              })
-            }}
-            theme="danger"
-          >
-            <IconTrash />
-          </Button>
+          {!suggested && (
+            <Button
+              onClick={() => {
+                NiceModal.show('delete', {
+                  children: (
+                    <DeleteConfirmation
+                      deleteButtonTitle="Delete"
+                      title="Delete prompt?"
+                      message={
+                        <div className="col gap-4">
+                          <p>
+                            Are you sure you want to delete this prompt from
+                            your prompt library?
+                          </p>
+                          <p>This cannot be undone.</p>
+                          <p>NOTE: No images will be harmed in this process.</p>
+                        </div>
+                      }
+                      onDelete={async () => {
+                        await deletePromptFromDexie(prompt.id as number)
+                        await onDelete()
+                        toastController({
+                          message: 'Prompt deleted!',
+                          type: 'success'
+                        })
+                      }}
+                    />
+                  )
+                })
+              }}
+              theme="danger"
+            >
+              <IconTrash />
+            </Button>
+          )}
         </div>
       </div>
     </div>
