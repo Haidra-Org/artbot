@@ -12,7 +12,7 @@ import {
   IconPlaylistX,
   IconTags
 } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ReactTextareaAutosize from 'react-textarea-autosize'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import useUndoPrompt from '@/app/_hooks/useUndoPrompt'
@@ -22,6 +22,7 @@ import NiceModal from '@ebay/nice-modal-react'
 import PromptLibrary from '@/app/_components/PromptLibrary'
 import { addPromptToDexie } from '@/app/_db/promptsHistory'
 import { toastController } from '@/app/_controllers/toastController'
+import StyleTags from '@/app/_components/StyleTags'
 
 const AccordionItem = ({
   children,
@@ -65,6 +66,10 @@ export default function PromptInputForm() {
     useUndoPrompt()
   const { input, setInput } = useInput()
   const [openNegativePrompt, setOpenNegativePrompt] = useState(false)
+
+  const StyleTagsWrapper = useCallback(() => {
+    return <StyleTags input={input} setInput={setInput} />
+  }, [input, setInput])
 
   useEffect(() => {
     const negOpen = AppSettings.get('negativePanelOpen') || false
@@ -142,7 +147,7 @@ export default function PromptInputForm() {
               className="!h-[36px]"
               onClick={() => {
                 NiceModal.show('modal', {
-                  children: <div className="text-[20px]">Style tags...</div>
+                  children: <StyleTagsWrapper />
                 })
               }}
               title="Suggested tags to help add additional styles to an image"
