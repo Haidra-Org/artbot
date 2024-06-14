@@ -2,6 +2,7 @@
 
 import Button from '@/app/_components/Button'
 import DeleteConfirmation from '@/app/_components/Modal_DeleteConfirmation'
+import PromptWarning from '@/app/_components/PromptWarning'
 import PromptInput from '@/app/_data-models/PromptInput'
 import {
   deleteImageFileByArtbotIdTx,
@@ -136,7 +137,14 @@ export default function PromptActionPanel() {
         </span>
       </Button>
       {errors.length > 0 && (
-        <Button theme="warning" onClick={() => {}}>
+        <Button
+          theme="warning"
+          onClick={() => {
+            NiceModal.show('modal', {
+              children: <PromptWarning errors={errors} />
+            })
+          }}
+        >
           <span className="row gap-1">
             <IconInfoTriangle stroke={1.5} />
             {hasCriticalError ? 'Error' : 'Warning'}
