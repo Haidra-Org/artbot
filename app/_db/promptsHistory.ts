@@ -134,11 +134,16 @@ export const getPromptHistoryFromDexie = async ({
     .toArray()
 }
 
-export const addPromptToDexie = async (
-  artbot_id: string,
-  prompt: string,
-  promptType: 'prompt' | 'negative' = 'prompt'
-) => {
+export const addPromptToDexie = async ({
+  artbot_id = '',
+  prompt = '',
+  promptType = 'prompt'
+}: {
+  prompt: string
+  artbot_id?: string
+  promptType?: 'prompt' | 'negative'
+}) => {
+  if (prompt.trim().length === 0) return
   const hash_id = sha256(prompt.trim().toLowerCase())
   const uniqueWords = getAllWords(prompt)
 
@@ -170,7 +175,7 @@ export const addPromptToDexie = async (
           promptType
         })
 
-        if (prompt_id) {
+        if (prompt_id && promptType === 'prompt') {
           await db.promptsJobMap.add({
             artbot_id,
             prompt_id

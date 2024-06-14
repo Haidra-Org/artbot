@@ -49,7 +49,10 @@ export default function PromptActionPanel() {
       addPendingImageToAppState(pendingJob)
     }
 
-    await addPromptToDexie(pendingJob.artbot_id, input.prompt)
+    await addPromptToDexie({
+      artbot_id: pendingJob.artbot_id,
+      prompt: input.prompt
+    })
     setRequestPending(false)
   }, [input])
 

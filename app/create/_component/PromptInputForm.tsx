@@ -20,6 +20,8 @@ import { useInput } from '@/app/_providers/PromptInputProvider'
 import Button from '@/app/_components/Button'
 import NiceModal from '@ebay/nice-modal-react'
 import PromptLibrary from '@/app/_components/PromptLibrary'
+import { addPromptToDexie } from '@/app/_db/promptsHistory'
+import { toastController } from '@/app/_controllers/toastController'
 
 const AccordionItem = ({
   children,
@@ -239,8 +241,20 @@ export default function PromptInputForm() {
               <div className="row w-full justify-between">
                 <div className="row gap-2">
                   <Button
+                    disabled={!input.negative.trim()}
                     className="!h-[36px]"
-                    onClick={() => {}}
+                    onClick={async () => {
+                      if (input.negative.trim() === '') return
+                      await addPromptToDexie({
+                        prompt: input.negative,
+                        promptType: 'negative'
+                      })
+
+                      toastController({
+                        message: 'Negative prompt saved!',
+                        type: 'success'
+                      })
+                    }}
                     title="Save negative prompt for future use"
                   >
                     <span className="row gap-1">
@@ -252,10 +266,18 @@ export default function PromptInputForm() {
                     onClick={() => {
                       NiceModal.show('modal', {
                         children: (
-                          <div className="text-[20px]">
-                            Negative prompt library...
-                          </div>
-                        )
+                          <PromptLibrary
+                            setPrompt={(prompt) => {
+                              setUndoNegative(input.negative)
+                              setInput({ negative: prompt })
+                            }}
+                            type="negative"
+                          />
+                        ),
+                        modalStyle: {
+                          maxWidth: '1024px',
+                          width: 'calc(100% - 32px)'
+                        }
                       })
                     }}
                     title="Load previously saved negative prompt"
