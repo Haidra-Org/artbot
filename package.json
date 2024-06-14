@@ -6,6 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
+    "postbuild": "cp -R public .next/standalone && cp -R .next/static .next/standalone/.next",
     "prepare": "husky",
     "prettier": "prettier --write \"app/**/*.{js,jsx,ts,tsx}\"",
     "start": "next start",

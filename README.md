@@ -10,6 +10,7 @@ A front-end GUI for interacting with AI Horde's distributed cluster of Stable Di
   - [Installing](#installing)
 - [Usage](#usage)
   - [Development](#development)
+  - [Production](#production)
 - [Contributions](#contributions)
 - [Acknowledgements](#acknowledgements)
 
@@ -59,6 +60,19 @@ Alright, you should now be able to run the ArtBot web app! To run in development
 ```
 
 Then, open your browser and visit `http://localhost:3000`, you should now be able to immediately make image requests to the Stable Horde. Head over to `http://localhost:3000/settings` and enter your Stable Horde API key for faster generation times.
+
+### Production
+
+ArtBot is built using [Next.JS's standalone mode](https://nextjs.org/docs/pages/api-reference/next-config-js/output). This outputs the project to `./next/standalone`. The idea is that this folder can be gzipped and uploaded to wherever you need to serve the project.
+
+After running `npm run build`, you'll need to run `npm run postbuild` in order to copy static assets and the public folder (NextJS doesn't automatically do this, as these sorts of things should usually be uploaded to a CDN). If you forget to run the `postbuild` script, ArtBot will be missing images and CSS styles.
+
+```bash
+> npm run build
+> npm run postbuild # copies public folder
+> cd ./next/standalone
+> node server.js
+```
 
 ## Contributions
 
