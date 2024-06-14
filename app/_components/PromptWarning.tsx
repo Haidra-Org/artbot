@@ -1,8 +1,4 @@
-import {
-  IconAlertTriangle,
-  IconExclamationCircle,
-  IconTriangle
-} from '@tabler/icons-react'
+import { IconAlertTriangle, IconExclamationCircle } from '@tabler/icons-react'
 import { PromptError } from '../_hooks/usePromptInputValidation'
 import Button from './Button'
 import NiceModal from '@ebay/nice-modal-react'
