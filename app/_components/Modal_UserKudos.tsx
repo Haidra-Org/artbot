@@ -19,7 +19,7 @@ export default function UserKudosModal() {
           </div>
         </div>
       </div>
-      {records.request && (
+      {records && records.request && (
         <div className="stats bg-body-color">
           <div className="stat">
             <div className="font-bold p-1">Images requested</div>

@@ -5,24 +5,49 @@ import Input from '@/app/_components/Input'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import {
   IconArrowBarLeft,
+  IconCopy,
   IconDeviceFloppy,
   IconEye,
   IconEyeOff
 } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import useHordeApiKey from '@/app/_hooks/useHordeApiKey'
+import { useCallback, useEffect, useState } from 'react'
+import { toastController } from '@/app/_controllers/toastController'
 
 export default function Apikey() {
+  const [handleLogin] = useHordeApiKey()
   const [apikey, setApikey] = useState('')
   const [showKey, setShowKey] = useState(false)
 
+  const handleApiKeySave = useCallback(async () => {
+    AppSettings.set('apiKey', apikey.trim())
+
+    if (!apikey.trim()) return
+
+    const result = await handleLogin(apikey.trim())
+
+    if (result.success) {
+      toastController({
+        message: 'Successfully logged into AI Horde!'
+      })
+    } else {
+      toastController({
+        message: 'Unable to login. Check API key.',
+        type: 'error'
+      })
+    }
+  }, [apikey, handleLogin])
+
   useEffect(() => {
     const key = AppSettings.get('apiKey')
+
+    if (key === '0000000000') return
     setApikey(key)
   }, [])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      AppSettings.set('apiKey', apikey.trim())
+      handleApiKeySave()
     }
   }
 
@@ -55,9 +80,17 @@ export default function Apikey() {
           {showKey ? <IconEyeOff /> : <IconEye />}
         </Button>
         <Button
-          onClick={() => AppSettings.set('apiKey', apikey.trim())}
-          title="Save API key"
+          onClick={() => {
+            navigator.clipboard.writeText(apikey)
+            toastController({
+              message: 'API key copied to clipboard!'
+            })
+          }}
+          title="Copy API key"
         >
+          <IconCopy />
+        </Button>
+        <Button onClick={handleApiKeySave} title="Save API key">
           <IconDeviceFloppy />
         </Button>
       </div>

@@ -2,6 +2,7 @@ import { clientHeader } from '../_data-models/ClientHeader'
 import { AppSettings } from '../_data-models/AppSettings'
 import { HordeUser } from '../_types/HordeTypes'
 import { updateUser } from '../_stores/UserStore'
+import { isUuid } from '../_utils/stringUtils'
 
 interface ErrorResponse {
   message: string
@@ -24,8 +25,13 @@ export default function useHordeApiKey() {
       return { success: false }
     }
 
+    const isSharedKey = isUuid(apikey)
+    const userDetailsApi = isSharedKey
+      ? `https://aihorde.net/api/v2/sharedkeys/${apikey}`
+      : `https://aihorde.net/api/v2/find_user`
+
     try {
-      const res = await fetch(`https://aihorde.net/api/v2/find_user`, {
+      const res = await fetch(userDetailsApi, {
         headers: {
           apikey: apikey,
           'Client-Agent': clientHeader(),
@@ -46,7 +52,7 @@ export default function useHordeApiKey() {
         return { success: false, message: 'Unknown data structure received' }
       }
 
-      return data
+      return { success: true, data }
     } catch (err) {
       console.warn(`useHordeApiKey: ${err}`)
       return { success: false, message: (err as Error).message }
