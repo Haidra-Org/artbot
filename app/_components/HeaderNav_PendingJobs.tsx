@@ -1,5 +1,5 @@
 import { useStore } from 'statery'
-import { IconPhotoCheck } from '@tabler/icons-react'
+import { IconPhoto, IconPhotoCheck } from '@tabler/icons-react'
 import Link from 'next/link'
 import {
   PendingImagesStore,
@@ -9,11 +9,7 @@ import {
 export default function HeaderNavPendingJobs() {
   const { completedJobsNotViewed, pendingImages } = useStore(PendingImagesStore)
 
-  if (
-    pendingImages.length === 0 &&
-    completedJobsNotViewed === 0
-    // pendingJobCompletedTimestamp < pendingPageTimestamp
-  ) {
+  if (pendingImages.length === 0 && completedJobsNotViewed === 0) {
     return null
   }
 
@@ -26,7 +22,11 @@ export default function HeaderNavPendingJobs() {
         }}
       >
         <div className="relative">
-          <IconPhotoCheck stroke={1.5} />
+          {pendingImages.length === 0 ? (
+            <IconPhotoCheck stroke={1.5} />
+          ) : (
+            <IconPhoto stroke={1.5} />
+          )}
           {completedJobsNotViewed > 0 && (
             <span
               style={{

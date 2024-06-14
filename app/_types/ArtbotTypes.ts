@@ -88,10 +88,11 @@ export enum JobType {
 }
 
 export interface PromptsHistory {
+  id?: number
   artbot_id: string
   hash_id: string
   timestamp: number
-  favorited: boolean
+  favorited: number // true === 1, false === 0
   promptType: 'prompt' | 'negative' // indexed
   prompt: string
   promptWords: string[] // indexed

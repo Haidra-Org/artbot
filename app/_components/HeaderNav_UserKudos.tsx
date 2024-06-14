@@ -28,7 +28,7 @@ export default function UserKudos() {
     if (!apikey || !apikey.trim() || apikey === '0000000000') return
     setClientApiKey(apikey)
     setIsClient(true)
-  }, [])
+  }, [userDetails])
 
   if (
     !isClient ||

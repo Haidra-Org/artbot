@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Toaster } from 'react-hot-toast'
+
 import HeaderNav from './_components/HeaderNav'
 import './globals.css'
 import AppInit from './AppInit'
@@ -21,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex flex-col justify-center min-h-screen" id="__app">
         <ModalProvider>
+          <Toaster />
           <AppInit />
           <div className="flex flex-col flex-1 pt-[42px] p-[8px]">
             <HeaderNav />
