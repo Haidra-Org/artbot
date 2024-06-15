@@ -133,18 +133,20 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
       </div>
       {lora?.modelVersions && lora.modelVersions[0] && (
         <OptionLabel
+          className="row md:row"
           title={
             <span className="row font-bold text-sm text-white gap-1">
               Version:
             </span>
           }
         >
-          <span className="font-mono font-normal pl-4">
+          <span className="font-mono pl-4 text-white font-bold">
             {lora.modelVersions[0].name}
           </span>
         </OptionLabel>
       )}
       <OptionLabel
+        className="row md:row"
         title={
           <span className="row font-bold text-sm text-white gap-1">
             Strength
@@ -214,6 +216,7 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
         </div>
       </OptionLabel>
       <OptionLabel
+        className="!row md:row"
         title={
           <span className="row font-bold text-sm text-white gap-1">Clip</span>
         }

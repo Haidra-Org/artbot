@@ -10,6 +10,7 @@ export default function ImageCount() {
 
   return (
     <OptionLabel
+      className="!row md:row"
       title={
         <span className="row font-bold text-sm text-white gap-1">Images</span>
       }

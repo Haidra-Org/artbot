@@ -374,6 +374,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     hasError: boolean = false
   ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput }> {
     const instance = new ImageParamsForHordeApi(imageDetails)
+    instance.setEmbeddings()
     instance.setWorkerPreferences()
     await instance.setSourceProcessing()
     instance.setControlType()
