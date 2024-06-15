@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { Embedding } from '@/app/_types/CivitaiTypes'
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
@@ -14,8 +13,8 @@ import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
-import { SavedLora } from '@/app/_types/ArtbotTypes'
 import MasonryLayout from '../../MasonryLayout'
+import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
 
 export default function LoraSearch({
   onUseLoraClick = () => {},
@@ -121,13 +120,14 @@ export default function LoraSearch({
           <Button
             disabled={!searchInput.trim()}
             onClick={() => {
-              const savedLora = {
+              const savedLora = new SavedLora({
                 id: searchInput.trim(),
                 versionId: searchInput.trim(),
+                isArtbotManualEntry: true,
                 name: searchInput.trim(),
                 strength: 1,
                 clip: 1
-              }
+              })
 
               onUseLoraClick(savedLora as unknown as SavedLora)
               NiceModal.remove('modal')

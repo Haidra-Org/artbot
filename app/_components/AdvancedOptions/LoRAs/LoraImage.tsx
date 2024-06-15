@@ -1,13 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import { Embedding } from '@/app/_types/CivitaiTypes'
 import { IconBox } from '@tabler/icons-react'
 import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver'
 import LoraDetails from './LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
 import { useState } from 'react'
 import Spinner from '../../Spinner'
-import { SavedLora } from '@/app/_types/ArtbotTypes'
 import { AppSettings } from '@/app/_data-models/AppSettings'
+import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
 
 interface LoraImageProps {
   columnWidth?: number // Optional prop to receive columnWidth

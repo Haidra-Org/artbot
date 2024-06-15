@@ -1,5 +1,5 @@
+import { Embedding } from '../_data-models/Civitai'
 import { ImageEnhancementModulesModifier } from '../_types/ArtbotTypes'
-import { Embedding } from '../_types/CivitaiTypes'
 import { db } from './dexie'
 
 export const getFavoriteEnhancements = async (

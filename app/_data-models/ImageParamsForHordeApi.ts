@@ -1,5 +1,4 @@
 import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles'
-import { SavedLora } from '../_types/ArtbotTypes'
 import {
   ControlTypes,
   Lora,
@@ -9,6 +8,7 @@ import {
 import { castTiInject } from '../_utils/hordeUtils'
 import { blobToBase64 } from '../_utils/imageUtils'
 import { AppSettings } from './AppSettings'
+import { SavedLora } from './Civitai'
 import { ImageType } from './ImageFile_Dexie'
 import PromptInput from './PromptInput'
 

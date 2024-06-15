@@ -1,10 +1,10 @@
 import {
   AiHordeEmbedding,
   ImageOrientations,
-  JobType,
-  SavedLora
+  JobType
 } from '@/app/_types/ArtbotTypes'
 import { ControlTypes, SourceProcessing } from '@/app/_types/HordeTypes'
+import { SavedLora } from './Civitai'
 
 class PromptInput {
   // ArtBot ID for mainting relationships in IndexedDb

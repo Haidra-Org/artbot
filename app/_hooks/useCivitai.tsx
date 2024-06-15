@@ -4,12 +4,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { AppSettings } from '../_data-models/AppSettings'
 import { debounce } from '../_utils/debounce'
 import CacheMap from '../_data-models/CacheMap'
-import { CivitAiApiResponse, Embedding } from '../_types/CivitaiTypes'
+import { CivitAiApiResponse } from '../_types/CivitaiTypes'
 import {
   getFavoriteEnhancements,
   getRecentlyUsedEnhancements
 } from '../_db/imageEnhancementModules'
 import LORAS from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
+import { Embedding } from '../_data-models/Civitai'
 
 const searchCache = new CacheMap({ limit: 30, expireMinutes: 20 })
 

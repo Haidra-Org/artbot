@@ -78,7 +78,8 @@ export default function PromptInputForm() {
   }, [])
 
   const hasTrainedWords = input.loras.some((embedding) => {
-    if (!embedding) return false
+    if (!embedding || !embedding.modelVersions || embedding.isArtbotManualEntry)
+      return false
 
     return embedding.modelVersions.some(
       (modelVersion) => modelVersion.trainedWords.length > 0
@@ -112,9 +113,7 @@ export default function PromptInputForm() {
         </div>
         <div className="row w-full justify-between">
           <div className="row gap-2">
-            {(input.loras.length > 0 ||
-              input.tis.length > 0 ||
-              hasTrainedWords) && (
+            {hasTrainedWords && (
               <Button
                 className="!h-[36px]"
                 onClick={() => {
