@@ -21,7 +21,7 @@ export default function HeaderNavPendingJobs() {
           viewedPendingPage()
         }}
       >
-        <div className="relative">
+        <div className="relative text-black dark:text-white">
           {pendingImages.length === 0 ? (
             <IconPhotoCheck stroke={1.5} />
           ) : (
