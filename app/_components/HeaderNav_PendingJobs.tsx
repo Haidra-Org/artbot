@@ -23,12 +23,13 @@ export default function HeaderNavPendingJobs() {
       >
         <div className="relative text-black dark:text-white">
           {pendingImages.length === 0 ? (
-            <IconPhotoCheck stroke={1.5} />
+            <IconPhotoCheck stroke={1} />
           ) : (
-            <IconPhoto stroke={1.5} />
+            <IconPhoto stroke={1} />
           )}
           {completedJobsNotViewed > 0 && (
             <span
+              className="text-white"
               style={{
                 position: 'absolute',
                 top: '-4px',
@@ -42,7 +43,7 @@ export default function HeaderNavPendingJobs() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: '500',
+                fontWeight: '700',
                 fontFamily: 'monospace'
               }}
             >
