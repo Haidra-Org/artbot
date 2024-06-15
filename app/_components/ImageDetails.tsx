@@ -6,6 +6,8 @@ import { IconCodeDots, IconCopy } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import useImageDetails, { JobDetails } from '../_hooks/useImageDetails'
 import PromptInput from '../_data-models/PromptInput'
+import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'
+import NiceModal from '@ebay/nice-modal-react'
 // import { Store } from 'react-notifications-component'
 
 export default function ImageDetails({ image_id }: { image_id: string }) {
@@ -113,15 +115,53 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
             <strong>Seed: </strong>
             {imageFile.seed}
           </div>
-          <div className="mb-4" />
-          <div>
-            <strong>Height: </strong>
-            {imageRequest.height}px
+          <div className="mb-4">
+            <div>
+              <strong>Height: </strong>
+              {imageRequest.height}px
+            </div>
+            <div>
+              <strong>Width: </strong>
+              {imageRequest.width}px
+            </div>
           </div>
-          <div>
-            <strong>Width: </strong>
-            {imageRequest.width}px
-          </div>
+          {imageRequest.loras.length > 0 &&
+            imageRequest.loras.map((lora) => {
+              return (
+                <div
+                  key={lora.name}
+                  style={{
+                    borderLeft: '2px solid #aabad4',
+                    paddingLeft: '8px'
+                  }}
+                >
+                  <div
+                    className="row"
+                    onClick={() => {
+                      NiceModal.show('embeddingDetails', {
+                        children: <LoraDetails details={lora} />
+                      })
+                    }}
+                  >
+                    <strong>LoRA: </strong>
+                    <div className="cursor-pointer primary-color">
+                      {lora.name}
+                    </div>
+                  </div>
+                  <div className="row">
+                    <strong>LoRA version: {lora.modelVersions[0].name}</strong>
+                  </div>
+                  <div className="row">
+                    <strong>Strength: </strong>
+                    {lora.strength}
+                  </div>
+                  <div className="row">
+                    <strong>CLIP: </strong>
+                    {lora.strength}
+                  </div>
+                </div>
+              )
+            })}
           <div className="mb-4" />
           <div>
             <strong>Karras: </strong>

@@ -84,17 +84,15 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
 
   return (
     <div className="rounded bg-[#1d4d74] p-2 col">
-      <div className="w-full row justify-between text-sm font-mono">
-        <div>
-          {lora.isArtbotManualEntry ? (
-            <span>LoRA by Version ID: {lora.name}</span>
-          ) : (
-            <span>{lora.name}</span>
-          )}
-        </div>
+      <div className="w-full row justify-between text-sm font-mono font-bold text-white">
+        {lora.isArtbotManualEntry ? (
+          <span>LoRA by Version ID: {lora.name}</span>
+        ) : (
+          <span>{lora.name}</span>
+        )}
         <div className="row gap-2">
           <Button
-            disabled={lora.name === lora.versionId}
+            disabled={lora.isArtbotManualEntry}
             onClick={() => {
               NiceModal.show('embeddingDetails', {
                 children: <LoraDetails details={lora} />

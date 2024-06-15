@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './loraSearch.module.css'
 import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
 import LoraDetails from './LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
 import { IconBox } from '@tabler/icons-react'
+import { AppSettings } from '@/app/_data-models/AppSettings'
 
 interface LoraImageProps {
   onUseLoraClick?: (savedLora: SavedLora) => void
@@ -23,6 +24,7 @@ interface LoraImageProps {
 const LoraImageV2 = ({ onUseLoraClick = () => {}, image }: LoraImageProps) => {
   if (!image) return null
 
+  const baseFilters = AppSettings.get('civitAiBaseModelFilter')
   const aspectRatio = image.width / image.height
   const paddingTop = `${(1 / aspectRatio) * 100}%`
 
@@ -42,7 +44,16 @@ const LoraImageV2 = ({ onUseLoraClick = () => {}, image }: LoraImageProps) => {
       }}
       style={{ paddingTop }}
     >
-      <img src={image.src} alt={image.name} />
+      <img
+        src={image.src}
+        alt={image.name}
+        style={{
+          filter:
+            !baseFilters.includes('NSFW') && image.nsfwLevel >= 7
+              ? 'blur(12px)'
+              : 'none'
+        }}
+      />
       <div
         style={{
           alignItems: 'center',
