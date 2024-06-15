@@ -169,7 +169,7 @@ export default function LoraDetails({
                         height: 'auto',
                         maxHeight: height ? `${height - 256}px` : 'unset',
                         filter:
-                          !baseFilters.includes('NSFW') && image.nsfwLevel > 6
+                          !baseFilters.includes('NSFW') && image.nsfwLevel >= 7
                             ? 'blur(12px)'
                             : 'none'
                       }}

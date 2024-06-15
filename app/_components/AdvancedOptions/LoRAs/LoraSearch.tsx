@@ -13,8 +13,8 @@ import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
-import MasonryLayout from '../../MasonryLayout'
 import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
+import styles from './loraSearch.module.css'
 
 export default function LoraSearch({
   onUseLoraClick = () => {},
@@ -173,15 +173,13 @@ export default function LoraSearch({
         </div>
       )}
       <div>
-        <MasonryLayout>
-          {transformedData.map((photo) => (
-            <LoraImage
-              key={`${photo.key}`}
-              photo={photo}
-              onUseLoraClick={onUseLoraClick}
-            />
+        <div className={styles['masonry-with-columns']}>
+          {transformedData.map((image) => (
+            <div key={`${image.key}`} className={styles['masonry-item']}>
+              <LoraImage onUseLoraClick={onUseLoraClick} image={image} />
+            </div>
           ))}
-        </MasonryLayout>
+        </div>
       </div>
     </div>
   )
