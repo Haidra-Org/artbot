@@ -1,8 +1,6 @@
 'use client'
 import React from 'react'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
-import styles from './numberInput.module.css'
-import clsx from 'clsx'
 import Button from '../Button'
 
 interface NumberInputProps {
