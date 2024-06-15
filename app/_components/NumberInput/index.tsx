@@ -1,8 +1,6 @@
 'use client'
 import React from 'react'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
-import styles from './numberInput.module.css'
-import clsx from 'clsx'
 import Button from '../Button'
 
 interface NumberInputProps {
@@ -93,44 +91,6 @@ const NumberInput: React.FC<NumberInputProps> = ({
         >
           <IconPlus />
         </Button>
-      </div>
-    </div>
-  )
-
-  return (
-    <div className="row bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2">
-      <input
-        className="bg-gray-50 text-gray-900 text-[16px] rounded-lg block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        onBlur={onBlur}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        value={value}
-      />
-      <div className="row gap-0">
-        <button
-          disabled={Number(value) <= min}
-          className={clsx(styles.Button, {
-            [styles.ButtonDisabled]: Number(value) <= min
-          })}
-          onClick={(e) => {
-            e.preventDefault()
-            handleMinusClick()
-          }}
-        >
-          <IconMinus />
-        </button>
-        <button
-          disabled={Number(value) >= max}
-          className={clsx(styles.Button, {
-            [styles.ButtonDisabled]: Number(value) >= max
-          })}
-          onClick={(e) => {
-            e.preventDefault()
-            handlePlusClick()
-          }}
-        >
-          <IconPlus />
-        </button>
       </div>
     </div>
   )

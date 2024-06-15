@@ -3,6 +3,7 @@
 import Button from '@/app/_components/Button'
 import DeleteConfirmation from '@/app/_components/Modal_DeleteConfirmation'
 import PromptWarning from '@/app/_components/PromptWarning'
+import { toastController } from '@/app/_controllers/toastController'
 import PromptInput from '@/app/_data-models/PromptInput'
 import {
   deleteImageFileByArtbotIdTx,
@@ -55,6 +56,11 @@ export default function PromptActionPanel() {
       prompt: input.prompt
     })
     setRequestPending(false)
+
+    toastController({
+      message: 'Image successfully requested!',
+      type: 'success'
+    })
   }, [input])
 
   useEffect(() => {

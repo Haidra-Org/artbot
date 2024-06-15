@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { sanitize } from 'isomorphic-dompurify'
-import { Embedding, ModelVersion } from '@/app/_types/CivitaiTypes'
 import PageTitle from '../../PageTitle'
 import Carousel from '../../Carousel'
 import Button from '../../Button'
@@ -15,7 +14,6 @@ import { useCallback, useEffect, useState } from 'react'
 import Section from '../../Section'
 import OptionLabel from '../OptionLabel'
 import Select from '../../Select'
-import { SavedLora } from '@/app/_types/ArtbotTypes'
 import {
   getFavoriteImageEnhancementModule,
   toggleImageEnhancementFavorite,
@@ -23,6 +21,7 @@ import {
 } from '@/app/_db/imageEnhancementModules'
 import { useWindowSize } from '@/app/_hooks/useWindowSize'
 import { AppSettings } from '@/app/_data-models/AppSettings'
+import { Embedding, ModelVersion, SavedLora } from '@/app/_data-models/Civitai'
 
 export default function LoraDetails({
   details,
@@ -67,13 +66,13 @@ export default function LoraDetails({
   }
 
   const handleUseLoraClick = useCallback(() => {
-    const savedLora: SavedLora = {
+    const savedLora = new SavedLora({
       ...details,
       versionId: modelVersion.id,
       modelVersions: [modelVersion],
       strength: 1,
       clip: 1
-    }
+    })
 
     updateRecentlyUsedImageEnhancement({
       model: {
@@ -170,7 +169,7 @@ export default function LoraDetails({
                         height: 'auto',
                         maxHeight: height ? `${height - 256}px` : 'unset',
                         filter:
-                          !baseFilters.includes('NSFW') && image.nsfwLevel > 6
+                          !baseFilters.includes('NSFW') && image.nsfwLevel >= 7
                             ? 'blur(12px)'
                             : 'none'
                       }}

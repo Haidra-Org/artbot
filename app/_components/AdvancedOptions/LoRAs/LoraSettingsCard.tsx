@@ -1,4 +1,3 @@
-import { SavedLora } from '@/app/_types/ArtbotTypes'
 import Button from '../../Button'
 import { IconInfoCircle, IconTrash } from '@tabler/icons-react'
 import { useInput } from '@/app/_providers/PromptInputProvider'
@@ -8,6 +7,46 @@ import { useState } from 'react'
 import DeleteConfirmation from '../../Modal_DeleteConfirmation'
 import NiceModal from '@ebay/nice-modal-react'
 import LoraDetails from './LoraDetails'
+import { SavedLora } from '@/app/_data-models/Civitai'
+
+interface UpdateSaveLoraParams {
+  loras: SavedLora[]
+  index: number
+  updates: Partial<SavedLora>
+}
+
+// Function to update specified properties of a SaveLora instance in an array
+function updateSaveLoraProperty({
+  loras,
+  index,
+  updates
+}: UpdateSaveLoraParams): SavedLora[] {
+  // Create a shallow copy of the array to avoid mutating the original array
+  const updatedLoras = [...loras]
+
+  // Retrieve the current SaveLora instance to be updated
+  const loraToUpdate = updatedLoras[index]
+
+  // Create a new instance of SaveLora with the updated properties
+  const updatedLora = new SavedLora({
+    ...loraToUpdate,
+    ...updates, // Spread the updates to override specific properties
+    // Ensure the updates for numeric properties are formatted correctly
+    clip:
+      updates.clip !== undefined
+        ? parseFloat(Number(updates.clip).toFixed(2))
+        : loraToUpdate.clip,
+    strength:
+      updates.strength !== undefined
+        ? parseFloat(Number(updates.strength).toFixed(2))
+        : loraToUpdate.strength
+  })
+
+  // Replace the old instance with the updated one
+  updatedLoras[index] = updatedLora
+
+  return updatedLoras
+}
 
 export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
   const { input, setInput } = useInput()
@@ -27,15 +66,16 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
   }
 
   const handleUpdateLora = (type: 'strength' | 'clip', value: number) => {
+    // Map through the loras array and update the specific Lora
     const updateLoras = input.loras.map((l) => {
       if (String(l.versionId) === String(lora.versionId)) {
-        return {
+        // Return a new instance of SaveLora with the updated property
+        return new SavedLora({
           ...l,
-          [type]: value
-        }
+          [type]: parseFloat(value.toFixed(2)) // Ensure the value is correctly formatted
+        })
       }
-
-      return l
+      return l // Return the unchanged Lora
     })
 
     setStrength(value)
@@ -44,17 +84,15 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
 
   return (
     <div className="rounded bg-[#1d4d74] p-2 col">
-      <div className="w-full row justify-between text-sm font-mono">
-        <div>
-          {lora.name === lora.versionId ? (
-            <span>LoRA by Version ID: {lora.name}</span>
-          ) : (
-            <span>{lora.name}</span>
-          )}
-        </div>
+      <div className="w-full row justify-between text-sm font-mono font-bold text-white">
+        {lora.isArtbotManualEntry ? (
+          <span>LoRA by Version ID: {lora.name}</span>
+        ) : (
+          <span>{lora.name}</span>
+        )}
         <div className="row gap-2">
           <Button
-            disabled={lora.name === lora.versionId}
+            disabled={lora.isArtbotManualEntry}
             onClick={() => {
               NiceModal.show('embeddingDetails', {
                 children: <LoraDetails details={lora} />
@@ -93,18 +131,20 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
       </div>
       {lora?.modelVersions && lora.modelVersions[0] && (
         <OptionLabel
+          className="row md:row"
           title={
             <span className="row font-bold text-sm text-white gap-1">
               Version:
             </span>
           }
         >
-          <span className="font-mono font-normal pl-4">
+          <span className="font-mono pl-4 text-white font-bold">
             {lora.modelVersions[0].name}
           </span>
         </OptionLabel>
       )}
       <OptionLabel
+        className="row md:row"
         title={
           <span className="row font-bold text-sm text-white gap-1">
             Strength
@@ -119,11 +159,12 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
               if (isNaN(strength)) {
                 setStrength(1.0)
               } else {
-                const updatedLoras = [...input.loras]
-                updatedLoras[loraIndex] = {
-                  ...updatedLoras[loraIndex],
-                  strength: parseFloat(Number(strength).toFixed(2))
-                }
+                const updatedLoras = updateSaveLoraProperty({
+                  loras: input.loras,
+                  index: loraIndex,
+                  updates: { strength: parseFloat(Number(strength).toFixed(2)) }
+                })
+
                 setStrength(parseFloat(Number(strength).toFixed(2)))
                 setInput({
                   loras: updatedLoras
@@ -137,12 +178,13 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
               if (Number(strength) - 0.05 < -5.0) {
                 return
               }
-
-              const updatedLoras = [...input.loras]
-              updatedLoras[loraIndex] = {
-                ...updatedLoras[loraIndex],
-                strength: parseFloat(Number(strength - 0.05).toFixed(2))
-              }
+              const updatedLoras = updateSaveLoraProperty({
+                loras: input.loras,
+                index: loraIndex,
+                updates: {
+                  strength: parseFloat(Number(strength - 0.05).toFixed(2))
+                }
+              })
 
               setStrength(parseFloat(Number(strength - 0.05).toFixed(2)))
               setInput({
@@ -154,11 +196,13 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
                 return
               }
 
-              const updatedLoras = [...input.loras]
-              updatedLoras[loraIndex] = {
-                ...updatedLoras[loraIndex],
-                strength: parseFloat(Number(strength + 0.05).toFixed(2))
-              }
+              const updatedLoras = updateSaveLoraProperty({
+                loras: input.loras,
+                index: loraIndex,
+                updates: {
+                  strength: parseFloat(Number(strength + 0.05).toFixed(2))
+                }
+              })
 
               setStrength(parseFloat(Number(strength + 0.05).toFixed(2)))
               setInput({
@@ -170,6 +214,7 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
         </div>
       </OptionLabel>
       <OptionLabel
+        className="!row md:row"
         title={
           <span className="row font-bold text-sm text-white gap-1">Clip</span>
         }
@@ -182,11 +227,14 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
               if (isNaN(clip)) {
                 setClip(1.0)
               } else {
-                const updatedLoras = [...input.loras]
-                updatedLoras[loraIndex] = {
-                  ...updatedLoras[loraIndex],
-                  clip: parseFloat(Number(clip).toFixed(2))
-                }
+                const updatedLoras = updateSaveLoraProperty({
+                  loras: input.loras,
+                  index: loraIndex,
+                  updates: {
+                    clip: parseFloat(Number(clip).toFixed(2))
+                  }
+                })
+
                 setClip(parseFloat(Number(clip).toFixed(2)))
                 setInput({
                   loras: updatedLoras
@@ -201,11 +249,13 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
                 return
               }
 
-              const updatedLoras = [...input.loras]
-              updatedLoras[loraIndex] = {
-                ...updatedLoras[loraIndex],
-                clip: parseFloat(Number(clip - 0.05).toFixed(2))
-              }
+              const updatedLoras = updateSaveLoraProperty({
+                loras: input.loras,
+                index: loraIndex,
+                updates: {
+                  clip: parseFloat(Number(clip - 0.05).toFixed(2))
+                }
+              })
 
               setClip(parseFloat(Number(clip - 0.05).toFixed(2)))
               setInput({
@@ -217,11 +267,13 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
                 return
               }
 
-              const updatedLoras = [...input.loras]
-              updatedLoras[loraIndex] = {
-                ...updatedLoras[loraIndex],
-                clip: parseFloat(Number(clip + 0.05).toFixed(2))
-              }
+              const updatedLoras = updateSaveLoraProperty({
+                loras: input.loras,
+                index: loraIndex,
+                updates: {
+                  clip: parseFloat(Number(clip + 0.05).toFixed(2))
+                }
+              })
 
               setClip(parseFloat(Number(clip + 0.05).toFixed(2)))
               setInput({

@@ -4,17 +4,74 @@ import { useCallback, useEffect, useState } from 'react'
 import { AppSettings } from '../_data-models/AppSettings'
 import { debounce } from '../_utils/debounce'
 import CacheMap from '../_data-models/CacheMap'
-import { CivitAiApiResponse, Embedding } from '../_types/CivitaiTypes'
+import { CivitAiApiResponse } from '../_types/CivitaiTypes'
 import {
   getFavoriteEnhancements,
   getRecentlyUsedEnhancements
 } from '../_db/imageEnhancementModules'
 import LORAS from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
+import { Embedding } from '../_data-models/Civitai'
 
 const searchCache = new CacheMap({ limit: 30, expireMinutes: 20 })
 
-// Hacky implementation of a throttled search.
 let pendingRequest = false
+const buildQuery = ({
+  input,
+  page = 1,
+  limit = 20,
+  type = 'LORA'
+}: {
+  input?: string
+  page?: number
+  limit?: number
+  type?: 'LoCon' | 'LORA' | 'TextualInversion'
+}) => {
+  const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter')
+
+  // TODO: Figure out these questions
+  // do sd14 loras/tis work on sd15 models? sd0.9 stuff works with sd1.0 models...
+  // what about Turbo and LCM? 2.0 and 2.1? I'm just assuming 2.0 and 2.1 can be mixed, and 1.4 and 1.5 can be mixed, and lcm/turbo/not can be mixed. leave the rest to the user, maybe display that baseline somewhere.
+  // I dont think civitai lets you filter by model size, maybe you want to put that filter in the display code (allow 220mb loras only)
+  //  - except some workers have modified this. the colab worker has the limit removed, and my runpod is set to 750mb...
+
+  // Per this discussion on GitHub, this is an undocumented feature:
+  // https://github.com/orgs/civitai/discussions/733
+  // API response gives me the following valid values:
+  //  "'SD 1.4' | 'SD 1.5' | 'SD 1.5 LCM' | 'SD 2.0' | 'SD 2.0 768' | 'SD 2.1' | 'SD 2.1 768' | 'SD 2.1 Unclip' | 'SDXL 0.9' | 'SDXL 1.0' | 'SDXL 1.0 LCM' | 'SDXL Distilled' | 'SDXL Turbo' | 'SVD' | 'SVD XT' | 'Playground v2' | 'PixArt a' | 'Pony' | 'Other'"
+  let baseModelFilter
+
+  baseModelFilter = userBaseModelFilters.includes('SD 1.x')
+    ? ['1.4', '1.5', '1.5 LCM'].map((e) => '&baseModels=SD ' + e).join('')
+    : ''
+  baseModelFilter += userBaseModelFilters.includes('SD 2.x')
+    ? ['2.0', '2.0 768', '2.1', '2.1 768', '2.1 Unclip']
+        .map((e) => '&baseModels=SD ' + e)
+        .join('')
+    : ''
+  baseModelFilter += userBaseModelFilters.includes('SDXL')
+    ? ['0.9', '1.0', '1.0 LCM', 'Turbo']
+        .map((e) => '&baseModels=SDXL ' + e)
+        .join('')
+    : ''
+  baseModelFilter += userBaseModelFilters.includes('Pony')
+    ? '&baseModels=Pony'
+    : ''
+  baseModelFilter = baseModelFilter.replace(/ /g, '%20')
+
+  let searchTypes = 'types=LORA&types=LoCon'
+
+  if (type === 'TextualInversion') {
+    searchTypes = 'types=TextualInversion'
+  }
+
+  const query = input ? `&query=${input}` : ''
+  const searchKey = `limit=${limit}${query}&page=${page}&nsfw=${userBaseModelFilters.includes('NSFW')}${baseModelFilter}`
+  const searchParams = `${searchTypes}&sort=Highest%20Rated&${searchKey}`
+
+  return searchParams
+}
+
+// Hacky implementation of a throttled search.
 const getCivitaiSearchResults = async ({
   input,
   page = 1,
@@ -31,53 +88,19 @@ const getCivitaiSearchResults = async ({
 
     pendingRequest = true
 
-    const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter')
-
     // Use AbortController to timeout long responses from CivitAI
     const controller = new AbortController()
     const signal = controller.signal
 
-    // TODO: Figure out these questions
-    // do sd14 loras/tis work on sd15 models? sd0.9 stuff works with sd1.0 models...
-    // what about Turbo and LCM? 2.0 and 2.1? I'm just assuming 2.0 and 2.1 can be mixed, and 1.4 and 1.5 can be mixed, and lcm/turbo/not can be mixed. leave the rest to the user, maybe display that baseline somewhere.
-    // I dont think civitai lets you filter by model size, maybe you want to put that filter in the display code (allow 220mb loras only)
-    //  - except some workers have modified this. the colab worker has the limit removed, and my runpod is set to 750mb...
+    const searchParams = buildQuery({
+      input,
+      page,
+      limit,
+      type
+    })
 
-    // Per this discussion on GitHub, this is an undocumented feature:
-    // https://github.com/orgs/civitai/discussions/733
-    // API response gives me the following valid values:
-    //  "'SD 1.4' | 'SD 1.5' | 'SD 1.5 LCM' | 'SD 2.0' | 'SD 2.0 768' | 'SD 2.1' | 'SD 2.1 768' | 'SD 2.1 Unclip' | 'SDXL 0.9' | 'SDXL 1.0' | 'SDXL 1.0 LCM' | 'SDXL Distilled' | 'SDXL Turbo' | 'SVD' | 'SVD XT' | 'Playground v2' | 'PixArt a' | 'Pony' | 'Other'"
-    let baseModelFilter
-
-    baseModelFilter = userBaseModelFilters.includes('SD 1.x')
-      ? ['1.4', '1.5', '1.5 LCM'].map((e) => '&baseModels=SD ' + e).join('')
-      : ''
-    baseModelFilter += userBaseModelFilters.includes('SD 2.x')
-      ? ['2.0', '2.0 768', '2.1', '2.1 768', '2.1 Unclip']
-          .map((e) => '&baseModels=SD ' + e)
-          .join('')
-      : ''
-    baseModelFilter += userBaseModelFilters.includes('SDXL')
-      ? ['0.9', '1.0', '1.0 LCM', 'Turbo']
-          .map((e) => '&baseModels=SDXL ' + e)
-          .join('')
-      : ''
-    baseModelFilter += userBaseModelFilters.includes('Pony')
-      ? '&baseModels=Pony'
-      : ''
-    baseModelFilter = baseModelFilter.replace(/ /g, '%20')
-
-    let searchTypes = 'types=LORA&types=LoCon'
-
-    if (type === 'TextualInversion') {
-      searchTypes = 'types=TextualInversion'
-    }
-
-    const query = input ? `&query=${input}` : ''
-    const searchKey = `limit=${limit}${query}&page=${page}&nsfw=${userBaseModelFilters.includes('NSFW')}${baseModelFilter}`
-
-    if (searchCache.get(searchKey)) {
-      const data = searchCache.get<CivitAiApiResponse>(searchKey)
+    if (searchCache.get(searchParams)) {
+      const data = searchCache.get<CivitAiApiResponse>(searchParams)
       if (data) {
         const { items = [], metadata = {} } = data
         pendingRequest = false
@@ -89,9 +112,7 @@ const getCivitaiSearchResults = async ({
       controller.abort()
       pendingRequest = false
       console.error('CivitAi Search Error - Request timed out.')
-    }, 5000)
-
-    const searchParams = `${searchTypes}&sort=Highest%20Rated&${searchKey}`
+    }, 8000)
 
     const response = await fetch(
       `https://civitai.com/api/v1/models?${searchParams}`,

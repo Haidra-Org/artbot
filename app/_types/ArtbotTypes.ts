@@ -1,5 +1,5 @@
+import { Embedding } from '../_data-models/Civitai'
 import PromptInput from '../_data-models/PromptInput'
-import { Embedding } from './CivitaiTypes'
 import { InjectTi } from './HordeTypes'
 
 export interface AiHordeEmbedding extends Embedding {
@@ -101,13 +101,4 @@ export interface PromptsHistory {
 export interface PromptsJobMap {
   artbot_id: string
   prompt_id: number
-}
-
-export interface SavedLora extends Embedding {
-  id: number | string // parentID of Embedding (e.g., Embedding.id)
-  versionId: number | string // id of ModelVersion,
-
-  // Config params used for AI Horde image requests
-  strength: number // AKA "model" field for AI Horde
-  clip: number
 }

@@ -6,9 +6,9 @@ import Section from '../../Section'
 import NiceModal from '@ebay/nice-modal-react'
 import LoraSearch from './LoraSearch'
 import { useInput } from '@/app/_providers/PromptInputProvider'
-import { SavedLora } from '@/app/_types/ArtbotTypes'
 import LoraSettingsCard from './LoraSettingsCard'
 import { useCallback } from 'react'
+import { SavedLora } from '@/app/_data-models/Civitai'
 
 const MAX_LORAS = 5
 

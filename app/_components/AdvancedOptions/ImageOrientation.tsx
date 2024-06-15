@@ -120,7 +120,7 @@ export default function ImageOrientation() {
           </Button>
         </div>
       </OptionLabel>
-      <div className="text-sm font-mono w-full text-right">
+      <div className="text-sm font-mono w-full text-right text-white font-bold">
         {input.width}w x {input.height}h
       </div>
     </div>

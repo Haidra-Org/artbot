@@ -32,6 +32,8 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
 
   const tags = input.loras.reduce(
     (acc, embedding) => {
+      if (!embedding || !embedding.modelVersions) return acc
+
       // Check if the embedding has any model versions and get the trainedWords from the first model version
       if (embedding.modelVersions.length > 0) {
         acc[embedding.name] = embedding.modelVersions[0].trainedWords

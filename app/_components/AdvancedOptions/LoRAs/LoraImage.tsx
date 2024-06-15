@@ -1,18 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
-import { Embedding } from '@/app/_types/CivitaiTypes'
-import { IconBox } from '@tabler/icons-react'
-import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver'
+import React, { useState } from 'react'
+import styles from './loraSearch.module.css'
+import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
 import LoraDetails from './LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
-import { useState } from 'react'
-import Spinner from '../../Spinner'
-import { SavedLora } from '@/app/_types/ArtbotTypes'
+import { IconBox } from '@tabler/icons-react'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 
 interface LoraImageProps {
-  columnWidth?: number // Optional prop to receive columnWidth
   onUseLoraClick?: (savedLora: SavedLora) => void
-  photo: {
+  image: {
     key: string
     name: string
     baseModel: string
@@ -24,80 +21,39 @@ interface LoraImageProps {
   }
 }
 
-export default function LoraImage({
-  columnWidth,
-  onUseLoraClick,
-  photo
-}: LoraImageProps) {
-  const [baseFilters] = useState(AppSettings.get('civitAiBaseModelFilter'))
-  const calculatedWidth = columnWidth
-    ? Math.min(columnWidth, photo.width)
-    : photo.width
-  let calculatedHeight = photo.height * (calculatedWidth / photo.width)
-  const [loading, setLoading] = useState(true)
-  const { ref, isIntersecting } = useIntersectionObserver<HTMLDivElement>(
-    { threshold: 0.01 },
-    '0px 0px 400px 0px', // Load when 100px below the viewport
-    '400px 0px 0px 0px' // Unload when 100px above the viewport
-  )
+const LoraImageV2 = ({ onUseLoraClick = () => {}, image }: LoraImageProps) => {
+  if (!image) return null
 
-  const handleImageLoad = () => {
-    setLoading(false)
-  }
-
-  if (calculatedHeight < 300) {
-    calculatedHeight += 64
-  }
+  const baseFilters = AppSettings.get('civitAiBaseModelFilter')
+  const aspectRatio = image.width / image.height
+  const paddingTop = `${(1 / aspectRatio) * 100}%`
 
   return (
     <div
-      ref={ref}
-      style={{
-        backgroundColor: '#E6E6E6',
-        display: 'flex',
-        cursor: 'pointer',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        position: 'relative',
-        width: calculatedWidth,
-        height: calculatedHeight
-      }}
+      className={styles['image-item']}
       onClick={() => {
         NiceModal.show('embeddingDetails', {
           children: (
             <LoraDetails
-              details={photo.details}
+              details={image.details}
               onUseLoraClick={onUseLoraClick}
             />
           ),
           id: 'LoraDetails'
         })
       }}
+      style={{ paddingTop }}
     >
-      {loading && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 row items-center justify-center text-center">
-          <Spinner />
-        </div>
-      )}
-      {isIntersecting && (
-        <img
-          src={photo.src}
-          alt={photo.name}
-          width={calculatedWidth}
-          height={calculatedHeight}
-          style={{
-            filter:
-              !baseFilters.includes('NSFW') && photo.nsfwLevel > 6
-                ? 'blur(12px)'
-                : 'none'
-          }}
-          onLoad={() => {
-            if (loading) {
-              handleImageLoad()
-            }
-          }}
-        />
-      )}
+      <img
+        src={image.src}
+        alt={image.name}
+        style={{
+          filter:
+            !baseFilters.includes('NSFW') && image.nsfwLevel >= 7
+              ? 'blur(12px)'
+              : 'none'
+        }}
+      />
       <div
         style={{
           alignItems: 'center',
@@ -117,7 +73,7 @@ export default function LoraImage({
         }}
       >
         <IconBox stroke={1} />
-        {photo.baseModel}
+        {image.baseModel}
       </div>
       <div
         className="row items-center justify-center font-bold text-xs px-2 text-center"
@@ -130,7 +86,7 @@ export default function LoraImage({
           right: 0
         }}
       >
-        <div className="text-white font-bold z-10">{photo.name}</div>
+        <div className="text-white font-bold z-10">{image.name}</div>
         <div
           className="z-1"
           style={{
@@ -147,3 +103,5 @@ export default function LoraImage({
     </div>
   )
 }
+
+export default LoraImageV2
