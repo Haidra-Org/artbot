@@ -28,16 +28,24 @@ export default function SelectCombo({
   options: SelectOption[]
   value: SelectOption
 }) {
+  const [searchInput, setSearchInput] = useState(value.label)
   const [optionsPanelOpen, setOptionsPanelOpen] = useState(false)
-  const ref = useDetectClickOutside({
-    onTriggered: () => {
-      setOptionsPanelOpen(false)
-    }
-  })
 
   const handleOnChangeSelection = (option: SelectOption) => {
     onChange(option)
   }
+
+  const handleSelectOption = (option: SelectOption) => {
+    setSearchInput(option.label)
+    onChange(option)
+    setOptionsPanelOpen(false)
+  }
+
+  const ref = useDetectClickOutside({
+    onTriggered: () => {
+      handleSelectOption(value)
+    }
+  })
 
   const filteredOptions = options
 
@@ -54,13 +62,15 @@ export default function SelectCombo({
               'w-full !bg-input !text-input-color dark:placeholder-gray-400 dark:text-white text-[16px]'
             )}
             displayValue={(option: SelectOption) => option.label}
-            onChange={() => {}}
+            onChange={(e) => {
+              setSearchInput(e.target.value)
+            }}
             onClick={() => {
               setOptionsPanelOpen(true)
             }}
             onFocus={() => {}}
             placeholder={''}
-            value={''}
+            value={searchInput}
             onKeyDown={() => {}}
             style={{
               textOverflow: 'ellipsis',
@@ -90,7 +100,13 @@ export default function SelectCombo({
                 <ComboboxOption
                   key={`option-${option.value}-${idx}`}
                   value={option}
-                  onClick={() => {}}
+                  onClick={(e) => {
+                    // Need prevent default here so that ComboBoxInput
+                    // onClick event doesn't capture this click.
+                    e.preventDefault()
+
+                    handleSelectOption(option)
+                  }}
                   className={({ focus }) =>
                     classNames(
                       focus ? 'bg-indigo-600 ' : '',
