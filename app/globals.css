@@ -3,15 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --foreground-color: black;
   --background-color: rgb(242, 242, 242);
+  --foreground-color: black;
+  --input-color: rgb(249, 250, 251);
   --primary-color: rgb(20, 184, 166);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-color: white;
     --background-color: #242424;
+    --input-color: rgb(55, 65, 81);
+    --foreground-color: white;
   }
 }
 
@@ -31,6 +33,10 @@ body {
 }
 
 @layer utilities {
+  .bg-input {
+    background-color: var(--input-color);
+  }
+
   .primary-color {
     color: var(--primary-color);
   }
