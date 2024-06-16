@@ -5,14 +5,16 @@
 :root {
   --background-color: rgb(242, 242, 242);
   --foreground-color: black;
-  --input-color: rgb(249, 250, 251);
+  --input-background-color: rgb(249, 250, 251);
+  --input-text-color: white;
   --primary-color: rgb(20, 184, 166);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background-color: #242424;
-    --input-color: rgb(55, 65, 81);
+    --input-background-color: rgb(55, 65, 81);
+    --input-text-color: black;
     --foreground-color: white;
   }
 }
@@ -34,7 +36,11 @@ body {
 
 @layer utilities {
   .bg-input {
-    background-color: var(--input-color);
+    background-color: var(--input-background-color);
+  }
+
+  .text-input-color {
+    color: var(--input-text-color);
   }
 
   .primary-color {
