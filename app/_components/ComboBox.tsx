@@ -31,6 +31,7 @@ export default function SelectCombo({
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [optionsPanelOpen, setOptionsPanelOpen] = useState(false)
   const [searchInput, setSearchInput] = useState(value.label)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     setSearchInput(value.label)
@@ -60,7 +61,9 @@ export default function SelectCombo({
     }
   })
 
-  const filteredOptions = options
+  const filteredOptions = options.filter((option) => {
+    return option.label.toLowerCase().includes(searchQuery.toLowerCase())
+  })
 
   return (
     <div className="relative w-full" ref={ref}>
@@ -77,14 +80,18 @@ export default function SelectCombo({
             )}
             displayValue={(option: SelectOption) => option.label}
             onChange={(e) => {
-              setSearchInput(e.target.value)
+              if (optionsPanelOpen) {
+                setSearchQuery(e.target.value)
+              } else {
+                setSearchInput(e.target.value)
+              }
             }}
             onClick={() => {
               setOptionsPanelOpen(true)
             }}
             onFocus={() => {}}
             placeholder={''}
-            value={searchInput}
+            value={optionsPanelOpen ? searchQuery : searchInput}
             onKeyDown={() => {}}
             style={{
               textOverflow: 'ellipsis',
