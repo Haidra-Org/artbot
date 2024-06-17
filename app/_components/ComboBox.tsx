@@ -7,7 +7,7 @@ import {
   ComboboxOptions
 } from '@headlessui/react'
 import { IconChevronDown } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDetectClickOutside } from 'react-detect-click-outside'
 
 function classNames(...classes: string[]) {
@@ -28,8 +28,9 @@ export default function SelectCombo({
   options: SelectOption[]
   value: SelectOption
 }) {
-  const [searchInput, setSearchInput] = useState(value.label)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [optionsPanelOpen, setOptionsPanelOpen] = useState(false)
+  const [searchInput, setSearchInput] = useState(value.label)
 
   useEffect(() => {
     setSearchInput(value.label)
@@ -40,14 +41,22 @@ export default function SelectCombo({
   }
 
   const handleSelectOption = (option: SelectOption) => {
+    handleUnfocusInput()
+    setOptionsPanelOpen(false)
     setSearchInput(option.label)
     onChange(option)
-    setOptionsPanelOpen(false)
+  }
+
+  const handleUnfocusInput = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.blur()
+    }
   }
 
   const ref = useDetectClickOutside({
     onTriggered: () => {
       handleSelectOption(value)
+      handleUnfocusInput()
     }
   })
 
@@ -62,6 +71,7 @@ export default function SelectCombo({
       >
         <div className="justify-between relative cursor-pointer bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
           <ComboboxInput
+            ref={searchInputRef}
             className={clsx(
               'w-full !bg-input !text-input-color dark:placeholder-gray-400 dark:text-white text-[16px]'
             )}
