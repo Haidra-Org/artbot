@@ -37,6 +37,11 @@ export default function SelectCombo({
     setSearchInput(value.label)
   }, [value.label])
 
+  const handleInputFocus = () => {
+    setOptionsPanelOpen(true)
+    setSearchQuery('')
+  }
+
   const handleOnChangeSelection = (option: SelectOption) => {
     onChange(option)
   }
@@ -78,7 +83,7 @@ export default function SelectCombo({
               <ComboboxInput
                 ref={searchInputRef}
                 className={clsx(
-                  'w-full !bg-input !text-input-color dark:placeholder-gray-400 dark:text-white text-[16px]'
+                  'w-full !bg-input !placeholder-gray-800 dark:!placeholder-white dark:text-white text-[16px]'
                 )}
                 displayValue={(option: SelectOption) => option.label}
                 onChange={(e) => {
@@ -92,11 +97,20 @@ export default function SelectCombo({
                   setOptionsPanelOpen(true)
                 }}
                 onFocus={handleInputFocus}
-                placeholder={''}
+                placeholder={activeOption?.label ?? ''}
                 value={optionsPanelOpen ? searchQuery : searchInput}
                 onKeyDown={(e) => {
-                  if (e.key === 'Return') {
+                  if (e.key === 'Enter' && activeOption) {
+                    setSearchQuery(activeOption.label)
                     handleSelectOption(activeOption)
+
+                    if (searchInputRef.current) {
+                      searchInputRef.current.blur()
+                    }
+
+                    setOptionsPanelOpen(false)
+                  } else if (e.key === 'Enter' && !activeOption) {
+                    e.preventDefault()
                   }
                 }}
                 style={{
@@ -117,7 +131,7 @@ export default function SelectCombo({
                 </span>
               </ComboboxButton>
             </div>
-            {optionsPanelOpen && (
+            {optionsPanelOpen && filteredOptions.length > 0 && (
               <ComboboxOptions
                 static
                 className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-gray-50 border border-gray-300 text-gray-900 text-[16px] focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
