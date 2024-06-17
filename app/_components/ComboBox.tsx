@@ -7,7 +7,7 @@ import {
   ComboboxOptions
 } from '@headlessui/react'
 import { IconChevronDown } from '@tabler/icons-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDetectClickOutside } from 'react-detect-click-outside'
 
 function classNames(...classes: string[]) {
@@ -30,6 +30,10 @@ export default function SelectCombo({
 }) {
   const [searchInput, setSearchInput] = useState(value.label)
   const [optionsPanelOpen, setOptionsPanelOpen] = useState(false)
+
+  useEffect(() => {
+    setSearchInput(value.label)
+  }, [value.label])
 
   const handleOnChangeSelection = (option: SelectOption) => {
     onChange(option)
