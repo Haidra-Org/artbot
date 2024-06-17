@@ -7,7 +7,7 @@
   height: calc(68px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
-  z-index: var(--zIndex-navBar);
+  z-index: 10;
 }
 
 .nav-icons-wrapper {
