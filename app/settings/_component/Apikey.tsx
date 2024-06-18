@@ -90,7 +90,11 @@ export default function Apikey() {
         >
           <IconCopy />
         </Button>
-        <Button onClick={handleApiKeySave} title="Save API key">
+        <Button
+          disabled={!apikey.trim()}
+          onClick={handleApiKeySave}
+          title="Save API key"
+        >
           <IconDeviceFloppy />
         </Button>
       </div>
