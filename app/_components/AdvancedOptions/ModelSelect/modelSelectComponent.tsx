@@ -3,8 +3,8 @@
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import { AvailableImageModel } from '@/app/_types/HordeTypes'
 import { IconAlertTriangle } from '@tabler/icons-react'
-import Select, { SelectOption } from '../../Select'
 import OptionLabel from '../OptionLabel'
+import SelectCombo, { SelectOption } from '../../ComboBox'
 
 export default function ModelSelectComponent({
   models,
@@ -35,8 +35,10 @@ export default function ModelSelectComponent({
       }
     >
       <div className="w-full">
-        <Select
+        <SelectCombo
           onChange={(option: SelectOption) => {
+            if (!option || !option.value) return
+
             setInput({ models: [option.value as string] })
           }}
           options={models.map((model) => ({

@@ -3,15 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --foreground-color: black;
   --background-color: rgb(242, 242, 242);
+  --footer-padding: 72px;
+  --foreground-color: black;
+  --input-background-color: rgb(249, 250, 251);
+  --input-text-color: rgb(17, 24, 39);
   --primary-color: rgb(20, 184, 166);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --footer-padding: 8px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-color: white;
     --background-color: #242424;
+    --input-background-color: rgb(55, 65, 81);
+    --input-text-color: black;
+    --foreground-color: white;
   }
 }
 
@@ -31,6 +42,14 @@ body {
 }
 
 @layer utilities {
+  .bg-input {
+    background-color: var(--input-background-color);
+  }
+
+  .text-input-color {
+    color: var(--input-text-color);
+  }
+
   .primary-color {
     color: var(--primary-color);
   }

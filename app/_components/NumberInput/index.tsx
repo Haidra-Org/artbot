@@ -69,6 +69,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
         onBlur={onBlur}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
+        pattern="[0-9]*"
         type="number"
         value={value}
       />

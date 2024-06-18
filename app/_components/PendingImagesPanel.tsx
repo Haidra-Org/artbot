@@ -22,6 +22,7 @@ import PendingImageOverlay from './PendingImageOverlay'
 import ImageView from './ImageView'
 import Section from './Section'
 import Button from './Button'
+import PendingImageView from './ImageView_Pending'
 
 interface PendingImagesPanelProps {
   showBorder?: boolean
@@ -120,14 +121,20 @@ export default function PendingImagesPanel({
             return (
               <div
                 key={photo.artbot_id}
+                onClick={() => {
+                  NiceModal.show('modal', {
+                    children: <PendingImageView artbot_id={photo.artbot_id} />
+                  })
+                }}
                 style={{
-                  display: 'flex',
-                  justifyContent: 'center',
                   alignItems: 'center',
-                  position: 'relative',
+                  cursor: 'pointer',
+                  display: 'flex',
                   height: layout.height,
-                  width: layout.width,
-                  marginBottom: layoutOptions.spacing
+                  justifyContent: 'center',
+                  marginBottom: layoutOptions.spacing,
+                  position: 'relative',
+                  width: layout.width
                 }}
               >
                 <img
@@ -152,6 +159,11 @@ export default function PendingImagesPanel({
             return (
               <div
                 key={photo.artbot_id}
+                onClick={() => {
+                  NiceModal.show('modal', {
+                    children: <ImageView artbot_id={photo.artbot_id} />
+                  })
+                }}
                 style={{
                   alignItems: 'center',
                   cursor: 'pointer',
@@ -161,11 +173,6 @@ export default function PendingImagesPanel({
                   marginBottom: layoutOptions.spacing,
                   position: 'relative',
                   width: layout.width
-                }}
-                onClick={() => {
-                  NiceModal.show('modal', {
-                    children: <ImageView artbot_id={photo.artbot_id} />
-                  })
                 }}
               >
                 <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />

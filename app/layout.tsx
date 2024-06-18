@@ -7,6 +7,7 @@ import AppInit from './AppInit'
 import ModalProvider from './_providers/ModalProvider'
 import ContentWrapper from './_components/ContentWrapper'
 import BetaWarningPanel from './_components/BetaWarningPanel'
+import MobileFooter from './_components/MobileFooter'
 
 export const metadata: Metadata = {
   title: 'ArtBot for Stable Diffusion',
@@ -25,7 +26,13 @@ export default function RootLayout({
         <ModalProvider>
           <Toaster />
           <AppInit />
-          <div className="flex flex-col flex-1 pt-[42px] p-[8px]">
+          <div
+            className="flex flex-col flex-1"
+            style={{
+              padding: '42px 8px 8px 8px',
+              paddingBottom: 'var(--footer-padding)'
+            }}
+          >
             <HeaderNav />
             <main className="flex flex-col gap-2 w-full flex-1 sm:p-1">
               <ContentWrapper>
@@ -33,6 +40,7 @@ export default function RootLayout({
                 {children}
               </ContentWrapper>
             </main>
+            <MobileFooter />
           </div>
         </ModalProvider>
       </body>

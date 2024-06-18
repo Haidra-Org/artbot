@@ -92,7 +92,10 @@ export default function Gallery() {
             </span>
           </Button>
           <Button
-            onClick={() => setGroupImages(!groupImages)}
+            onClick={() => {
+              setCurrentPage(1)
+              setGroupImages(!groupImages)
+            }}
             outline
             title="Group or ungroup images by batched image request"
           >
@@ -192,7 +195,12 @@ export default function Gallery() {
                     handleImageKeypress(e, photo.artbot_id, photo.image_id)
                   }
                 >
-                  <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
+                  {groupImages && (
+                    <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
+                  )}
+                  {!groupImages && (
+                    <ImageThumbnail alt={alt} image_id={photo.image_id} />
+                  )}
                   <GalleryImageCardOverlay
                     imageCount={photo.image_count}
                     style={{
