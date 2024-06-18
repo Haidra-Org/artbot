@@ -4,11 +4,11 @@ import Button from '@/app/_components/Button'
 import Input from '@/app/_components/Input'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import {
-  IconArrowBarLeft,
   IconCopy,
   IconDeviceFloppy,
   IconEye,
-  IconEyeOff
+  IconEyeOff,
+  IconTrash
 } from '@tabler/icons-react'
 import useHordeApiKey from '@/app/_hooks/useHordeApiKey'
 import { useCallback, useEffect, useState } from 'react'
@@ -52,7 +52,7 @@ export default function Apikey() {
   }
 
   return (
-    <div className="row items-end">
+    <div className="col md:row w-full items-end h-auto sm:h-[70px]">
       <Input
         label="API key"
         onChange={(e) => setApikey(e.target.value)}
@@ -61,17 +61,20 @@ export default function Apikey() {
         type={!showKey ? 'password' : 'text'}
         value={apikey}
       />
-      <div className="row gap-1">
+      <div className="row !h-full w-auto justify-end gap-1 items-end">
         <Button
           disabled={!apikey}
           onClick={() => {
             setApikey('')
             AppSettings.set('apiKey', '')
+            toastController({
+              message: 'API key removed from ArtBot!'
+            })
           }}
           theme="danger"
-          title="Reset API key"
+          title="Remove / reset API key"
         >
-          <IconArrowBarLeft />
+          <IconTrash />
         </Button>
         <Button
           onClick={() => setShowKey(!showKey)}
@@ -81,10 +84,12 @@ export default function Apikey() {
         </Button>
         <Button
           onClick={() => {
-            navigator.clipboard.writeText(apikey)
-            toastController({
-              message: 'API key copied to clipboard!'
-            })
+            if (apikey) {
+              navigator.clipboard.writeText(apikey)
+              toastController({
+                message: 'API key copied to clipboard!'
+              })
+            }
           }}
           title="Copy API key"
         >
