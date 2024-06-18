@@ -4,30 +4,37 @@ import {
 } from '@/app/_data-models/ImageParamsForHordeApi'
 import { IconCodeDots, IconCopy } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import useImageDetails, { JobDetails } from '../_hooks/useImageDetails'
 import PromptInput from '../_data-models/PromptInput'
 import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
 import { toastController } from '../_controllers/toastController'
+import { JobDetails } from '../_hooks/useImageDetails'
+import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 
-export default function ImageDetails({ image_id }: { image_id: string }) {
-  const [imageDetails] = useImageDetails(image_id)
+export default function ImageDetails({
+  imageDetails
+}: {
+  imageDetails: JobDetails
+}) {
   const [showRequestParams, setShowRequestParams] = useState(false)
   const [rawParams, setRawParams] = useState<{
     apiParams: HordeApiParams
     imageDetails: PromptInput
   }>()
 
-  const { jobDetails, imageFile, imageRequest } =
-    imageDetails || ({} as JobDetails)
+  const {
+    jobDetails,
+    imageFile = {} as ImageFileInterface,
+    imageRequest
+  } = imageDetails || ({} as JobDetails)
 
   useEffect(() => {
     async function fetchParams() {
-      if (!imageFile) return
+      if (!imageFile || !imageRequest) return
 
       const raw = await ImageParamsForHordeApi.build({
         ...imageRequest,
-        seed: imageFile.seed as string
+        seed: (imageFile.seed as string) || imageRequest.seed
       } as PromptInput)
 
       setRawParams(raw)
@@ -36,7 +43,7 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
     fetchParams()
   }, [imageFile, imageRequest])
 
-  if (!imageDetails) return null
+  if (!imageDetails || !jobDetails) return null
 
   const handleCopy = async () => {
     const prettyJson = JSON.stringify(rawParams?.apiParams, null, 2)
@@ -70,10 +77,9 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
             <strong>Created: </strong>
             {new Date(jobDetails.created_timestamp).toLocaleString()}
           </div>
-          <div className="mb-4" />
-          <div>
+          <div className="mt-4">
             <strong>Model: </strong>
-            {imageFile.model}
+            {imageFile.model || imageRequest.models[0]}
           </div>
           <div>
             <strong>Model version: </strong>
@@ -83,12 +89,13 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
             <strong>Sampler: </strong>
             {imageRequest?.sampler}
           </div>
-          <div>
-            <strong>Kudos: </strong>
-            {imageFile.kudos}
-          </div>
-          <div className="mb-4" />
-          <div>
+          {imageFile.kudos && (
+            <div>
+              <strong>Kudos: </strong>
+              {imageFile.kudos}
+            </div>
+          )}
+          <div className="mt-4">
             <strong>Steps: </strong>
             {imageRequest.steps}
           </div>
@@ -96,11 +103,13 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
             <strong>Guidance (CFG scale): </strong>
             {imageRequest.cfg_scale}
           </div>
-          <div>
-            <strong>Seed: </strong>
-            {imageFile.seed}
-          </div>
-          <div className="mb-4">
+          {(imageFile.seed || imageRequest.seed) && (
+            <div>
+              <strong>Seed: </strong>
+              {imageFile.seed || imageRequest.seed}
+            </div>
+          )}
+          <div className="mt-4">
             <div>
               <strong>Height: </strong>
               {imageRequest.height}px
@@ -110,45 +119,50 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
               {imageRequest.width}px
             </div>
           </div>
-          {imageRequest.loras.length > 0 &&
-            imageRequest.loras.map((lora) => {
-              return (
-                <div
-                  key={lora.name}
-                  style={{
-                    borderLeft: '2px solid #aabad4',
-                    paddingLeft: '8px'
-                  }}
-                >
+          {imageRequest.loras.length > 0 && (
+            <div className="mt-4">
+              {imageRequest.loras.map((lora) => {
+                return (
                   <div
-                    className="row"
-                    onClick={() => {
-                      NiceModal.show('embeddingDetails', {
-                        children: <LoraDetails details={lora} />
-                      })
+                    key={lora.name}
+                    style={{
+                      borderLeft: '2px solid #aabad4',
+                      paddingLeft: '8px'
                     }}
                   >
-                    <strong>LoRA: </strong>
-                    <div className="cursor-pointer primary-color">
-                      {lora.name}
+                    <div
+                      className="row"
+                      onClick={() => {
+                        NiceModal.show('embeddingDetails', {
+                          children: <LoraDetails details={lora} />
+                        })
+                      }}
+                    >
+                      <strong>LoRA: </strong>
+                      <div className="cursor-pointer primary-color">
+                        {lora.name}
+                      </div>
+                    </div>
+                    <div className="row">
+                      <strong>
+                        LoRA version: {lora.modelVersions[0].name}
+                      </strong>
+                    </div>
+                    <div className="row">
+                      <strong>Strength: </strong>
+                      {lora.strength}
+                    </div>
+                    <div className="row">
+                      <strong>CLIP: </strong>
+                      {lora.strength}
                     </div>
                   </div>
-                  <div className="row">
-                    <strong>LoRA version: {lora.modelVersions[0].name}</strong>
-                  </div>
-                  <div className="row">
-                    <strong>Strength: </strong>
-                    {lora.strength}
-                  </div>
-                  <div className="row">
-                    <strong>CLIP: </strong>
-                    {lora.strength}
-                  </div>
-                </div>
-              )
-            })}
-          <div className="mb-4" />
-          <div>
+                )
+              })}
+            </div>
+          )}
+
+          <div className="mt-4">
             <strong>Karras: </strong>
             {imageRequest.karras ? 'true' : 'false'}
           </div>
@@ -164,20 +178,24 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
             <strong>Tiled: </strong>
             {imageRequest.tiling ? 'true' : 'false'}
           </div>
-          <div className="mb-4" />
-          <div>
-            <strong>Worker ID: </strong>
-            {imageFile.worker_id}
-          </div>
-          <div>
-            <strong>Worker name: </strong>
-            {imageFile.worker_name}
-          </div>
-          <div className="mb-4" />
-          <div>
-            <strong>Horde Job ID: </strong>
-            {jobDetails.horde_id}
-          </div>
+          {imageFile.worker_id && (
+            <div className="mt-4">
+              <strong>Worker ID: </strong>
+              {imageFile.worker_id}
+            </div>
+          )}
+          {imageFile.worker_name && (
+            <div className="mt-4">
+              <strong>Worker name: </strong>
+              {imageFile.worker_name}
+            </div>
+          )}
+          {jobDetails.horde_id && (
+            <div className="mt-4">
+              <strong>Horde Job ID: </strong>
+              {jobDetails.horde_id}
+            </div>
+          )}
         </div>
       )}
       {showRequestParams && (

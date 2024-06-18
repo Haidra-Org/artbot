@@ -152,6 +152,11 @@ export default function PendingImagesPanel({
             return (
               <div
                 key={photo.artbot_id}
+                onClick={() => {
+                  NiceModal.show('modal', {
+                    children: <ImageView artbot_id={photo.artbot_id} />
+                  })
+                }}
                 style={{
                   alignItems: 'center',
                   cursor: 'pointer',
@@ -161,11 +166,6 @@ export default function PendingImagesPanel({
                   marginBottom: layoutOptions.spacing,
                   position: 'relative',
                   width: layout.width
-                }}
-                onClick={() => {
-                  NiceModal.show('modal', {
-                    children: <ImageView artbot_id={photo.artbot_id} />
-                  })
                 }}
               >
                 <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
