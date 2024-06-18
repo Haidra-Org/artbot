@@ -8,7 +8,7 @@ import useImageDetails, { JobDetails } from '../_hooks/useImageDetails'
 import PromptInput from '../_data-models/PromptInput'
 import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
-// import { Store } from 'react-notifications-component'
+import { toastController } from '../_controllers/toastController'
 
 export default function ImageDetails({ image_id }: { image_id: string }) {
   const [imageDetails] = useImageDetails(image_id)
@@ -42,36 +42,21 @@ export default function ImageDetails({ image_id }: { image_id: string }) {
     const prettyJson = JSON.stringify(rawParams?.apiParams, null, 2)
 
     if (!navigator.clipboard) {
-      // Store.addNotification({
-      //   title: 'Error',
-      //   message: 'Unable to copy params to clipboard. JSON output to console.',
-      //   type: 'warning',
-      //   insert: 'top',
-      //   container: 'top-right',
-      //   dismiss: {
-      //     duration: 5000,
-      //     showIcon: true,
-      //     onScreen: true
-      //   }
-      // })
+      toastController({
+        message:
+          'Unable to copy image parameterss to clipboard. JSON output to browser console.',
+        type: 'error'
+      })
 
       return
     }
 
     try {
       await navigator.clipboard.writeText(prettyJson)
-      // Store.addNotification({
-      //   title: 'Success!',
-      //   message: 'Image request parameters copied to clipboard',
-      //   type: 'success',
-      //   insert: 'top',
-      //   container: 'top-right',
-      //   dismiss: {
-      //     duration: 2500,
-      //     showIcon: true,
-      //     onScreen: true
-      //   }
-      // })
+      toastController({
+        message: 'Image request parameters copied to clipboard',
+        type: 'success'
+      })
     } catch (err) {
       console.log(`Err. Unable to copy text to clipboard`, err)
     }
