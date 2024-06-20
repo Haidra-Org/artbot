@@ -23,6 +23,7 @@ import ImageView from './ImageView'
 import Section from './Section'
 import Button from './Button'
 import PendingImageView from './ImageView_Pending'
+import PendingImagePanelStats from './PendingImagePanelStats'
 
 interface PendingImagesPanelProps {
   showBorder?: boolean
@@ -98,6 +99,7 @@ export default function PendingImagesPanel({
           <IconSettings />
         </Button>
       </Section>
+      <PendingImagePanelStats />
       {images.length === 0 && (
         <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center z-[1]">
           <p className="text-gray-400 w-full text-center  ">
@@ -134,20 +136,25 @@ export default function PendingImagesPanel({
                   justifyContent: 'center',
                   marginBottom: layoutOptions.spacing,
                   position: 'relative',
-                  width: layout.width
+                  width: layout.width,
+                  backgroundImage: 'url(/tile.png)', // Set the background image
+                  backgroundSize: 'auto', // Ensure the image is not stretched
+                  backgroundRepeat: 'repeat' // Tile the image
                 }}
               >
-                <img
-                  alt={alt}
+                {/* Internal Shading Effect */}
+                <div
                   style={{
-                    ...style,
-                    borderRadius: '8px',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
                     width: '100%',
-                    height: 'auto',
-                    marginBottom: '0 !important'
+                    height: '100%',
+                    background:
+                      'linear-gradient(145deg, rgba(0, 0, 0, 0.25), transparent)', // Gradient for shading
+                    pointerEvents: 'none', // So that the overlay does not block clicks
+                    borderRadius: 'inherit' // Match the border radius of the parent
                   }}
-                  {...restImageProps}
-                  src="data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw=="
                 />
                 <PendingImageOverlay
                   artbot_id={photo.artbot_id}
