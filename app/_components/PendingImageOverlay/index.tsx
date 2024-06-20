@@ -144,8 +144,7 @@ function PendingImageOverlay({
             <IconPhotoUp
               color="white"
               stroke={1}
-              size={30}
-              style={{ position: 'absolute' }}
+              style={{ position: 'absolute', height: '40px', width: '40px' }}
             />
           </div>
           <div className={styles.ImageStatus}>Waiting to request image...</div>
@@ -158,8 +157,7 @@ function PendingImageOverlay({
             <IconPhotoUp
               color="white"
               stroke={1}
-              size={30}
-              style={{ position: 'absolute' }}
+              style={{ position: 'absolute', height: '40px', width: '40px' }}
             />
           </div>
           <div className={styles.ImageStatus}>Image requested...</div>
@@ -172,9 +170,16 @@ function PendingImageOverlay({
             <ParticleAnimation />
           </div>
           <div className={styles.ImageStatus} style={{ marginBottom: '12px' }}>
-            {pendingJob.wait_time !== null && pendingJob.wait_time > 0
-              ? `Processing... (${pendingJob.wait_time}s)`
-              : `Finishing up...`}
+            {pendingJob.wait_time !== null &&
+              pendingJob.wait_time > 0 &&
+              pendingJob.init_wait_time !== 0 && (
+                <span>Processing... ({pendingJob.wait_time}s)</span>
+              )}
+            {pendingJob.init_wait_time &&
+              pendingJob.wait_time === 0 &&
+              pendingJob.wait_time < pendingJob.init_wait_time && (
+                <span>Finishing up...</span>
+              )}
           </div>
         </>
       )}

@@ -59,12 +59,15 @@
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  /* Centers the loader */
+  height: 40px;
+  width: 40px;
 }
 
 .ImageStatus {
   bottom: 4px;
-  font-size: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  font-weight: 700;
   left: 4px;
   position: absolute;
   right: 4px;
