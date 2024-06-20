@@ -17,7 +17,10 @@ export default function CarouselV2({
   numSlides: number
   options?: EmblaOptionsType
 }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel(options)
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    ...options,
+    watchDrag: numSlides > 1
+  })
   const { selectedIndex, scrollSnaps } = useDotButton(emblaApi)
 
   const {
