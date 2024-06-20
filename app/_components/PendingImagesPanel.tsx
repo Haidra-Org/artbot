@@ -137,9 +137,9 @@ export default function PendingImagesPanel({
                   marginBottom: layoutOptions.spacing,
                   position: 'relative',
                   width: layout.width,
-                  backgroundImage: 'url(/tile.png)', // Set the background image
-                  backgroundSize: 'auto', // Ensure the image is not stretched
-                  backgroundRepeat: 'repeat' // Tile the image
+                  backgroundImage: 'url(/tile.png)',
+                  backgroundSize: 'auto',
+                  backgroundRepeat: 'repeat'
                 }}
               >
                 {/* Internal Shading Effect */}

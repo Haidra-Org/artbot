@@ -171,25 +171,45 @@ function PendingImageOverlay({
           </div>
           <div className={styles.ImageStatus} style={{ marginBottom: '12px' }}>
             {pendingJob.wait_time !== null &&
-              pendingJob.wait_time > 0 &&
-              pendingJob.init_wait_time !== 0 && (
-                <span>Processing... ({pendingJob.wait_time}s)</span>
-              )}
+            pendingJob.wait_time > 0 &&
+            pendingJob.init_wait_time !== 0 ? (
+              <span>Processing... ({pendingJob.wait_time}s)</span>
+            ) : (
+              <span></span>
+            )}
             {pendingJob.init_wait_time &&
-              pendingJob.wait_time === 0 &&
-              pendingJob.wait_time < pendingJob.init_wait_time && (
-                <span>Finishing up...</span>
-              )}
+            pendingJob.wait_time === 0 &&
+            pendingJob.wait_time < pendingJob.init_wait_time ? (
+              <span>Finishing up...</span>
+            ) : (
+              <span></span>
+            )}
           </div>
         </>
       )}
       {(status === JobStatus.Error || imageError) && (
-        <IconAlertTriangle
-          color="rgb(234 179 8)"
-          size={36}
-          stroke={1}
-          style={{ position: 'absolute' }}
-        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: 0,
+            gap: '8px',
+            fontFamily: 'monospace',
+            backgroundColor: 'black',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundImage: 'url(/tile.png)', // Set the background image
+            backgroundSize: 'auto', // Ensure the image is not stretched
+            backgroundRepeat: 'repeat' // Tile the image
+          }}
+        >
+          <IconAlertTriangle color="rgb(234 179 8)" size={48} stroke={1} />
+          <div>Error: Unable to process image</div>
+        </div>
       )}
       {(status === JobStatus.Queued || status === JobStatus.Processing) && (
         <div
