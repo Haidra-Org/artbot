@@ -80,7 +80,7 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   })
 
   return (
-    <div className="col w-full justify-center max-w-[768px]">
+    <div className="col w-full justify-center">
       <h2 className="row font-bold">Pending Image Details</h2>
       <Section>
         <div className="col gap-0">

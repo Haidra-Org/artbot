@@ -42,7 +42,7 @@ function PendingImageOverlay({
       !isNaN(pendingJob?.images_completed) &&
       pendingJob?.images_completed === 0)
 
-  let pctComplete = 5
+  let pctComplete = 1
 
   if (
     pendingJob?.wait_time !== null &&
@@ -173,7 +173,12 @@ function PendingImageOverlay({
             {pendingJob.wait_time !== null &&
             pendingJob.wait_time > 0 &&
             pendingJob.init_wait_time !== 0 ? (
-              <span>Processing... ({pendingJob.wait_time}s)</span>
+              <div className="col gap-0">
+                <div>Processing...</div>
+                <div>
+                  {pctComplete}% / ({pendingJob.wait_time}s remaining)
+                </div>
+              </div>
             ) : (
               <span></span>
             )}
@@ -204,7 +209,8 @@ function PendingImageOverlay({
             justifyContent: 'center',
             backgroundImage: 'url(/tile.png)',
             backgroundSize: 'auto',
-            backgroundRepeat: 'repeat'
+            backgroundRepeat: 'repeat',
+            boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
           }}
         >
           <IconAlertTriangle color="rgb(234 179 8)" size={48} stroke={1} />

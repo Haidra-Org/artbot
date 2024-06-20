@@ -127,7 +127,8 @@ export default function PendingImagesPanel({
                 key={photo.artbot_id}
                 onClick={() => {
                   NiceModal.show('modal', {
-                    children: <PendingImageView artbot_id={photo.artbot_id} />
+                    children: <PendingImageView artbot_id={photo.artbot_id} />,
+                    modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
                   })
                 }}
                 style={{
@@ -141,23 +142,10 @@ export default function PendingImagesPanel({
                   width: layout.width,
                   backgroundImage: 'url(/tile.png)',
                   backgroundSize: 'auto',
-                  backgroundRepeat: 'repeat'
+                  backgroundRepeat: 'repeat',
+                  boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
                 }}
               >
-                {/* Internal Shading Effect */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background:
-                      'linear-gradient(145deg, rgba(0, 0, 0, 0.25), transparent)', // Gradient for shading
-                    pointerEvents: 'none', // So that the overlay does not block clicks
-                    borderRadius: 'inherit' // Match the border radius of the parent
-                  }}
-                />
                 <PendingImageOverlay
                   artbot_id={photo.artbot_id}
                   status={photo.hordeStatus}
@@ -172,7 +160,10 @@ export default function PendingImagesPanel({
                   // TODO: Better way to handle / triage error states.)
                   if (photo.error) {
                     NiceModal.show('modal', {
-                      children: <PendingImageView artbot_id={photo.artbot_id} />
+                      children: (
+                        <PendingImageView artbot_id={photo.artbot_id} />
+                      ),
+                      modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
                     })
                   } else {
                     NiceModal.show('modal', {

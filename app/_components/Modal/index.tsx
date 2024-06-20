@@ -6,11 +6,13 @@ import { IconX } from '@tabler/icons-react'
 
 import 'react-responsive-modal/styles.css'
 import styles from './modal.module.css'
+import clsx from 'clsx'
 
 interface ModalProps {
   children: ReactNode
   fullscreen?: boolean
   id?: string
+  modalClassName?: string
   modalStyle?: React.CSSProperties
   onClose: () => void
 }
@@ -19,6 +21,7 @@ function Modal({
   children,
   fullscreen = false,
   id,
+  modalClassName = '',
   modalStyle = {},
   onClose = () => {}
 }: ModalProps) {
@@ -54,7 +57,7 @@ function Modal({
       center
       classNames={{
         root: styles.CustomModalContainer,
-        modal: styles.CustomModal,
+        modal: clsx(styles.CustomModal, modalClassName),
         closeButton: styles.CustomCloseButton
       }}
       modalId={id}
