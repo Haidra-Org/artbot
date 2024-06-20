@@ -202,9 +202,9 @@ function PendingImageOverlay({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundImage: 'url(/tile.png)', // Set the background image
-            backgroundSize: 'auto', // Ensure the image is not stretched
-            backgroundRepeat: 'repeat' // Tile the image
+            backgroundImage: 'url(/tile.png)',
+            backgroundSize: 'auto',
+            backgroundRepeat: 'repeat'
           }}
         >
           <IconAlertTriangle color="rgb(234 179 8)" size={48} stroke={1} />

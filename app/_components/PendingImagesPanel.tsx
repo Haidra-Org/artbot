@@ -36,6 +36,7 @@ interface PhotoData {
   src: string
   hordeStatus: JobStatus
   image_count: number
+  error: boolean
   width: number
   height: number
 }
@@ -58,6 +59,7 @@ export default function PendingImagesPanel({
         key: `image-${image.artbot_id || image.image_id}`,
         src: '', // PhotoAlbum library requires this but we're not using it.
         image_count: image.image_count || 1,
+        error: image.images_requested === image.images_failed,
         hordeStatus: image.status,
         width: image.width,
         height: image.height
@@ -167,9 +169,16 @@ export default function PendingImagesPanel({
               <div
                 key={photo.artbot_id}
                 onClick={() => {
-                  NiceModal.show('modal', {
-                    children: <ImageView artbot_id={photo.artbot_id} />
-                  })
+                  // TODO: Better way to handle / triage error states.)
+                  if (photo.error) {
+                    NiceModal.show('modal', {
+                      children: <PendingImageView artbot_id={photo.artbot_id} />
+                    })
+                  } else {
+                    NiceModal.show('modal', {
+                      children: <ImageView artbot_id={photo.artbot_id} />
+                    })
+                  }
                 }}
                 style={{
                   alignItems: 'center',

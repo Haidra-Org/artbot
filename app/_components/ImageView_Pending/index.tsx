@@ -10,6 +10,8 @@ import {
 } from '@tabler/icons-react'
 import ImageDetails from '../ImageDetails'
 import { JobDetails } from '@/app/_hooks/useImageDetails'
+import { useStore } from 'statery'
+import { PendingImagesStore } from '@/app/_stores/PendingImagesStore'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -48,8 +50,17 @@ function formatPercentage({
 }
 
 export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
+  const { pendingImages } = useStore(PendingImagesStore)
   const [imageDetails, setImageDetails] = useState<ImageRequest>()
   const [jobDetails, setJobDetails] = useState<HordeJob>()
+
+  const pendingImage = pendingImages.find(
+    (image) => image.artbot_id === artbot_id
+  )
+
+  const imageError =
+    pendingImage?.status === JobStatus.Error ||
+    pendingImage?.images_failed === pendingImage?.images_requested
 
   useEffect(() => {
     async function fetchData() {
@@ -75,7 +86,9 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
         <div className="col gap-0">
           <div>
             <strong>Job status:</strong>{' '}
-            {formatJobStatus(jobDetails?.status as JobStatus)}
+            {imageError
+              ? 'AI Horde Error'
+              : formatJobStatus(jobDetails?.status as JobStatus)}
           </div>
           {jobDetails &&
             jobDetails?.queue_position !== null &&
@@ -93,6 +106,12 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
           <div>
             <strong>Images requested:</strong> {jobDetails?.images_requested}
           </div>
+          {jobDetails?.images_failed && (
+            <div>
+              <strong>Images failed to complete:</strong>{' '}
+              {jobDetails?.images_failed}
+            </div>
+          )}
         </div>
       </Section>
       <div className="col gap-1 w-full">
