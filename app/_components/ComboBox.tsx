@@ -8,7 +8,7 @@ import {
 } from '@headlessui/react'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
-import { useDetectClickOutside } from 'react-detect-click-outside'
+import { useClickAway } from 'react-use'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -32,6 +32,7 @@ export default function SelectCombo({
   const [optionsPanelOpen, setOptionsPanelOpen] = useState(false)
   const [searchInput, setSearchInput] = useState(value.label)
   const [searchQuery, setSearchQuery] = useState('')
+  const ref = useRef(null)
 
   useEffect(() => {
     setSearchInput(value.label)
@@ -59,11 +60,9 @@ export default function SelectCombo({
     }
   }
 
-  const ref = useDetectClickOutside({
-    onTriggered: () => {
-      handleSelectOption(value)
-      handleUnfocusInput()
-    }
+  useClickAway(ref, () => {
+    handleSelectOption(value)
+    handleUnfocusInput()
   })
 
   const filteredOptions = options.filter((option) => {
