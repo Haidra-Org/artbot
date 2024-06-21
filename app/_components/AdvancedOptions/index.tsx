@@ -15,10 +15,14 @@ import Seed from './Seed'
 import Steps from './Steps'
 import UploadImage from './UploadImage'
 import Upscalers from './Upscalers'
+import StylePresetSelect from './StylePresetSelect'
 
 export default function AdvancedOptions() {
   return (
     <div className="grid gap-4">
+      <Section>
+        <StylePresetSelect />
+      </Section>
       <Section>
         <ModelSelect />
         <SamplerSelect />

@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState } from 'react'
+import React from 'react'
 import styles from './loraSearch.module.css'
 import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
 import LoraDetails from './LoraDetails'

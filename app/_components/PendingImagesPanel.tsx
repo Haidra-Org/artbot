@@ -144,7 +144,7 @@ export default function PendingImagesPanel({
         renderPhoto={(renderPhotoProps) => {
           const { layout, layoutOptions, photo, imageProps } =
             renderPhotoProps || {}
-          const { alt, style, ...restImageProps } = imageProps || {}
+          const { alt, ...restImageProps } = imageProps || {}
 
           // @ts-expect-error Deleting this due to using custom image component.
           delete restImageProps.src

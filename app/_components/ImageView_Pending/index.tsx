@@ -100,8 +100,6 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
     (image) => image.artbot_id === artbot_id
   )
 
-  console.log('pendingImage', pendingImage)
-
   const imageError =
     pendingImage?.status === JobStatus.Error ||
     pendingImage?.images_failed === pendingImage?.images_requested

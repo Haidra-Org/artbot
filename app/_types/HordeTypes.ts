@@ -8,6 +8,10 @@ export interface AvailableImageModel {
   type: string
 }
 
+export interface CategoryPreset {
+  [key: string]: string[]
+}
+
 export enum ControlTypes {
   // ArtBot specific
   // Delete before sending to API.

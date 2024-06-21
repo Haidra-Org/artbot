@@ -78,8 +78,8 @@ export const downloadImages = async ({
   let images_completed = 0
   let images_failed = 0
 
-  let imageErrors: ImageError[] = []
-  let gen_metadata: GenMetadata[] = []
+  const imageErrors: ImageError[] = []
+  const gen_metadata: GenMetadata[] = []
 
   for (const generation of generations) {
     const exists = await checkImageExistsInDexie({ image_id: generation.id })

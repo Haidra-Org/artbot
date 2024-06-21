@@ -98,7 +98,6 @@ export default function UploadImage() {
         imageStatus: ImageStatus.OK,
         model: '',
         imageBlob: source_image,
-        gen_metadata: [],
         seed: '',
         worker_id: '',
         worker_name: '',
