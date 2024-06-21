@@ -49,23 +49,51 @@ export default function PendingImagesPanel({
   const [images, setImages] = useState<PhotoData[]>([])
 
   const fetchImages = useCallback(async () => {
+    // Fetch the completed jobs data
     const artbotIds = pendingImages.map((image) => image.artbot_id)
     const data = await fetchCompletedJobsByArtbotIdsFromDexie(artbotIds)
 
-    const imagesArray = data.map((image) => {
-      return {
-        artbot_id: image.artbot_id,
-        image_id: image.image_id,
-        key: `image-${image.artbot_id || image.image_id}`,
-        src: '', // PhotoAlbum library requires this but we're not using it.
-        image_count: image.image_count || 1,
-        error: image.images_requested === image.images_failed,
-        hordeStatus: image.status,
-        width: image.width,
-        height: image.height
-      }
-    }) as unknown as PhotoData[]
+    // Create a lookup object for completed jobs by artbot_id
+    const completedJobsById = data.reduce(
+      (acc, image) => {
+        acc[image.artbot_id] = image
+        return acc
+      },
+      {} as Record<string, (typeof data)[0]>
+    )
 
+    // Iterate through the pendingImages array
+    const imagesArray = pendingImages.map((pendingImage) => {
+      const completedImage = completedJobsById[pendingImage.artbot_id]
+      if (completedImage) {
+        return {
+          artbot_id: completedImage.artbot_id,
+          image_id: completedImage.image_id,
+          key: `image-${completedImage.artbot_id || completedImage.image_id}`,
+          src: '', // PhotoAlbum library requires this but we're not using it.
+          image_count: completedImage.image_count || 1,
+          error:
+            completedImage.images_requested === completedImage.images_failed,
+          hordeStatus: completedImage.status,
+          width: completedImage.width,
+          height: completedImage.height
+        }
+      } else {
+        return {
+          artbot_id: pendingImage.artbot_id,
+          image_id: 'completedImage.image_id',
+          key: `image-${pendingImage.artbot_id}`,
+          src: '', // PhotoAlbum library requires this but we're not using it.
+          image_count: pendingImage.images_requested || 1,
+          error: pendingImage.images_requested === pendingImage.images_failed,
+          hordeStatus: pendingImage.status,
+          width: pendingImage.width,
+          height: pendingImage.height
+        }
+      }
+    }) as PhotoData[]
+
+    // Update the state with the resulting array
     setImages(imagesArray)
   }, [pendingImages])
 

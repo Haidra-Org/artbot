@@ -128,13 +128,20 @@ export const downloadImages = async ({
     }
   }
 
+  let success = true
+
   await updatePendingImage(jobDetails.artbot_id, {
     images_completed,
     images_failed
   })
 
-  if (images_completed === images_failed) {
+  if (jobDetails.images_requested === images_failed) {
     await deleteJobFromDexie(jobDetails.artbot_id)
+    success = false
+  }
+
+  return {
+    success
   }
 }
 
@@ -180,13 +187,14 @@ export const checkPendingJobs = async () => {
           errors: [{ error: response.message || '' }]
         })
       } else if (response.done) {
-        await downloadImages({
+        const { success } = await downloadImages({
           jobDetails: pendingJobs[index],
           generations: response.generations,
           kudos: response.kudos
         })
+
         await updatePendingImage(pendingJobs[index].artbot_id, {
-          status: JobStatus.Done
+          status: success ? JobStatus.Done : JobStatus.Error
         })
 
         updateCompletedJobInPendingImagesStore()
