@@ -59,6 +59,8 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
     (image) => image.artbot_id === artbot_id
   )
 
+  console.log('pendingImage', pendingImage)
+
   const imageError =
     pendingImage?.status === JobStatus.Error ||
     pendingImage?.images_failed === pendingImage?.images_requested
@@ -92,29 +94,31 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
             <strong>Job status:</strong>{' '}
             {imageError
               ? 'AI Horde Error'
-              : formatJobStatus(jobDetails?.status as JobStatus)}
+              : formatJobStatus(pendingImage?.status as JobStatus)}
           </div>
-          {jobDetails &&
-            jobDetails?.queue_position !== null &&
-            jobDetails?.queue_position > 0 && (
+          {pendingImage &&
+            pendingImage?.queue_position !== null &&
+            pendingImage?.queue_position > 0 && (
               <div>
-                <strong>Queue position:</strong> {jobDetails?.queue_position}
+                <strong>Queue position:</strong> {pendingImage?.queue_position}
               </div>
             )}
           {jobDetails?.status !== JobStatus.Done && (
             <div>
-              <strong>Wait time:</strong> {jobDetails?.wait_time} seconds{' '}
-              {pctComplete && <span>({pctComplete}% complete)</span>}
+              <strong>Wait time:</strong> {pendingImage?.wait_time} seconds{' '}
+              {pctComplete ? <span>({pctComplete}% complete)</span> : ''}
             </div>
           )}
           <div>
             <strong>Images requested:</strong> {jobDetails?.images_requested}
           </div>
-          {jobDetails?.images_failed && (
+          {jobDetails?.images_failed ? (
             <div>
               <strong>Images failed to complete:</strong>{' '}
               {jobDetails?.images_failed}
             </div>
+          ) : (
+            ''
           )}
         </div>
       </Section>
