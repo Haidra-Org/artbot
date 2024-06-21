@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+
 import Section from '../Section'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getJobsFromDexieById } from '@/app/_db/hordeJobs'
@@ -17,6 +19,10 @@ import { JobDetails } from '@/app/_hooks/useImageDetails'
 import { useStore } from 'statery'
 import { PendingImagesStore } from '@/app/_stores/PendingImagesStore'
 import Button from '../Button'
+import cloneDeep from 'clone-deep'
+import { updateInputTimstamp } from '@/app/_stores/CreateImageStore'
+import NiceModal from '@ebay/nice-modal-react'
+import { updatePendingImage } from '@/app/_controllers/pendingJobController'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -55,6 +61,7 @@ function formatPercentage({
 }
 
 export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
+  const router = useRouter()
   const { pendingImages } = useStore(PendingImagesStore)
   const [imageDetails, setImageDetails] = useState<ImageRequest>()
   const [jobDetails, setJobDetails] = useState<HordeJob>()
@@ -162,10 +169,45 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
         />
       </div>
       <div className="row justify-end gap-2">
-        <Button onClick={() => {}}>
+        <Button
+          onClick={() => {
+            const updateImageDetails = cloneDeep(imageDetails)
+            // @ts-expect-error New ArtBot ID will be added if image is requested
+            delete updateImageDetails?.artbot_id
+            // @ts-expect-error id exists on imageDetails after database query
+            delete updateImageDetails?.id
+
+            const jsonString = JSON.stringify(updateImageDetails)
+            sessionStorage.setItem('userInput', jsonString)
+            updateInputTimstamp()
+            NiceModal.remove('modal')
+            router.push('/create')
+          }}
+        >
           <IconEdit /> Edit
         </Button>
-        <Button onClick={() => {}}>
+        <Button
+          onClick={async () => {
+            const updateJobDetails = cloneDeep(jobDetails)
+
+            if (!updateJobDetails) return
+
+            // @ts-expect-error New HordeID will be added on response from Horde
+            delete updateJobDetails.horde_id
+
+            updateJobDetails.images_completed = 0
+            updateJobDetails.images_failed = 0
+            updateJobDetails.init_wait_time = 0
+            updateJobDetails.wait_time = 0
+            updateJobDetails.status = JobStatus.Waiting
+
+            await updatePendingImage(updateJobDetails.artbot_id, {
+              ...updateJobDetails
+            })
+
+            NiceModal.remove('modal')
+          }}
+        >
           <IconRecycle /> Try again?
         </Button>
         <Button theme="danger" onClick={() => {}}>
