@@ -1,3 +1,53 @@
+// Define the type for the input object
+interface TimeDifferenceInput {
+  timestamp1: number
+  timestamp2: number
+  unit: 'seconds' | 'minutes' | 'hours' | 'days'
+  round?: boolean
+}
+
+export const calculateTimeDifference = ({
+  timestamp1,
+  timestamp2,
+  unit,
+  round = false
+}: TimeDifferenceInput): number => {
+  if (typeof timestamp1 !== 'number' || typeof timestamp2 !== 'number') {
+    throw new Error('Both timestamps must be numbers.')
+  }
+
+  // Calculate the absolute difference in milliseconds
+  const diffInMillis = Math.abs(timestamp2 - timestamp1)
+
+  // Convert the difference based on the specified unit
+  let difference: number
+  switch (unit) {
+    case 'seconds':
+      difference = diffInMillis / 1000
+      break
+    case 'minutes':
+      difference = diffInMillis / (1000 * 60)
+      break
+    case 'hours':
+      difference = diffInMillis / (1000 * 60 * 60)
+      break
+    case 'days':
+      difference = diffInMillis / (1000 * 60 * 60 * 24)
+      break
+    default:
+      throw new Error(
+        'Invalid unit. Use "seconds", "minutes", "hours", or "days".'
+      )
+  }
+
+  // Return the difference, rounded if specified
+  if (round) {
+    return Math.round(difference)
+  } else {
+    return parseFloat(difference.toFixed(2))
+  }
+}
+
 export const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp)
 
