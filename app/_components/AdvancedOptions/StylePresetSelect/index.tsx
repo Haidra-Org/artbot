@@ -1,10 +1,10 @@
-import { CategoryPreset } from '@/app/_types/HordeTypes'
+import { CategoryPreset, StylePresetConfigurations } from '@/app/_types/HordeTypes'
 import StylePresetSelectComponent from './stylePresetSelectComponent'
 
 export async function getData(): Promise<{
   success: boolean
   categories: CategoryPreset
-  presets: never
+  presets: StylePresetConfigurations
 }> {
   try {
     const categoriesRes = await fetch(
@@ -28,7 +28,6 @@ export async function getData(): Promise<{
     return {
       success: false,
       categories: {},
-    // @ts-expect-error TODO: Need to properly type this.
       presets: {}
     }
   }

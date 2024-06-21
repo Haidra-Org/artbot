@@ -3,7 +3,11 @@ import {
   ImageOrientations,
   JobType
 } from '@/app/_types/ArtbotTypes'
-import { ControlTypes, SourceProcessing } from '@/app/_types/HordeTypes'
+import {
+  ControlTypes,
+  SourceProcessing,
+  StylePresetConfig
+} from '@/app/_types/HordeTypes'
 import { SavedLora } from './Civitai'
 
 class PromptInput {
@@ -34,7 +38,10 @@ class PromptInput {
   numImages: number = 1
   parentJobId: string = ''
   post_processing: Array<string> = []
-  preset: string[] = []
+  preset: Array<{
+    name: string
+    settings: StylePresetConfig
+  }> = []
   prompt: string = ''
   return_control_map: boolean = false
   sampler: string = 'k_dpmpp_sde'

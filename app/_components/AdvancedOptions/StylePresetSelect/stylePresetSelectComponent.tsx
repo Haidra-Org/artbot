@@ -7,7 +7,10 @@ import Select from '../../Select'
 import NiceModal from '@ebay/nice-modal-react'
 import StylePresetModal from '../StylePresetModal'
 import Button from '../../Button'
-import { CategoryPreset } from '@/app/_types/HordeTypes'
+import {
+  CategoryPreset,
+  StylePresetConfigurations
+} from '@/app/_types/HordeTypes'
 
 export default function StylePresetSelectComponent({
   categories,
@@ -15,7 +18,7 @@ export default function StylePresetSelectComponent({
   hasError = false
 }: {
   categories: CategoryPreset
-  presets: never
+  presets: StylePresetConfigurations
   hasError: boolean
 }) {
   const { input, setInput } = useInput()
@@ -30,14 +33,15 @@ export default function StylePresetSelectComponent({
   if (input.preset.length > 0) {
     options = [
       {
-        label: input.preset[0],
-        value: input.preset[0]
+        label: input.preset[0].name,
+        value: input.preset[0].name
       }
     ]
   }
 
   return (
     <OptionLabel
+      anchor="style-preset"
       title={
         <span className="row font-bold text-sm text-white gap-1">
           Style preset
@@ -59,7 +63,11 @@ export default function StylePresetSelectComponent({
                   categories={categories}
                   presets={presets}
                   handleOnClick={(option: string) => {
-                    setInput({ preset: [option] })
+                    setInput({
+                      preset: [
+                        { name: option, settings: { ...presets[option] } }
+                      ]
+                    })
                     NiceModal.remove('modal')
                   }}
                 />
@@ -77,7 +85,9 @@ export default function StylePresetSelectComponent({
             const randomPreset =
               presetKeys[Math.floor(Math.random() * presetKeys.length)]
 
-            setInput({ preset: [randomPreset] })
+            setInput({
+              preset: [{ name: randomPreset, settings: presets[randomPreset] }]
+            })
           }}
         >
           <IconWand />
