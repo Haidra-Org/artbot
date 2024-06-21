@@ -185,7 +185,7 @@ export default function ImageDetails({
             </div>
           )}
           {imageFile.worker_name && (
-            <div className="mt-4">
+            <div>
               <strong>Worker name: </strong>
               {imageFile.worker_name}
             </div>

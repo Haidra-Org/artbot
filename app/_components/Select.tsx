@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Listbox,
   ListboxButton,
@@ -6,7 +6,7 @@ import {
   ListboxOptions
 } from '@headlessui/react'
 import { IconChevronDown } from '@tabler/icons-react'
-import { useDetectClickOutside } from 'react-detect-click-outside'
+import { useClickAway } from 'react-use'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -27,7 +27,11 @@ export default function Select({
   value: SelectOption
 }) {
   const [isOpen, setIsOpen] = useState(false)
-  const ref = useDetectClickOutside({ onTriggered: () => setIsOpen(false) })
+  const ref = useRef(null)
+
+  useClickAway(ref, () => {
+    setIsOpen(false)
+  })
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
