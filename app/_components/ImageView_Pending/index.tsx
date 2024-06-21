@@ -4,6 +4,7 @@ import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getJobsFromDexieById } from '@/app/_db/hordeJobs'
 import { HordeJob, ImageRequest, JobStatus } from '@/app/_types/ArtbotTypes'
 import {
+  IconInfoCircle,
   IconPlaylistAdd,
   IconPlaylistX,
   IconSettings
@@ -82,8 +83,11 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   return (
     <div className="col w-full justify-center">
       <h2 className="row font-bold">Pending Image Details</h2>
-      <Section>
-        <div className="col gap-0">
+      <div className="row font-bold text-sm text-white">
+        <IconInfoCircle /> Job Details
+      </div>
+      <Section className="p-0">
+        <div className="text-white font-mono p-0 w-full text-[14px] col gap-0">
           <div>
             <strong>Job status:</strong>{' '}
             {imageError
