@@ -1,6 +1,6 @@
 import { Embedding } from '../_data-models/Civitai'
 import PromptInput from '../_data-models/PromptInput'
-import { InjectTi } from './HordeTypes'
+import { GenMetadata, InjectTi } from './HordeTypes'
 
 export interface AiHordeEmbedding extends Embedding {
   strength: number
@@ -36,6 +36,9 @@ export interface HordeJob {
   images_requested: number
   images_completed: number
   images_failed: number
+  height: number
+  width: number
+  gen_metadata?: GenMetadata[]
 }
 
 export interface ImagesForGallery extends HordeJob {

@@ -26,7 +26,9 @@ describe('PendingImagesStore', () => {
       wait_time: null,
       images_requested: 1,
       images_completed: 0,
-      images_failed: 0
+      images_failed: 0,
+      height: 512,
+      width: 512
     }
 
     addPendingImageToAppState(job)
@@ -46,7 +48,9 @@ describe('PendingImagesStore', () => {
       wait_time: null,
       images_requested: 1,
       images_completed: 0,
-      images_failed: 0
+      images_failed: 0,
+      height: 512,
+      width: 512
     }
 
     addPendingImageToAppState(job)
@@ -67,7 +71,9 @@ describe('PendingImagesStore', () => {
       wait_time: null,
       images_requested: 1,
       images_completed: 0,
-      images_failed: 0
+      images_failed: 0,
+      height: 512,
+      width: 512
     }
 
     const job2: HordeJob = {
@@ -81,7 +87,9 @@ describe('PendingImagesStore', () => {
       wait_time: null,
       images_requested: 1,
       images_completed: 0,
-      images_failed: 0
+      images_failed: 0,
+      height: 512,
+      width: 512
     }
 
     addPendingImageToAppState(job1)
@@ -112,7 +120,9 @@ describe('PendingImagesStore', () => {
       wait_time: null,
       images_requested: 1,
       images_completed: 0,
-      images_failed: 0
+      images_failed: 0,
+      height: 512,
+      width: 512
     }
 
     addPendingImageToAppState(job)
@@ -133,7 +143,9 @@ describe('PendingImagesStore', () => {
       wait_time: null,
       images_requested: 1,
       images_completed: 0,
-      images_failed: 0
+      images_failed: 0,
+      height: 512,
+      width: 512
     }
 
     const updatedJob: Partial<HordeJob> = {

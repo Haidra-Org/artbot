@@ -26,16 +26,18 @@ export enum ControlTypes {
   hough = 'hough'
 }
 
+export interface GenMetadata {
+  type: string
+  value: string
+  ref?: string
+}
+
 export interface HordeGeneration {
   img: string
   seed: string
   id: string
   censored: boolean
-  gen_metadata: Array<{
-    type: string
-    value: string
-    ref?: string
-  }>
+  gen_metadata: GenMetadata[]
   worker_id: string
   worker_name: string
   model: string
