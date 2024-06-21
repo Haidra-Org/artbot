@@ -4,7 +4,7 @@ import {
 } from '@/app/_db/hordeJobs'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { addImageAndDefaultFavToDexie } from '@/app/_db/jobTransactions'
-import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
+import { HordeJob, ImageError, JobStatus } from '../_types/ArtbotTypes'
 import {
   addPendingImageToAppState,
   getPendingImagesByStatusFromAppState,
@@ -20,6 +20,7 @@ import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
 import generateImage from '../_api/horde/generate'
 import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
+import { AppSettings } from '../_data-models/AppSettings'
 
 const MAX_JOBS = 5
 
@@ -77,14 +78,31 @@ export const downloadImages = async ({
   let images_completed = 0
   let images_failed = 0
 
+  let imageErrors: ImageError[] = []
+  let gen_metadata: GenMetadata[] = []
+
   for (const generation of generations) {
     const exists = await checkImageExistsInDexie({ image_id: generation.id })
 
     if (!exists) {
       if (generation.censored) {
         images_failed++
+
+        if (!AppSettings.get('allowNsfwImages')) {
+          imageErrors.push({
+            type: 'nsfw',
+            message: 'Image blocked due to user NSFW setting.'
+          })
+        } else {
+          imageErrors.push({
+            type: 'csam',
+            message:
+              'The GPU worker was unable to complete this request. Try again? (Error code: X)'
+          })
+        }
       } else {
         images_completed++
+        gen_metadata.push(generation.gen_metadata as unknown as GenMetadata)
       }
 
       downloadImagesPromise.push(downloadImage(generation.img))
@@ -130,10 +148,14 @@ export const downloadImages = async ({
 
   await updatePendingImage(jobDetails.artbot_id, {
     images_completed,
-    images_failed
+    images_failed,
+    errors: imageErrors,
+    gen_metadata
   })
 
   if (jobDetails.images_requested === images_failed) {
+    // TODO: Think about this -- maybe not auto delete failed jobs?
+    // Let user decide what to do so they can re-roll / edit request.
     // await deleteJobFromDexie(jobDetails.artbot_id)
     success = false
   }
@@ -182,7 +204,12 @@ export const checkPendingJobs = async () => {
       } else if (!response.success) {
         await updatePendingImage(pendingJobs[index].artbot_id, {
           status: JobStatus.Error,
-          errors: [{ error: response.message || '' }]
+          errors: [
+            {
+              type: 'other',
+              message: response.message || ''
+            }
+          ]
         })
       } else if (response.done) {
         const { success } = await downloadImages({
@@ -270,8 +297,13 @@ export const checkForWaitingJobs = async () => {
   if ('errors' in apiResponse) {
     await updatePendingImage(waitingJob.artbot_id, {
       status: JobStatus.Error,
-      errors: apiResponse.errors
+      errors: apiResponse.errors.map((error) => ({
+        type: 'other',
+        message: error.message || 'Unknown error. (Check console.)'
+      }))
     })
+
+    console.error(`Unknown API error: ${JSON.stringify(apiResponse)}`)
   }
 
   if ('id' in apiResponse) {

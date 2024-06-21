@@ -4,7 +4,12 @@ import { useRouter } from 'next/navigation'
 import Section from '../Section'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getJobsFromDexieById } from '@/app/_db/hordeJobs'
-import { HordeJob, ImageRequest, JobStatus } from '@/app/_types/ArtbotTypes'
+import {
+  HordeJob,
+  ImageError,
+  ImageRequest,
+  JobStatus
+} from '@/app/_types/ArtbotTypes'
 import {
   IconEdit,
   IconInfoCircle,
@@ -17,15 +22,40 @@ import {
 import ImageDetails from '../ImageDetails'
 import { JobDetails } from '@/app/_hooks/useImageDetails'
 import { useStore } from 'statery'
-import { PendingImagesStore } from '@/app/_stores/PendingImagesStore'
+import {
+  PendingImagesStore,
+  deletePendingImageFromAppState
+} from '@/app/_stores/PendingImagesStore'
 import Button from '../Button'
 import cloneDeep from 'clone-deep'
 import { updateInputTimstamp } from '@/app/_stores/CreateImageStore'
 import NiceModal from '@ebay/nice-modal-react'
 import { updatePendingImage } from '@/app/_controllers/pendingJobController'
+import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
 
 interface PendingImageViewProps {
   artbot_id: string
+}
+
+const countErrorMessages = (
+  errors: ImageError[]
+): { message: string; count: number }[] => {
+  const errorCountMap: { [key: string]: number } = errors.reduce(
+    (acc: { [key: string]: number }, error: ImageError) => {
+      if (acc[error.message]) {
+        acc[error.message] += 1
+      } else {
+        acc[error.message] = 1
+      }
+      return acc
+    },
+    {}
+  )
+
+  return Object.entries(errorCountMap).map(([message, count]) => ({
+    message,
+    count
+  }))
 }
 
 function formatJobStatus(status: JobStatus) {
@@ -88,6 +118,25 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
     fetchData()
   }, [artbot_id])
 
+  const JobErrorsComponent = (errors: ImageError[] = []) => {
+    const countedErrors = countErrorMessages(errors)
+
+    return (
+      <div className="mt-2">
+        <strong>Errors:</strong>{' '}
+        {countedErrors.length > 0 && (
+          <div>
+            {countedErrors.map(({ message, count }, idx) => (
+              <div key={idx} className={`image_error_${idx} text-xs`}>
+                ({count} {count === 1 ? 'image' : 'images'}) {message}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   const pctComplete = formatPercentage({
     init: pendingImage?.init_wait_time as number,
     remaining: pendingImage?.wait_time as number
@@ -114,15 +163,23 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
                 <strong>Queue position:</strong> {pendingImage?.queue_position}
               </div>
             )}
-          {jobDetails?.status !== JobStatus.Done && (
-            <div>
-              <strong>Wait time:</strong> {pendingImage?.wait_time} seconds{' '}
-              {pctComplete ? <span>({pctComplete}% complete)</span> : ''}
-            </div>
-          )}
+          {jobDetails?.status !== JobStatus.Done &&
+            jobDetails?.status !== JobStatus.Error && (
+              <div>
+                <strong>Wait time:</strong> {pendingImage?.wait_time} seconds{' '}
+                {pctComplete ? <span>({pctComplete}% complete)</span> : ''}
+              </div>
+            )}
           <div>
             <strong>Images requested:</strong> {jobDetails?.images_requested}
           </div>
+          {jobDetails?.images_completed ? (
+            <div>
+              <strong>Images completed:</strong> {jobDetails?.images_completed}
+            </div>
+          ) : (
+            ''
+          )}
           {jobDetails?.images_failed ? (
             <div>
               <strong>Images failed to complete:</strong>{' '}
@@ -131,6 +188,9 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
           ) : (
             ''
           )}
+          {jobDetails?.errors &&
+            jobDetails?.errors.length > 0 &&
+            JobErrorsComponent(jobDetails?.errors)}
         </div>
       </Section>
       <div className="col gap-1 w-full">
@@ -210,7 +270,15 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
         >
           <IconRecycle /> Try again?
         </Button>
-        <Button theme="danger" onClick={() => {}}>
+        <Button
+          theme="danger"
+          onClick={async () => {
+            const artbot_id = imageDetails?.artbot_id as string
+            deletePendingImageFromAppState(artbot_id)
+            await deleteJobFromDexie(artbot_id)
+            NiceModal.remove('modal')
+          }}
+        >
           <IconTrash /> Delete?
         </Button>
       </div>

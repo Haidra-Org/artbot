@@ -17,6 +17,7 @@ import { useImageView } from './ImageViewProvider'
 import useFavorite from '@/app/_hooks/useFavorite'
 import useRerollImage from '@/app/_hooks/useRerollImage'
 import { deleteImageFromDexie } from '@/app/_db/jobTransactions'
+import { useCallback, useEffect } from 'react'
 
 export default function ImageViewActions({
   onDelete
@@ -26,6 +27,38 @@ export default function ImageViewActions({
   const { artbot_id, imageId } = useImageView()
   const [rerollImage] = useRerollImage()
   const [isFavorite, toggleFavorite] = useFavorite(artbot_id, imageId as string)
+
+  const handleDelete = useCallback(async () => {
+    NiceModal.show('delete', {
+      children: (
+        <DeleteConfirmation
+          onDelete={async () => {
+            await deleteImageFromDexie(imageId as string)
+            await onDelete()
+
+            // For now, just close modal on delete
+            NiceModal.remove('modal')
+          }}
+        />
+      )
+    })
+  }, [imageId, onDelete])
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Delete') {
+        handleDelete()
+      }
+    }
+
+    // Add event listener
+    window.addEventListener('keydown', handleKeyPress)
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [handleDelete])
 
   return (
     <div className="row w-full justify-center">
@@ -69,21 +102,7 @@ export default function ImageViewActions({
           )}
         </Button>
         <Button
-          onClick={async () => {
-            NiceModal.show('delete', {
-              children: (
-                <DeleteConfirmation
-                  onDelete={async () => {
-                    await deleteImageFromDexie(imageId as string)
-                    await onDelete()
-
-                    // For now, just close modal on delete
-                    NiceModal.remove('modal')
-                  }}
-                />
-              )
-            })
-          }}
+          onClick={handleDelete}
           title="Delete image"
           theme="danger"
           //

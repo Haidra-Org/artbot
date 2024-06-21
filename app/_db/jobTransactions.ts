@@ -79,6 +79,8 @@ export const deleteImageFromDexie = async (image_id: string) => {
 }
 
 export const deleteJobFromDexie = async (artbot_id: string) => {
+  if (!artbot_id) return
+
   await db.transaction(
     'rw',
     [db.favorites, db.hordeJobs, db.imageFiles, db.imageRequests],

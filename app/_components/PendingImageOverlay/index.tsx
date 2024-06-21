@@ -61,6 +61,20 @@ function PendingImageOverlay({
     pctComplete = 95
   }
 
+  let serverWorkingMessage = 'Waiting...'
+
+  if (status === JobStatus.Requested) {
+    serverWorkingMessage = `Requested...`
+  }
+
+  if (status === JobStatus.Queued) {
+    serverWorkingMessage = `Queued... (Position #${pendingJob.queue_position})`
+  }
+
+  if (status === JobStatus.Processing) {
+    serverWorkingMessage = `Processing...`
+  }
+
   return (
     <div className={styles.PendingImageOverlay}>
       <div
@@ -169,12 +183,15 @@ function PendingImageOverlay({
           <div className={styles.ImageStatusIcon}>
             <ParticleAnimation />
           </div>
-          <div className={styles.ImageStatus} style={{ marginBottom: '12px' }}>
+          <div
+            className={styles.ImageStatusWorking}
+            style={{ marginBottom: '12px' }}
+          >
             {pendingJob.wait_time !== null &&
             pendingJob.wait_time > 0 &&
             pendingJob.init_wait_time !== 0 ? (
               <div className="col gap-0">
-                <div>Processing...</div>
+                <div>{serverWorkingMessage}</div>
                 <div>
                   {pctComplete}% / ({pendingJob.wait_time}s remaining)
                 </div>
@@ -192,6 +209,7 @@ function PendingImageOverlay({
           </div>
         </>
       )}
+      {serverHasJob && <div></div>}
       {(status === JobStatus.Error || imageError) && (
         <div
           style={{

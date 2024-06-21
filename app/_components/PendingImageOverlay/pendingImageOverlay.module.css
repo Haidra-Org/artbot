@@ -74,6 +74,26 @@
   text-align: center;
 }
 
+.ImageStatusWorking {
+  bottom: 0px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  left: 12px;
+  position: absolute;
+}
+
+.ImagePrompt {
+  bottom: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  left: 4px;
+  position: absolute;
+  right: 4px;
+  text-align: center;
+}
+
 .ImageCount {
   align-items: center;
   background-color: black;
