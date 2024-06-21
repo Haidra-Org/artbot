@@ -141,3 +141,28 @@ export interface TextualInversion {
   inject_ti?: string
   strength?: number
 }
+
+export interface LoraConfig {
+  name: string
+  model?: number
+  clip?: number
+  is_version: boolean
+}
+
+export interface StylePresetConfig {
+  prompt: string
+  model: string
+  enhance?: boolean
+  steps?: number
+  width?: number
+  height?: number
+  sampler_name?: string
+  karras?: boolean
+  cfg_scale?: number
+  hires_fix?: boolean
+  loras?: LoraConfig[]
+}
+
+export interface StylePresetConfigurations {
+  [key: string]: StylePresetConfig
+}

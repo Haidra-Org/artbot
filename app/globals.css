@@ -31,6 +31,10 @@ body {
   background-color: var(--background-color);
 }
 
+html {
+  scroll-padding-top: 52px;
+}
+
 @layer components {
   .col {
     @apply flex flex-col gap-2
