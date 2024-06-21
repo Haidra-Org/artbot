@@ -3,10 +3,7 @@ import {
   updateHordeJobById
 } from '@/app/_db/hordeJobs'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
-import {
-  addImageAndDefaultFavToDexie,
-  deleteJobFromDexie
-} from '@/app/_db/jobTransactions'
+import { addImageAndDefaultFavToDexie } from '@/app/_db/jobTransactions'
 import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
 import {
   addPendingImageToAppState,
@@ -14,7 +11,7 @@ import {
   updateCompletedJobInPendingImagesStore,
   updatePendingImageInAppState
 } from '../_stores/PendingImagesStore'
-import { HordeGeneration } from '../_types/HordeTypes'
+import { GenMetadata, HordeGeneration } from '../_types/HordeTypes'
 import { checkImageExistsInDexie } from '../_db/ImageFiles'
 import downloadImage, { DownloadSuccessResponse } from '../_api/horde/download'
 import { ImageStatus, ImageType } from '../_data-models/ImageFile_Dexie'
@@ -114,7 +111,8 @@ export const downloadImages = async ({
         imageStatus: ImageStatus.OK, // TODO: FIXME: handle censored or errors.
         model: generationsList[index].model,
         imageBlob: response.blob,
-        gen_metadata: [...generationsList[index].gen_metadata],
+        gen_metadata: generationsList[index]
+          .gen_metadata as unknown as GenMetadata,
         seed: generationsList[index].seed,
         worker_id: generationsList[index].worker_id,
         worker_name: generationsList[index].worker_name,
@@ -136,7 +134,7 @@ export const downloadImages = async ({
   })
 
   if (jobDetails.images_requested === images_failed) {
-    await deleteJobFromDexie(jobDetails.artbot_id)
+    // await deleteJobFromDexie(jobDetails.artbot_id)
     success = false
   }
 
