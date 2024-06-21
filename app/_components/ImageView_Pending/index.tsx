@@ -82,8 +82,8 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   }, [artbot_id])
 
   const pctComplete = formatPercentage({
-    init: jobDetails?.init_wait_time as number,
-    remaining: jobDetails?.wait_time as number
+    init: pendingImage?.init_wait_time as number,
+    remaining: pendingImage?.wait_time as number
   })
 
   return (
