@@ -4,15 +4,19 @@ import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getJobsFromDexieById } from '@/app/_db/hordeJobs'
 import { HordeJob, ImageRequest, JobStatus } from '@/app/_types/ArtbotTypes'
 import {
+  IconEdit,
   IconInfoCircle,
   IconPlaylistAdd,
   IconPlaylistX,
-  IconSettings
+  IconRecycle,
+  IconSettings,
+  IconTrash
 } from '@tabler/icons-react'
 import ImageDetails from '../ImageDetails'
 import { JobDetails } from '@/app/_hooks/useImageDetails'
 import { useStore } from 'statery'
 import { PendingImagesStore } from '@/app/_stores/PendingImagesStore'
+import Button from '../Button'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -156,6 +160,17 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
             } as JobDetails
           }
         />
+      </div>
+      <div className="row justify-end gap-2">
+        <Button onClick={() => {}}>
+          <IconEdit /> Edit
+        </Button>
+        <Button onClick={() => {}}>
+          <IconRecycle /> Try again?
+        </Button>
+        <Button theme="danger" onClick={() => {}}>
+          <IconTrash /> Delete?
+        </Button>
       </div>
     </div>
   )
