@@ -67,7 +67,8 @@ export default function StylePresetSelectComponent({
 
         // TODO: Better Handle Loras and tis?
 
-        updateInput[key] = presetSettings[key]
+        // @ts-expect-error All fields should be handled properly as of this point.
+        updateInput[key as keyof PromptInput] = presetSettings[key]
       })
 
       setInput({

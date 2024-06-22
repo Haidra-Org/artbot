@@ -98,8 +98,8 @@ export default function AddLora() {
       </div>
       {input.loras.length > 0 && (
         <div className="w-full col">
-          {input.loras.map((lora) => (
-            <div key={lora.versionId} className="w-full col">
+          {input.loras.map((lora, idx) => (
+            <div key={`${lora.name}_${idx}`} className="w-full col">
               <LoraSettingsCard lora={lora} />
             </div>
           ))}

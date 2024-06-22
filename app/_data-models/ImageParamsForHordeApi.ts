@@ -379,6 +379,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         param in stylePresetSettings &&
         typeof stylePresetSettings[param] !== 'undefined'
       ) {
+        // @ts-expect-error FIXME: param should always be defined here
         this.apiParams.params[param] = stylePresetSettings[param]
       }
     })
