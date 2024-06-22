@@ -297,10 +297,12 @@ export const checkForWaitingJobs = async () => {
   if ('errors' in apiResponse) {
     await updatePendingImage(waitingJob.artbot_id, {
       status: JobStatus.Error,
-      errors: apiResponse.errors.map((error) => ({
-        type: 'other',
-        message: error.message || 'Unknown error. (Check console.)'
-      }))
+      errors: [
+        {
+          type: 'other',
+          message: apiResponse.message
+        }
+      ]
     })
 
     console.error(`Unknown API error: ${JSON.stringify(apiResponse)}`)

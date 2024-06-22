@@ -214,10 +214,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     if (loras && Array.isArray(loras) && loras.length > 0) {
       this.apiParams.params.loras = loras.map((lora: SavedLora) => {
         const loraObj: Lora = {
-          name: String(lora.versionId),
+          name: String(lora.versionId || lora.name),
           model: lora.strength,
           clip: lora.clip,
-          is_version: true
+          is_version: lora.versionId !== false ? true : false
         }
 
         return loraObj
@@ -344,6 +344,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
 
   setStylePresets(): ImageParamsForHordeApi {
     if (this.imageDetails.preset.length === 0) return this
+
     const stylePresetSettings = this.imageDetails.preset[0].settings
 
     this.apiParams.prompt = formatStylePresetPrompt({
@@ -381,6 +382,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         this.apiParams.params[param] = stylePresetSettings[param]
       }
     })
+
+    if (stylePresetSettings.model) {
+      this.apiParams.models = [stylePresetSettings.model]
+    }
 
     return this
   }

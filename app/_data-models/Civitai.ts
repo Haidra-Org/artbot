@@ -94,7 +94,7 @@ export class Embedding {
 // Define the type for the SaveLora constructor parameters, extending EmbeddingParams
 interface SavedLoraParams extends Partial<EmbeddingParams> {
   id: number | string // parentID of Embedding (e.g., Embedding.id)
-  versionId: number | string // id of ModelVersion,
+  versionId: number | string | boolean // id of ModelVersion,
   isArtbotManualEntry?: boolean
 
   // Config params used for AI Horde image requests
@@ -104,7 +104,7 @@ interface SavedLoraParams extends Partial<EmbeddingParams> {
 
 // Define the SaveLora class extending from Embedding
 export class SavedLora extends Embedding {
-  versionId: number | string
+  versionId: number | string | boolean // bool is Artbot specific to disable Horde is_version flag.
   isArtbotManualEntry: boolean
   strength: number
   clip: number

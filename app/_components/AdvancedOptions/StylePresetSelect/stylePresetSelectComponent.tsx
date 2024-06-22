@@ -9,8 +9,12 @@ import StylePresetModal from '../StylePresetModal'
 import Button from '../../Button'
 import {
   CategoryPreset,
+  StylePresetConfig,
   StylePresetConfigurations
 } from '@/app/_types/HordeTypes'
+import { useCallback } from 'react'
+import PromptInput from '@/app/_data-models/PromptInput'
+import { SavedLora } from '@/app/_data-models/Civitai'
 
 export default function StylePresetSelectComponent({
   categories,
@@ -22,6 +26,57 @@ export default function StylePresetSelectComponent({
   hasError: boolean
 }) {
   const { input, setInput } = useInput()
+
+  const handleSelectPreset = useCallback(
+    (option: string, presetSettings: StylePresetConfig) => {
+      const updateInput: Partial<PromptInput> = {}
+
+      Object.keys(presetSettings).forEach((key) => {
+        if (key === 'prompt') return
+
+        if (key === 'model') {
+          updateInput.models = [presetSettings.model]
+          return
+        }
+
+        if (key === 'height' || key === 'width') {
+          updateInput.imageOrientation = 'custom'
+        }
+
+        if (key === 'loras' && typeof presetSettings.loras !== 'undefined') {
+          updateInput.loras = []
+
+          presetSettings.loras.forEach((lora) => {
+            const updateLora = new SavedLora({
+              id: lora.name,
+              versionId: lora.is_version ? Number(lora.name) : false,
+              isArtbotManualEntry: true,
+              name: lora.name,
+              strength: lora.model || 1,
+              clip: lora.clip || 1
+            })
+
+            // @ts-expect-error updateInput.loras is defined right above this.
+            updateInput.loras.push({ ...updateLora })
+          })
+
+          return
+        }
+
+        if (key === 'enhance') return
+
+        // TODO: Better Handle Loras and tis?
+
+        updateInput[key] = presetSettings[key]
+      })
+
+      setInput({
+        ...updateInput,
+        preset: [{ name: option, settings: { ...presetSettings } }]
+      })
+    },
+    [setInput]
+  )
 
   let options = [
     {
@@ -63,11 +118,7 @@ export default function StylePresetSelectComponent({
                   categories={categories}
                   presets={presets}
                   handleOnClick={(option: string) => {
-                    setInput({
-                      preset: [
-                        { name: option, settings: { ...presets[option] } }
-                      ]
-                    })
+                    handleSelectPreset(option, presets[option])
                     NiceModal.remove('modal')
                   }}
                 />
@@ -85,9 +136,7 @@ export default function StylePresetSelectComponent({
             const randomPreset =
               presetKeys[Math.floor(Math.random() * presetKeys.length)]
 
-            setInput({
-              preset: [{ name: randomPreset, settings: presets[randomPreset] }]
-            })
+            handleSelectPreset(randomPreset, presets[randomPreset])
           }}
         >
           <IconWand />

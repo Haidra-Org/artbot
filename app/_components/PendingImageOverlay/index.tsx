@@ -68,7 +68,7 @@ function PendingImageOverlay({
   }
 
   if (status === JobStatus.Queued) {
-    serverWorkingMessage = `Queued... (Position #${pendingJob.queue_position})`
+    serverWorkingMessage = `Queued... ${pendingJob.queue_position ? `(Position #${pendingJob.queue_position})` : ''}`
   }
 
   if (status === JobStatus.Processing) {

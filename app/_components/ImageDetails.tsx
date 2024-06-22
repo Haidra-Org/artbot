@@ -145,7 +145,10 @@ export default function ImageDetails({
                     </div>
                     <div className="row">
                       <strong>
-                        LoRA version: {lora.modelVersions[0].name}
+                        LoRA version:{' '}
+                        {lora.modelVersions
+                          ? lora?.modelVersions[0]?.name
+                          : lora.name}
                       </strong>
                     </div>
                     <div className="row">
