@@ -33,25 +33,25 @@ export default function PendingImagePanelStats() {
 
   return (
     <div
-      className="row justify-between p-1"
+      className="row justify-between p-2"
       style={{
         border: '1px solid rgb(63 63 70)',
         borderRadius: '4px'
       }}
     >
-      <div className="row text-[12px]" title="Images completed">
+      <div className="row text-[14px]" title="Images completed">
         <IconCheck size={16} stroke={1.5} />
         {done.length}
       </div>
-      <div className="row text-[12px]" title="Images processings">
+      <div className="row text-[14px]" title="Images processings">
         <IconLoader size={16} stroke={1.5} />
         {processing.length}
       </div>
-      <div className="row text-[12px]" title="Images queued">
+      <div className="row text-[14px]" title="Images queued">
         <IconUpload size={16} stroke={1.5} />
         {waiting.length}
       </div>
-      <div className="row text-[12px]" title="Images failed">
+      <div className="row text-[14px]" title="Images failed">
         <IconAlertTriangle size={16} stroke={1.5} />
         {error.length}
       </div>

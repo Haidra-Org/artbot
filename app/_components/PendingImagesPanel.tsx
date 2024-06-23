@@ -11,6 +11,7 @@ import {
   IconFilter,
   IconPhotoBolt,
   IconSettings,
+  IconSortAscending,
   IconSortDescending
 } from '@tabler/icons-react'
 
@@ -47,6 +48,7 @@ export default function PendingImagesPanel({
 }: PendingImagesPanelProps) {
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
+  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
 
   const fetchImages = useCallback(async () => {
     // Fetch the completed jobs data
@@ -93,13 +95,27 @@ export default function PendingImagesPanel({
       }
     }) as PhotoData[]
 
+    if (sortBy === 'asc') {
+      imagesArray.reverse()
+    }
+
     // Update the state with the resulting array
     setImages(imagesArray)
-  }, [pendingImages])
+  }, [pendingImages, sortBy])
 
   useEffect(() => {
     fetchImages()
   }, [fetchImages, pendingImages])
+
+  useEffect(() => {
+    setImages((prevImages) => {
+      const sortedImages = [...prevImages]
+      if (sortBy === 'asc') {
+        sortedImages.reverse()
+      }
+      return sortedImages
+    })
+  }, [sortBy])
 
   return (
     <div
@@ -113,19 +129,24 @@ export default function PendingImagesPanel({
         </h2>
       )}
       <Section className="justify-end gap-2 row z-10 sticky top-[42px]">
-        <Button onClick={() => {}} style={{ width: '42px' }}>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconClearAll />
         </Button>
-        <Button onClick={() => {}} style={{ width: '42px' }}>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconAffiliate />
         </Button>
-        <Button onClick={() => {}} style={{ width: '42px' }}>
-          <IconSortDescending />
+        <Button
+          onClick={() => {
+            setSortBy(sortBy === 'asc' ? 'desc' : 'asc')
+          }}
+          style={{ height: '38px', width: '38px' }}
+        >
+          {sortBy === 'asc' ? <IconSortAscending /> : <IconSortDescending />}
         </Button>
-        <Button onClick={() => {}} style={{ width: '42px' }}>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconFilter />
         </Button>
-        <Button onClick={() => {}} style={{ width: '42px' }}>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconSettings />
         </Button>
       </Section>
