@@ -15,16 +15,17 @@ import {
   IconSortDescending
 } from '@tabler/icons-react'
 
-import { fetchCompletedJobsByArtbotIdsFromDexie } from '../_db/hordeJobs'
-import { JobStatus } from '../_types/ArtbotTypes'
-import { PendingImagesStore } from '../_stores/PendingImagesStore'
-import ImageThumbnail from './ImageThumbnail'
-import PendingImageOverlay from './PendingImageOverlay'
-import ImageView from './ImageView'
-import Section from './Section'
-import Button from './Button'
-import PendingImageView from './ImageView_Pending'
-import PendingImagePanelStats from './PendingImagePanelStats'
+import { fetchCompletedJobsByArtbotIdsFromDexie } from '../../_db/hordeJobs'
+import { JobStatus } from '../../_types/ArtbotTypes'
+import { PendingImagesStore } from '../../_stores/PendingImagesStore'
+import ImageThumbnail from '../ImageThumbnail'
+import PendingImageOverlay from '../PendingImageOverlay'
+import ImageView from '../ImageView'
+import Section from '../Section'
+import Button from '../Button'
+import PendingImageView from '../ImageView_Pending'
+import PendingImagePanelStats from '../PendingImagePanelStats'
+import { Popover } from '@headlessui/react'
 
 interface PendingImagesPanelProps {
   showBorder?: boolean
@@ -48,6 +49,7 @@ export default function PendingImagesPanel({
 }: PendingImagesPanelProps) {
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
+  const [filter, setFilter] = useState('')
   const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
 
   const fetchImages = useCallback(async () => {
@@ -143,9 +145,11 @@ export default function PendingImagesPanel({
         >
           {sortBy === 'asc' ? <IconSortAscending /> : <IconSortDescending />}
         </Button>
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-          <IconFilter />
-        </Button>
+        <Popover className="relative">
+          <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
+            <IconFilter />
+          </Button>
+        </Popover>
         <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconSettings />
         </Button>
