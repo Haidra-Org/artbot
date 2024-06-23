@@ -3,18 +3,15 @@ import {
   updateHordeJobById
 } from '@/app/_db/hordeJobs'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
-import {
-  addImageAndDefaultFavToDexie,
-  deleteJobFromDexie
-} from '@/app/_db/jobTransactions'
-import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
+import { addImageAndDefaultFavToDexie } from '@/app/_db/jobTransactions'
+import { HordeJob, ImageError, JobStatus } from '../_types/ArtbotTypes'
 import {
   addPendingImageToAppState,
   getPendingImagesByStatusFromAppState,
   updateCompletedJobInPendingImagesStore,
   updatePendingImageInAppState
 } from '../_stores/PendingImagesStore'
-import { HordeGeneration } from '../_types/HordeTypes'
+import { GenMetadata, HordeGeneration } from '../_types/HordeTypes'
 import { checkImageExistsInDexie } from '../_db/ImageFiles'
 import downloadImage, { DownloadSuccessResponse } from '../_api/horde/download'
 import { ImageStatus, ImageType } from '../_data-models/ImageFile_Dexie'
@@ -23,6 +20,7 @@ import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
 import generateImage from '../_api/horde/generate'
 import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
+import { AppSettings } from '../_data-models/AppSettings'
 
 const MAX_JOBS = 5
 
@@ -80,14 +78,31 @@ export const downloadImages = async ({
   let images_completed = 0
   let images_failed = 0
 
+  const imageErrors: ImageError[] = []
+  const gen_metadata: GenMetadata[] = []
+
   for (const generation of generations) {
     const exists = await checkImageExistsInDexie({ image_id: generation.id })
 
     if (!exists) {
       if (generation.censored) {
         images_failed++
+
+        if (!AppSettings.get('allowNsfwImages')) {
+          imageErrors.push({
+            type: 'nsfw',
+            message: 'Image blocked due to user NSFW setting.'
+          })
+        } else {
+          imageErrors.push({
+            type: 'csam',
+            message:
+              'The GPU worker was unable to complete this request. Try again? (Error code: X)'
+          })
+        }
       } else {
         images_completed++
+        gen_metadata.push(generation.gen_metadata as unknown as GenMetadata)
       }
 
       downloadImagesPromise.push(downloadImage(generation.img))
@@ -114,7 +129,8 @@ export const downloadImages = async ({
         imageStatus: ImageStatus.OK, // TODO: FIXME: handle censored or errors.
         model: generationsList[index].model,
         imageBlob: response.blob,
-        gen_metadata: [...generationsList[index].gen_metadata],
+        gen_metadata: generationsList[index]
+          .gen_metadata as unknown as GenMetadata,
         seed: generationsList[index].seed,
         worker_id: generationsList[index].worker_id,
         worker_name: generationsList[index].worker_name,
@@ -128,13 +144,24 @@ export const downloadImages = async ({
     }
   }
 
+  let success = true
+
   await updatePendingImage(jobDetails.artbot_id, {
     images_completed,
-    images_failed
+    images_failed,
+    errors: imageErrors,
+    gen_metadata
   })
 
-  if (images_completed === images_failed) {
-    await deleteJobFromDexie(jobDetails.artbot_id)
+  if (jobDetails.images_requested === images_failed) {
+    // TODO: Think about this -- maybe not auto delete failed jobs?
+    // Let user decide what to do so they can re-roll / edit request.
+    // await deleteJobFromDexie(jobDetails.artbot_id)
+    success = false
+  }
+
+  return {
+    success
   }
 }
 
@@ -177,16 +204,22 @@ export const checkPendingJobs = async () => {
       } else if (!response.success) {
         await updatePendingImage(pendingJobs[index].artbot_id, {
           status: JobStatus.Error,
-          errors: [{ error: response.message || '' }]
+          errors: [
+            {
+              type: 'other',
+              message: response.message || ''
+            }
+          ]
         })
       } else if (response.done) {
-        await downloadImages({
+        const { success } = await downloadImages({
           jobDetails: pendingJobs[index],
           generations: response.generations,
           kudos: response.kudos
         })
+
         await updatePendingImage(pendingJobs[index].artbot_id, {
-          status: JobStatus.Done
+          status: success ? JobStatus.Done : JobStatus.Error
         })
 
         updateCompletedJobInPendingImagesStore()
@@ -264,8 +297,15 @@ export const checkForWaitingJobs = async () => {
   if ('errors' in apiResponse) {
     await updatePendingImage(waitingJob.artbot_id, {
       status: JobStatus.Error,
-      errors: apiResponse.errors
+      errors: [
+        {
+          type: 'other',
+          message: apiResponse.message
+        }
+      ]
     })
+
+    console.error(`Unknown API error: ${JSON.stringify(apiResponse)}`)
   }
 
   if ('id' in apiResponse) {

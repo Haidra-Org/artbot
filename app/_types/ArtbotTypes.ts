@@ -1,6 +1,6 @@
 import { Embedding } from '../_data-models/Civitai'
 import PromptInput from '../_data-models/PromptInput'
-import { InjectTi } from './HordeTypes'
+import { GenMetadata, InjectTi } from './HordeTypes'
 
 export interface AiHordeEmbedding extends Embedding {
   strength: number
@@ -29,13 +29,16 @@ export interface HordeJob {
   created_timestamp: number
   updated_timestamp: number
   status: JobStatus
-  errors?: Array<{ [key: string]: string }> | null
+  errors?: ImageError[] | null
   queue_position: number | null
   init_wait_time: number | null
   wait_time: number | null
   images_requested: number
   images_completed: number
   images_failed: number
+  height: number
+  width: number
+  gen_metadata?: GenMetadata[]
 }
 
 export interface ImagesForGallery extends HordeJob {
@@ -53,6 +56,13 @@ export interface ImageEnhancementModulesTable {
   modifier: ImageEnhancementModulesModifier
   type: 'favorite' | 'recent'
   model: Embedding
+}
+
+export type ImageErrors = 'csam' | 'notfound' | 'nsfw' | 'other'
+
+export interface ImageError {
+  type: ImageErrors
+  message: string
 }
 
 export type ImageOrientations =

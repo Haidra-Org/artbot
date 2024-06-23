@@ -13,6 +13,8 @@ import PromptInput from '../_data-models/PromptInput'
 import { debounce } from '../_utils/debounce'
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles'
+import { useStore } from 'statery'
+import { CreateImageStore } from '../_stores/CreateImageStore'
 
 type PromptInputContextType = {
   input: PromptInput
@@ -55,6 +57,7 @@ export const useInput = () => {
 export const PromptInputProvider: React.FC<PromptProviderProps> = ({
   children
 }) => {
+  const { inputUpdated } = useStore(CreateImageStore)
   const [pageLoaded, setPageLoaded] = useState(false)
 
   const inputReducer: InputReducer = (
@@ -79,7 +82,7 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
       const retrievedObject = JSON.parse(retrievedString)
       setInput(retrievedObject)
     }
-  }, [])
+  }, [inputUpdated])
 
   const loadUploadedImages = useCallback(async () => {
     const images = await getImagesForArtbotJobFromDexie(

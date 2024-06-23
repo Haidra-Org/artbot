@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Listbox,
   ListboxButton,
@@ -6,7 +6,7 @@ import {
   ListboxOptions
 } from '@headlessui/react'
 import { IconChevronDown } from '@tabler/icons-react'
-import { useDetectClickOutside } from 'react-detect-click-outside'
+import { useClickAway } from 'react-use'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -18,16 +18,24 @@ export interface SelectOption {
 }
 
 export default function Select({
+  hideDropdown = false,
   onChange = () => {},
+  onClick = () => {},
   options,
   value
 }: {
+  hideDropdown?: boolean
   onChange: (option: SelectOption) => void
+  onClick?: (e: React.MouseEvent) => void
   options: SelectOption[]
   value: SelectOption
 }) {
   const [isOpen, setIsOpen] = useState(false)
-  const ref = useDetectClickOutside({ onTriggered: () => setIsOpen(false) })
+  const ref = useRef(null)
+
+  useClickAway(ref, () => {
+    setIsOpen(false)
+  })
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -49,12 +57,14 @@ export default function Select({
   }
 
   return (
-    <div className="relative w-full" ref={ref}>
+    <div className="relative w-full" onClick={onClick} ref={ref}>
       <Listbox value={value} onChange={handleSelection}>
         <ListboxButton
           className="relative cursor-default bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           onClick={() => {
-            setIsOpen(!isOpen)
+            if (!hideDropdown) {
+              setIsOpen(!isOpen)
+            }
           }}
         >
           <span className="flex items-center">

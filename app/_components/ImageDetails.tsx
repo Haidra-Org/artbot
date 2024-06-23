@@ -83,7 +83,11 @@ export default function ImageDetails({
           </div>
           <div>
             <strong>Model version: </strong>
-            ??
+            {imageRequest?.modelDetails?.version ?? 'N/A'}
+          </div>
+          <div>
+            <strong>Baseline: </strong>
+            {imageRequest?.modelDetails?.baseline ?? 'N/A'}
           </div>
           <div>
             <strong>Sampler: </strong>
@@ -93,6 +97,12 @@ export default function ImageDetails({
             <div>
               <strong>Kudos: </strong>
               {imageFile.kudos}
+            </div>
+          )}
+          {imageRequest.preset.length > 0 && (
+            <div className="mt-4">
+              <strong>Preset: </strong>
+              {imageRequest.preset[0].name}
             </div>
           )}
           <div className="mt-4">
@@ -145,7 +155,10 @@ export default function ImageDetails({
                     </div>
                     <div className="row">
                       <strong>
-                        LoRA version: {lora.modelVersions[0].name}
+                        LoRA version:{' '}
+                        {lora.modelVersions
+                          ? lora?.modelVersions[0]?.name
+                          : lora.name}
                       </strong>
                     </div>
                     <div className="row">
@@ -185,7 +198,7 @@ export default function ImageDetails({
             </div>
           )}
           {imageFile.worker_name && (
-            <div className="mt-4">
+            <div>
               <strong>Worker name: </strong>
               {imageFile.worker_name}
             </div>

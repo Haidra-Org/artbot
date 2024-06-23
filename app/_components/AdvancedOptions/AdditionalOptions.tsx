@@ -7,7 +7,7 @@ export default function AdditionalOptions() {
   const { input, setInput } = useInput()
 
   return (
-    <Section title="Additional options">
+    <Section title="Additional options" anchor="additional-options">
       <label className="row gap-2 text-white">
         <Switch
           checked={input.post_processing.includes('strip_background')}

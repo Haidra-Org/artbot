@@ -42,7 +42,9 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
     wait_time: null,
     images_requested: updatedInput.numImages,
     images_completed: 0,
-    images_failed: 0
+    images_failed: 0,
+    height: updatedInput.height,
+    width: updatedInput.width
   }
 
   await db.transaction('rw', [db.imageRequests, db.hordeJobs], async () => {
@@ -77,6 +79,8 @@ export const deleteImageFromDexie = async (image_id: string) => {
 }
 
 export const deleteJobFromDexie = async (artbot_id: string) => {
+  if (!artbot_id) return
+
   await db.transaction(
     'rw',
     [db.favorites, db.hordeJobs, db.imageFiles, db.imageRequests],

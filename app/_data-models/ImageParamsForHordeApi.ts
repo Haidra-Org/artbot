@@ -7,6 +7,7 @@ import {
 } from '../_types/HordeTypes'
 import { castTiInject } from '../_utils/hordeUtils'
 import { blobToBase64 } from '../_utils/imageUtils'
+import { formatStylePresetPrompt } from '../_utils/stringUtils'
 import { AppSettings } from './AppSettings'
 import { SavedLora } from './Civitai'
 import { ImageType } from './ImageFile_Dexie'
@@ -18,6 +19,7 @@ interface HordeApiParamsBuilderInterface {
   setSourceProcessing(): Promise<ImageParamsForHordeApi>
   setEmbeddings(): ImageParamsForHordeApi
   setControlType(): ImageParamsForHordeApi
+  setStylePresets(): ImageParamsForHordeApi
   setErrorHandling(hasError: boolean): ImageParamsForHordeApi
 }
 
@@ -212,10 +214,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     if (loras && Array.isArray(loras) && loras.length > 0) {
       this.apiParams.params.loras = loras.map((lora: SavedLora) => {
         const loraObj: Lora = {
-          name: String(lora.versionId),
+          name: String(lora.versionId || lora.name),
           model: lora.strength,
           clip: lora.clip,
-          is_version: true
+          is_version: lora.versionId !== false ? true : false
         }
 
         return loraObj
@@ -340,6 +342,55 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     return this
   }
 
+  setStylePresets(): ImageParamsForHordeApi {
+    if (this.imageDetails.preset.length === 0) return this
+
+    const stylePresetSettings = this.imageDetails.preset[0].settings
+
+    this.apiParams.prompt = formatStylePresetPrompt({
+      positive: this.imageDetails.prompt,
+      negative: this.imageDetails.negative,
+      stylePresetPrompt: this.imageDetails.preset[0].settings.prompt
+    })
+
+    // Update params
+    type UpdateableParams = Pick<
+      ImageParams,
+      | 'steps'
+      | 'width'
+      | 'height'
+      | 'sampler_name'
+      | 'karras'
+      | 'cfg_scale'
+      | 'hires_fix'
+    >
+    const paramsToUpdate: (keyof UpdateableParams)[] = [
+      'steps',
+      'width',
+      'height',
+      'sampler_name',
+      'karras',
+      'cfg_scale',
+      'hires_fix'
+    ]
+
+    paramsToUpdate.forEach((param) => {
+      if (
+        param in stylePresetSettings &&
+        typeof stylePresetSettings[param] !== 'undefined'
+      ) {
+        // @ts-expect-error FIXME: param should always be defined here
+        this.apiParams.params[param] = stylePresetSettings[param]
+      }
+    })
+
+    if (stylePresetSettings.model) {
+      this.apiParams.models = [stylePresetSettings.model]
+    }
+
+    return this
+  }
+
   setErrorHandling(hasError: boolean): ImageParamsForHordeApi {
     // Modify error handling settings if hasError is true
     if (hasError === true) {
@@ -378,6 +429,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     instance.setWorkerPreferences()
     await instance.setSourceProcessing()
     instance.setControlType()
+    instance.setStylePresets()
     instance.setErrorHandling(hasError)
     instance.validate()
 

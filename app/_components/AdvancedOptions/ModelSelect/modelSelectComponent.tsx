@@ -5,6 +5,8 @@ import { AvailableImageModel } from '@/app/_types/HordeTypes'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import OptionLabel from '../OptionLabel'
 import SelectCombo, { SelectOption } from '../../ComboBox'
+import { useStore } from 'statery'
+import { ModelStore } from '@/app/_stores/ModelStore'
 
 export default function ModelSelectComponent({
   models,
@@ -14,6 +16,7 @@ export default function ModelSelectComponent({
   hasError: boolean
 }) {
   const { input, setInput } = useInput()
+  const { modelDetails } = useStore(ModelStore)
 
   const findModelCountByName = (name: string) => {
     // Find the model by name and return its count, or undefined if not found
@@ -39,7 +42,15 @@ export default function ModelSelectComponent({
           onChange={(option: SelectOption) => {
             if (!option || !option.value) return
 
-            setInput({ models: [option.value as string] })
+            const modelInfo = {
+              baseline: modelDetails[option.value as string].baseline,
+              version: modelDetails[option.value as string].version
+            }
+
+            setInput({
+              models: [option.value as string],
+              modelDetails: modelInfo
+            })
           }}
           options={models.map((model) => ({
             value: model.name,

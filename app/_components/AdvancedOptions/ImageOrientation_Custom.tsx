@@ -33,12 +33,14 @@ export default function CustomImageOrientation({
   return (
     <div className="col">
       <h2 className="row font-bold">Custom image size</h2>
-      <OptionLabel
-        title={
-          <span className="row font-bold text-sm text-white gap-1">Width</span>
-        }
-      >
-        <div className="">
+      <div className="row w-full gap-2">
+        <OptionLabel
+          title={
+            <span className="row font-bold text-sm text-black dark:text-white gap-1">
+              Width
+            </span>
+          }
+        >
           <NumberInput
             min={64}
             max={3072}
@@ -102,14 +104,38 @@ export default function CustomImageOrientation({
             }}
             value={width}
           />
+        </OptionLabel>
+        <div
+          style={{
+            position: 'relative',
+            borderTop: '2px solid var(--foreground-color)',
+            borderRight: '2px solid var(--foreground-color)',
+            width: '20px',
+            height: '20px',
+            top: '8px'
+          }}
+        />
+      </div>
+      <div className="row w-full gap-2 justify-end">
+        <div
+          style={{
+            position: 'relative',
+            width: '20px',
+            height: '22px',
+            right: '-6px'
+          }}
+        >
+          {lockRatio ? <IconLock /> : <IconLockOpen />}
         </div>
-      </OptionLabel>
-      <OptionLabel
-        title={
-          <span className="row font-bold text-sm text-white gap-1">Height</span>
-        }
-      >
-        <div className="">
+      </div>
+      <div className="row w-full gap-2">
+        <OptionLabel
+          title={
+            <span className="row font-bold text-sm text-black dark:text-white gap-1">
+              Height
+            </span>
+          }
+        >
           <NumberInput
             min={64}
             max={3072}
@@ -173,8 +199,19 @@ export default function CustomImageOrientation({
             }}
             value={height}
           />
-        </div>
-      </OptionLabel>
+        </OptionLabel>
+        <div
+          style={{
+            position: 'relative',
+            borderBottom: '2px solid var(--foreground-color)',
+            borderRight: '2px solid var(--foreground-color)',
+            width: '20px',
+            height: '20px',
+            top: '-8px'
+          }}
+        />
+      </div>
+
       <div className="w-full text-right row !justify-end">
         <Button
           onClick={() => {

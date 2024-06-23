@@ -3,11 +3,11 @@ import { Toaster } from 'react-hot-toast'
 
 import HeaderNav from './_components/HeaderNav'
 import './globals.css'
-import AppInit from './AppInit'
 import ModalProvider from './_providers/ModalProvider'
 import ContentWrapper from './_components/ContentWrapper'
 import BetaWarningPanel from './_components/BetaWarningPanel'
 import MobileFooter from './_components/MobileFooter'
+import AppInit from './_components/AppInit'
 
 export const metadata: Metadata = {
   title: 'ArtBot for Stable Diffusion',

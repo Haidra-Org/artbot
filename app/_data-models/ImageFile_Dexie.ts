@@ -1,3 +1,5 @@
+import { GenMetadata } from '../_types/HordeTypes'
+
 export enum ImageStatus {
   CENSORED = 'censored',
   ERROR = 'error',
@@ -24,11 +26,7 @@ export interface ImageFileInterface {
   sampler?: string
   model?: string
   imageBlob?: Blob | null
-  gen_metadata?: Array<{
-    type: string
-    value: string
-    ref?: string | undefined
-  }>
+  gen_metadata?: GenMetadata
   strength?: number | null // Used when adding multiple images (e.g., remix)
   seed?: string
   worker_id?: string
@@ -47,11 +45,7 @@ class ImageFile implements ImageFileInterface {
 
   // Other fields
   imageBlob?: Blob | null = null
-  gen_metadata?: Array<{
-    type: string
-    value: string
-    ref: string
-  }> = []
+  gen_metadata?: GenMetadata
   seed: string = ''
   strength: number | null = null
   worker_id: string = ''

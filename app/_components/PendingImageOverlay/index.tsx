@@ -42,7 +42,7 @@ function PendingImageOverlay({
       !isNaN(pendingJob?.images_completed) &&
       pendingJob?.images_completed === 0)
 
-  let pctComplete = 5
+  let pctComplete = 1
 
   if (
     pendingJob?.wait_time !== null &&
@@ -59,6 +59,20 @@ function PendingImageOverlay({
 
   if (pctComplete > 95) {
     pctComplete = 95
+  }
+
+  let serverWorkingMessage = 'Waiting...'
+
+  if (status === JobStatus.Requested) {
+    serverWorkingMessage = `Requested...`
+  }
+
+  if (status === JobStatus.Queued) {
+    serverWorkingMessage = `Queued... ${pendingJob.queue_position ? `(Position #${pendingJob.queue_position})` : ''}`
+  }
+
+  if (status === JobStatus.Processing) {
+    serverWorkingMessage = `Processing...`
   }
 
   return (
@@ -144,8 +158,7 @@ function PendingImageOverlay({
             <IconPhotoUp
               color="white"
               stroke={1}
-              size={30}
-              style={{ position: 'absolute' }}
+              style={{ position: 'absolute', height: '40px', width: '40px' }}
             />
           </div>
           <div className={styles.ImageStatus}>Waiting to request image...</div>
@@ -158,8 +171,7 @@ function PendingImageOverlay({
             <IconPhotoUp
               color="white"
               stroke={1}
-              size={30}
-              style={{ position: 'absolute' }}
+              style={{ position: 'absolute', height: '40px', width: '40px' }}
             />
           </div>
           <div className={styles.ImageStatus}>Image requested...</div>
@@ -171,20 +183,57 @@ function PendingImageOverlay({
           <div className={styles.ImageStatusIcon}>
             <ParticleAnimation />
           </div>
-          <div className={styles.ImageStatus} style={{ marginBottom: '12px' }}>
-            {pendingJob.wait_time !== null && pendingJob.wait_time > 0
-              ? `Processing... (${pendingJob.wait_time}s)`
-              : `Finishing up...`}
+          <div
+            className={styles.ImageStatusWorking}
+            style={{ marginBottom: '12px' }}
+          >
+            {pendingJob.wait_time !== null &&
+            pendingJob.wait_time > 0 &&
+            pendingJob.init_wait_time !== 0 ? (
+              <div className="col gap-0">
+                <div>{serverWorkingMessage}</div>
+                <div>
+                  {pctComplete}% / ({pendingJob.wait_time}s remaining)
+                </div>
+              </div>
+            ) : (
+              <span></span>
+            )}
+            {pendingJob.init_wait_time &&
+            pendingJob.wait_time === 0 &&
+            pendingJob.wait_time < pendingJob.init_wait_time ? (
+              <span>Finishing up...</span>
+            ) : (
+              <span></span>
+            )}
           </div>
         </>
       )}
+      {serverHasJob && <div></div>}
       {(status === JobStatus.Error || imageError) && (
-        <IconAlertTriangle
-          color="rgb(234 179 8)"
-          size={36}
-          stroke={1}
-          style={{ position: 'absolute' }}
-        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: 0,
+            gap: '8px',
+            fontFamily: 'monospace',
+            backgroundColor: 'black',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundImage: 'url(/tile.png)',
+            backgroundSize: 'auto',
+            backgroundRepeat: 'repeat',
+            boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
+          }}
+        >
+          <IconAlertTriangle color="rgb(234 179 8)" size={48} stroke={1} />
+          <div>Error: Unable to process image</div>
+        </div>
       )}
       {(status === JobStatus.Queued || status === JobStatus.Processing) && (
         <div

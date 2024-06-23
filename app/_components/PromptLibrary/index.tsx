@@ -197,7 +197,7 @@ export default function PromptLibrary({
             )
           })}
       </div>
-      {showSuggestions && (
+      {!showSuggestions && (
         <div className="row justify-center my-2">
           <ReactPaginate
             breakLabel="..."

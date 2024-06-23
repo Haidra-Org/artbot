@@ -74,6 +74,11 @@ export const updatePendingImageInAppState = (
     // Map through the existing pendingImages to find and update the relevant item
     const updatedPendingImages = state.pendingImages.map((job) => {
       if (job.artbot_id === artbot_id) {
+        // Fix issue where init_wait_time might be set to 0.
+        if (job.init_wait_time === 0 && updates.wait_time !== 0) {
+          updates.init_wait_time = updates.wait_time
+        }
+
         // Found the job to update, apply the updates to it
         return { ...job, ...updates }
       }

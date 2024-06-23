@@ -15,32 +15,36 @@ import Seed from './Seed'
 import Steps from './Steps'
 import UploadImage from './UploadImage'
 import Upscalers from './Upscalers'
+import StylePresetSelect from './StylePresetSelect'
 
 export default function AdvancedOptions() {
   return (
     <div className="grid gap-4">
-      <Section>
+      <Section anchor="style-preset">
+        <StylePresetSelect />
+      </Section>
+      <Section anchor="model-select">
         <ModelSelect />
         <SamplerSelect />
       </Section>
-      <Section>
+      <Section anchor="image-orientation">
         <ImageOrientation />
         <ImageCount />
       </Section>
-      <Section>
+      <Section anchor="steps">
         <Steps />
         <Guidance />
         <ClipSkip />
       </Section>
       <AddLora />
       <AddEmbedding />
-      <Section>
+      <Section anchor="face-fixers">
         <FaceFixers />
       </Section>
-      <Section>
+      <Section anchor="upscalers">
         <Upscalers />
       </Section>
-      <Section>
+      <Section anchor="seed">
         <Seed />
       </Section>
       <AdditionalOptions />

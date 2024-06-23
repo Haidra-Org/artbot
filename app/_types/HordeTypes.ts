@@ -8,6 +8,10 @@ export interface AvailableImageModel {
   type: string
 }
 
+export interface CategoryPreset {
+  [key: string]: string[]
+}
+
 export enum ControlTypes {
   // ArtBot specific
   // Delete before sending to API.
@@ -26,16 +30,18 @@ export enum ControlTypes {
   hough = 'hough'
 }
 
+export interface GenMetadata {
+  type: string
+  value: string
+  ref?: string
+}
+
 export interface HordeGeneration {
   img: string
   seed: string
   id: string
   censored: boolean
-  gen_metadata: Array<{
-    type: string
-    value: string
-    ref?: string
-  }>
+  gen_metadata: GenMetadata[]
   worker_id: string
   worker_name: string
   model: string
@@ -99,6 +105,33 @@ export interface HordeUser {
   }
 }
 
+export interface ImageModelDetails {
+  name: string
+  baseline: string
+  type: string
+  inpainting: boolean
+  description: string
+  showcases: string[]
+  version: string
+  style: string
+  nsfw: boolean
+  download_all: boolean
+  config: {
+    files: {
+      path: string
+      md5sum?: string
+      sha256sum?: string
+    }[]
+    download: {
+      file_name: string
+      file_path: string
+      file_url: string
+    }[]
+  }
+  available: boolean
+  size_on_disk_bytes: number
+}
+
 export enum InjectTi {
   Prompt = 'prompt',
   NegPrompt = 'negprompt'
@@ -134,4 +167,29 @@ export interface TextualInversion {
   name: string
   inject_ti?: string
   strength?: number
+}
+
+export interface LoraConfig {
+  name: string
+  model?: number
+  clip?: number
+  is_version: boolean
+}
+
+export interface StylePresetConfig {
+  prompt: string
+  model: string
+  enhance?: boolean
+  steps?: number
+  width?: number
+  height?: number
+  sampler_name?: string
+  karras?: boolean
+  cfg_scale?: number
+  hires_fix?: boolean
+  loras?: LoraConfig[]
+}
+
+export interface StylePresetConfigurations {
+  [key: string]: StylePresetConfig
 }
