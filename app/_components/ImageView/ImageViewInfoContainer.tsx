@@ -9,12 +9,15 @@ import styles from './imageView.module.css'
 import { useImageView } from './ImageViewProvider'
 import ImageDetails from '../ImageDetails'
 import useImageDetails, { JobDetails } from '@/app/_hooks/useImageDetails'
+import { useState } from 'react'
+import { formatStylePresetPrompt } from '@/app/_utils/stringUtils'
 
 export default function ImageViewInfoContainer({
   onDelete
 }: {
   onDelete: () => void
 }) {
+  const [showPromptPreset, setShowPromptPreset] = useState(false)
   const { imageData, imageId } = useImageView()
   const [imageDetails] = useImageDetails(imageId)
   const { imageRequest } = imageData
@@ -28,9 +31,25 @@ export default function ImageViewInfoContainer({
           Prompt
         </div>
         <div className="w-full text-sm ml-[8px] break-words">
-          {imageRequest?.prompt}
+          {!showPromptPreset
+            ? imageRequest?.prompt
+            : formatStylePresetPrompt({
+                positive: imageRequest?.prompt,
+                negative: imageRequest?.negative,
+                stylePresetPrompt: imageRequest.preset[0].settings.prompt
+              })}
         </div>
       </div>
+      {imageRequest?.preset && imageRequest.preset.length > 0 && (
+        <div>
+          <div
+            className="primary-color text-sm cursor-pointer row font-mono"
+            onClick={() => setShowPromptPreset(!showPromptPreset)}
+          >
+            [ {showPromptPreset ? 'Hide' : 'Show'} modified prompt ]
+          </div>
+        </div>
+      )}
       {imageRequest?.negative && (
         <div className="col gap-0 w-full">
           <div className="row gap-2 text-sm font-bold">

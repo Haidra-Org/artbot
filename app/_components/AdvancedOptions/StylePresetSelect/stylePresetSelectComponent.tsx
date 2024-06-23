@@ -124,7 +124,7 @@ export default function StylePresetSelectComponent({
                   }}
                 />
               ),
-              modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
+              modalClassName: 'w-full md:min-w-[640px] max-w-[648px]'
             })
           }}
           onChange={() => {}}

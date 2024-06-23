@@ -35,6 +35,11 @@ html {
   scroll-padding-top: 52px;
 }
 
+/* lol. need this z-index so popover displays over existing modal */
+#headlessui-portal-root {
+  z-index: 9999;
+}
+
 @layer components {
   .col {
     @apply flex flex-col gap-2

@@ -1,9 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
-import { IconArrowBarLeft, IconWand } from '@tabler/icons-react'
+import {
+  IconArrowBarLeft,
+  IconCheck,
+  IconPhotoCog,
+  IconWand
+} from '@tabler/icons-react'
 import React, { useState } from 'react'
 import Button from '../Button'
 import NiceModal from '@ebay/nice-modal-react'
 import { CategoryPreset } from '@/app/_types/HordeTypes'
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 
 // Component to manage individual image loading and error handling
 const ImageWithFallback = ({
@@ -67,6 +73,7 @@ const FilterableCategories = ({
   handleOnClick?: (preset: string) => void
 }) => {
   const [searchInput, setSearchInput] = useState('')
+  const [subject, setSubject] = useState('person')
 
   // Filter function to filter the categories based on the search input
   const filterCategories = (
@@ -119,6 +126,50 @@ const FilterableCategories = ({
         >
           <IconArrowBarLeft />
         </Button>
+        <Popover className="relative">
+          <PopoverButton>
+            <Button onClick={() => {}} title="View other preset example images">
+              <IconPhotoCog />
+            </Button>
+          </PopoverButton>
+          <PopoverPanel
+            anchor="bottom"
+            className="col bg-white dark:bg-black p-2 rounded-md w-[180px] mt-2"
+            transition
+            style={{
+              border: '1px solid white'
+            }}
+          >
+            <div className="text-sm font-bold">View examples:</div>
+            <div
+              onClick={() => setSubject('person')}
+              className="row w-full  cursor-pointer"
+            >
+              <div className="w-[20px] pr-1">
+                {subject === 'person' && <IconCheck size={12} />}
+              </div>
+              Person
+            </div>
+            <div
+              onClick={() => setSubject('place')}
+              className="row w-full  cursor-pointer"
+            >
+              <div className="w-[20px] pr-1">
+                {subject === 'place' && <IconCheck size={12} />}
+              </div>
+              Place
+            </div>
+            <div
+              onClick={() => setSubject('thing')}
+              className="row w-full cursor-pointer"
+            >
+              <div className="w-[20px] pr-1">
+                {subject === 'thing' && <IconCheck size={12} />}
+              </div>
+              Thing
+            </div>
+          </PopoverPanel>
+        </Popover>
       </div>
       {Object.keys(filteredCategories).map((category: string) => (
         <div key={category} className="w-full col mb-6">
@@ -164,7 +215,7 @@ const FilterableCategories = ({
                     }}
                   >
                     <ImageWithFallback
-                      src={`https://raw.githubusercontent.com/amiantos/AI-Horde-Styles-Previews/main/images/${formatPreset}_person.webp`}
+                      src={`https://raw.githubusercontent.com/amiantos/AI-Horde-Styles-Previews/main/images/${formatPreset}_${subject}.webp`}
                       alt={preset}
                       fallbackColor="gray"
                     />

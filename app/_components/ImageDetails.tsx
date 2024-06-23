@@ -119,6 +119,12 @@ export default function ImageDetails({
               {imageRequest.width}px
             </div>
           </div>
+          {imageRequest.preset.length > 0 && (
+            <div className="mt-4">
+              <strong>Preset: </strong>
+              {imageRequest.preset[0].name}
+            </div>
+          )}
           {imageRequest.loras.length > 0 && (
             <div className="mt-4">
               {imageRequest.loras.map((lora) => {
