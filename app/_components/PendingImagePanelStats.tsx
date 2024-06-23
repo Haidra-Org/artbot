@@ -33,7 +33,7 @@ export default function PendingImagePanelStats() {
 
   return (
     <div
-      className="row justify-between p-2"
+      className="row justify-between p-2 font-mono"
       style={{
         border: '1px solid rgb(63 63 70)',
         borderRadius: '4px'

@@ -6,10 +6,8 @@ import { useStore } from 'statery'
 import { useCallback, useEffect, useState } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
 import {
-  IconAffiliate,
   IconClearAll,
   IconPhotoBolt,
-  IconSettings,
   IconSortAscending,
   IconSortDescending
 } from '@tabler/icons-react'
@@ -118,8 +116,6 @@ export default function PendingImagesPanel({
     })
   }, [sortBy])
 
-  console.log(`images`, images)
-
   const filteredImages = images.filter((image) => {
     const { hordeStatus } = image
     if (filter === 'all') {
@@ -155,9 +151,6 @@ export default function PendingImagesPanel({
         <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconClearAll />
         </Button>
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-          <IconAffiliate />
-        </Button>
         <Button
           onClick={() => {
             setSortBy(sortBy === 'asc' ? 'desc' : 'asc')
@@ -167,11 +160,12 @@ export default function PendingImagesPanel({
           {sortBy === 'asc' ? <IconSortAscending /> : <IconSortDescending />}
         </Button>
         <FilterButton filter={filter} setFilter={setFilter} />
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-          <IconSettings />
-        </Button>
       </Section>
       <PendingImagePanelStats />
+      <div className="w-full font-mono text-xs">
+        Filter: {filter} ({filteredImages.length} image
+        {filteredImages.length > 1 ? 's' : ''})
+      </div>
       {images.length === 0 && (
         <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center z-[1]">
           <p className="text-gray-400 w-full text-center  ">
