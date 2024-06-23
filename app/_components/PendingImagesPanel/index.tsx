@@ -147,17 +147,19 @@ export default function PendingImagesPanel({
           Pending images
         </h2>
       )}
-      <Section className="justify-end gap-2 row z-10 sticky top-[42px]">
-        <ClearButton />
-        <Button
-          onClick={() => {
-            setSortBy(sortBy === 'asc' ? 'desc' : 'asc')
-          }}
-          style={{ height: '38px', width: '38px' }}
-        >
-          {sortBy === 'asc' ? <IconSortAscending /> : <IconSortDescending />}
-        </Button>
-        <FilterButton filter={filter} setFilter={setFilter} />
+      <Section className="z-10 sticky top-[42px]">
+        <div className="w-full justify-end gap-2 row">
+          <ClearButton />
+          <Button
+            onClick={() => {
+              setSortBy(sortBy === 'asc' ? 'desc' : 'asc')
+            }}
+            style={{ height: '38px', width: '38px' }}
+          >
+            {sortBy === 'asc' ? <IconSortAscending /> : <IconSortDescending />}
+          </Button>
+          <FilterButton filter={filter} setFilter={setFilter} />
+        </div>
       </Section>
       <PendingImagePanelStats />
       <div className="w-full font-mono text-xs">
