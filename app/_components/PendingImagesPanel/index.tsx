@@ -8,7 +8,6 @@ import NiceModal from '@ebay/nice-modal-react'
 import {
   IconAffiliate,
   IconClearAll,
-  IconFilter,
   IconPhotoBolt,
   IconSettings,
   IconSortAscending,
@@ -25,7 +24,7 @@ import Section from '../Section'
 import Button from '../Button'
 import PendingImageView from '../ImageView_Pending'
 import PendingImagePanelStats from '../PendingImagePanelStats'
-import { Popover } from '@headlessui/react'
+import FilterButton from './PendingImagesPanel_FilterButton'
 
 interface PendingImagesPanelProps {
   showBorder?: boolean
@@ -49,7 +48,7 @@ export default function PendingImagesPanel({
 }: PendingImagesPanelProps) {
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
 
   const fetchImages = useCallback(async () => {
@@ -119,6 +118,28 @@ export default function PendingImagesPanel({
     })
   }, [sortBy])
 
+  console.log(`images`, images)
+
+  const filteredImages = images.filter((image) => {
+    const { hordeStatus } = image
+    if (filter === 'all') {
+      return true
+    } else if (filter === 'done') {
+      return hordeStatus === JobStatus.Done
+    } else if (filter === 'processing') {
+      return hordeStatus === JobStatus.Processing
+    } else if (filter === 'error') {
+      return hordeStatus === JobStatus.Error
+    } else if (filter === 'pending') {
+      return (
+        hordeStatus === JobStatus.Requested ||
+        hordeStatus === JobStatus.Waiting ||
+        hordeStatus === JobStatus.Queued
+      )
+    }
+    return false
+  })
+
   return (
     <div
       className="w-full rounded-md p-2 col min-h-[364px] relative"
@@ -145,11 +166,7 @@ export default function PendingImagesPanel({
         >
           {sortBy === 'asc' ? <IconSortAscending /> : <IconSortDescending />}
         </Button>
-        <Popover className="relative">
-          <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-            <IconFilter />
-          </Button>
-        </Popover>
+        <FilterButton filter={filter} setFilter={setFilter} />
         <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconSettings />
         </Button>
@@ -165,7 +182,7 @@ export default function PendingImagesPanel({
       <PhotoAlbum
         layout="masonry"
         spacing={4}
-        photos={images}
+        photos={filteredImages}
         renderPhoto={(renderPhotoProps) => {
           const { layout, layoutOptions, photo, imageProps } =
             renderPhotoProps || {}
