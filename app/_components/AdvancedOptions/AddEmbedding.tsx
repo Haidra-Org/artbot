@@ -7,7 +7,7 @@ import NiceModal from '@ebay/nice-modal-react'
 
 export default function AddEmbedding() {
   return (
-    <Section>
+    <Section anchor="add-embedding">
       <div className="row justify-between">
         <h2 className="row font-bold text-white">Embeddings</h2>
         <div className="row gap-1">

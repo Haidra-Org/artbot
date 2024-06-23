@@ -8,7 +8,6 @@ export default function ClipSkip() {
 
   return (
     <OptionLabel
-      anchor="clip"
       className="row md:row"
       title={
         <span className="row font-bold text-sm text-white gap-1">

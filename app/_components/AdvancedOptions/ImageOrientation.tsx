@@ -88,7 +88,6 @@ export default function ImageOrientation() {
   return (
     <div className="col">
       <OptionLabel
-        anchor="image-orientation"
         title={
           <span className="row font-bold text-sm text-white gap-1">Aspect</span>
         }

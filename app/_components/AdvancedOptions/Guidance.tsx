@@ -8,7 +8,6 @@ export default function Guidance() {
 
   return (
     <OptionLabel
-      anchor="guidance"
       className="row md:row"
       title={
         <span className="row font-bold text-sm text-white gap-1">Guidance</span>

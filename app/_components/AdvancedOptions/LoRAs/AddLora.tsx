@@ -32,7 +32,7 @@ export default function AddLora() {
   )
 
   return (
-    <Section anchor="loras">
+    <Section anchor="add-lora">
       <div className="row justify-between">
         <h2 className="row font-bold text-white">
           LoRAs{' '}

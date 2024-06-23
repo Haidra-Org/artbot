@@ -169,7 +169,10 @@ export default function UploadImage() {
   return (
     <>
       {sourceImages.length > 0 && (
-        <Section title={`Uploaded images (${sourceImages.length} / 5)`}>
+        <Section
+          title={`Uploaded images (${sourceImages.length} / 5)`}
+          anchor="uploaded-images"
+        >
           {sourceImages.map((image, idx) => (
             <div key={`uploaded-image-${image.image_id}`}>
               {idx > 0 && (

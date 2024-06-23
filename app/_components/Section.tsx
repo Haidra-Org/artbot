@@ -21,20 +21,17 @@ export default function Section({
       )}
     >
       {anchor && (
-        <div
+        <a
           className=""
           style={{
             backgroundColor: 'gray',
             borderTopLeftRadius: '0.375rem',
             borderBottomLeftRadius: '0.375rem',
-            // position: 'absolute',
-            // top: 0,
-            // bottom: 0,
-            // left: 0,
             height: '100%',
             width: '8px'
           }}
-        ></div>
+          href={`#${anchor}`}
+        ></a>
       )}
       <div className="col px-2 py-3 gap-2 w-full">
         {title && <h2 className="row font-bold text-white">{title}</h2>}

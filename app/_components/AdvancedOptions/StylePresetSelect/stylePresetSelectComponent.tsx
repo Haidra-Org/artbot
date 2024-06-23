@@ -83,7 +83,7 @@ export default function StylePresetSelectComponent({
         preset: [{ name: option, settings: { ...presetSettings } }]
       })
     },
-    [setInput]
+    [modelDetails, setInput]
   )
 
   let options = [
@@ -104,7 +104,6 @@ export default function StylePresetSelectComponent({
 
   return (
     <OptionLabel
-      anchor="style-preset"
       title={
         <span className="row font-bold text-sm text-white gap-1">
           Style preset

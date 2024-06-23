@@ -51,7 +51,7 @@ export default function HordeSettings() {
   }, [])
 
   return (
-    <Section title="Horde settings">
+    <Section title="Horde settings" anchor="horde-settings">
       <label className="row gap-2 text-white">
         <Switch
           checked={downgrade}

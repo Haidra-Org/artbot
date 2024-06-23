@@ -40,7 +40,6 @@ export default function SamplerSelect() {
 
   return (
     <OptionLabel
-      anchor="sampler"
       title={
         <span className="row font-bold text-sm text-white gap-1">Sampler</span>
       }

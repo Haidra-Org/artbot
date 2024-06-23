@@ -8,7 +8,6 @@ export default function Steps() {
 
   return (
     <OptionLabel
-      anchor="steps"
       className="row md:row"
       title={
         <span className="row font-bold text-sm text-white gap-1">Steps</span>

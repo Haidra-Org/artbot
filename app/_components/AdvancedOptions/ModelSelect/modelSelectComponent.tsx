@@ -26,7 +26,6 @@ export default function ModelSelectComponent({
 
   return (
     <OptionLabel
-      anchor="model-select"
       title={
         <span className="row font-bold text-sm text-white gap-1">
           Image model
