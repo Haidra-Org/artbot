@@ -83,7 +83,11 @@ export default function ImageDetails({
           </div>
           <div>
             <strong>Model version: </strong>
-            ??
+            {imageRequest?.modelDetails?.version ?? 'N/A'}
+          </div>
+          <div>
+            <strong>Baseline: </strong>
+            {imageRequest?.modelDetails?.baseline ?? 'N/A'}
           </div>
           <div>
             <strong>Sampler: </strong>
@@ -93,6 +97,12 @@ export default function ImageDetails({
             <div>
               <strong>Kudos: </strong>
               {imageFile.kudos}
+            </div>
+          )}
+          {imageRequest.preset.length > 0 && (
+            <div className="mt-4">
+              <strong>Preset: </strong>
+              {imageRequest.preset[0].name}
             </div>
           )}
           <div className="mt-4">
@@ -119,12 +129,6 @@ export default function ImageDetails({
               {imageRequest.width}px
             </div>
           </div>
-          {imageRequest.preset.length > 0 && (
-            <div className="mt-4">
-              <strong>Preset: </strong>
-              {imageRequest.preset[0].name}
-            </div>
-          )}
           {imageRequest.loras.length > 0 && (
             <div className="mt-4">
               {imageRequest.loras.map((lora) => {

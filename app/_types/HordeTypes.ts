@@ -105,6 +105,33 @@ export interface HordeUser {
   }
 }
 
+export interface ImageModelDetails {
+  name: string
+  baseline: string
+  type: string
+  inpainting: boolean
+  description: string
+  showcases: string[]
+  version: string
+  style: string
+  nsfw: boolean
+  download_all: boolean
+  config: {
+    files: {
+      path: string
+      md5sum?: string
+      sha256sum?: string
+    }[]
+    download: {
+      file_name: string
+      file_path: string
+      file_url: string
+    }[]
+  }
+  available: boolean
+  size_on_disk_bytes: number
+}
+
 export enum InjectTi {
   Prompt = 'prompt',
   NegPrompt = 'negprompt'

@@ -15,6 +15,8 @@ import {
 import { useCallback } from 'react'
 import PromptInput from '@/app/_data-models/PromptInput'
 import { SavedLora } from '@/app/_data-models/Civitai'
+import { useStore } from 'statery'
+import { ModelStore } from '@/app/_stores/ModelStore'
 
 export default function StylePresetSelectComponent({
   categories,
@@ -26,6 +28,7 @@ export default function StylePresetSelectComponent({
   hasError: boolean
 }) {
   const { input, setInput } = useInput()
+  const { modelDetails } = useStore(ModelStore)
 
   const handleSelectPreset = useCallback(
     (option: string, presetSettings: StylePresetConfig) => {
@@ -36,6 +39,10 @@ export default function StylePresetSelectComponent({
 
         if (key === 'model') {
           updateInput.models = [presetSettings.model]
+          updateInput.modelDetails = {
+            baseline: modelDetails[presetSettings.model].baseline,
+            version: modelDetails[presetSettings.model].version
+          }
           return
         }
 

@@ -34,6 +34,13 @@ class PromptInput {
   karras: boolean = true
   loras: SavedLora[] = []
   models: Array<string> = ['AlbedoBase XL (SDXL)']
+  modelDetails: {
+    baseline: string
+    version: string
+  } = {
+    baseline: '',
+    version: ''
+  }
   negative: string = ''
   numImages: number = 1
   parentJobId: string = ''
