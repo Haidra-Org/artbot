@@ -24,7 +24,7 @@ export default function FilterButton({
 
   return (
     <Popover className="relative">
-      <PopoverButton>
+      <PopoverButton as="div">
         <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconFilter />
         </Button>

@@ -6,7 +6,6 @@ import { useStore } from 'statery'
 import { useCallback, useEffect, useState } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
 import {
-  IconClearAll,
   IconPhotoBolt,
   IconSortAscending,
   IconSortDescending
@@ -23,6 +22,7 @@ import Button from '../Button'
 import PendingImageView from '../ImageView_Pending'
 import PendingImagePanelStats from '../PendingImagePanelStats'
 import FilterButton from './PendingImagesPanel_FilterButton'
+import ClearButton from './PendingImagesPanel_ClearButton'
 
 interface PendingImagesPanelProps {
   showBorder?: boolean
@@ -148,9 +148,7 @@ export default function PendingImagesPanel({
         </h2>
       )}
       <Section className="justify-end gap-2 row z-10 sticky top-[42px]">
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-          <IconClearAll />
-        </Button>
+        <ClearButton />
         <Button
           onClick={() => {
             setSortBy(sortBy === 'asc' ? 'desc' : 'asc')
