@@ -342,6 +342,56 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     return this
   }
 
+  setWorkflows(): ImageParamsForHordeApi {
+    if (this.imageDetails.workflows.length === 0) return this
+    const { workflows } = this.imageDetails
+
+    // Filter through workflows array and find element that contains type === 'qr_code`
+    const qrCode = workflows.find((w) => w.type === 'qr_code')
+
+    if (qrCode) {
+      if (!this.apiParams.params.extra_texts) {
+        this.apiParams.params.extra_texts = []
+      }
+
+      this.apiParams.params.workflow = 'qr_code'
+      this.apiParams.params.extra_texts?.push({
+        text: qrCode.text,
+        reference: 'qr_code'
+      })
+
+      if (qrCode.position === 'center') {
+        return this
+      }
+
+      // Default setting for Top Left
+      let x_offset = 32
+      let y_offset = 32
+
+      if (qrCode.position === 'top right') {
+        x_offset = this.imageDetails.width - 32
+      } else if (qrCode.position === 'bottom left') {
+        x_offset = 32
+        y_offset = this.imageDetails.height - 32
+      } else if (qrCode.position === 'bottom right') {
+        x_offset = this.imageDetails.width - 32
+        y_offset = this.imageDetails.height - 32
+      }
+
+      this.apiParams.params.extra_texts?.push({
+        text: String(x_offset),
+        reference: 'x_offset'
+      })
+
+      this.apiParams.params.extra_texts?.push({
+        text: String(y_offset),
+        reference: 'y_offset'
+      })
+    }
+
+    return this
+  }
+
   setStylePresets(): ImageParamsForHordeApi {
     if (this.imageDetails.preset.length === 0) return this
 
@@ -392,6 +442,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     instance.setWorkerPreferences()
     await instance.setSourceProcessing()
     instance.setControlType()
+    instance.setWorkflows()
     instance.setStylePresets()
     instance.setErrorHandling(hasError)
     instance.validate()
