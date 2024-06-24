@@ -32,6 +32,7 @@ import { updateInputTimstamp } from '@/app/_stores/CreateImageStore'
 import NiceModal from '@ebay/nice-modal-react'
 import { updatePendingImage } from '@/app/_controllers/pendingJobController'
 import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
+import { formatPendingPercentage } from '@/app/_utils/numberUtils'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -74,19 +75,6 @@ function formatJobStatus(status: JobStatus) {
       return 'Error'
     default:
       return status
-  }
-}
-
-function formatPercentage({
-  init,
-  remaining
-}: {
-  init: number
-  remaining: number
-}) {
-  if (init > 0 && remaining >= 0) {
-    const pct = 100 - (remaining / init) * 100
-    return Math.round(pct * 100) / 100
   }
 }
 
@@ -135,7 +123,7 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
     )
   }
 
-  const pctComplete = formatPercentage({
+  const pctComplete = formatPendingPercentage({
     init: pendingImage?.init_wait_time as number,
     remaining: pendingImage?.wait_time as number
   })

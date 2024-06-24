@@ -51,6 +51,7 @@ class ImageFile implements ImageFileInterface {
   strength: number | null = null
   worker_id: string = ''
   worker_name: string = ''
+  apiResponse: string = ''
 
   constructor(params: Partial<ImageFile>) {
     Object.assign(this, params)

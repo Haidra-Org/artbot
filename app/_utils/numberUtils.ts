@@ -64,6 +64,31 @@ export const formatTimestamp = (timestamp: number): string => {
   return `${formattedDate.replace(/-/g, '/')} ${formattedTime}`
 }
 
+export const formatPendingPercentage = ({
+  init,
+  remaining
+}: {
+  init: number
+  remaining: number
+}) => {
+  let pctComplete = 1
+
+  if (init > 0 && remaining >= 0) {
+    const pct = 100 - (remaining / init) * 100
+    pctComplete = Math.round(pct * 100) / 100
+  }
+
+  if (pctComplete < 1) {
+    pctComplete = 1
+  }
+
+  if (pctComplete > 95) {
+    pctComplete = 95
+  }
+
+  return pctComplete
+}
+
 export const formatKudos = (num: number) => {
   if (num === 0) {
     return '...'
