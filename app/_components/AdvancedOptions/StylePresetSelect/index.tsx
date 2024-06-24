@@ -1,4 +1,7 @@
-import { CategoryPreset, StylePresetConfigurations } from '@/app/_types/HordeTypes'
+import {
+  CategoryPreset,
+  StylePresetConfigurations
+} from '@/app/_types/HordeTypes'
 import StylePresetSelectComponent from './stylePresetSelectComponent'
 
 export async function getData(): Promise<{
@@ -18,9 +21,18 @@ export async function getData(): Promise<{
     // @ts-expect-error TODO: Need to properly type this.
     const presets: never = (await presetsRes.json()) || {}
 
+    // Filter categories to include only those keys that exist in presets
+    // e.g., "Summer" category includes "Summer 2022" and "Summer 2023" categories
+    const filteredCategories = Object.keys(categories).reduce((acc, key) => {
+      acc[key] = categories[key].filter(
+        (category: string) => category in presets
+      )
+      return acc
+    }, {} as CategoryPreset)
+
     return {
       success: true,
-      categories,
+      categories: filteredCategories,
       presets
     }
   } catch (err) {
