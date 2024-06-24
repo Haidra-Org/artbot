@@ -9,7 +9,7 @@ const defaultImage =
 
 // Prevents re-rendering of the same image multiple times as parent is updated
 const ImageViewImage = React.memo(() => {
-  const { artbot_id, imageBlob, imageData } = useImageView()
+  const { artbot_id, imageBlob, imageData, setCurrentImageId } = useImageView()
   const { imageFiles } = imageData
 
   const [imageUrl, setImageUrl] = useState(defaultImage)
@@ -41,7 +41,13 @@ const ImageViewImage = React.memo(() => {
   if (!imageBlob) return null
 
   return (
-    <Carousel numSlides={imageFiles.length} options={{ loop: true }}>
+    <Carousel
+      numSlides={imageFiles.length}
+      onSlideChange={(num: number) => {
+        setCurrentImageId(imageFiles[num].image_id)
+      }}
+      options={{ loop: true }}
+    >
       {imageFiles.map((image) => (
         <CarouselImage
           key={image.image_id}

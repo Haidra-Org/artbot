@@ -5,16 +5,19 @@ import { useDotButton } from '@/app/_hooks/useCarouselDots'
 import styles from './carousel.module.css'
 import CarouselControls from './CarouselControls'
 import { usePrevNextButtons } from './CarouselArrowButtons'
+import { useCallback, useEffect } from 'react'
 
-export default function CarouselV2({
+export default function Carousel({
   children,
   controls = 'bottom',
   numSlides,
+  onSlideChange = () => {},
   options = {}
 }: {
   children: React.ReactNode
   controls?: 'top' | 'bottom'
   numSlides: number
+  onSlideChange?: (index: number) => void
   options?: EmblaOptionsType
 }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -29,6 +32,18 @@ export default function CarouselV2({
     onPrevButtonClick,
     onNextButtonClick
   } = usePrevNextButtons(emblaApi)
+
+  const emitSlidePosition = useCallback(() => {
+    onSlideChange(emblaApi?.selectedScrollSnap() || 0)
+  }, [emblaApi, onSlideChange])
+
+  useEffect(() => {
+    emblaApi?.on('select', emitSlidePosition)
+
+    return () => {
+      emblaApi?.off('select', emitSlidePosition)
+    }
+  }, [emblaApi, emitSlidePosition])
 
   return (
     <section className={styles.embla}>
