@@ -172,7 +172,7 @@ export interface TextualInversion {
 export interface LoraConfig {
   name: string
   model?: number
-  clip?: number
+  clip_skip?: number
   is_version: boolean
 }
 

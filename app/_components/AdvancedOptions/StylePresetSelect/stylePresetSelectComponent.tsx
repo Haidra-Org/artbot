@@ -60,7 +60,7 @@ export default function StylePresetSelectComponent({
               isArtbotManualEntry: true,
               name: lora.name,
               strength: lora.model || 1,
-              clip: lora.clip || 1
+              clip: lora.clip_skip || 1
             })
 
             // @ts-expect-error updateInput.loras is defined right above this.
