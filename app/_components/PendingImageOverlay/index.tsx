@@ -20,6 +20,7 @@ import { deletePendingImageFromAppState } from '../../_stores/PendingImagesStore
 import { deleteJobFromDexie } from '../../_db/jobTransactions'
 import ParticleAnimation from '../ParticleAnimation'
 import styles from './pendingImageOverlay.module.css'
+import { formatPendingPercentage } from '@/app/_utils/numberUtils'
 // import DeleteConfirmation from '@/app/_components/modals/DeleteConfirmation'
 
 function PendingImageOverlay({
@@ -42,24 +43,10 @@ function PendingImageOverlay({
       !isNaN(pendingJob?.images_completed) &&
       pendingJob?.images_completed === 0)
 
-  let pctComplete = 1
-
-  if (
-    pendingJob?.wait_time !== null &&
-    pendingJob?.init_wait_time !== null &&
-    pendingJob?.wait_time < pendingJob?.init_wait_time &&
-    pendingJob?.init_wait_time !== 0
-  ) {
-    pctComplete = Math.round(
-      ((pendingJob.init_wait_time - pendingJob.wait_time) /
-        pendingJob.init_wait_time) *
-        100
-    )
-  }
-
-  if (pctComplete > 95) {
-    pctComplete = 95
-  }
+  const pctComplete = formatPendingPercentage({
+    init: pendingJob?.init_wait_time as number,
+    remaining: pendingJob?.wait_time as number
+  })
 
   let serverWorkingMessage = 'Waiting...'
 

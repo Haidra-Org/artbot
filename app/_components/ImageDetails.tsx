@@ -16,7 +16,9 @@ export default function ImageDetails({
 }: {
   imageDetails: JobDetails
 }) {
-  const [showRequestParams, setShowRequestParams] = useState(false)
+  const [display, setDisplay] = useState<'info' | 'request' | 'response'>(
+    'info'
+  )
   const [rawParams, setRawParams] = useState<{
     apiParams: HordeApiParams
     imageDetails: PromptInput
@@ -71,7 +73,7 @@ export default function ImageDetails({
 
   return (
     <div className="col">
-      {!showRequestParams && (
+      {display === 'info' && (
         <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
           <div>
             <strong>Created: </strong>
@@ -143,15 +145,21 @@ export default function ImageDetails({
                     <div
                       className="row"
                       onClick={() => {
+                        if (lora.isArtbotManualEntry) return
+
                         NiceModal.show('embeddingDetails', {
                           children: <LoraDetails details={lora} />
                         })
                       }}
                     >
                       <strong>LoRA: </strong>
-                      <div className="cursor-pointer primary-color">
-                        {lora.name}
-                      </div>
+                      {!lora.isArtbotManualEntry ? (
+                        <div className="cursor-pointer primary-color">
+                          {lora.name}
+                        </div>
+                      ) : (
+                        <div>{lora.name}</div>
+                      )}
                     </div>
                     <div className="row">
                       <strong>
@@ -211,20 +219,48 @@ export default function ImageDetails({
           )}
         </div>
       )}
-      {showRequestParams && (
+      {display === 'request' && (
         <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
           <pre className="whitespace-pre-wrap">
             {JSON.stringify(rawParams?.apiParams, null, 2)}
           </pre>
         </div>
       )}
+      {display === 'response' && (
+        <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
+          <pre
+            className="whitespace-pre-wrap"
+            style={{
+              overflowWrap: 'break-word'
+            }}
+          >
+            {JSON.stringify(JSON.parse(imageFile.apiResponse), null, 2)}
+          </pre>
+        </div>
+      )}
       <button
         className="cursor-pointer row text-[14px]"
         tabIndex={0}
-        onClick={() => setShowRequestParams(!showRequestParams)}
+        onClick={() => setDisplay('info')}
       >
         <IconCodeDots stroke={1.5} />
-        {showRequestParams ? 'Hide' : 'Show'} request parameters
+        Image details
+      </button>
+      <button
+        className="cursor-pointer row text-[14px]"
+        tabIndex={0}
+        onClick={() => setDisplay('request')}
+      >
+        <IconCodeDots stroke={1.5} />
+        Request parameters
+      </button>
+      <button
+        className="cursor-pointer row text-[14px]"
+        tabIndex={0}
+        onClick={() => setDisplay('response')}
+      >
+        <IconCodeDots stroke={1.5} />
+        API response
       </button>
       <button
         className="cursor-pointer row text-[14px]"

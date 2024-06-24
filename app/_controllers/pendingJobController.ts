@@ -14,7 +14,11 @@ import {
 import { GenMetadata, HordeGeneration } from '../_types/HordeTypes'
 import { checkImageExistsInDexie } from '../_db/ImageFiles'
 import downloadImage, { DownloadSuccessResponse } from '../_api/horde/download'
-import { ImageStatus, ImageType } from '../_data-models/ImageFile_Dexie'
+import {
+  ImageFileInterface,
+  ImageStatus,
+  ImageType
+} from '../_data-models/ImageFile_Dexie'
 import imageStatus, { StatusSuccessResponse } from '../_api/horde/status'
 import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
 import generateImage from '../_api/horde/generate'
@@ -121,7 +125,7 @@ export const downloadImages = async ({
       const response = result.value as DownloadSuccessResponse
       const imageKudos = images_completed > 0 ? kudos / images_completed : 0
 
-      const image = {
+      const image: ImageFileInterface = {
         artbot_id: jobDetails.artbot_id,
         horde_id: jobDetails.horde_id,
         image_id: generationsList[index].id,
@@ -134,7 +138,8 @@ export const downloadImages = async ({
         seed: generationsList[index].seed,
         worker_id: generationsList[index].worker_id,
         worker_name: generationsList[index].worker_name,
-        kudos: imageKudos.toFixed(2)
+        kudos: imageKudos.toFixed(2),
+        apiResponse: JSON.stringify(generationsList[index])
       }
 
       if (response.success && !generations[index].censored) {

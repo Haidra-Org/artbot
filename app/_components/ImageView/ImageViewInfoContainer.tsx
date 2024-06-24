@@ -18,8 +18,8 @@ export default function ImageViewInfoContainer({
   onDelete: () => void
 }) {
   const [showPromptPreset, setShowPromptPreset] = useState(false)
-  const { imageData, imageId } = useImageView()
-  const [imageDetails] = useImageDetails(imageId)
+  const { currentImageId, imageData, imageId } = useImageView()
+  const [imageDetails] = useImageDetails(currentImageId || imageId)
   const { imageRequest } = imageData
 
   return (

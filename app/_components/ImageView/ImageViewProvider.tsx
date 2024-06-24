@@ -17,20 +17,24 @@ interface ImageDetails {
 
 interface DefaultContext {
   artbot_id: string
+  currentImageId: string
   imageBlob: Blob | undefined
   imageData: ImageDetails
   imageId: string
+  setCurrentImageId: (image_id: string) => void
 }
 
 const defaultContext: DefaultContext = {
   artbot_id: '',
+  currentImageId: '',
   imageBlob: undefined,
   imageData: {
     jobDetails: {} as HordeJob,
     imageFiles: [] as ImageFileInterface[],
     imageRequest: {} as ImageRequest
   },
-  imageId: '' as string
+  imageId: '' as string,
+  setCurrentImageId: () => {}
 }
 
 const ImageViewContext = createContext(defaultContext)
@@ -54,7 +58,9 @@ export const ImageViewProvider = ({
     imageFiles: [] as ImageFileInterface[],
     imageRequest: {} as ImageRequest
   })
+
   const [imageId, setImageId] = useState(image_id || '')
+  const [currentImageId, setCurrentImageId] = useState(image_id || '')
 
   const fetchData = useCallback(async () => {
     try {
@@ -84,7 +90,14 @@ export const ImageViewProvider = ({
 
   return (
     <ImageViewContext.Provider
-      value={{ artbot_id, imageBlob, imageData, imageId }}
+      value={{
+        artbot_id,
+        currentImageId,
+        imageBlob,
+        imageData,
+        imageId,
+        setCurrentImageId
+      }}
     >
       {children}
     </ImageViewContext.Provider>
