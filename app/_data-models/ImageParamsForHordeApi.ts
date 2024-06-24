@@ -345,48 +345,11 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
   setStylePresets(): ImageParamsForHordeApi {
     if (this.imageDetails.preset.length === 0) return this
 
-    const stylePresetSettings = this.imageDetails.preset[0].settings
-
     this.apiParams.prompt = formatStylePresetPrompt({
       positive: this.imageDetails.prompt,
       negative: this.imageDetails.negative,
       stylePresetPrompt: this.imageDetails.preset[0].settings.prompt
     })
-
-    // Update params
-    type UpdateableParams = Pick<
-      ImageParams,
-      | 'steps'
-      | 'width'
-      | 'height'
-      | 'sampler_name'
-      | 'karras'
-      | 'cfg_scale'
-      | 'hires_fix'
-    >
-    const paramsToUpdate: (keyof UpdateableParams)[] = [
-      'steps',
-      'width',
-      'height',
-      'sampler_name',
-      'karras',
-      'cfg_scale',
-      'hires_fix'
-    ]
-
-    paramsToUpdate.forEach((param) => {
-      if (
-        param in stylePresetSettings &&
-        typeof stylePresetSettings[param] !== 'undefined'
-      ) {
-        // @ts-expect-error FIXME: param should always be defined here
-        this.apiParams.params[param] = stylePresetSettings[param]
-      }
-    })
-
-    if (stylePresetSettings.model) {
-      this.apiParams.models = [stylePresetSettings.model]
-    }
 
     return this
   }

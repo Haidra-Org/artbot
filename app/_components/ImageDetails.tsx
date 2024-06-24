@@ -145,15 +145,21 @@ export default function ImageDetails({
                     <div
                       className="row"
                       onClick={() => {
+                        if (lora.isArtbotManualEntry) return
+
                         NiceModal.show('embeddingDetails', {
                           children: <LoraDetails details={lora} />
                         })
                       }}
                     >
                       <strong>LoRA: </strong>
-                      <div className="cursor-pointer primary-color">
-                        {lora.name}
-                      </div>
+                      {!lora.isArtbotManualEntry ? (
+                        <div className="cursor-pointer primary-color">
+                          {lora.name}
+                        </div>
+                      ) : (
+                        <div>{lora.name}</div>
+                      )}
                     </div>
                     <div className="row">
                       <strong>
