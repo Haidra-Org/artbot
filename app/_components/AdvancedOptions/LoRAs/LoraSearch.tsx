@@ -14,7 +14,7 @@ import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
-import styles from './loraSearch.module.css'
+import { MasonryItem, MasonryLayout } from '../../Masonry'
 
 export default function LoraSearch({
   onUseLoraClick = () => {},
@@ -173,13 +173,13 @@ export default function LoraSearch({
         </div>
       )}
       <div>
-        <div className={styles['masonry-with-columns']}>
+        <MasonryLayout>
           {transformedData.map((image) => (
-            <div key={`${image.key}`} className={styles['masonry-item']}>
+            <MasonryItem key={`${image.key}`}>
               <LoraImage onUseLoraClick={onUseLoraClick} image={image} />
-            </div>
+            </MasonryItem>
           ))}
-        </div>
+        </MasonryLayout>
       </div>
     </div>
   )

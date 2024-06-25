@@ -3,7 +3,7 @@
 
 import PhotoAlbum from 'react-photo-album'
 import { useStore } from 'statery'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconPhotoBolt,
@@ -25,6 +25,7 @@ import FilterButton from './PendingImagesPanel_FilterButton'
 import ClearButton from './PendingImagesPanel_ClearButton'
 
 interface PendingImagesPanelProps {
+  scrollContainer?: boolean
   showBorder?: boolean
   showTitle?: boolean
 }
@@ -41,9 +42,14 @@ interface PhotoData {
 }
 
 export default function PendingImagesPanel({
+  scrollContainer = true,
   showBorder = true,
   showTitle = true
 }: PendingImagesPanelProps) {
+  const topDivRef = useRef(null)
+  const scrollableDivRef = useRef(null)
+  const [topOffset, setTopOffset] = useState(178)
+
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
   const [filter, setFilter] = useState('all')
@@ -116,6 +122,22 @@ export default function PendingImagesPanel({
     })
   }, [sortBy])
 
+  const updateTopOffset = () => {
+    if (topDivRef.current) {
+      // @ts-expect-error Au contraire, it does!
+      const topDivHeight = topDivRef.current.offsetHeight
+      setTopOffset(topDivHeight + 8) // Adding a margin if needed
+    }
+  }
+
+  useEffect(() => {
+    updateTopOffset()
+    window.addEventListener('resize', updateTopOffset)
+    return () => {
+      window.removeEventListener('resize', updateTopOffset)
+    }
+  }, [])
+
   const filteredImages = images.filter((image) => {
     const { hordeStatus } = image
     if (filter === 'all') {
@@ -162,7 +184,7 @@ export default function PendingImagesPanel({
         </div>
       </Section>
       <PendingImagePanelStats />
-      <div className="w-full font-mono text-xs">
+      <div className="w-full font-mono text-xs" ref={topDivRef}>
         Filter: {filter} ({filteredImages.length} image
         {filteredImages.length > 1 ? 's' : ''})
       </div>
@@ -173,101 +195,113 @@ export default function PendingImagesPanel({
           </p>
         </div>
       )}
-      <PhotoAlbum
-        layout="masonry"
-        spacing={4}
-        photos={filteredImages}
-        renderPhoto={(renderPhotoProps) => {
-          const { layout, layoutOptions, photo, imageProps } =
-            renderPhotoProps || {}
-          const { alt, ...restImageProps } = imageProps || {}
+      <div
+        className={
+          !scrollContainer
+            ? ''
+            : 'absolute left-[8px] right-0 bottom-[8px] col justify-start z-[2] overflow-auto pr-[12px]'
+        }
+        ref={scrollableDivRef}
+        style={{ top: `${topOffset + 152}px` }}
+      >
+        <PhotoAlbum
+          layout="masonry"
+          spacing={4}
+          photos={filteredImages}
+          renderPhoto={(renderPhotoProps) => {
+            const { layout, layoutOptions, photo, imageProps } =
+              renderPhotoProps || {}
+            const { alt, ...restImageProps } = imageProps || {}
 
-          // @ts-expect-error Deleting this due to using custom image component.
-          delete restImageProps.src
+            // @ts-expect-error Deleting this due to using custom image component.
+            delete restImageProps.src
 
-          if (photo.hordeStatus !== JobStatus.Done) {
-            return (
-              <div
-                key={photo.artbot_id}
-                onClick={() => {
-                  NiceModal.show('modal', {
-                    children: <PendingImageView artbot_id={photo.artbot_id} />,
-                    modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
-                  })
-                }}
-                style={{
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  height: layout.height,
-                  justifyContent: 'center',
-                  marginBottom: layoutOptions.spacing,
-                  position: 'relative',
-                  width: layout.width,
-                  backgroundImage: 'url(/tile.png)',
-                  backgroundSize: 'auto',
-                  backgroundRepeat: 'repeat',
-                  boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
-                }}
-              >
-                <PendingImageOverlay
-                  artbot_id={photo.artbot_id}
-                  status={photo.hordeStatus}
-                />
-              </div>
-            )
-          } else {
-            return (
-              <div
-                key={photo.artbot_id}
-                onClick={() => {
-                  // TODO: Better way to handle / triage error states.)
-                  if (photo.error) {
+            if (photo.hordeStatus !== JobStatus.Done) {
+              return (
+                <div
+                  key={photo.artbot_id}
+                  onClick={() => {
                     NiceModal.show('modal', {
                       children: (
                         <PendingImageView artbot_id={photo.artbot_id} />
                       ),
                       modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
                     })
-                  } else {
-                    NiceModal.show('modal', {
-                      children: <ImageView artbot_id={photo.artbot_id} />
-                    })
-                  }
-                }}
-                style={{
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  height: layout.height,
-                  justifyContent: 'center',
-                  marginBottom: layoutOptions.spacing,
-                  position: 'relative',
-                  width: layout.width
-                }}
-              >
-                <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
-                <PendingImageOverlay
-                  artbot_id={photo.artbot_id}
-                  imageCount={photo.image_count}
-                  status={photo.hordeStatus}
-                />
-              </div>
-            )
-          }
-        }}
-        targetRowHeight={256}
-        rowConstraints={{
-          singleRowMaxHeight: 256
-        }}
-        columns={(containerWidth) => {
-          if (containerWidth <= 512) return 1
-          if (containerWidth <= 800) return 2
-          if (containerWidth <= 1200) return 3
-          if (containerWidth <= 1600) return 4
-          return 5
-        }}
-      />
+                  }}
+                  style={{
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    height: layout.height,
+                    justifyContent: 'center',
+                    marginBottom: layoutOptions.spacing,
+                    position: 'relative',
+                    width: layout.width,
+                    backgroundImage: 'url(/tile.png)',
+                    backgroundSize: 'auto',
+                    backgroundRepeat: 'repeat',
+                    boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
+                  }}
+                >
+                  <PendingImageOverlay
+                    artbot_id={photo.artbot_id}
+                    status={photo.hordeStatus}
+                  />
+                </div>
+              )
+            } else {
+              return (
+                <div
+                  key={photo.artbot_id}
+                  onClick={() => {
+                    // TODO: Better way to handle / triage error states.)
+                    if (photo.error) {
+                      NiceModal.show('modal', {
+                        children: (
+                          <PendingImageView artbot_id={photo.artbot_id} />
+                        ),
+                        modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
+                      })
+                    } else {
+                      NiceModal.show('modal', {
+                        children: <ImageView artbot_id={photo.artbot_id} />
+                      })
+                    }
+                  }}
+                  style={{
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    height: layout.height,
+                    justifyContent: 'center',
+                    marginBottom: layoutOptions.spacing,
+                    position: 'relative',
+                    width: layout.width
+                  }}
+                >
+                  <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
+                  <PendingImageOverlay
+                    artbot_id={photo.artbot_id}
+                    imageCount={photo.image_count}
+                    status={photo.hordeStatus}
+                  />
+                </div>
+              )
+            }
+          }}
+          targetRowHeight={256}
+          rowConstraints={{
+            singleRowMaxHeight: 256
+          }}
+          columns={(containerWidth) => {
+            if (containerWidth <= 512) return 1
+            if (containerWidth <= 800) return 2
+            if (containerWidth <= 1200) return 3
+            if (containerWidth <= 1600) return 4
+            return 5
+          }}
+        />
+      </div>
     </div>
   )
 }
