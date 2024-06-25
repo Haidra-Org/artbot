@@ -27,13 +27,13 @@ export const getRecentlyUsedEnhancements = async (
 }
 
 export const getFavoriteImageEnhancementModule = async (
-  versionId: string,
+  model_id: string,
   type: ImageEnhancementModulesModifier
 ) => {
-  const id = `civitai_${type}_${versionId}`
+  const id = `civitai_${type}_${model_id}`
 
   const hasFavorite = await db.imageEnhancementModules
-    .where('[version_id+type]')
+    .where('[model_id+type]')
     .equals([id, 'favorite'])
     .toArray()
 
@@ -43,28 +43,28 @@ export const getFavoriteImageEnhancementModule = async (
 export const toggleImageEnhancementFavorite = async ({
   model,
   type,
-  versionId
+  model_id
 }: {
   model?: Embedding
   type: ImageEnhancementModulesModifier
-  versionId: string
+  model_id: string
 }) => {
-  const id = `civitai_${type}_${versionId}`
+  const id = `civitai_${type}_${model_id}`
 
   await db.transaction('rw', db.imageEnhancementModules, async () => {
     const hasFavorite = await db.imageEnhancementModules
-      .where('[version_id+type]')
+      .where('[model_id+type]')
       .equals([id, 'favorite'])
       .toArray()
 
     if (hasFavorite.length > 0) {
       await db.imageEnhancementModules
-        .where('[version_id+type]')
+        .where('[model_id+type]')
         .equals([id, 'favorite'])
         .delete()
     } else if (model) {
       await db.imageEnhancementModules.add({
-        version_id: id,
+        model_id: id,
         timestamp: Date.now(),
         modifier: type,
         type: 'favorite',
@@ -77,13 +77,13 @@ export const toggleImageEnhancementFavorite = async ({
 export const updateRecentlyUsedImageEnhancement = async ({
   model,
   modifier,
-  versionId
+  model_id
 }: {
   model: Embedding
   modifier: ImageEnhancementModulesModifier
-  versionId: string
+  model_id: string
 }) => {
-  const id = `civitai_${modifier}_${versionId}`
+  const id = `civitai_${modifier}_${model_id}`
 
   await db.transaction('rw', db.imageEnhancementModules, async () => {
     // Step 1: Get the most recent 20 rows
@@ -100,7 +100,7 @@ export const updateRecentlyUsedImageEnhancement = async ({
         if (row.type === 'recent') {
           // Ensure we are deleting only rows with type 'recent'
           await db.imageEnhancementModules
-            .where({ version_id: row.version_id })
+            .where({ version_id: row.model_id })
             .delete()
         }
       }
@@ -108,13 +108,13 @@ export const updateRecentlyUsedImageEnhancement = async ({
 
     // Step 3: Filter out/delete any row where versionId matches
     await db.imageEnhancementModules
-      .where('[version_id+type]')
+      .where('[model_id+type]')
       .equals([id, 'recent'])
       .delete()
 
     // Step 4: Add the new model to the table
     await db.imageEnhancementModules.add({
-      version_id: id,
+      model_id: id,
       model,
       modifier,
       type: 'recent',

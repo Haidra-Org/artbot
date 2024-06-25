@@ -6,6 +6,7 @@ import Button from '../../Button'
 import {
   IconBox,
   IconDeviceFloppy,
+  IconExternalLink,
   IconHeart,
   IconHeartFilled
 } from '@tabler/icons-react'
@@ -22,6 +23,7 @@ import {
 import { useWindowSize } from '@/app/_hooks/useWindowSize'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import { Embedding, ModelVersion, SavedLora } from '@/app/_data-models/Civitai'
+import Link from 'next/link'
 
 export default function LoraDetails({
   details,
@@ -36,13 +38,14 @@ export default function LoraDetails({
   const [initModel = {} as ModelVersion] = modelVersions
   const [modelVersion, setModelVersion] = useState<ModelVersion>(initModel)
   const [isFavorite, setIsFavorite] = useState(false)
+  const model_id = details.id
 
   useEffect(() => {
-    if (!modelVersion.id) return
+    if (!model_id) return
 
     async function getIsFavorite() {
       const savedLoras = await getFavoriteImageEnhancementModule(
-        modelVersion.id as string,
+        model_id as string,
         'lora'
       )
 
@@ -52,16 +55,15 @@ export default function LoraDetails({
     }
 
     getIsFavorite()
-  }, [modelVersion.id])
+  }, [model_id])
 
   const handleFavoriteClick = async () => {
     await toggleImageEnhancementFavorite({
       model: {
-        ...details,
-        modelVersions: [modelVersion]
+        ...details
       },
       type: 'lora',
-      versionId: modelVersion.id as string
+      model_id: model_id as string
     })
   }
 
@@ -69,22 +71,21 @@ export default function LoraDetails({
     const savedLora = new SavedLora({
       ...details,
       versionId: modelVersion.id,
-      modelVersions: [modelVersion],
+      versionName: modelVersion.name,
       strength: 1,
       clip: 1
     })
 
     updateRecentlyUsedImageEnhancement({
       model: {
-        ...details,
-        modelVersions: [modelVersion]
+        ...details
       },
       modifier: 'lora',
-      versionId: modelVersion.id as string
+      model_id: model_id as string
     })
     onUseLoraClick(savedLora)
     return savedLora
-  }, [details, modelVersion, onUseLoraClick])
+  }, [details, modelVersion, model_id, onUseLoraClick])
 
   const versionOptions = modelVersions.map((version) => {
     return {
@@ -133,11 +134,26 @@ export default function LoraDetails({
           >
             {isFavorite ? <IconHeartFilled color={'red'} /> : <IconHeart />}
           </Button>
-          <div className="row gap-2 rounded-md bg-slate-500 p-1 pr-2">
+          <div className="row gap-2 rounded-md bg-slate-500 p-1 pr-2 text-white text-sm font-bold">
             <IconBox stroke={1.5} />
             {modelVersion.baseModel}
           </div>
-          <div className="font-mono">Version: {modelVersion.name}</div>
+          <div className="font-mono font-bold">
+            Version: {modelVersion.name}
+          </div>
+        </div>
+
+        <div className="w-full row text-sm">
+          <Link
+            href={`https://civitai.com/models/${details.id}`}
+            className="primary-color"
+            target="_blank"
+          >
+            <div className="row gap-2">
+              View model info on CivitAI
+              <IconExternalLink />
+            </div>
+          </Link>
         </div>
         <div className="col md:row gap-4 !items-start justify-start">
           <div className="w-full md:max-w-[512px]">

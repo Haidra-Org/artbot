@@ -92,6 +92,7 @@ export default function UploadImage() {
     async ({ source_image }: { source_image: Blob }) => {
       const image: ImageFileInterface = {
         artbot_id: '__TEMP_USER_IMG_UPLOAD__',
+        apiResponse: '',
         horde_id: '',
         image_id: nanoid(),
         imageType: ImageType.SOURCE,
