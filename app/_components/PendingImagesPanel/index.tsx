@@ -160,8 +160,11 @@ export default function PendingImagesPanel({
 
   return (
     <div
-      className="w-full rounded-md col min-h-[364px] relative"
-      style={{ border: showBorder ? '1px solid #7e5a6c p-2' : 'none' }}
+      className="w-full rounded-md col min-h-[364px] relative p-2"
+      style={{
+        border: showBorder ? '1px solid #7e5a6c' : 'none',
+        padding: showBorder ? '0.5rem' : '0'
+      }}
     >
       {showTitle && (
         <h2 className="row font-bold">
@@ -183,10 +186,10 @@ export default function PendingImagesPanel({
           <FilterButton filter={filter} setFilter={setFilter} />
         </div>
       </Section>
-      <PendingImagePanelStats />
+      <PendingImagePanelStats setFilter={setFilter} />
       <div className="w-full font-mono text-xs" ref={topDivRef}>
         Filter: {filter} ({filteredImages.length} image
-        {filteredImages.length > 1 ? 's' : ''})
+        {filteredImages.length !== 1 ? 's' : ''})
       </div>
       {images.length === 0 && (
         <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center z-[1]">
