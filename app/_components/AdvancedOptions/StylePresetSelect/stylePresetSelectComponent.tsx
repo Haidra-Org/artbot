@@ -10,7 +10,8 @@ import Button from '../../Button'
 import {
   CategoryPreset,
   StylePresetConfig,
-  StylePresetConfigurations
+  StylePresetConfigurations,
+  StylePreviewConfigurations
 } from '@/app/_types/HordeTypes'
 import { useCallback } from 'react'
 import PromptInput from '@/app/_data-models/PromptInput'
@@ -21,10 +22,12 @@ import { ModelStore } from '@/app/_stores/ModelStore'
 export default function StylePresetSelectComponent({
   categories,
   presets,
+  previews,
   hasError = false
 }: {
   categories: CategoryPreset
   presets: StylePresetConfigurations
+  previews: StylePreviewConfigurations
   hasError: boolean
 }) {
   const { input, setInput } = useInput()
@@ -124,6 +127,7 @@ export default function StylePresetSelectComponent({
                 <StylePresetModal
                   categories={categories}
                   presets={presets}
+                  previews={previews}
                   handleOnClick={(option: string) => {
                     handleSelectPreset(option, presets[option])
                     NiceModal.remove('modal')

@@ -2,7 +2,7 @@ import {
   HordeApiParams,
   ImageParamsForHordeApi
 } from '@/app/_data-models/ImageParamsForHordeApi'
-import { IconCaretRight, IconCodeDots, IconCopy } from '@tabler/icons-react'
+import { IconCaretRight, IconCopy } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import PromptInput from '../_data-models/PromptInput'
 import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'

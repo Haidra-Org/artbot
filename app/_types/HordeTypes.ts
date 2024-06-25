@@ -193,3 +193,13 @@ export interface StylePresetConfig {
 export interface StylePresetConfigurations {
   [key: string]: StylePresetConfig
 }
+
+export interface StylePreview {
+  person: string
+  place: string
+  thing: string
+}
+
+export interface StylePreviewConfigurations {
+  [key: string]: StylePreview
+}
