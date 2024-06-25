@@ -10,39 +10,24 @@ interface IntersectionObserverOptions {
 interface IntersectionObserverHookReturn<T> {
   ref: MutableRefObject<T | null>
   isIntersecting: boolean
+  stopObserving: () => void
 }
 
+// Define the hook with type safety
 const useIntersectionObserver = <T extends HTMLElement>(
-  options: IntersectionObserverOptions,
-  loadMargin: string,
-  unloadMargin: string
+  options: IntersectionObserverOptions
 ): IntersectionObserverHookReturn<T> => {
   const [isIntersecting, setIsIntersecting] = useState(false)
   const ref = useRef<T>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
   useEffect(() => {
-    const currentRef = ref.current
-    let observer: IntersectionObserver
+    const currentRef = ref.current // Copy ref.current to a local variable
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsIntersecting(entry.isIntersecting)
+    }, options)
 
-    const handleIntersection = ([entry]: IntersectionObserverEntry[]) => {
-      // Use different margins based on whether loading or unloading
-      if (entry.isIntersecting) {
-        observer.disconnect()
-        observer = new IntersectionObserver(handleIntersection, {
-          ...options,
-          rootMargin: unloadMargin
-        })
-        observer.observe(currentRef!)
-        setIsIntersecting(true)
-      } else {
-        setIsIntersecting(false)
-      }
-    }
-
-    observer = new IntersectionObserver(handleIntersection, {
-      ...options,
-      rootMargin: loadMargin
-    })
+    observerRef.current = observer
 
     if (currentRef) {
       observer.observe(currentRef)
@@ -53,9 +38,15 @@ const useIntersectionObserver = <T extends HTMLElement>(
         observer.unobserve(currentRef)
       }
     }
-  }, [options, loadMargin, unloadMargin])
+  }, [options])
 
-  return { ref, isIntersecting }
+  const stopObserving = () => {
+    if (observerRef.current && ref.current) {
+      observerRef.current.unobserve(ref.current)
+    }
+  }
+
+  return { ref, isIntersecting, stopObserving }
 }
 
 export default useIntersectionObserver

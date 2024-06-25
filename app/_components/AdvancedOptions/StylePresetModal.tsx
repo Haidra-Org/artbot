@@ -14,6 +14,7 @@ import {
   StylePreviewConfigurations
 } from '@/app/_types/HordeTypes'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
+import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver'
 
 // Component to manage individual image loading and error handling
 const ImageWithFallback = ({
@@ -27,11 +28,17 @@ const ImageWithFallback = ({
   fallbackColor: string
   style?: React.CSSProperties
 }) => {
+  const { ref, isIntersecting, stopObserving } =
+    useIntersectionObserver<HTMLDivElement>({
+      rootMargin: '0px 0px 500px 0px', // Load when 500px below the viewport
+      threshold: 0.5 // Adjust threshold as needed
+    })
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
   return (
     <div
+      ref={ref}
       style={{
         width: '200px',
         height: '200px',
@@ -40,10 +47,11 @@ const ImageWithFallback = ({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: imageError ? fallbackColor : 'transparent',
+        borderRadius: '4px',
         ...style
       }}
     >
-      {!imageLoaded && !imageError && (
+      {!isIntersecting && !imageLoaded && !imageError && (
         <div
           style={{
             width: '100%',
@@ -52,18 +60,26 @@ const ImageWithFallback = ({
           }}
         ></div>
       )}
-      <img
-        src={src}
-        alt={alt}
-        onLoad={() => setImageLoaded(true)}
-        onError={() => setImageError(true)}
-        style={{
-          display: imageLoaded ? 'block' : 'none', // Hide image until loaded
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover'
-        }}
-      />
+      {(isIntersecting || imageLoaded) && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => {
+            setImageLoaded(true)
+            stopObserving()
+          }}
+          onError={() => {
+            setImageError(true)
+            stopObserving()
+          }}
+          style={{
+            display: imageLoaded ? 'block' : 'none', // Hide image until loaded
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -218,7 +234,6 @@ const StylePresetModal = ({
                         cursor: 'pointer',
                         width: '200px',
                         height: 'auto',
-                        border: '1px solid white',
                         overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column',
