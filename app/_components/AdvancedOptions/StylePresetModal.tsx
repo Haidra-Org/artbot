@@ -8,7 +8,11 @@ import {
 import React, { useState } from 'react'
 import Button from '../Button'
 import NiceModal from '@ebay/nice-modal-react'
-import { CategoryPreset } from '@/app/_types/HordeTypes'
+import {
+  CategoryPreset,
+  StylePresetConfigurations,
+  StylePreviewConfigurations
+} from '@/app/_types/HordeTypes'
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 
 // Component to manage individual image loading and error handling
@@ -64,12 +68,14 @@ const ImageWithFallback = ({
   )
 }
 
-const FilterableCategories = ({
+const StylePresetModal = ({
   categories,
+  previews,
   handleOnClick = () => {}
 }: {
   categories: CategoryPreset
-  presets: unknown
+  presets: StylePresetConfigurations
+  previews: StylePreviewConfigurations
   handleOnClick?: (preset: string) => void
 }) => {
   const [searchInput, setSearchInput] = useState('')
@@ -171,74 +177,89 @@ const FilterableCategories = ({
           </PopoverPanel>
         </Popover>
       </div>
-      {Object.keys(filteredCategories).map((category: string) => (
-        <div key={category} className="w-full col mb-6">
-          <h3 className="font-[700] text-[18px] row gap-2">
-            {category}
-            <button
-              onClick={() => {
-                const filterStyles = filteredCategories[category]
-                const randomStyle =
-                  filterStyles[Math.floor(Math.random() * filterStyles.length)]
+      {Object.keys(filteredCategories).map((category: string) => {
+        if (
+          !filteredCategories[category] ||
+          filteredCategories[category].length === 0
+        )
+          return null
+        return (
+          <div key={category} className="w-full col mb-6">
+            <h3 className="font-[700] text-[18px] row gap-2">
+              {category}
+              <button
+                onClick={() => {
+                  const filterStyles = filteredCategories[category]
+                  const randomStyle =
+                    filterStyles[
+                      Math.floor(Math.random() * filterStyles.length)
+                    ]
 
-                if (!randomStyle) {
-                  return
-                }
+                  if (!randomStyle) {
+                    return
+                  }
 
-                handleOnClick(randomStyle)
-                NiceModal.remove('modal')
-              }}
-              title="Select random style"
-            >
-              <IconWand className="primary-color" />
-            </button>
-          </h3>
-          <div className="row w-full gap-2 flex-wrap">
+                  handleOnClick(randomStyle)
+                  NiceModal.remove('modal')
+                }}
+                title="Select random style"
+              >
+                <IconWand className="primary-color" />
+              </button>
+            </h3>
             <div className="row w-full gap-2 flex-wrap">
-              {filteredCategories[category].map((preset) => {
-                const formatPreset = preset.replace(' ', '_')
-                return (
-                  <div
-                    key={`${category}-${preset}`}
-                    style={{
-                      cursor: 'pointer',
-                      width: '200px',
-                      height: 'auto',
-                      border: '1px solid white',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center'
-                    }}
-                    onClick={() => {
-                      handleOnClick(preset)
-                    }}
-                  >
-                    <ImageWithFallback
-                      src={`https://raw.githubusercontent.com/amiantos/AI-Horde-Styles-Previews/main/images/${formatPreset}_${subject}.webp`}
-                      alt={preset}
-                      fallbackColor="gray"
-                    />
+              <div className="row w-full gap-2 flex-wrap">
+                {filteredCategories[category].map((preset) => {
+                  if (!preset) return null
+                  return (
                     <div
+                      key={`${category}-${preset}`}
                       style={{
+                        cursor: 'pointer',
                         width: '200px',
-                        padding: '8px',
-                        textAlign: 'center',
-                        wordWrap: 'break-word',
-                        whiteSpace: 'normal'
+                        height: 'auto',
+                        border: '1px solid white',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                      }}
+                      onClick={() => {
+                        handleOnClick(preset)
                       }}
                     >
-                      {preset}
+                      <ImageWithFallback
+                        src={
+                          previews[preset] && preset
+                            ? // @ts-expect-error TODO: Add type
+                              previews[preset][subject]
+                            : ''
+                        }
+                        alt={preset}
+                        fallbackColor="gray"
+                      />
+                      <div
+                        style={{
+                          width: '200px',
+                          padding: '4px',
+                          textAlign: 'center',
+                          wordWrap: 'break-word',
+                          whiteSpace: 'normal',
+                          fontSize: '12px'
+                        }}
+                      >
+                        {preset}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
 
-export default FilterableCategories
+export default StylePresetModal

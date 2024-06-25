@@ -172,7 +172,7 @@ export interface TextualInversion {
 export interface LoraConfig {
   name: string
   model?: number
-  clip?: number
+  clip_skip?: number
   is_version: boolean
 }
 
@@ -192,4 +192,14 @@ export interface StylePresetConfig {
 
 export interface StylePresetConfigurations {
   [key: string]: StylePresetConfig
+}
+
+export interface StylePreview {
+  person: string
+  place: string
+  thing: string
+}
+
+export interface StylePreviewConfigurations {
+  [key: string]: StylePreview
 }

@@ -1,7 +1,8 @@
 import {
   AiHordeEmbedding,
   ImageOrientations,
-  JobType
+  JobType,
+  Workflow
 } from '@/app/_types/ArtbotTypes'
 import {
   ControlTypes,
@@ -60,7 +61,7 @@ class PromptInput {
   triggers: Array<string> = []
   upscaled: boolean = false
   width: number = 1024
-  workflow?: 'qr_code' | ''
+  workflows: Workflow[] = []
 
   constructor(params: Partial<PromptInput> = {}) {
     Object.assign(this, params)

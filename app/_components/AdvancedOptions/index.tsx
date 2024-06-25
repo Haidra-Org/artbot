@@ -16,6 +16,7 @@ import Steps from './Steps'
 import UploadImage from './UploadImage'
 import Upscalers from './Upscalers'
 import StylePresetSelect from './StylePresetSelect'
+import AddWorkflow from './AddWorkflow'
 
 export default function AdvancedOptions() {
   return (
@@ -38,6 +39,7 @@ export default function AdvancedOptions() {
       </Section>
       <AddLora />
       <AddEmbedding />
+      <AddWorkflow />
       <Section anchor="face-fixers">
         <FaceFixers />
       </Section>

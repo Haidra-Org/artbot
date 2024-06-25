@@ -21,6 +21,7 @@ import Button from './Button'
 import ImageThumbnail from './ImageThumbnail'
 import GalleryImageCardOverlay from './GalleryImageCardOverlay'
 import { viewedPendingPage } from '../_stores/PendingImagesStore'
+import Section from './Section'
 
 export default function Gallery() {
   const [groupImages, setGroupImages] = useState(true)
@@ -73,60 +74,61 @@ export default function Gallery() {
 
   return (
     <div className="w-full">
-      <div className="row w-full justify-between my-2">
-        <div className="row">
-          <Button
-            onClick={() => {
-              if (showSearch) {
-                setSearchInput('')
-                setShowSearch(false)
-              } else {
-                setShowSearch(true)
-              }
-            }}
-            outline
-          >
-            <span className="row gap-1">
-              <IconSearch stroke={1.5} size={16} />
-              Search
-            </span>
-          </Button>
-          <Button
-            onClick={() => {
-              setCurrentPage(1)
-              setGroupImages(!groupImages)
-            }}
-            outline
-            title="Group or ungroup images by batched image request"
-          >
-            <span className="row gap-1 justify-center md:w-[5.75em]">
-              {groupImages ? (
-                <>
-                  <IconAffiliate />
-                  <span className="hidden sm:row">Ungroup</span>
-                </>
-              ) : (
-                <>
-                  <IconAffiliateFilled stroke={1.5} size={16} />
-                  <span className="hidden sm:row">Group</span>
-                </>
-              )}
-            </span>
-          </Button>
-          <Button
-            onClick={() => setSortBy(sortBy === 'desc' ? 'asc' : 'desc')}
-            outline
-          >
-            <span className="row gap-1">
-              {sortBy === 'desc' ? (
-                <IconSortDescending stroke={1.5} size={20} />
-              ) : (
-                <IconSortAscending stroke={1.5} size={20} />
-              )}
-              <span className="hidden sm:row">Sort</span>
-            </span>
-          </Button>
-          {/* <Menu
+      <Section className="w-full mb-2">
+        <div className="row w-full justify-between">
+          <div className="row">
+            <Button
+              onClick={() => {
+                if (showSearch) {
+                  setSearchInput('')
+                  setShowSearch(false)
+                } else {
+                  setShowSearch(true)
+                }
+              }}
+              outline
+            >
+              <span className="row gap-1">
+                <IconSearch stroke={1.5} size={16} />
+                Search
+              </span>
+            </Button>
+            <Button
+              onClick={() => {
+                setCurrentPage(0)
+                setGroupImages(!groupImages)
+              }}
+              outline
+              title="Group or ungroup images by batched image request"
+            >
+              <span className="row gap-1 justify-center md:w-[5.75em]">
+                {groupImages ? (
+                  <>
+                    <IconAffiliate />
+                    <span className="hidden sm:row">Ungroup</span>
+                  </>
+                ) : (
+                  <>
+                    <IconAffiliateFilled stroke={1.5} size={16} />
+                    <span className="hidden sm:row">Group</span>
+                  </>
+                )}
+              </span>
+            </Button>
+            <Button
+              onClick={() => setSortBy(sortBy === 'desc' ? 'asc' : 'desc')}
+              outline
+            >
+              <span className="row gap-1">
+                {sortBy === 'desc' ? (
+                  <IconSortDescending stroke={1.5} size={20} />
+                ) : (
+                  <IconSortAscending stroke={1.5} size={20} />
+                )}
+                <span className="hidden sm:row">Sort</span>
+              </span>
+            </Button>
+            {/* <Menu
             menuText={
               <span className="row">
                 <IconFilter stroke={1.5} size={20} />
@@ -138,27 +140,32 @@ export default function Gallery() {
             <MenuItem>Favorited</MenuItem>
             <MenuItem>Unfavorited</MenuItem>
           </Menu> */}
-          <Button onClick={() => {}} outline>
-            <span className="row gap-1">
-              <IconSettings stroke={1.5} size={20} />
-              <span className="hidden sm:row">
-                Settings
-                <IconChevronRight />
+            <Button onClick={() => {}} outline>
+              <span className="row gap-1">
+                <IconSettings stroke={1.5} size={20} />
+                <span className="hidden sm:row">
+                  Settings
+                  <IconChevronRight />
+                </span>
               </span>
-            </span>
-          </Button>
-        </div>
-        <div>
-          <Button onClick={() => {}} outline>
-            <span className="row gap-1">
-              <IconCircleCheck stroke={1.5} size={20} />
-              <span className="hidden sm:row">
-                Select
-                <IconChevronRight />
+            </Button>
+          </div>
+          <div>
+            <Button onClick={() => {}} outline>
+              <span className="row gap-1">
+                <IconCircleCheck stroke={1.5} size={20} />
+                <span className="hidden sm:row">
+                  Select
+                  <IconChevronRight />
+                </span>
               </span>
-            </span>
-          </Button>
+            </Button>
+          </div>
         </div>
+      </Section>
+      <div className="w-full font-mono text-xs mb-2">
+        Page {currentPage + 1} of {Math.ceil(totalImages / 20)} ({totalImages}{' '}
+        {groupImages ? 'image requests' : 'total images'})
       </div>
       {/* {showSearch && <ImageSearch setSearchInput={setSearchInput} />} */}
       {images.length > 0 && (

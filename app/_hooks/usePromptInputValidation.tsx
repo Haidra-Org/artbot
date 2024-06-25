@@ -3,6 +3,9 @@ import { useInput } from '../_providers/PromptInputProvider'
 import { SourceProcessing } from '../_types/HordeTypes'
 import { flattenKeywords } from '../_utils/arrayUtils'
 import { AppSettings } from '../_data-models/AppSettings'
+import { useStore } from 'statery'
+import { ModelStore } from '../_stores/ModelStore'
+import { Workflow } from '../_types/ArtbotTypes'
 
 export interface PromptError {
   message: string
@@ -11,8 +14,12 @@ export interface PromptError {
 
 export default function usePromptInputValidation(): [PromptError[], boolean] {
   const { input } = useInput()
+  const { modelDetails } = useStore(ModelStore)
+
   const [errors, setErrors] = useState<PromptError[]>([])
   const [hasCriticalError, setCriticalError] = useState(false)
+
+  const baselineModel = modelDetails[input?.models[0]]?.baseline ?? ''
 
   useEffect(() => {
     let updateCriticalError = false
@@ -40,6 +47,28 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
         type: 'critical'
       })
     }
+
+    // filter through input.workflows and find element that matchs type==='qr_code', if so, console.log error
+    const workflowBaselineMatch =
+      baselineModel === 'stable diffusion 1' ||
+      baselineModel === 'stable_diffusion_xl'
+    input.workflows.forEach((workflow: Workflow) => {
+      if (!workflow) return
+
+      if (workflow.type === 'qr_code' && !workflowBaselineMatch) {
+        updateErrors.push({
+          message: `QR code option only supported using Stable Diffusion 1.x or SDXL models`,
+          type: 'critical'
+        })
+      }
+
+      if (workflow.type === 'qr_code' && !workflow.text.trim()) {
+        updateErrors.push({
+          message: `QR code workflow requires text or URL`,
+          type: 'critical'
+        })
+      }
+    })
 
     // Remix is only availble with Stable Cascade 1.0
     if (

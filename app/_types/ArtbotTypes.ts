@@ -112,3 +112,16 @@ export interface PromptsJobMap {
   artbot_id: string
   prompt_id: number
 }
+
+export interface Workflow {
+  type: 'qr_code' | ''
+  position: WorkflowPosition
+  text: string
+}
+
+export type WorkflowPosition =
+  | 'center'
+  | 'top left'
+  | 'top right'
+  | 'bottom left'
+  | 'bottom right'

@@ -2,7 +2,7 @@ import {
   HordeApiParams,
   ImageParamsForHordeApi
 } from '@/app/_data-models/ImageParamsForHordeApi'
-import { IconCodeDots, IconCopy } from '@tabler/icons-react'
+import { IconCaretRight, IconCopy } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import PromptInput from '../_data-models/PromptInput'
 import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'
@@ -10,6 +10,7 @@ import NiceModal from '@ebay/nice-modal-react'
 import { toastController } from '../_controllers/toastController'
 import { JobDetails } from '../_hooks/useImageDetails'
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
+import { JobStatus } from '../_types/ArtbotTypes'
 
 export default function ImageDetails({
   imageDetails
@@ -131,8 +132,9 @@ export default function ImageDetails({
               {imageRequest.width}px
             </div>
           </div>
-          {imageRequest.loras.length > 0 && (
+          {imageRequest?.loras?.length > 0 && (
             <div className="mt-4">
+              <div>[ LoRAs ]</div>
               {imageRequest.loras.map((lora) => {
                 return (
                   <div
@@ -182,6 +184,33 @@ export default function ImageDetails({
               })}
             </div>
           )}
+          {imageRequest?.workflows?.length > 0 && (
+            <div className="mt-4">
+              <div className="mb-1">[ Workflows ]</div>
+              {imageRequest.workflows.map((workflow, idx) => {
+                return (
+                  <div
+                    key={`${workflow.type}_${idx}`}
+                    style={{
+                      borderLeft: '2px solid #aabad4',
+                      marginLeft: '4px',
+                      paddingLeft: '8px'
+                    }}
+                  >
+                    <div className="row">
+                      <strong>Type: {workflow.type}</strong>
+                    </div>
+                    <div className="row">
+                      <strong>Text: {workflow.text}</strong>
+                    </div>
+                    <div className="row">
+                      <strong>Position: {workflow.position}</strong>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           <div className="mt-4">
             <strong>Karras: </strong>
@@ -199,24 +228,52 @@ export default function ImageDetails({
             <strong>Tiled: </strong>
             {imageRequest.tiling ? 'true' : 'false'}
           </div>
-          {imageFile.worker_id && (
+
+          {imageFile?.gen_metadata && imageFile?.gen_metadata?.length > 0 && (
             <div className="mt-4">
-              <strong>Worker ID: </strong>
-              {imageFile.worker_id}
+              <div className="mb-1">[ Generation Metadata ]</div>
+              {imageFile.gen_metadata.map((gen, idx) => {
+                return (
+                  <div
+                    key={`${gen}_${imageFile.image_id}_${idx}`}
+                    style={{
+                      borderLeft: '2px solid #aabad4',
+                      marginLeft: '4px',
+                      paddingLeft: '8px'
+                    }}
+                  >
+                    <div className="row">
+                      <strong>Type: {gen.type}</strong>
+                    </div>
+                    <div className="row">
+                      <strong>Ref: {gen.ref}</strong>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           )}
-          {imageFile.worker_name && (
-            <div>
-              <strong>Worker name: </strong>
-              {imageFile.worker_name}
-            </div>
-          )}
-          {jobDetails.horde_id && (
-            <div className="mt-4">
-              <strong>Horde Job ID: </strong>
-              {jobDetails.horde_id}
-            </div>
-          )}
+
+          <div className="col gap-1">
+            {imageFile.worker_name && (
+              <div className="mt-4">
+                <strong>Worker name: </strong>
+                <div>{imageFile.worker_name}</div>
+              </div>
+            )}
+            {imageFile.worker_id && (
+              <div>
+                <strong>Worker ID: </strong>
+                <div>{imageFile.worker_id}</div>
+              </div>
+            )}
+            {jobDetails.horde_id && (
+              <div>
+                <strong>Horde Job ID: </strong>
+                <div>{jobDetails.horde_id}</div>
+              </div>
+            )}
+          </div>
         </div>
       )}
       {display === 'request' && (
@@ -238,30 +295,47 @@ export default function ImageDetails({
           </pre>
         </div>
       )}
-      <button
-        className="cursor-pointer row text-[14px]"
-        tabIndex={0}
-        onClick={() => setDisplay('info')}
-      >
-        <IconCodeDots stroke={1.5} />
-        Image details
-      </button>
-      <button
-        className="cursor-pointer row text-[14px]"
-        tabIndex={0}
-        onClick={() => setDisplay('request')}
-      >
-        <IconCodeDots stroke={1.5} />
-        Request parameters
-      </button>
-      <button
-        className="cursor-pointer row text-[14px]"
-        tabIndex={0}
-        onClick={() => setDisplay('response')}
-      >
-        <IconCodeDots stroke={1.5} />
-        API response
-      </button>
+      <div className="col gap-1">
+        <div className="row gap-1 w-full">
+          <div className="w-[28px]">
+            {display === 'info' && <IconCaretRight />}
+          </div>
+          <button
+            className="cursor-pointer row text-[14px]"
+            tabIndex={0}
+            onClick={() => setDisplay('info')}
+          >
+            Image details
+          </button>
+        </div>
+
+        <div className="row gap-1 w-full">
+          <div className="w-[28px]">
+            {display === 'request' && <IconCaretRight />}
+          </div>
+          <button
+            className="cursor-pointer row text-[14px]"
+            tabIndex={0}
+            onClick={() => setDisplay('request')}
+          >
+            Request parameters
+          </button>
+        </div>
+        {jobDetails.status === JobStatus.Done && (
+          <div className="row gap-1 w-full">
+            <div className="w-[28px]">
+              {display === 'response' && <IconCaretRight />}
+            </div>
+            <button
+              className="cursor-pointer row text-[14px]"
+              tabIndex={0}
+              onClick={() => setDisplay('response')}
+            >
+              API response
+            </button>
+          </div>
+        )}
+      </div>
       <button
         className="cursor-pointer row text-[14px]"
         tabIndex={0}

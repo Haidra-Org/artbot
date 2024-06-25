@@ -158,10 +158,7 @@ export default function PromptInputForm() {
               onClick={() => {
                 NiceModal.show('modal', {
                   children: <StyleTagsWrapper />,
-                  modalStyle: {
-                    maxWidth: '1600px',
-                    width: 'calc(100% - 32px)'
-                  }
+                  modalClassName: 'w-full md:min-w-[640px] max-w-[648px]'
                 })
               }}
               title="Suggested tags to help add additional styles to an image"
@@ -170,21 +167,6 @@ export default function PromptInputForm() {
                 <IconTags stroke={1.5} /> <span>Tags</span>
               </span>
             </Button>
-            {/*
-            // TODO: Move styles into advanced options area?
-            */}
-            {/* <ReactiveButton
-              idleText={
-                <span className="row gap-1">
-                  <IconCamera stroke={1.5} /> <span>Styles</span>
-                </span>
-              }
-              size="small"
-              style={{
-                borderRadius: '4px',
-                padding: '0 6px'
-              }}
-            /> */}
           </div>
           <div className="row">
             <Button

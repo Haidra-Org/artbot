@@ -39,7 +39,7 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.triggers).toEqual([])
     expect(defaultPromptInput.upscaled).toBe(false)
     expect(defaultPromptInput.width).toBe(1024)
-    expect(defaultPromptInput.workflow).toBe(undefined)
+    expect(defaultPromptInput.workflows).toEqual([])
   })
 
   it('should initialize with partial values', () => {
