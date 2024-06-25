@@ -24,7 +24,9 @@ export default function ImageViewInfoContainer({
 
   return (
     <div className={styles.ImageInfoContainer}>
-      <ImageViewActions onDelete={onDelete} />
+      <div className="row w-full justify-center">
+        <ImageViewActions onDelete={onDelete} />
+      </div>
       <div className="col gap-1 w-full">
         <div className="row gap-2 text-sm font-bold">
           <IconPlaylistAdd stroke={1} />

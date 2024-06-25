@@ -160,8 +160,8 @@ export default function PendingImagesPanel({
 
   return (
     <div
-      className="w-full rounded-md p-2 col min-h-[364px] relative"
-      style={{ border: showBorder ? '1px solid #7e5a6c' : 'none' }}
+      className="w-full rounded-md col min-h-[364px] relative"
+      style={{ border: showBorder ? '1px solid #7e5a6c p-2' : 'none' }}
     >
       {showTitle && (
         <h2 className="row font-bold">

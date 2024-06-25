@@ -18,6 +18,7 @@ import useFavorite from '@/app/_hooks/useFavorite'
 import useRerollImage from '@/app/_hooks/useRerollImage'
 import { deleteImageFromDexie } from '@/app/_db/jobTransactions'
 import { useCallback, useEffect } from 'react'
+import Section from '../Section'
 
 export default function ImageViewActions({
   onDelete
@@ -61,39 +62,39 @@ export default function ImageViewActions({
   }, [handleDelete])
 
   return (
-    <div className="row w-full justify-center">
+    <Section>
       <div className="row w-full justify-between max-w-[388px]">
-        <Button onClick={() => {}} outline>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconDotsCircleHorizontal stroke={1} />
         </Button>
-        <Button onClick={() => {}} outline>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconCopy stroke={1} />
         </Button>
-        <Button onClick={() => {}} outline>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconShare stroke={1} />
         </Button>
         <Button
           onClick={() => setFullscreenImageId(imageId as string)}
-          outline
           title="Expand image to full browser window"
+          style={{ height: '38px', width: '38px' }}
         >
           <IconWindowMaximize stroke={1} />
         </Button>
-        <Button onClick={() => {}} outline>
+        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconDownload stroke={1} />
         </Button>
         <Button
           onClick={() => {
             rerollImage(artbot_id)
           }}
-          outline
+          style={{ height: '38px', width: '38px' }}
         >
           <IconRefresh stroke={1} />
         </Button>
         <Button
           onClick={toggleFavorite}
-          outline
           title={`${isFavorite ? 'Remove from' : 'Add to'} favorites`}
+          style={{ height: '38px', width: '38px' }}
         >
           {isFavorite ? (
             <IconHeartFilled fill="red" stroke={1} />
@@ -105,11 +106,11 @@ export default function ImageViewActions({
           onClick={handleDelete}
           title="Delete image"
           theme="danger"
-          //
+          style={{ height: '38px', width: '38px' }}
         >
           <IconTrash stroke={1} />
         </Button>
       </div>
-    </div>
+    </Section>
   )
 }
