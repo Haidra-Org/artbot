@@ -343,7 +343,11 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
   }
 
   setWorkflows(): ImageParamsForHordeApi {
-    if (this.imageDetails.workflows.length === 0) return this
+    if (
+      !this.imageDetails?.workflows ||
+      this.imageDetails?.workflows?.length === 0
+    )
+      return this
     const { workflows } = this.imageDetails
 
     // Filter through workflows array and find element that contains type === 'qr_code`
