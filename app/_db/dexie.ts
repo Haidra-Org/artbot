@@ -29,7 +29,7 @@ class ArtBot_v2 extends Dexie {
     this.version(1).stores({
       appSettings: '++id, key',
       favorites: '++id, artbot_id, image_id, favorited',
-      hordeJobs: '++id, artbot_id, horde_id, status',
+      hordeJobs: '++id, artbot_id, job_id, horde_id, status',
       imageEnhancementModules:
         '++id, model_id, modifier, type, [modifier+type], [model_id+modifier], [model_id+type]',
       imageFiles:

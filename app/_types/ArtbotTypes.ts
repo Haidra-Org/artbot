@@ -24,11 +24,12 @@ export interface FavoriteImage {
 
 export interface HordeJob {
   id?: number
-  artbot_id: string
-  horde_id: string
+  artbot_id: string // Indexed in IndexedDB
+  job_id: string // Indexed in IndexedDB
+  horde_id: string // Indexed in IndexedDB
   created_timestamp: number
   updated_timestamp: number
-  status: JobStatus
+  status: JobStatus // Indexed in IndexedDB
   errors?: ImageError[] | null
   queue_position: number | null
   init_wait_time: number | null
