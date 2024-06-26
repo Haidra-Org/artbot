@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect, useState } from 'react'
+import useImageBlobUrl from '@/app/_hooks/useImageBlobUrl'
+import React from 'react'
 
 interface CarouselImageProps {
   imageBlob: Blob
@@ -8,20 +9,7 @@ interface CarouselImageProps {
 }
 
 const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlob }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
-
-  useEffect(() => {
-    // Create an object URL for the blob
-    const url = URL.createObjectURL(imageBlob)
-    setImageUrl(url)
-
-    // Cleanup function to revoke the object URL
-    return () => {
-      if (url) {
-        URL.revokeObjectURL(url)
-      }
-    }
-  }, [imageBlob])
+  const imageUrl = useImageBlobUrl(imageBlob)
 
   if (!imageUrl) return null
 
