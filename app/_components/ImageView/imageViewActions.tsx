@@ -19,6 +19,8 @@ import useRerollImage from '@/app/_hooks/useRerollImage'
 import { deleteImageFromDexie } from '@/app/_db/jobTransactions'
 import { useCallback, useEffect } from 'react'
 import Section from '../Section'
+import DropdownMenu from '../DropdownMenu'
+import { MenuDivider, MenuItem } from '@szhsin/react-menu'
 
 export default function ImageViewActions({
   onDelete
@@ -67,12 +69,38 @@ export default function ImageViewActions({
         <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
           <IconDotsCircleHorizontal stroke={1} />
         </Button>
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-          <IconCopy stroke={1} />
-        </Button>
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
-          <IconShare stroke={1} />
-        </Button>
+        <DropdownMenu
+          menuButton={
+            <Button
+              onClick={() => {}}
+              style={{ height: '38px', width: '38px' }}
+            >
+              <IconCopy stroke={1} />
+            </Button>
+          }
+        >
+          <MenuItem>Use prompt</MenuItem>
+          <MenuItem>Use all settings</MenuItem>
+          <MenuDivider />
+          <MenuItem>Copy JSON parameters</MenuItem>
+          <MenuItem>Copy image to clipboard</MenuItem>
+        </DropdownMenu>
+        <DropdownMenu
+          menuButton={
+            <Button
+              onClick={() => {}}
+              style={{ height: '38px', width: '38px' }}
+            >
+              <IconShare stroke={1} />
+            </Button>
+          }
+        >
+          <MenuItem>Share image (creates URL)</MenuItem>
+          <MenuItem>Share parameters (creates URL)</MenuItem>
+          <MenuDivider />
+          <MenuItem>Submit to ArtBot showcase</MenuItem>
+        </DropdownMenu>
+
         <Button
           onClick={() => setFullscreenImageId(imageId as string)}
           title="Expand image to full browser window"

@@ -86,7 +86,6 @@ export default function Gallery() {
                   setShowSearch(true)
                 }
               }}
-              outline
             >
               <span className="row gap-1">
                 <IconSearch stroke={1.5} size={16} />
@@ -98,7 +97,6 @@ export default function Gallery() {
                 setCurrentPage(0)
                 setGroupImages(!groupImages)
               }}
-              outline
               title="Group or ungroup images by batched image request"
             >
               <span className="row gap-1 justify-center md:w-[5.75em]">
@@ -117,7 +115,6 @@ export default function Gallery() {
             </Button>
             <Button
               onClick={() => setSortBy(sortBy === 'desc' ? 'asc' : 'desc')}
-              outline
             >
               <span className="row gap-1">
                 {sortBy === 'desc' ? (
@@ -140,7 +137,7 @@ export default function Gallery() {
             <MenuItem>Favorited</MenuItem>
             <MenuItem>Unfavorited</MenuItem>
           </Menu> */}
-            <Button onClick={() => {}} outline>
+            <Button onClick={() => {}}>
               <span className="row gap-1">
                 <IconSettings stroke={1.5} size={20} />
                 <span className="hidden sm:row">
@@ -151,7 +148,7 @@ export default function Gallery() {
             </Button>
           </div>
           <div>
-            <Button onClick={() => {}} outline>
+            <Button onClick={() => {}}>
               <span className="row gap-1">
                 <IconCircleCheck stroke={1.5} size={20} />
                 <span className="hidden sm:row">
