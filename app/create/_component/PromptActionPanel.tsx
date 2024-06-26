@@ -22,12 +22,14 @@ import {
   IconSquarePlus,
   IconTrash
 } from '@tabler/icons-react'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 export default function PromptActionPanel() {
   const { input, setInput, setSourceImages } = useInput()
   const [errors, hasCriticalError] = usePromptInputValidation()
   const [requestPending, setRequestPending] = useState(false)
+  const router = useRouter()
 
   const handleCreateClick = useCallback(async () => {
     const emptyInput = !input.prompt.trim() && !input.negative.trim()
@@ -35,9 +37,7 @@ export default function PromptActionPanel() {
     if (emptyInput || requestPending || hasCriticalError) return
 
     setRequestPending(true)
-
     const pendingJob = await addPendingJobToDexie({ ...input })
-
     const uploadedImages = await getImagesForArtbotJobFromDexie(
       '__TEMP_USER_IMG_UPLOAD__'
     )
@@ -106,6 +106,9 @@ export default function PromptActionPanel() {
                   await deleteImageFileByArtbotIdTx('__TEMP_USER_IMG_UPLOAD__')
                   setSourceImages([])
                   window.scrollTo(0, 0)
+
+                  // Strip hash off URL if it exists.
+                  router.push('/create')
 
                   // For now, just close modal on delete
                   NiceModal.remove('modal')

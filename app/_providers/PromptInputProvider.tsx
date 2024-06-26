@@ -15,6 +15,7 @@ import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles'
 import { useStore } from 'statery'
 import { CreateImageStore } from '../_stores/CreateImageStore'
+import { decodeAndDecompress, getHashData } from '../_utils/urlUtils'
 
 type PromptInputContextType = {
   input: PromptInput
@@ -94,6 +95,23 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
   useEffect(() => {
     loadUploadedImages()
   }, [loadUploadedImages])
+
+  useEffect(() => {
+    const windowHash = window.location.hash
+    if (windowHash.startsWith('#share=')) {
+      const hashData = getHashData(window.location.hash) || ''
+      const formData = decodeAndDecompress(hashData)
+
+      // Cleanup properties that are automatically created
+      // when adding to the database.
+      delete formData.id
+      delete formData.artbot_id
+
+      setInput({ ...formData })
+    }
+    // We only want this to run once, on initial page load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <InputContext.Provider
