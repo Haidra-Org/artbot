@@ -1,15 +1,32 @@
 'use client'
 
 import clsx from 'clsx'
-import React, { CSSProperties, ReactNode } from 'react'
+import React, { CSSProperties, ReactNode, ElementType, forwardRef } from 'react'
 import styles from './button.module.css'
 
 // Extend this as needed
 type ButtonTheme = 'default' | 'danger' | 'warning'
 
-const Button = React.forwardRef(
-  (
+interface ButtonProps<T extends ElementType = 'button'> {
+  as?: T
+  className?: string
+  children: ReactNode
+  disabled?: boolean
+  onClick?: () => void
+  outline?: boolean
+  style?: CSSProperties
+  title?: string
+  type?: 'button' | 'submit'
+  theme?: ButtonTheme
+}
+
+type PolymorphicRef<C extends ElementType> =
+  React.ComponentPropsWithRef<C>['ref']
+
+const Button = forwardRef(
+  <T extends ElementType = 'button'>(
     {
+      as,
       className,
       children,
       disabled = false,
@@ -18,23 +35,15 @@ const Button = React.forwardRef(
       style,
       title,
       theme = 'default',
-      type = 'button'
-    }: {
-      className?: string
-      children: ReactNode
-      disabled?: boolean
-      onClick: () => void
-      outline?: boolean
-      style?: CSSProperties
-      title?: string
-      type?: 'button' | 'submit'
-      theme?: ButtonTheme
-    },
-    ref
+      type = 'button',
+      ...rest
+    }: ButtonProps<T>,
+    ref: PolymorphicRef<T>
   ) => {
+    const Component = as || 'button'
+
     return (
-      <button
-        // @ts-expect-error TODO
+      <Component
         ref={ref}
         className={clsx(
           styles.Button,
@@ -49,10 +58,11 @@ const Button = React.forwardRef(
         }}
         style={{ ...style }}
         title={title}
-        type={type}
+        type={Component === 'button' ? type : undefined}
+        {...rest}
       >
         <span className={styles.ButtonText}>{children}</span>
-      </button>
+      </Component>
     )
   }
 )

@@ -7,7 +7,11 @@ import {
 import { useStore } from 'statery'
 import { PendingImagesStore } from '../_stores/PendingImagesStore'
 
-export default function PendingImagePanelStats() {
+export default function PendingImagePanelStats({
+  setFilter
+}: {
+  setFilter: (filter: string) => void
+}) {
   const { pendingImages } = useStore(PendingImagesStore)
 
   const done = pendingImages.filter((image) => {
@@ -39,19 +43,35 @@ export default function PendingImagePanelStats() {
         borderRadius: '4px'
       }}
     >
-      <div className="row text-[14px]" title="Images completed">
+      <div
+        className="row text-[14px] cursor-pointer"
+        title="Images completed"
+        onClick={() => setFilter('done')}
+      >
         <IconCheck size={16} stroke={1.5} />
         {done.length}
       </div>
-      <div className="row text-[14px]" title="Images processings">
+      <div
+        className="row text-[14px] cursor-pointer"
+        title="Images processing"
+        onClick={() => setFilter('processing')}
+      >
         <IconLoader size={16} stroke={1.5} />
         {processing.length}
       </div>
-      <div className="row text-[14px]" title="Images queued">
+      <div
+        className="row text-[14px] cursor-pointer"
+        title="Images queued"
+        onClick={() => setFilter('pending')}
+      >
         <IconUpload size={16} stroke={1.5} />
         {waiting.length}
       </div>
-      <div className="row text-[14px]" title="Images failed">
+      <div
+        className="row text-[14px] cursor-pointer"
+        title="Images failed"
+        onClick={() => setFilter('error')}
+      >
         <IconAlertTriangle size={16} stroke={1.5} />
         {error.length}
       </div>

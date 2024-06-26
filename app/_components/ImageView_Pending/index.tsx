@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import Section from '../Section'
@@ -33,6 +33,7 @@ import NiceModal from '@ebay/nice-modal-react'
 import { updatePendingImage } from '@/app/_controllers/pendingJobController'
 import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
 import { formatPendingPercentage } from '@/app/_utils/numberUtils'
+import { clientHeader } from '@/app/_data-models/ClientHeader'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -84,6 +85,11 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   const [imageDetails, setImageDetails] = useState<ImageRequest>()
   const [jobDetails, setJobDetails] = useState<HordeJob>()
 
+  const serverHasJob =
+    jobDetails &&
+    (jobDetails.status === JobStatus.Queued ||
+      jobDetails.status === JobStatus.Processing)
+
   const pendingImage = pendingImages.find(
     (image) => image.artbot_id === artbot_id
   )
@@ -91,6 +97,26 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   const imageError =
     pendingImage?.status === JobStatus.Error ||
     pendingImage?.images_failed === pendingImage?.images_requested
+
+  const handleCancelPendingJob = useCallback(async () => {
+    if (!jobDetails || !jobDetails.horde_id) return
+
+    try {
+      await fetch(
+        `https://aihorde.net/api/v2/generate/status/${jobDetails.horde_id}`,
+        {
+          cache: 'no-store',
+          headers: {
+            'Content-Type': 'application/json',
+            'Client-Agent': clientHeader()
+          },
+          method: 'DELETE'
+        }
+      )
+    } catch (err) {
+      console.error('Unable to delete pending job:', err)
+    }
+  }, [jobDetails])
 
   useEffect(() => {
     async function fetchData() {
@@ -259,13 +285,18 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
         <Button
           theme="danger"
           onClick={async () => {
+            if (serverHasJob) {
+              handleCancelPendingJob()
+            }
+
             const artbot_id = imageDetails?.artbot_id as string
             deletePendingImageFromAppState(artbot_id)
             await deleteJobFromDexie(artbot_id)
             NiceModal.remove('modal')
           }}
         >
-          <IconTrash /> Delete?
+          <IconTrash />{' '}
+          {serverHasJob ? <span>Cancel?</span> : <span>Delete?</span>}
         </Button>
       </div>
     </div>

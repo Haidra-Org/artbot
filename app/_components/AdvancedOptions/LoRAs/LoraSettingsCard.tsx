@@ -82,6 +82,10 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
     setInput({ loras: updateLoras })
   }
 
+  const currentVersion = lora.modelVersions.filter(
+    (ver) => ver.id === lora.versionId
+  )
+
   return (
     <div className="rounded bg-[#1d4d74] p-2 col">
       <div className="w-full row justify-between text-sm font-mono font-bold text-white">
@@ -139,7 +143,7 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
           }
         >
           <span className="font-mono pl-4 text-white font-bold">
-            {lora.modelVersions[0].name}
+            {currentVersion && currentVersion[0].name}
           </span>
         </OptionLabel>
       )}

@@ -30,7 +30,9 @@ export default function PromptActionPanel() {
   const [requestPending, setRequestPending] = useState(false)
 
   const handleCreateClick = useCallback(async () => {
-    if (input.prompt.trim() === '') return
+    const emptyInput = !input.prompt.trim() && !input.negative.trim()
+    if (emptyInput) return
+    if (emptyInput || requestPending || hasCriticalError) return
 
     setRequestPending(true)
 
@@ -61,7 +63,7 @@ export default function PromptActionPanel() {
       message: 'Image successfully requested!',
       type: 'success'
     })
-  }, [input])
+  }, [hasCriticalError, input, requestPending])
 
   useEffect(() => {
     // Function to handle keydown events

@@ -34,7 +34,6 @@ export default function AppInitComponent({
 
   useEffect(() => {
     setImageModels(modelDetails)
-    console.log(`modelDetails`, modelDetails)
   }, [modelDetails])
 
   useEffectOnce(() => {

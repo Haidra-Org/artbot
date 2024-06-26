@@ -29,10 +29,11 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
 
   // @ts-expect-error remove any instance of "artbot_id" since we always want to create a new ID
   delete updatedInput.artbot_id
-  updatedInput.artbot_id = nanoid()
+  updatedInput.artbot_id = nanoid(13)
 
   const job: HordeJob = {
     artbot_id: updatedInput.artbot_id,
+    job_id: nanoid(13),
     horde_id: '',
     created_timestamp: Date.now(),
     updated_timestamp: Date.now(),

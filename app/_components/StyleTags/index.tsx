@@ -127,7 +127,7 @@ export default function StyleTags({ input, setInput }: StyleTagsProps) {
         </div>
         {usedTags.length > 0 && (
           <Section className="w-full col mb-4">
-            <h3 className="font-[700] text-[16px]">Used tags</h3>
+            <h3 className="font-[700] text-[16px] text-white">Used tags</h3>
             <div className="row w-full gap-2 flex-wrap">
               {usedTags.map((tag) => {
                 const active = usedTags.includes(tag)
@@ -135,7 +135,7 @@ export default function StyleTags({ input, setInput }: StyleTagsProps) {
                   <div
                     key={`used_tag-${tag}`}
                     className={clsx(
-                      'row gap-2 px-2 py-1 rounded hover:bg-[#14B8A6] cursor-pointer',
+                      'row gap-2 px-2 py-1 rounded hover:bg-[#14B8A6] cursor-pointer text-white',
                       active ? 'bg-[#14B8A6]' : 'bg-zinc-400 dark:bg-zinc-700'
                     )}
                     onClick={() => onTagClick(tag)}
@@ -191,7 +191,7 @@ export default function StyleTags({ input, setInput }: StyleTagsProps) {
                     <div
                       key={`${category}-${tag}`}
                       className={clsx(
-                        'row gap-2 px-2 py-1 rounded hover:bg-[#14B8A6] cursor-pointer',
+                        'row gap-2 px-2 py-1 rounded hover:bg-[#14B8A6] cursor-pointer text-white',
                         active ? 'bg-[#14B8A6]' : 'bg-zinc-400 dark:bg-zinc-700'
                       )}
                       onClick={() => onTagClick(tag)}

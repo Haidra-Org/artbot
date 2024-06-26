@@ -13,7 +13,9 @@ import {
   StylePresetConfigurations,
   StylePreviewConfigurations
 } from '@/app/_types/HordeTypes'
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
+import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver'
+import DropdownMenu from '../DropdownMenu'
+import { MenuItem } from '@szhsin/react-menu'
 
 // Component to manage individual image loading and error handling
 const ImageWithFallback = ({
@@ -27,11 +29,17 @@ const ImageWithFallback = ({
   fallbackColor: string
   style?: React.CSSProperties
 }) => {
+  const { ref, isIntersecting, stopObserving } =
+    useIntersectionObserver<HTMLDivElement>({
+      rootMargin: '0px 0px 500px 0px', // Load when 500px below the viewport
+      threshold: 0.5 // Adjust threshold as needed
+    })
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
   return (
     <div
+      ref={ref}
       style={{
         width: '200px',
         height: '200px',
@@ -40,10 +48,11 @@ const ImageWithFallback = ({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: imageError ? fallbackColor : 'transparent',
+        borderRadius: '4px',
         ...style
       }}
     >
-      {!imageLoaded && !imageError && (
+      {!isIntersecting && !imageLoaded && !imageError && (
         <div
           style={{
             width: '100%',
@@ -52,18 +61,26 @@ const ImageWithFallback = ({
           }}
         ></div>
       )}
-      <img
-        src={src}
-        alt={alt}
-        onLoad={() => setImageLoaded(true)}
-        onError={() => setImageError(true)}
-        style={{
-          display: imageLoaded ? 'block' : 'none', // Hide image until loaded
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover'
-        }}
-      />
+      {(isIntersecting || imageLoaded) && (
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => {
+            setImageLoaded(true)
+            stopObserving()
+          }}
+          onError={() => {
+            setImageError(true)
+            stopObserving()
+          }}
+          style={{
+            display: imageLoaded ? 'block' : 'none', // Hide image until loaded
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -132,50 +149,45 @@ const StylePresetModal = ({
         >
           <IconArrowBarLeft />
         </Button>
-        <Popover className="relative">
-          <PopoverButton>
+        <DropdownMenu
+          menuButton={
             <Button onClick={() => {}} title="View other preset example images">
               <IconPhotoCog />
             </Button>
-          </PopoverButton>
-          <PopoverPanel
-            anchor="bottom"
-            className="col bg-white dark:bg-black p-2 rounded-md w-[180px] mt-2"
-            transition
-            style={{
-              border: '1px solid white'
+          }
+          direction="left"
+        >
+          <MenuItem
+            onClick={() => {
+              setSubject('person')
             }}
           >
-            <div className="text-sm font-bold">View examples:</div>
-            <div
-              onClick={() => setSubject('person')}
-              className="row w-full  cursor-pointer"
-            >
-              <div className="w-[20px] pr-1">
-                {subject === 'person' && <IconCheck size={12} />}
-              </div>
-              Person
+            <div className="w-[20px] pr-1">
+              {subject === 'person' && <IconCheck size={12} />}
             </div>
-            <div
-              onClick={() => setSubject('place')}
-              className="row w-full  cursor-pointer"
-            >
-              <div className="w-[20px] pr-1">
-                {subject === 'place' && <IconCheck size={12} />}
-              </div>
-              Place
+            Person
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setSubject('place')
+            }}
+          >
+            <div className="w-[20px] pr-1">
+              {subject === 'place' && <IconCheck size={12} />}
             </div>
-            <div
-              onClick={() => setSubject('thing')}
-              className="row w-full cursor-pointer"
-            >
-              <div className="w-[20px] pr-1">
-                {subject === 'thing' && <IconCheck size={12} />}
-              </div>
-              Thing
+            Place
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setSubject('thing')
+            }}
+          >
+            <div className="w-[20px] pr-1">
+              {subject === 'thing' && <IconCheck size={12} />}
             </div>
-          </PopoverPanel>
-        </Popover>
+            Thing
+          </MenuItem>
+        </DropdownMenu>
       </div>
       {Object.keys(filteredCategories).map((category: string) => {
         if (
@@ -218,7 +230,6 @@ const StylePresetModal = ({
                         cursor: 'pointer',
                         width: '200px',
                         height: 'auto',
-                        border: '1px solid white',
                         overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column',

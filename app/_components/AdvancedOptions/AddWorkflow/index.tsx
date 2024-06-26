@@ -123,7 +123,9 @@ export default function AddWorkflow() {
         {qrCodeOption.value === 'enabled' && (
           <div className="rounded bg-[#1d4d74] p-2 col mt-2">
             <label
-              className={'col md:row justify-between gap-2 font-bold text-sm'}
+              className={
+                'col md:row justify-between gap-2 font-bold text-sm text-white'
+              }
             >
               QR Code Text
             </label>
@@ -159,7 +161,7 @@ export default function AddWorkflow() {
             </div>
             <label
               className={
-                'col md:row justify-between gap-2 font-bold text-sm mt-2'
+                'col md:row justify-between gap-2 font-bold text-sm mt-2 text-white'
               }
             >
               QR Code Position
