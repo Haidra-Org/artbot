@@ -15,7 +15,7 @@ import {
 } from '@/app/_types/HordeTypes'
 import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver'
 import DropdownMenu from '../DropdownMenu'
-import { MenuItem } from '@szhsin/react-menu'
+import { MenuHeader, MenuItem } from '@szhsin/react-menu'
 
 // Component to manage individual image loading and error handling
 const ImageWithFallback = ({
@@ -155,8 +155,9 @@ const StylePresetModal = ({
               <IconPhotoCog />
             </Button>
           }
-          direction="left"
+          shift={-120}
         >
+          <MenuHeader>View examples</MenuHeader>
           <MenuItem
             onClick={() => {
               setSubject('person')
