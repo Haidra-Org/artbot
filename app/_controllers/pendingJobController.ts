@@ -133,8 +133,7 @@ export const downloadImages = async ({
         imageStatus: ImageStatus.OK, // TODO: FIXME: handle censored or errors.
         model: generationsList[index].model,
         imageBlob: response.blob,
-        gen_metadata: generationsList[index]
-          .gen_metadata as unknown as GenMetadata,
+        gen_metadata: generationsList[index].gen_metadata,
         seed: generationsList[index].seed,
         worker_id: generationsList[index].worker_id,
         worker_name: generationsList[index].worker_name,
