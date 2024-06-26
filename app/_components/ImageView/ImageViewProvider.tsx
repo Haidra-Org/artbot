@@ -58,7 +58,6 @@ export const ImageViewProvider = ({
     imageFiles: [] as ImageFileInterface[],
     imageRequest: {} as ImageRequest
   })
-
   const [imageId, setImageId] = useState(image_id || '')
   const [currentImageId, setCurrentImageId] = useState(image_id || '')
 
@@ -67,8 +66,8 @@ export const ImageViewProvider = ({
       const data = await getImagesForJobFromDexie(artbot_id)
       if (!data) return
 
-      let imageId = image_id
-      if (!image_id) {
+      let imageId = currentImageId
+      if (!currentImageId) {
         imageId = data.imageFiles[0].image_id
         setImageId(data.imageFiles[0].image_id)
       }
@@ -82,7 +81,7 @@ export const ImageViewProvider = ({
     } catch (err) {
       console.error('ImageViewProvider - Error fetching data:', err)
     }
-  }, [artbot_id, image_id])
+  }, [artbot_id, currentImageId])
 
   useEffect(() => {
     fetchData()

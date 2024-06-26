@@ -22,6 +22,7 @@ export default function Carousel({
 }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     ...options,
+    loop: true,
     watchDrag: numSlides > 1
   })
   const { selectedIndex, scrollSnaps } = useDotButton(emblaApi)

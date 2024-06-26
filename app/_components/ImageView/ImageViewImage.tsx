@@ -13,21 +13,23 @@ const ImageViewImage = React.memo(() => {
   if (!imageBlob) return null
 
   return (
-    <Carousel
-      numSlides={imageFiles.length}
-      onSlideChange={(num: number) => {
-        setCurrentImageId(imageFiles[num].image_id)
-      }}
-      options={{ loop: true }}
-    >
-      {imageFiles.map((image) => (
-        <CarouselImage
-          key={image.image_id}
-          imageBlob={image.imageBlob as Blob}
-          maxWidth={imageData?.imageRequest?.width}
-        />
-      ))}
-    </Carousel>
+    <div style={{ maxWidth: `${imageData?.imageRequest?.width}px` }}>
+      <Carousel
+        numSlides={imageFiles.length}
+        onSlideChange={(num: number) => {
+          setCurrentImageId(imageFiles[num].image_id)
+        }}
+        options={{ loop: true }}
+      >
+        {imageFiles.map((image) => (
+          <CarouselImage
+            key={image.image_id}
+            imageBlob={image.imageBlob as Blob}
+            maxWidth={imageData?.imageRequest?.width}
+          />
+        ))}
+      </Carousel>
+    </div>
   )
 })
 
