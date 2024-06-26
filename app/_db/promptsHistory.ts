@@ -23,10 +23,17 @@ export const getAllWords = (prompt: string = '') => {
 }
 
 export const updateFavoritePrompt = async (id: number, status: boolean) => {
-  await db.promptsHistory
-    .where('id')
-    .equals(id)
-    .modify({ favorited: status ? 1 : 0 })
+  try {
+    await db.transaction('rw', db.promptsHistory, async () => {
+      await db.promptsHistory
+        .where('id')
+        .equals(id)
+        .modify({ favorited: status ? 1 : 0 })
+    })
+  } catch (error) {
+    console.error('Transaction failed: ', error)
+    throw error
+  }
 }
 
 export const getPromptHistoryCountFromDexie = async (
