@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {
   IconCopy,
   IconDotsCircleHorizontal,
@@ -20,15 +21,16 @@ import { useCallback, useEffect, useState } from 'react'
 import Section from '../Section'
 import DropdownMenu from '../DropdownMenu'
 import { MenuDivider, MenuItem } from '@szhsin/react-menu'
-import FullScreenModal from '../Fullscreen'
 import useImageBlobUrl from '@/app/_hooks/useImageBlobUrl'
+import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 
 export default function ImageViewActions({
   onDelete
 }: {
   onDelete: () => void
 }) {
-  const [showFullscreen, setShowFullscreen] = useState(false)
+  const showFullScreen = useFullScreenHandle()
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const { artbot_id, imageBlob, imageId } = useImageView()
   const imageUrl = useImageBlobUrl(imageBlob)
   const [rerollImage] = useRerollImage()
@@ -68,11 +70,25 @@ export default function ImageViewActions({
 
   return (
     <>
-      {showFullscreen && (
-        <FullScreenModal onClose={() => setShowFullscreen(false)}>
-          <img src={imageUrl} />
-        </FullScreenModal>
-      )}
+      <FullScreen
+        handle={showFullScreen}
+        onChange={(isFullscreen) => setIsFullscreen(isFullscreen)}
+      >
+        {isFullscreen && (
+          <div
+            className="flex flex-row items-center justify-center w-full h-screen"
+            onClick={() => {
+              showFullScreen.exit()
+            }}
+          >
+            <img
+              className="max-h-screen max-w-full"
+              src={imageUrl}
+              alt="image"
+            />
+          </div>
+        )}
+      </FullScreen>
       <Section>
         <div className="row w-full justify-between max-w-[388px]">
           <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
@@ -112,7 +128,8 @@ export default function ImageViewActions({
 
           <Button
             onClick={() => {
-              setShowFullscreen(true)
+              setIsFullscreen(true)
+              showFullScreen.enter()
             }}
             title="Expand image to full browser window"
             style={{ height: '38px', width: '38px' }}

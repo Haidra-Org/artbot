@@ -45,6 +45,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-dropzone": "14.2.3",
+    "react-full-screen": "1.1.1",
     "react-hot-toast": "2.4.1",
     "react-loader-spinner": "6.1.6",
     "react-paginate": "8.2.0",
