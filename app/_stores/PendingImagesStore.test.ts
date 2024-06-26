@@ -17,6 +17,7 @@ describe('PendingImagesStore', () => {
   it('should add a pending image to the store', () => {
     const job: HordeJob = {
       artbot_id: '1',
+      job_id: 'job1',
       horde_id: 'horde1',
       created_timestamp: Date.now(),
       updated_timestamp: Date.now(),
@@ -39,6 +40,7 @@ describe('PendingImagesStore', () => {
   it('should retrieve a pending image by artbot_id', () => {
     const job: HordeJob = {
       artbot_id: '1',
+      job_id: 'job1',
       horde_id: 'horde1',
       created_timestamp: Date.now(),
       updated_timestamp: Date.now(),
@@ -62,6 +64,7 @@ describe('PendingImagesStore', () => {
   it('should retrieve pending images by status', () => {
     const job1: HordeJob = {
       artbot_id: '1',
+      job_id: 'job1',
       horde_id: 'horde1',
       created_timestamp: Date.now(),
       updated_timestamp: Date.now(),
@@ -78,6 +81,7 @@ describe('PendingImagesStore', () => {
 
     const job2: HordeJob = {
       artbot_id: '2',
+      job_id: 'job2',
       horde_id: 'horde2',
       created_timestamp: Date.now(),
       updated_timestamp: Date.now(),
@@ -111,6 +115,7 @@ describe('PendingImagesStore', () => {
   it('should delete a pending image from the store', () => {
     const job: HordeJob = {
       artbot_id: '1',
+      job_id: 'job1',
       horde_id: 'horde1',
       created_timestamp: Date.now(),
       updated_timestamp: Date.now(),
@@ -134,6 +139,7 @@ describe('PendingImagesStore', () => {
   it('should update a pending image in the store', () => {
     const job: HordeJob = {
       artbot_id: '1',
+      job_id: 'job1',
       horde_id: 'horde1',
       created_timestamp: Date.now(),
       updated_timestamp: Date.now(),

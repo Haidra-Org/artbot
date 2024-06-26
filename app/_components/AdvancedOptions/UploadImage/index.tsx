@@ -94,7 +94,7 @@ export default function UploadImage() {
         artbot_id: '__TEMP_USER_IMG_UPLOAD__',
         apiResponse: '',
         horde_id: '',
-        image_id: nanoid(),
+        image_id: nanoid(13),
         imageType: ImageType.SOURCE,
         imageStatus: ImageStatus.OK,
         model: '',

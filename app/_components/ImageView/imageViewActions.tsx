@@ -97,6 +97,7 @@ export default function ImageViewActions({
           <DropdownMenu
             menuButton={
               <Button
+                as="div"
                 onClick={() => {}}
                 style={{ height: '38px', width: '38px' }}
               >
@@ -113,6 +114,7 @@ export default function ImageViewActions({
           <DropdownMenu
             menuButton={
               <Button
+                as="div"
                 onClick={() => {}}
                 style={{ height: '38px', width: '38px' }}
               >
