@@ -49,6 +49,7 @@ export default function PendingImagesPanel({
   const topDivRef = useRef(null)
   const scrollableDivRef = useRef(null)
   const [topOffset, setTopOffset] = useState(178)
+  const [minHeight, setMinHeight] = useState('100vh')
 
   const { pendingImages } = useStore(PendingImagesStore)
   const [images, setImages] = useState<PhotoData[]>([])
@@ -122,6 +123,20 @@ export default function PendingImagesPanel({
     })
   }, [sortBy])
 
+  useEffect(() => {
+    const updateMinHeight = () => {
+      if (typeof window !== 'undefined') {
+        setMinHeight(`${window.innerHeight - 92}px`)
+      }
+    }
+
+    updateMinHeight()
+
+    window.addEventListener('resize', updateMinHeight)
+
+    return () => window.removeEventListener('resize', updateMinHeight)
+  }, [])
+
   const updateTopOffset = () => {
     if (topDivRef.current) {
       // @ts-expect-error Au contraire, it does!
@@ -164,10 +179,7 @@ export default function PendingImagesPanel({
       style={{
         border: showBorder ? '1px solid #7e5a6c' : 'none',
         padding: showBorder ? '0.5rem' : '0',
-        minHeight:
-          typeof window !== 'undefined'
-            ? `${window.innerHeight - 92}px`
-            : 'auto'
+        minHeight
       }}
     >
       {showTitle && (
