@@ -3,18 +3,9 @@
 import Button from '@/app/_components/Button'
 import DeleteConfirmation from '@/app/_components/Modal_DeleteConfirmation'
 import PromptWarning from '@/app/_components/PromptWarning'
-import { toastController } from '@/app/_controllers/toastController'
 import PromptInput from '@/app/_data-models/PromptInput'
-import {
-  deleteImageFileByArtbotIdTx,
-  duplicateAndModifyArtbotId,
-  getImagesForArtbotJobFromDexie
-} from '@/app/_db/ImageFiles'
-import { addPendingJobToDexie } from '@/app/_db/jobTransactions'
-import { addPromptToDexie } from '@/app/_db/promptsHistory'
-import usePromptInputValidation from '@/app/_hooks/usePromptInputValidation'
+import { deleteImageFileByArtbotIdTx } from '@/app/_db/ImageFiles'
 import { useInput } from '@/app/_providers/PromptInputProvider'
-import { addPendingImageToAppState } from '@/app/_stores/PendingImagesStore'
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconHourglass,
@@ -23,64 +14,24 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import useCreateImageRequest from '../_hook/useCreateImageRequest'
 
-export default function PromptActionPanel() {
-  const { input, setInput, setSourceImages } = useInput()
-  const [errors, hasCriticalError] = usePromptInputValidation()
-  const [requestPending, setRequestPending] = useState(false)
+export default function PromptActionPanel({
+  height = 36,
+  isSticky = false
+}: {
+  height?: number
+  isSticky?: boolean
+}) {
+  const { setInput, setSourceImages } = useInput()
+  const {
+    emptyInput,
+    errors,
+    handleCreateClick,
+    hasCriticalError,
+    requestPending
+  } = useCreateImageRequest()
   const router = useRouter()
-
-  const handleCreateClick = useCallback(async () => {
-    const emptyInput = !input.prompt.trim() && !input.negative.trim()
-    if (emptyInput) return
-    if (emptyInput || requestPending || hasCriticalError) return
-
-    setRequestPending(true)
-    const pendingJob = await addPendingJobToDexie({ ...input })
-    const uploadedImages = await getImagesForArtbotJobFromDexie(
-      '__TEMP_USER_IMG_UPLOAD__'
-    )
-
-    if (uploadedImages && uploadedImages.length > 0) {
-      await duplicateAndModifyArtbotId(
-        '__TEMP_USER_IMG_UPLOAD__',
-        pendingJob.artbot_id
-      )
-    }
-
-    if (pendingJob) {
-      addPendingImageToAppState(pendingJob)
-    }
-
-    await addPromptToDexie({
-      artbot_id: pendingJob.artbot_id,
-      prompt: input.prompt
-    })
-    setRequestPending(false)
-
-    toastController({
-      message: 'Image successfully requested!',
-      type: 'success'
-    })
-  }, [hasCriticalError, input, requestPending])
-
-  useEffect(() => {
-    // Function to handle keydown events
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-        handleCreateClick()
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [handleCreateClick])
-
-  const emptyInput = !input.prompt.trim() && !input.negative.trim()
 
   return (
     <div className="row w-full justify-end">
@@ -117,6 +68,10 @@ export default function PromptActionPanel() {
             )
           })
         }}
+        style={{
+          height: `${height}px`,
+          width: isSticky ? '25%' : `88px`
+        }}
       >
         <span className="row gap-1">
           <IconTrash stroke={1.5} />
@@ -132,6 +87,10 @@ export default function PromptActionPanel() {
             ? 'Please fix errors before creating'
             : 'Send image request to the AI Horde'
         }
+        style={{
+          height: `${height}px`,
+          width: isSticky ? '75%' : `88px`
+        }}
       >
         <span className="row gap-1">
           {requestPending ? (
@@ -154,6 +113,9 @@ export default function PromptActionPanel() {
             NiceModal.show('modal', {
               children: <PromptWarning errors={errors} />
             })
+          }}
+          style={{
+            height: `${height}px`
           }}
         >
           <span className="row gap-1">

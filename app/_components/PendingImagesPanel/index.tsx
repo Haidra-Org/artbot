@@ -163,7 +163,8 @@ export default function PendingImagesPanel({
       className="w-full rounded-md col min-h-[364px] relative p-2"
       style={{
         border: showBorder ? '1px solid #7e5a6c' : 'none',
-        padding: showBorder ? '0.5rem' : '0'
+        padding: showBorder ? '0.5rem' : '0',
+        minHeight: `${window.innerHeight - 92}px`
       }}
     >
       {showTitle && (
