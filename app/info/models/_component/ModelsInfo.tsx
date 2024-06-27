@@ -3,9 +3,11 @@
 import {
   IconArrowBarLeft,
   IconCube,
+  IconDownload,
   IconExternalLink,
   IconFilter,
   IconHeart,
+  IconPhotoSearch,
   IconSortDescending
 } from '@tabler/icons-react'
 import Link from 'next/link'
@@ -210,6 +212,16 @@ export default function ModelsInfo({
                 <div className="row justify-end">
                   <Button
                     onClick={() => {
+                      router.push(`/images?model=${key}`)
+                    }}
+                  >
+                    <div className="row gap-2">
+                      <IconPhotoSearch />
+                      Find images
+                    </div>
+                  </Button>
+                  <Button
+                    onClick={() => {
                       if (!onUseModel) {
                         router.push(`/create?model=${key}`)
                       }
@@ -219,7 +231,10 @@ export default function ModelsInfo({
                       }
                     }}
                   >
-                    Use Model
+                    <div className="row gap-2">
+                      <IconDownload />
+                      Use Model
+                    </div>
                   </Button>
                 </div>
               </div>
