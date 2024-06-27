@@ -1,6 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
-import { IconCube, IconExternalLink, IconHeart } from '@tabler/icons-react'
+import {
+  IconArrowBarLeft,
+  IconCube,
+  IconExternalLink,
+  IconFilter,
+  IconHeart,
+  IconSortDescending
+} from '@tabler/icons-react'
 import Link from 'next/link'
 
 import Button from '@/app/_components/Button'
@@ -8,6 +15,7 @@ import Section from '@/app/_components/Section'
 import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { formatSeconds } from '@/app/_utils/numberUtils'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function ModelsInfo({
   modelsAvailable,
@@ -19,6 +27,7 @@ export default function ModelsInfo({
   onUseModel?: (model: string) => void
 }) {
   const router = useRouter()
+  const [searchInput, setSearchInput] = useState('')
   const availableModelsMap = modelsAvailable.reduce(
     (acc, item) => {
       acc[item.name] = item
@@ -43,10 +52,60 @@ export default function ModelsInfo({
     return `~ ${formatSeconds(s)}`
   }
 
+  const filteredModels = Object.keys(modelDetails).reduce(
+    (acc, key) => {
+      const userInput = searchInput.toLocaleLowerCase()
+      const nsfw = modelDetails[key].nsfw
+
+      if (userInput === 'nsfw' && nsfw) {
+        acc[key] = modelDetails[key]
+      } else if (key.toLocaleLowerCase().includes(userInput)) {
+        acc[key] = modelDetails[key]
+      }
+      return acc
+    },
+    {} as { [key: string]: ImageModelDetails }
+  )
+
   return (
     <div className="col">
       <div className="col w-full gap-4">
-        {Object.keys(modelDetails).map((key) => (
+        <div className="col gap-2">
+          <div className="row w-full">
+            <input
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder={'Search for image model'}
+              onChange={(e) => {
+                setSearchInput(e.target.value)
+              }}
+              value={searchInput}
+            />
+            <Button
+              theme="danger"
+              onClick={() => {
+                setSearchInput('')
+              }}
+            >
+              <IconArrowBarLeft />
+            </Button>
+            <Button>
+              <IconSortDescending />
+            </Button>
+            <Button
+              // outline={!showFilter}
+              onClick={() => {
+                // setShowFilter(!showFilter)
+              }}
+            >
+              <IconFilter />
+            </Button>
+          </div>
+          <div className="w-full font-mono text-xs mb-2">
+            Showing {Object.keys(filteredModels).length} model
+            {Object.keys(filteredModels).length !== 1 ? 's' : ''}
+          </div>
+        </div>
+        {Object.keys(filteredModels).map((key) => (
           <Section key={key} anchor={key} className="text-white">
             <h2 className="row font-bold text-white gap-1 text-lg">{key}</h2>
             <div className="row w-full gap-2">
