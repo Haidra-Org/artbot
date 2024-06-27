@@ -2,6 +2,7 @@
 
 import Button from '@/app/_components/Button'
 import PageTitle from '@/app/_components/PageTitle'
+import Section from '@/app/_components/Section'
 import { ModelStore } from '@/app/_stores/ModelStore'
 import { AvailableImageModel } from '@/app/_types/HordeTypes'
 import { IconCube, IconExternalLink, IconHeart } from '@tabler/icons-react'
@@ -25,13 +26,10 @@ export default function ModelsPage() {
   return (
     <div className="col">
       <PageTitle>Model Details</PageTitle>
-      <div className="col w-full">
+      <div className="col w-full gap-4">
         {Object.keys(modelDetails).map((key) => (
-          <div
-            key={key}
-            className="col text-white p-2 flex gap-2 rounded-md bg-[#c1c1c1] dark:bg-zinc-700"
-          >
-            <h3 className="row font-bold text-white gap-1">{key}</h3>
+          <Section key={key} anchor={key}>
+            <h2 className="row font-bold text-white gap-1 text-lg">{key}</h2>
             <div className="row w-full gap-2">
               <Button
                 style={{
@@ -59,7 +57,18 @@ export default function ModelsPage() {
                 </Link>
               </div>
             )}
-          </div>
+            <div className="row w-full items-start gap-4">
+              <div
+                style={{
+                  backgroundColor: 'gray',
+                  borderRadius: '8px',
+                  height: '400px',
+                  width: '400px'
+                }}
+              ></div>
+              <div className="w-full">{modelDetails[key].description}</div>
+            </div>
+          </Section>
         ))}
       </div>
     </div>

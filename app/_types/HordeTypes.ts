@@ -115,6 +115,7 @@ export interface ImageModelDetails {
   version: string
   style: string
   nsfw: boolean
+  homepage: string
   download_all: boolean
   config: {
     files: {
