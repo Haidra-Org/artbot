@@ -9,6 +9,8 @@ import { IconClearAll } from '@tabler/icons-react'
 import { PendingImagesStore } from '@/app/_stores/PendingImagesStore'
 import { JobStatus } from '@/app/_types/ArtbotTypes'
 import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
+import DropdownMenu from '../DropdownMenu'
+import { MenuHeader, MenuItem } from '@szhsin/react-menu'
 
 export default function ClearButton() {
   const clearDone = () => {
@@ -48,34 +50,23 @@ export default function ClearButton() {
   }
 
   return (
-    <Popover className="relative">
-      <PopoverButton as="div">
-        <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
+    <DropdownMenu
+      menuButton={
+        <Button
+          as="div"
+          onClick={() => {}}
+          style={{ height: '38px', width: '38px' }}
+        >
           <IconClearAll />
         </Button>
-      </PopoverButton>
-      <PopoverPanel
-        anchor="bottom"
-        className="col bg-white dark:bg-black p-2 rounded-md w-[180px] mt-2"
-        transition
-        style={{
-          border: '1px solid white'
-        }}
-      >
-        <div className="text-sm font-bold">Clear pending images:</div>
-        <CloseButton className="row w-full" onClick={clearAll}>
-          All
-        </CloseButton>
-        <CloseButton className="row w-full" onClick={clearDone}>
-          Done
-        </CloseButton>
-        <CloseButton className="row w-full" onClick={clearWaiting}>
-          Pending
-        </CloseButton>
-        <CloseButton className="row w-full" onClick={clearError}>
-          Error
-        </CloseButton>
-      </PopoverPanel>
-    </Popover>
+      }
+      shift={-120}
+    >
+      <MenuHeader>Clear pending images</MenuHeader>
+      <MenuItem onClick={clearAll}>All</MenuItem>
+      <MenuItem onClick={clearDone}>Done</MenuItem>
+      <MenuItem onClick={clearWaiting}>Pending</MenuItem>
+      <MenuItem onClick={clearError}>Error</MenuItem>
+    </DropdownMenu>
   )
 }
