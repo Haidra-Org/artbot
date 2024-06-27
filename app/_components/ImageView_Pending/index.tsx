@@ -272,6 +272,8 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
             updateJobDetails.init_wait_time = 0
             updateJobDetails.wait_time = 0
             updateJobDetails.status = JobStatus.Waiting
+            updateJobDetails.created_timestamp = Date.now()
+            updateJobDetails.updated_timestamp = Date.now()
 
             await updatePendingImage(updateJobDetails.artbot_id, {
               ...updateJobDetails

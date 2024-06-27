@@ -1,6 +1,7 @@
 import {
   IconAlertTriangle,
   IconCheck,
+  IconLayout2,
   IconLoader,
   IconUpload
 } from '@tabler/icons-react'
@@ -19,6 +20,7 @@ export default function PendingImagePanelStats({
       image.status === 'done' && image.images_requested !== image.images_failed
     )
   })
+
   const waiting = pendingImages.filter((image) => {
     return (
       image.status === 'waiting' ||
@@ -53,7 +55,7 @@ export default function PendingImagePanelStats({
       </div>
       <div
         className="row text-[14px] cursor-pointer"
-        title="Images processing"
+        title="Show images processing"
         onClick={() => setFilter('processing')}
       >
         <IconLoader size={16} stroke={1.5} />
@@ -61,7 +63,7 @@ export default function PendingImagePanelStats({
       </div>
       <div
         className="row text-[14px] cursor-pointer"
-        title="Images queued"
+        title="Show images queued"
         onClick={() => setFilter('pending')}
       >
         <IconUpload size={16} stroke={1.5} />
@@ -69,11 +71,19 @@ export default function PendingImagePanelStats({
       </div>
       <div
         className="row text-[14px] cursor-pointer"
-        title="Images failed"
+        title="Show failed image requests"
         onClick={() => setFilter('error')}
       >
         <IconAlertTriangle size={16} stroke={1.5} />
         {error.length}
+      </div>
+      <div
+        className="row text-[14px] cursor-pointer"
+        title="Show all images"
+        onClick={() => setFilter('all')}
+      >
+        <IconLayout2 size={16} stroke={1.5} />
+        {pendingImages.length}
       </div>
     </div>
   )

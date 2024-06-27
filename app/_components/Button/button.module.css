@@ -56,7 +56,7 @@
 .disabled {
   cursor: default;
   background-color: #a9b1b9;
-  border-color: #d1dbe4;
+  border-color: #a9b1b9;
 }
 
 .disabled:hover {

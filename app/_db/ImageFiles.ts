@@ -5,7 +5,14 @@ import {
 import { db } from './dexie'
 
 export const addImageToDexie = async (image: ImageFileInterface) => {
-  await db.imageFiles.add(image)
+  try {
+    await db.transaction('rw', db.imageFiles, async () => {
+      await db.imageFiles.add(image)
+    })
+  } catch (error) {
+    console.error('Transaction failed: ', error)
+    throw error
+  }
 }
 
 export const checkImageExistsInDexie = async ({

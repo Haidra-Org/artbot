@@ -23,6 +23,8 @@ import DropdownMenu from '../DropdownMenu'
 import { MenuDivider, MenuItem } from '@szhsin/react-menu'
 import useImageBlobUrl from '@/app/_hooks/useImageBlobUrl'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
+import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils'
+import { toastController } from '@/app/_controllers/toastController'
 
 export default function ImageViewActions({
   onDelete
@@ -31,7 +33,7 @@ export default function ImageViewActions({
 }) {
   const showFullScreen = useFullScreenHandle()
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const { artbot_id, imageBlob, imageId } = useImageView()
+  const { artbot_id, imageBlob, imageId, imageData } = useImageView()
   const imageUrl = useImageBlobUrl(imageBlob)
   const [rerollImage] = useRerollImage()
   const [isFavorite, toggleFavorite] = useFavorite(artbot_id, imageId as string)
@@ -123,7 +125,19 @@ export default function ImageViewActions({
             }
           >
             <MenuItem>Share image (creates URL)</MenuItem>
-            <MenuItem>Share parameters (creates URL)</MenuItem>
+            <MenuItem
+              onClick={() => {
+                const encodedData = compressAndEncode(imageData.imageRequest)
+                const url = `${getBaseUrl()}/create#share=${encodeURIComponent(encodedData)}`
+
+                navigator.clipboard.writeText(url)
+                toastController({
+                  message: 'URL copied to clipboard!'
+                })
+              }}
+            >
+              Share parameters (creates URL)
+            </MenuItem>
             <MenuDivider />
             <MenuItem>Submit to ArtBot showcase</MenuItem>
           </DropdownMenu>
