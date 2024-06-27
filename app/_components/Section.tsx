@@ -33,7 +33,7 @@ export default function Section({
           href={`#${anchor}`}
         ></a>
       )}
-      <div className="col px-2 py-3 gap-2 w-full">
+      <div className="col px-2 py-2 gap-2 w-full">
         {title && <h2 className="row font-bold text-white">{title}</h2>}
         {children}
       </div>
