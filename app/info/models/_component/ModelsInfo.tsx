@@ -54,12 +54,18 @@ export default function ModelsInfo({
 
   const filteredModels = Object.keys(modelDetails).reduce(
     (acc, key) => {
-      const userInput = searchInput.toLocaleLowerCase()
       const nsfw = modelDetails[key].nsfw
+      const sdxl = modelDetails[key].baseline === 'stable_diffusion_xl'
+      const userInput = searchInput.toLocaleLowerCase()
 
-      if (userInput === 'nsfw' && nsfw) {
+      if (userInput === 'sdxl' && sdxl) {
         acc[key] = modelDetails[key]
-      } else if (key.toLocaleLowerCase().includes(userInput)) {
+      } else if (userInput === 'nsfw' && nsfw) {
+        acc[key] = modelDetails[key]
+      } else if (
+        key.toLocaleLowerCase().includes(userInput) ||
+        modelDetails[key].style.includes(userInput)
+      ) {
         acc[key] = modelDetails[key]
       }
       return acc
@@ -72,6 +78,9 @@ export default function ModelsInfo({
       <div className="col w-full gap-4">
         <div className="col gap-2">
           <div className="row w-full">
+            <Button onClick={() => {}}>
+              <IconHeart />
+            </Button>
             <input
               className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder={'Search for image model'}
@@ -101,7 +110,7 @@ export default function ModelsInfo({
             </Button>
           </div>
           <div className="w-full font-mono text-xs mb-2">
-            Showing {Object.keys(filteredModels).length} model
+            Filter: showing {Object.keys(filteredModels).length} model
             {Object.keys(filteredModels).length !== 1 ? 's' : ''}
           </div>
         </div>
