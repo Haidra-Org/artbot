@@ -170,6 +170,14 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const model = params.get('model')
+    if (model) {
+      setInput({ models: [model] })
+    }
+  }, [])
+
   return (
     <InputContext.Provider
       value={{

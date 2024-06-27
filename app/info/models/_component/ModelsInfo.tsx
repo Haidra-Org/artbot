@@ -7,14 +7,18 @@ import Button from '@/app/_components/Button'
 import Section from '@/app/_components/Section'
 import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { formatSeconds } from '@/app/_utils/numberUtils'
+import { useRouter } from 'next/navigation'
 
 export default function ModelsInfo({
   modelsAvailable,
-  modelDetails
+  modelDetails,
+  onUseModel
 }: {
   modelsAvailable: AvailableImageModel[]
   modelDetails: { [key: string]: ImageModelDetails }
+  onUseModel?: (model: string) => void
 }) {
+  const router = useRouter()
   const availableModelsMap = modelsAvailable.reduce(
     (acc, item) => {
       acc[item.name] = item
@@ -138,7 +142,13 @@ export default function ModelsInfo({
                 <div className="row justify-end">
                   <Button
                     onClick={() => {
-                      // handleOnUseModel(key)
+                      if (!onUseModel) {
+                        router.push(`/create?model=${key}`)
+                      }
+
+                      if (onUseModel) {
+                        onUseModel(key)
+                      }
                     }}
                   >
                     Use Model
