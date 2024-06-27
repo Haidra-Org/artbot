@@ -1,9 +1,3 @@
-import {
-  CloseButton,
-  Popover,
-  PopoverButton,
-  PopoverPanel
-} from '@headlessui/react'
 import Button from '../Button'
 import { IconClearAll } from '@tabler/icons-react'
 import { PendingImagesStore } from '@/app/_stores/PendingImagesStore'

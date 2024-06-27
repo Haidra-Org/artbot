@@ -15,6 +15,7 @@ import {
 } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
 import useCreateImageRequest from '../_hook/useCreateImageRequest'
+import clsx from 'clsx'
 
 export default function PromptActionPanel({
   height = 36,
@@ -23,7 +24,7 @@ export default function PromptActionPanel({
   height?: number
   isSticky?: boolean
 }) {
-  const { setInput, setSourceImages } = useInput()
+  const { kudos, setInput, setSourceImages } = useInput()
   const {
     emptyInput,
     errors,
@@ -34,96 +35,105 @@ export default function PromptActionPanel({
   const router = useRouter()
 
   return (
-    <div className="row w-full justify-end">
-      <Button
-        theme="danger"
-        onClick={async () => {
-          NiceModal.show('delete', {
-            children: (
-              <DeleteConfirmation
-                deleteButtonTitle="Reset"
-                title="Reset prompt?"
-                message={
-                  <>
-                    <p>
-                      Are you sure you want to reset all image generation
-                      settings to their default values?
-                    </p>
-                    <p>This cannot be undone.</p>
-                  </>
-                }
-                onDelete={async () => {
-                  setInput({ ...new PromptInput() })
-                  await deleteImageFileByArtbotIdTx('__TEMP_USER_IMG_UPLOAD__')
-                  setSourceImages([])
-                  window.scrollTo(0, 0)
-
-                  // Strip hash off URL if it exists.
-                  router.push('/create')
-
-                  // For now, just close modal on delete
-                  NiceModal.remove('modal')
-                }}
-              />
-            )
-          })
-        }}
-        style={{
-          height: `${height}px`,
-          width: isSticky ? '25%' : `88px`
-        }}
-      >
-        <span className="row gap-1">
-          <IconTrash stroke={1.5} />
-          Reset?
-        </span>
-      </Button>
-
-      <Button
-        disabled={emptyInput || requestPending || hasCriticalError}
-        onClick={handleCreateClick}
-        title={
-          hasCriticalError
-            ? 'Please fix errors before creating'
-            : 'Send image request to the AI Horde'
-        }
-        style={{
-          height: `${height}px`,
-          width: isSticky ? '75%' : `88px`
-        }}
-      >
-        <span className="row gap-1">
-          {requestPending ? (
-            <>
-              <IconHourglass />
-              Sending...
-            </>
-          ) : (
-            <>
-              <IconSquarePlus stroke={1.5} />
-              Create
-            </>
-          )}
-        </span>
-      </Button>
-      {errors.length > 0 && (
+    <div className={clsx('row w-full', !isSticky && 'justify-between')}>
+      {!isSticky && kudos > 0 && (
+        <div className="text-sm font-mono">({kudos} kudos)</div>
+      )}
+      {!isSticky && kudos === 0 && <div></div>}
+      <div className={clsx('row', isSticky && 'w-full')}>
         <Button
-          theme="warning"
-          onClick={() => {
-            NiceModal.show('modal', {
-              children: <PromptWarning errors={errors} />
+          theme="danger"
+          onClick={async () => {
+            NiceModal.show('delete', {
+              children: (
+                <DeleteConfirmation
+                  deleteButtonTitle="Reset"
+                  title="Reset prompt?"
+                  message={
+                    <>
+                      <p>
+                        Are you sure you want to reset all image generation
+                        settings to their default values?
+                      </p>
+                      <p>This cannot be undone.</p>
+                    </>
+                  }
+                  onDelete={async () => {
+                    setInput({ ...new PromptInput() })
+                    await deleteImageFileByArtbotIdTx(
+                      '__TEMP_USER_IMG_UPLOAD__'
+                    )
+                    setSourceImages([])
+                    window.scrollTo(0, 0)
+
+                    // Strip hash off URL if it exists.
+                    router.push('/create')
+
+                    // For now, just close modal on delete
+                    NiceModal.remove('modal')
+                  }}
+                />
+              )
             })
           }}
           style={{
-            height: `${height}px`
+            height: `${height}px`,
+            width: isSticky ? '25%' : `88px`
           }}
         >
           <span className="row gap-1">
-            <IconInfoTriangle stroke={1.5} />
-            {hasCriticalError ? 'Error' : 'Warning'}
+            <IconTrash stroke={1.5} />
+            Reset?
           </span>
         </Button>
-      )}
+
+        <Button
+          disabled={emptyInput || requestPending || hasCriticalError}
+          onClick={handleCreateClick}
+          title={
+            hasCriticalError
+              ? 'Please fix errors before creating'
+              : 'Send image request to the AI Horde'
+          }
+          style={{
+            height: `${height}px`,
+            width: isSticky ? '75%' : `88px`
+          }}
+        >
+          <span className="row gap-1">
+            {requestPending ? (
+              <>
+                <IconHourglass />
+                Sending...
+              </>
+            ) : (
+              <>
+                <IconSquarePlus stroke={1.5} />
+                Create
+                {isSticky && kudos > 0 ? <span>({kudos} kudos)</span> : ''}
+              </>
+            )}
+          </span>
+        </Button>
+        {errors.length > 0 && (
+          <Button
+            theme="warning"
+            onClick={() => {
+              NiceModal.show('modal', {
+                children: <PromptWarning errors={errors} />
+              })
+            }}
+            style={{
+              height: `${height}px`
+            }}
+          >
+            <span className="row gap-1">
+              <IconInfoTriangle stroke={1.5} />
+              {hasCriticalError ? 'Error' : 'Warning'}
+            </span>
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

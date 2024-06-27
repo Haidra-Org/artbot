@@ -164,7 +164,10 @@ export default function PendingImagesPanel({
       style={{
         border: showBorder ? '1px solid #7e5a6c' : 'none',
         padding: showBorder ? '0.5rem' : '0',
-        minHeight: `${window.innerHeight - 92}px`
+        minHeight:
+          typeof window !== 'undefined'
+            ? `${window.innerHeight - 92}px`
+            : 'auto'
       }}
     >
       {showTitle && (

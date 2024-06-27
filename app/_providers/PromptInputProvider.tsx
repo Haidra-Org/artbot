@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useState
 } from 'react'
@@ -16,14 +17,18 @@ import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles'
 import { useStore } from 'statery'
 import { CreateImageStore } from '../_stores/CreateImageStore'
 import { decodeAndDecompress, getHashData } from '../_utils/urlUtils'
+import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
+import { AppSettings } from '../_data-models/AppSettings'
+import { clientHeader } from '../_data-models/ClientHeader'
 
 type PromptInputContextType = {
   input: PromptInput
-  setInput: React.Dispatch<Partial<PromptInput>>
+  kudos: number
   pageLoaded: boolean
+  setInput: React.Dispatch<Partial<PromptInput>>
   setPageLoaded: React.Dispatch<React.SetStateAction<boolean>>
-  sourceImages: ImageFileInterface[]
   setSourceImages: React.Dispatch<React.SetStateAction<ImageFileInterface[]>>
+  sourceImages: ImageFileInterface[]
 }
 
 type InputState = InstanceType<typeof PromptInput>
@@ -36,11 +41,12 @@ interface PromptProviderProps {
 
 const defaultInputContext: PromptInputContextType = {
   input: {} as PromptInput,
-  setInput: () => {},
+  kudos: 0,
   pageLoaded: false,
+  setInput: () => {},
   setPageLoaded: () => {},
-  sourceImages: [],
-  setSourceImages: () => {}
+  setSourceImages: () => {},
+  sourceImages: []
 }
 
 const InputContext = createContext<PromptInputContextType>(defaultInputContext)
@@ -60,6 +66,44 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
 }) => {
   const { inputUpdated } = useStore(CreateImageStore)
   const [pageLoaded, setPageLoaded] = useState(false)
+  const [kudos, setKudos] = useState(0)
+
+  const fetchUpdatedKudos = useCallback(async (input: PromptInput) => {
+    try {
+      if (!input.prompt.trim() && !input.negative.trim()) return
+
+      const { apiParams } = await ImageParamsForHordeApi.build(input)
+      apiParams.dry_run = true
+
+      const apikey = AppSettings.get('apiKey')?.trim() || '0000000000'
+      const response = await fetch(
+        `https://aihorde.net/api/v2/generate/async`,
+        {
+          body: JSON.stringify(apiParams),
+          cache: 'no-store',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Client-Agent': clientHeader(),
+            apikey: apikey
+          }
+        }
+      )
+
+      if (response.ok) {
+        const data = await response.json()
+        setKudos(data.kudos)
+      } else {
+        console.error('Failed to fetch kudos:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error fetching kudos:', error)
+    }
+  }, [])
+
+  const debouncedFetchUpdatedKudos = useMemo(() => {
+    return debounce(fetchUpdatedKudos, 500)
+  }, [fetchUpdatedKudos])
 
   const inputReducer: InputReducer = (
     state: PromptInput,
@@ -70,6 +114,9 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
     // Save input to session storage
     const jsonString = JSON.stringify(updatedInputState)
     debouncedUpdate(jsonString)
+
+    // Call kudos API
+    debouncedFetchUpdatedKudos(updatedInputState)
 
     return updatedInputState
   }
@@ -117,11 +164,12 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
     <InputContext.Provider
       value={{
         input,
-        setInput,
+        kudos,
         pageLoaded,
+        setInput,
         setPageLoaded,
-        sourceImages,
-        setSourceImages
+        setSourceImages,
+        sourceImages
       }}
     >
       {children}
