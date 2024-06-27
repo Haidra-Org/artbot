@@ -115,8 +115,18 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
     const jsonString = JSON.stringify(updatedInputState)
     debouncedUpdate(jsonString)
 
-    // Call kudos API
-    debouncedFetchUpdatedKudos(updatedInputState)
+    // Only call kudos API if there are significant changes
+    // TODO: Handle weighted prompts or prompt matrix
+    // Other things like model, etc
+    if (
+      !(
+        Object.keys(newState).length === 1 &&
+        (newState.prompt || newState.negative)
+      )
+    ) {
+      // Call kudos API
+      debouncedFetchUpdatedKudos(updatedInputState)
+    }
 
     return updatedInputState
   }
