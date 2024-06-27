@@ -13,13 +13,15 @@ import {
   initJobController,
   loadPendingImagesFromDexie
 } from '../../_controllers/pendingJobController'
-import { ImageModelDetails } from '@/app/_types/HordeTypes'
+import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { useEffect } from 'react'
-import { setImageModels } from '@/app/_stores/ModelStore'
+import { setAvailableModels, setImageModels } from '@/app/_stores/ModelStore'
 
 export default function AppInitComponent({
+  modelsAvailable,
   modelDetails
 }: {
+  modelsAvailable: AvailableImageModel[]
   modelDetails: { [key: string]: ImageModelDetails }
 }) {
   const [handleLogin] = useHordeApiKey()
@@ -33,8 +35,9 @@ export default function AppInitComponent({
   }
 
   useEffect(() => {
+    setAvailableModels(modelsAvailable)
     setImageModels(modelDetails)
-  }, [modelDetails])
+  }, [modelDetails, modelsAvailable])
 
   useEffectOnce(() => {
     console.log(`ArtBot v2.0.0_beta is online: ${new Date().toLocaleString()}`)
