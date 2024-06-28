@@ -18,12 +18,15 @@ import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { formatSeconds } from '@/app/_utils/numberUtils'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import clsx from 'clsx'
 
 export default function ModelsInfo({
+  isModal = false,
   modelsAvailable,
   modelDetails,
   onUseModel
 }: {
+  isModal?: boolean
   modelsAvailable: AvailableImageModel[]
   modelDetails: { [key: string]: ImageModelDetails }
   onUseModel?: (model: string) => void
@@ -133,13 +136,18 @@ export default function ModelsInfo({
               </div>
               <div>Version: {modelDetails[key].version}</div>
             </div>
-            <div className="row w-full items-start gap-4">
+            <div
+              className={clsx(
+                'w-full items-start gap-4',
+                isModal ? 'col' : 'row'
+              )}
+            >
               <div
                 style={{
                   backgroundColor: 'gray',
                   borderRadius: '8px',
-                  height: '400px',
-                  width: '400px'
+                  height: isModal ? '200px' : '400px',
+                  width: isModal ? '200px' : '400px'
                 }}
               >
                 {modelDetails[key]?.showcases &&
@@ -154,8 +162,8 @@ export default function ModelsInfo({
               <div
                 className="col justify-between h-full"
                 style={{
-                  minHeight: '400px',
-                  width: `calc(100% - 400px)`
+                  minHeight: isModal ? 'auto' : '400px',
+                  width: isModal ? '100%' : `calc(100% - 400px)`
                 }}
               >
                 <div className="col">
