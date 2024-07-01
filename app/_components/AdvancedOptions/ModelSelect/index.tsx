@@ -1,5 +1,5 @@
 import { AvailableImageModel } from '@/app/_types/HordeTypes'
-import ModelSelectComponent from './modelSelectComponent'
+import ModelSelectComponent from './modelSelectComponentV2'
 import models from './models.json'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 
@@ -53,11 +53,11 @@ export async function getData() {
 }
 
 export default async function ModelSelect() {
-  const data = await getData()
+  // const data = await getData()
   return (
     <ModelSelectComponent
-      hasError={data.success === false}
-      models={data.models}
+    // hasError={data.success === false}
+    // models={data.models}
     />
   )
 }

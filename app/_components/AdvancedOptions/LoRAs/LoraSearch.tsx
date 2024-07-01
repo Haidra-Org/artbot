@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react'
 
 import Button from '../../Button'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
@@ -32,6 +32,7 @@ export default function LoraSearch({
     searchType,
     type: 'LORA'
   })
+  const inputRef = useRef<HTMLInputElement>(null)
   const [inputVersionId, setInputVersionId] = useState(false)
   const [searchInput, setSearchInput] = useState('')
   const [showFilter, setShowFilter] = useState(false)
@@ -45,6 +46,14 @@ export default function LoraSearch({
     if (inputVersionId || !searchInput.trim()) return
     debouncedSearchRequest(searchInput)
   }, [debouncedSearchRequest, inputVersionId, searchInput])
+
+  useEffect(() => {
+    if (inputRef.current) {
+      setTimeout(() => {
+        inputRef.current!.focus()
+      }, 400)
+    }
+  }, [])
 
   const transformedData = searchResults.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
@@ -106,6 +115,7 @@ export default function LoraSearch({
 
             setSearchInput(e.target.value)
           }}
+          ref={inputRef}
           value={searchInput}
         />
         <Button
@@ -123,6 +133,7 @@ export default function LoraSearch({
               const savedLora = new SavedLora({
                 id: searchInput.trim(),
                 versionId: searchInput.trim(),
+                versionName: '',
                 isArtbotManualEntry: true,
                 name: searchInput.trim(),
                 strength: 1,

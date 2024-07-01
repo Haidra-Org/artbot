@@ -101,21 +101,6 @@ export default function LoraDetails({
     }
   })
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const element = document.getElementById('LoraDetails')
-      if (element) {
-        element.scrollIntoView({
-          behavior: 'auto',
-          block: 'start',
-          inline: 'start'
-        })
-      }
-    }, 150)
-
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
     <div>
       <div className="col w-full">
