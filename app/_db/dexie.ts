@@ -12,7 +12,13 @@ import {
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 
 class ArtBot_v2 extends Dexie {
-  public declare appSettings: Table<AppSettingsTable, number>
+  public declare appSettings: Dexie.Table<
+    {
+      key: keyof AppSettingsTable
+      value: AppSettingsTable[keyof AppSettingsTable]
+    },
+    string
+  >
   public declare favorites: Table<FavoriteImage, number>
   public declare hordeJobs: Table<HordeJob, number>
   public declare imageEnhancementModules: Table<
@@ -27,7 +33,7 @@ class ArtBot_v2 extends Dexie {
   public constructor() {
     super('ArtBot_v2')
     this.version(1).stores({
-      appSettings: '++id, key',
+      appSettings: '++id, &key',
       favorites: '++id, artbot_id, image_id, favorited',
       hordeJobs: '++id, artbot_id, job_id, horde_id, status',
       imageEnhancementModules:

@@ -7,8 +7,11 @@ import { useInput } from '@/app/_providers/PromptInputProvider'
 import Button from '../../Button'
 import { IconWand } from '@tabler/icons-react'
 import ModelModalWrapper from './modalWrapper'
+import { useStore } from 'statery'
+import { ModelStore } from '@/app/_stores/ModelStore'
 
 export default function ModelSelect() {
+  const { availableModels } = useStore(ModelStore)
   const { input, setInput } = useInput()
 
   const options = [
@@ -22,7 +25,7 @@ export default function ModelSelect() {
     <OptionLabel
       title={
         <span className="row font-bold text-sm text-white gap-1">
-          Image model v2
+          Image model
         </span>
       }
     >
@@ -50,10 +53,14 @@ export default function ModelSelect() {
         />
         <Button
           onClick={() => {
-            // const presetKeys = Object.keys(presets)
-            // const randomPreset =
-            //   presetKeys[Math.floor(Math.random() * presetKeys.length)]
-            // handleSelectPreset(randomPreset, presets[randomPreset])
+            // Choose random element from: availableModels array
+
+            const randomModel =
+              availableModels[
+                Math.floor(Math.random() * availableModels.length)
+              ]
+
+            setInput({ models: [randomModel.name] })
           }}
         >
           <IconWand />
