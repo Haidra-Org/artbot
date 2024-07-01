@@ -25,6 +25,7 @@ function Modal({
   modalStyle = {},
   onClose = () => {}
 }: ModalProps) {
+  const ref = useRef(null)
   const modal = useModal()
 
   const [closeOnEsc, setCloseOnEsc] = useState(true)
@@ -60,6 +61,7 @@ function Modal({
         modal: clsx(styles.CustomModal, modalClassName),
         closeButton: styles.CustomCloseButton
       }}
+      initialFocusRef={ref}
       modalId={id}
       styles={{
         modal: { ...modalStyle }
@@ -77,7 +79,7 @@ function Modal({
         </div>
       }
     >
-      {children}
+      <div ref={ref}>{children}</div>
     </ResponsiveModal>
   )
 }

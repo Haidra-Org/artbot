@@ -17,7 +17,7 @@ import Section from '@/app/_components/Section'
 import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { formatSeconds } from '@/app/_utils/numberUtils'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 
 export default function ModelsInfo({
@@ -32,6 +32,7 @@ export default function ModelsInfo({
   onUseModel?: (model: string) => void
 }) {
   const router = useRouter()
+  const inputRef = useRef<HTMLInputElement>(null)
   const [searchInput, setSearchInput] = useState('')
   const availableModelsMap = modelsAvailable.reduce(
     (acc, item) => {
@@ -42,6 +43,15 @@ export default function ModelsInfo({
 
     // TODO: Handle sort
   )
+
+  useEffect(() => {
+    if (inputRef.current) {
+      setTimeout(() => {
+        inputRef.current!.focus()
+      }, 400)
+    }
+  }, [])
+
   console.log(`availableModelsMap`, availableModelsMap)
   console.log(`modelDetails`, modelDetails)
 
@@ -92,6 +102,7 @@ export default function ModelsInfo({
               onChange={(e) => {
                 setSearchInput(e.target.value)
               }}
+              ref={inputRef}
               value={searchInput}
             />
             <Button
