@@ -12,13 +12,7 @@ import {
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 
 class ArtBot_v2 extends Dexie {
-  public declare appSettings: Dexie.Table<
-    {
-      key: keyof AppSettingsTable
-      value: AppSettingsTable[keyof AppSettingsTable]
-    },
-    string
-  >
+  public declare appSettings: Table<AppSettingsTable, number>
   public declare favorites: Table<FavoriteImage, number>
   public declare hordeJobs: Table<HordeJob, number>
   public declare imageEnhancementModules: Table<

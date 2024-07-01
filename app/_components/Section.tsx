@@ -36,7 +36,12 @@ export default function Section({
           href={`#${anchor}`}
         ></a>
       )}
-      <div className={clsx('col px-2 py-2 gap-2 w-full', anchor ? 'pl-5' : '')}>
+      <div
+        className={clsx(
+          'col px-2 py-2 gap-2 w-full',
+          anchor ? 'pl-3 pr-2' : ''
+        )}
+      >
         {title && <h2 className="row font-bold text-white">{title}</h2>}
         {children}
       </div>

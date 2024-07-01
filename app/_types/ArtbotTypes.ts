@@ -7,12 +7,12 @@ export interface AiHordeEmbedding extends Embedding {
   inject_ti?: InjectTi
 }
 
-export interface AppSetting {}
+type AppSettingsTableKeys = 'favoriteModels' | 'imageSize'
 
-// Holds various types of settings that may be used throughout the web app.
-export interface AppSettingsTable {
-  favoriteModels: string[]
-  imageSize: number
+export type AppSettingsTable = {
+  id?: number
+  key: AppSettingsTableKeys
+  value: string[] | string | number | boolean
 }
 
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
