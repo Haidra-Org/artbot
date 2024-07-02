@@ -58,6 +58,7 @@ class PromptInput {
   steps: number = 20
   tiling: boolean = false
   tis: AiHordeEmbedding[] = []
+  transparent: boolean = false
   triggers: Array<string> = []
   upscaled: boolean = false
   width: number = 1024
