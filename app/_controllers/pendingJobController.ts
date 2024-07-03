@@ -26,12 +26,17 @@ import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
 import { AppSettings } from '../_data-models/AppSettings'
 
-const MAX_JOBS = 5
+const MAX_REQUESTS_PER_SECOND = 2
+const REQUEST_INTERVAL = 1000 / MAX_REQUESTS_PER_SECOND
+const CACHE_TIMEOUT = 750
+const requestCache = new Map()
+
+const MAX_JOBS = 10
 
 let pendingLastChecked = 0
 let waitingLastChecked = 0
 
-const waitingInterval = 2025
+const waitingInterval = 250
 const pendingInterval = 6025
 
 // Handles loading any pending images from Dexie on initial app load.
@@ -188,7 +193,17 @@ export const checkPendingJobs = async () => {
   pendingLastChecked = Date.now()
 
   const horde_ids = pendingJobs.map((job) => job.horde_id)
-  const imageCheckPromises = horde_ids.map((id) => imageStatus(id))
+
+  const filteredHordeIds = horde_ids.filter((id) => {
+    const lastChecked = requestCache.get(id)
+    if (!lastChecked || Date.now() - lastChecked > REQUEST_INTERVAL) {
+      requestCache.set(id, Date.now())
+      return true
+    }
+    return false
+  })
+
+  const imageCheckPromises = filteredHordeIds.map((id) => imageStatus(id))
 
   const results = await Promise.allSettled(imageCheckPromises)
 
@@ -253,6 +268,12 @@ export const checkPendingJobs = async () => {
         result.reason
       )
     }
+
+    // Schedule unblocking of the ID
+    setTimeout(
+      () => requestCache.delete(filteredHordeIds[index]),
+      CACHE_TIMEOUT
+    )
   }
 }
 
@@ -351,5 +372,5 @@ export const initJobController = () => {
 
   setInterval(() => {
     checkPendingJobs()
-  }, 1000)
+  }, 500)
 }
