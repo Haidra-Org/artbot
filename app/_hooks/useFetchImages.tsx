@@ -46,6 +46,7 @@ export default function useFetchImages(): FetchImagesResult {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
+  // Initialize state with query parameters or defaults
   const [initLoad, setInitLoad] = useState(true)
   const [currentPage, setCurrentPage] = useState(
     Number(searchParams.get('page') || 1) - 1
@@ -56,19 +57,18 @@ export default function useFetchImages(): FetchImagesResult {
   const [sortBy, setSortBy] = useState<'asc' | 'desc'>(
     (searchParams.get('sortBy') as 'asc' | 'desc') || 'desc'
   )
-
   const [groupImagesState, setGroupImagesState] = useState(groupImages)
   const [offset, setOffset] = useState(0)
   const [totalImages, setTotalImages] = useState(0)
   const [images, setImages] = useState<PhotoData[]>([])
   const [searchInput, setSearchInput] = useState('')
 
+  // Update the URL with current state values
   const updateUrl = useCallback(() => {
     const query = new URLSearchParams()
     query.set('page', (currentPage + 1).toString()) // Set page as currentPage + 1
     query.set('sortBy', sortBy)
     query.set('group', groupImages.toString())
-
     router.push(`${pathname}?${query.toString()}`)
   }, [currentPage, sortBy, groupImages, router, pathname])
 
@@ -78,28 +78,28 @@ export default function useFetchImages(): FetchImagesResult {
     }
   }, [currentPage, groupImages, sortBy, updateUrl, initLoad])
 
+  // Fetch search results from Dexie based on search input and sorting
   const fetchSearchResults = useCallback(async () => {
     const data = await searchPromptsFromDexie({
       searchInput,
       sortDirection: sortBy
     })
 
-    const imagesArray = data.map((image) => {
-      return {
-        artbot_id: image.artbot_id,
-        image_id: image.image_id,
-        key: `image-${image.image_id}`,
-        src: '',
-        image_count: image.image_count || 1,
-        width: image.width,
-        height: image.height
-      }
-    }) as unknown as PhotoData[]
+    const imagesArray = data.map((image) => ({
+      artbot_id: image.artbot_id,
+      image_id: image.image_id,
+      key: `image-${image.image_id}`,
+      src: '',
+      image_count: image.image_count || 1,
+      width: image.width,
+      height: image.height
+    })) as PhotoData[]
 
     setTotalImages(imagesArray.length)
     setImages(imagesArray)
   }, [searchInput, sortBy])
 
+  // Fetch images based on current state values
   const fetchImages = useCallback(async () => {
     let data = []
     let count = 0
@@ -123,17 +123,15 @@ export default function useFetchImages(): FetchImagesResult {
       )
     }
 
-    const imagesArray = data.map((image) => {
-      return {
-        artbot_id: image.artbot_id,
-        image_id: image.image_id,
-        key: `image-${image.image_id}`,
-        src: '',
-        image_count: image.image_count || 1,
-        width: image.width,
-        height: image.height
-      }
-    }) as unknown as PhotoData[]
+    const imagesArray = data.map((image) => ({
+      artbot_id: image.artbot_id,
+      image_id: image.image_id,
+      key: `image-${image.image_id}`,
+      src: '',
+      image_count: image.image_count || 1,
+      width: image.width,
+      height: image.height
+    })) as PhotoData[]
 
     setTotalImages(count)
     setImages(imagesArray)
