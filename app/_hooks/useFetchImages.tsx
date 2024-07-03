@@ -32,20 +32,22 @@ export interface FetchImagesResult {
   fetchImages: () => void
   setSearchInput: Dispatch<SetStateAction<string>>
   initLoad: boolean
+  currentPage: number
+  setCurrentPage: Dispatch<SetStateAction<number>>
+  groupImages: boolean
+  setGroupImages: Dispatch<SetStateAction<boolean>>
+  sortBy: 'asc' | 'desc'
+  setSortBy: Dispatch<SetStateAction<'asc' | 'desc'>>
 }
 
-export default function useFetchImages({
-  currentPage,
-  groupImages,
-  sortBy = 'desc'
-}: {
-  currentPage: number
-  groupImages: boolean
-  sortBy: 'asc' | 'desc'
-}): FetchImagesResult {
+export default function useFetchImages(): FetchImagesResult {
   // Handle initial load of page
   // so we don't flash "No Images Found" if images actually exist.
   const [initLoad, setInitLoad] = useState(true)
+
+  const [currentPage, setCurrentPage] = useState(0)
+  const [groupImages, setGroupImages] = useState(false)
+  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
 
   // Track internal state of groupImages so we can reset offset and currentPage to 0 if groupImages changes
   const [groupImagesState, setGroupImagesState] = useState(groupImages)
@@ -136,6 +138,12 @@ export default function useFetchImages({
     totalImages,
     fetchImages,
     setSearchInput: debounceSearchInput,
-    initLoad
+    initLoad,
+    currentPage,
+    setCurrentPage,
+    groupImages,
+    setGroupImages,
+    sortBy,
+    setSortBy
   }
 }

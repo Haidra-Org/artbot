@@ -24,17 +24,21 @@ import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
 
 export default function Gallery() {
-  const [groupImages, setGroupImages] = useState(true)
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
-  const [currentPage, setCurrentPage] = useState(0)
   const [showSearch, setShowSearch] = useState(false)
 
-  const { images, totalImages, fetchImages, setSearchInput, initLoad } =
-    useFetchImages({
-      groupImages,
-      sortBy,
-      currentPage
-    })
+  const {
+    currentPage,
+    fetchImages,
+    groupImages,
+    images,
+    initLoad,
+    setCurrentPage,
+    setGroupImages,
+    setSearchInput,
+    setSortBy,
+    sortBy,
+    totalImages
+  } = useFetchImages()
 
   const handleImageOpen = useCallback(
     (artbot_id: string, image_id?: string) => {
