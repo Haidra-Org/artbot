@@ -1,7 +1,5 @@
 'use client'
 
-import Button from '@/app/_components/Button'
-import { IconSquarePlus, IconTrash } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import PromptActionPanel from './PromptActionPanel'
 

@@ -60,6 +60,7 @@ export default function StylePresetSelectComponent({
             const updateLora = new SavedLora({
               id: lora.name,
               versionId: lora.is_version ? Number(lora.name) : false,
+              versionName: lora.name,
               isArtbotManualEntry: true,
               name: lora.name,
               strength: lora.model || 1,
