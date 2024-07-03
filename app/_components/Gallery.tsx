@@ -2,14 +2,14 @@
 
 import NiceModal from '@ebay/nice-modal-react'
 import PhotoAlbum from 'react-photo-album'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
 import {
   IconAffiliate,
   IconAffiliateFilled,
   IconChevronRight,
   IconCircleCheck,
-  IconSearch,
+  // IconSearch,
   IconSettings,
   IconSortAscending,
   IconSortDescending
@@ -24,17 +24,21 @@ import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
 
 export default function Gallery() {
-  const [groupImages, setGroupImages] = useState(true)
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
-  const [currentPage, setCurrentPage] = useState(0)
-  const [showSearch, setShowSearch] = useState(false)
+  // const [showSearch, setShowSearch] = useState(false)
 
-  const [images, totalImages, fetchImages, setSearchInput, initLoad] =
-    useFetchImages({
-      groupImages,
-      sortBy,
-      currentPage
-    })
+  const {
+    currentPage,
+    fetchImages,
+    groupImages,
+    images,
+    initLoad,
+    setCurrentPage,
+    setGroupImages,
+    // setSearchInput,
+    setSortBy,
+    sortBy,
+    totalImages
+  } = useFetchImages()
 
   const handleImageOpen = useCallback(
     (artbot_id: string, image_id?: string) => {
@@ -77,7 +81,7 @@ export default function Gallery() {
       <Section className="w-full mb-2">
         <div className="row w-full justify-between">
           <div className="row">
-            <Button
+            {/* <Button
               onClick={() => {
                 if (showSearch) {
                   setSearchInput('')
@@ -91,7 +95,7 @@ export default function Gallery() {
                 <IconSearch stroke={1.5} size={16} />
                 Search
               </span>
-            </Button>
+            </Button> */}
             <Button
               onClick={() => {
                 setCurrentPage(0)
@@ -238,21 +242,22 @@ export default function Gallery() {
             }}
           />
           {!initLoad && (
-            <div className="row justify-center my-2">
+            <div className="row justify-center my-2 mt-4">
               <ReactPaginate
                 breakLabel="..."
                 nextLabel="⇢"
+                forcePage={currentPage}
                 onPageChange={(val) => {
-                  setCurrentPage(val.selected)
+                  setCurrentPage(Number(val.selected))
                   window.scrollTo(0, 0)
                 }}
                 containerClassName="row gap-0"
-                breakLinkClassName="border px-2 py-1 bg-[#8ac5d1] hover:bg-[#8ac5d1]"
-                pageLinkClassName="border px-2 py-1 bg-[#6AB7C6] hover:bg-[#8ac5d1]"
-                previousLinkClassName="rounded-l-md border px-2 py-1 bg-[#6AB7C6] hover:bg-[#8ac5d1]"
-                nextLinkClassName="rounded-r-md border px-2 py-1 bg-[#6AB7C6] hover:bg-[#8ac5d1]"
-                disabledLinkClassName="bg-[#969696] hover:bg-[#969696] cursor-default"
-                pageRangeDisplayed={5}
+                breakLinkClassName="border px-3 py-2 bg-[#8ac5d1] hover:bg-[#8ac5d1] text-white"
+                pageLinkClassName="border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+                previousLinkClassName="rounded-l-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+                nextLinkClassName="rounded-r-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+                disabledLinkClassName="bg-[#969696] hover:bg-[#969696] cursor-default text-white"
+                pageRangeDisplayed={3}
                 pageCount={Math.ceil(totalImages / 20)}
                 previousLabel="⇠"
                 renderOnZeroPageCount={null}

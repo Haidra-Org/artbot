@@ -43,6 +43,7 @@ export interface ImageParams {
   n: number
   loras?: Lora[]
   tis?: TextualInversion[]
+  transparent?: boolean
   workflow?: 'qr_code' | ''
   extra_texts?: Array<{
     text: string
@@ -112,6 +113,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       seed = '',
       steps,
       tiling = false,
+      transparent = false,
       width
     } = imageDetails
 
@@ -150,6 +152,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       ) {
         this.apiParams.params.facefixer_strength = facefixer_strength
       }
+    }
+
+    if (transparent) {
+      this.apiParams.params.transparent = true
     }
 
     // Set the base parameters of apiParams here based on imageDetails and options

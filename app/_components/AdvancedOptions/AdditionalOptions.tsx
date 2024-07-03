@@ -54,6 +54,15 @@ export default function AdditionalOptions() {
         />
         Tiling
       </label>
+      <label className="row gap-2 text-white">
+        <Switch
+          checked={input.transparent}
+          onChange={() => {
+            setInput({ transparent: !input.transparent })
+          }}
+        />
+        Transparent background
+      </label>
     </Section>
   )
 }

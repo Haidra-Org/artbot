@@ -228,6 +228,12 @@ export default function ImageDetails({
             <strong>Tiled: </strong>
             {imageRequest.tiling ? 'true' : 'false'}
           </div>
+          {imageRequest.transparent && (
+            <div>
+              <strong>Transparent background: </strong>
+              {imageRequest.transparent ? 'true' : 'false'}
+            </div>
+          )}
 
           {imageFile?.gen_metadata && imageFile?.gen_metadata?.length > 0 && (
             <div className="mt-4">

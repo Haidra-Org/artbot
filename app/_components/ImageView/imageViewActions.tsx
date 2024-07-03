@@ -25,6 +25,7 @@ import useImageBlobUrl from '@/app/_hooks/useImageBlobUrl'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils'
 import { toastController } from '@/app/_controllers/toastController'
+import { blobToClipboard } from '@/app/_utils/imageUtils'
 
 export default function ImageViewActions({
   onDelete
@@ -111,7 +112,18 @@ export default function ImageViewActions({
             <MenuItem>Use all settings</MenuItem>
             <MenuDivider />
             <MenuItem>Copy JSON parameters</MenuItem>
-            <MenuItem>Copy image to clipboard</MenuItem>
+            <MenuItem
+              onClick={async () => {
+                const success = await blobToClipboard(imageBlob as Blob)
+                if (success) {
+                  toastController({
+                    message: 'Image copied to clipboard!'
+                  })
+                }
+              }}
+            >
+              Copy image to clipboard
+            </MenuItem>
           </DropdownMenu>
           <DropdownMenu
             menuButton={

@@ -5,15 +5,8 @@ import {
   IconAlertTriangle,
   IconLibraryPhoto,
   IconPhotoUp,
-  IconTrash,
   IconX
 } from '@tabler/icons-react'
-// import { deletePendingImageFromAppState } from '@/app/_store/PendingImagesStore'
-// import { JobStatus } from '@/app/_types/artbot'
-// import ParticleAnimation from '@/app/_components/ui/ParticleLoader'
-// import { deleteJobFromDexie } from '@/app/_db/transactions'
-// import { usePendingJob } from '../../_hooks/usePendingJob'
-// import NiceModal from '@ebay/nice-modal-react'
 import { JobStatus } from '../../_types/ArtbotTypes'
 import { usePendingJob } from '../../_hooks/usePendingJob'
 import { deletePendingImageFromAppState } from '../../_stores/PendingImagesStore'
@@ -21,7 +14,6 @@ import { deleteJobFromDexie } from '../../_db/jobTransactions'
 import ParticleAnimation from '../ParticleAnimation'
 import styles from './pendingImageOverlay.module.css'
 import { formatPendingPercentage } from '@/app/_utils/numberUtils'
-// import DeleteConfirmation from '@/app/_components/modals/DeleteConfirmation'
 
 function PendingImageOverlay({
   artbot_id,
@@ -83,10 +75,10 @@ function PendingImageOverlay({
         }}
         title="Remove pending job from queue"
       >
-        <IconX />
+        <IconX stroke={'#000'} strokeWidth={2} />
       </div>
 
-      {(status === JobStatus.Done || status === JobStatus.Error) && (
+      {/* {(status === JobStatus.Done || status === JobStatus.Error) && (
         <div
           className={styles.TrashIcon}
           onClick={async (e) => {
@@ -137,7 +129,7 @@ function PendingImageOverlay({
         >
           <IconTrash stroke={1} />
         </div>
-      )}
+      )} */}
 
       {status === JobStatus.Waiting && (
         <>
