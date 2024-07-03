@@ -161,6 +161,7 @@ export default function useFetchImages(): FetchImagesResult {
     if (currentPage !== page) setCurrentPage(page)
     if (groupImages !== group) setGroupImages(group)
     if (sortBy !== sort) setSortBy(sort)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   return {

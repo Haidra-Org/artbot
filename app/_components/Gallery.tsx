@@ -2,14 +2,14 @@
 
 import NiceModal from '@ebay/nice-modal-react'
 import PhotoAlbum from 'react-photo-album'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
 import {
   IconAffiliate,
   IconAffiliateFilled,
   IconChevronRight,
   IconCircleCheck,
-  IconSearch,
+  // IconSearch,
   IconSettings,
   IconSortAscending,
   IconSortDescending
@@ -24,7 +24,7 @@ import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
 
 export default function Gallery() {
-  const [showSearch, setShowSearch] = useState(false)
+  // const [showSearch, setShowSearch] = useState(false)
 
   const {
     currentPage,
@@ -34,7 +34,7 @@ export default function Gallery() {
     initLoad,
     setCurrentPage,
     setGroupImages,
-    setSearchInput,
+    // setSearchInput,
     setSortBy,
     sortBy,
     totalImages
@@ -81,7 +81,7 @@ export default function Gallery() {
       <Section className="w-full mb-2">
         <div className="row w-full justify-between">
           <div className="row">
-            <Button
+            {/* <Button
               onClick={() => {
                 if (showSearch) {
                   setSearchInput('')
@@ -95,7 +95,7 @@ export default function Gallery() {
                 <IconSearch stroke={1.5} size={16} />
                 Search
               </span>
-            </Button>
+            </Button> */}
             <Button
               onClick={() => {
                 setCurrentPage(0)
