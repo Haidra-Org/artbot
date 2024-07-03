@@ -29,7 +29,7 @@ export default function Gallery() {
   const [currentPage, setCurrentPage] = useState(0)
   const [showSearch, setShowSearch] = useState(false)
 
-  const [images, totalImages, fetchImages, setSearchInput, initLoad] =
+  const { images, totalImages, fetchImages, setSearchInput, initLoad } =
     useFetchImages({
       groupImages,
       sortBy,

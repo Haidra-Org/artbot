@@ -26,6 +26,14 @@ export interface PhotoData {
   image_count: number
 }
 
+export interface FetchImagesResult {
+  images: PhotoData[]
+  totalImages: number
+  fetchImages: () => void
+  setSearchInput: Dispatch<SetStateAction<string>>
+  initLoad: boolean
+}
+
 export default function useFetchImages({
   currentPage,
   groupImages,
@@ -34,16 +42,13 @@ export default function useFetchImages({
   currentPage: number
   groupImages: boolean
   sortBy: 'asc' | 'desc'
-}): [
-  PhotoData[],
-  number,
-  () => void,
-  Dispatch<SetStateAction<string>>,
-  boolean
-] {
+}): FetchImagesResult {
   // Handle initial load of page
   // so we don't flash "No Images Found" if images actually exist.
   const [initLoad, setInitLoad] = useState(true)
+
+  // Track internal state of groupImages so we can reset offset and currentPage to 0 if groupImages changes
+  const [groupImagesState, setGroupImagesState] = useState(groupImages)
 
   const [offset, setOffset] = useState(0)
   const [totalImages, setTotalImages] = useState(0)
@@ -75,15 +80,22 @@ export default function useFetchImages({
   const fetchImages = useCallback(async () => {
     let data = []
     let count = 0
+    let updateOffset = offset
+
+    if (groupImages !== groupImagesState) {
+      updateOffset = 0
+      setOffset(0)
+      setGroupImagesState(groupImages)
+    }
 
     if (groupImages) {
       count = await countCompletedJobsFromDexie()
-      data = await fetchCompletedJobsFromDexie(LIMIT, offset, sortBy)
+      data = await fetchCompletedJobsFromDexie(LIMIT, updateOffset, sortBy)
     } else {
       count = await countAllImagesForCompletedJobsFromDexie()
       data = await fetchAllImagesForCompletedJobsFromDexie(
         LIMIT,
-        offset,
+        updateOffset,
         sortBy
       )
     }
@@ -103,7 +115,7 @@ export default function useFetchImages({
     setTotalImages(count)
     setImages(imagesArray)
     setInitLoad(false)
-  }, [groupImages, offset, sortBy])
+  }, [groupImages, groupImagesState, offset, sortBy])
 
   useEffect(() => {
     if (searchInput) {
@@ -119,5 +131,11 @@ export default function useFetchImages({
 
   const debounceSearchInput = debounce(setSearchInput, 250)
 
-  return [images, totalImages, fetchImages, debounceSearchInput, initLoad]
+  return {
+    images,
+    totalImages,
+    fetchImages,
+    setSearchInput: debounceSearchInput,
+    initLoad
+  }
 }
