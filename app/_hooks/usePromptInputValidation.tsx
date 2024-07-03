@@ -89,7 +89,7 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
 
     setCriticalError(updateCriticalError)
     setErrors(updateErrors)
-  }, [input])
+  }, [baselineModel, input])
 
   return [errors, hasCriticalError]
 }
