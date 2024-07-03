@@ -13,6 +13,7 @@ import {
   useEffect,
   useState
 } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 const LIMIT = 20
 
@@ -41,21 +42,41 @@ export interface FetchImagesResult {
 }
 
 export default function useFetchImages(): FetchImagesResult {
-  // Handle initial load of page
-  // so we don't flash "No Images Found" if images actually exist.
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [initLoad, setInitLoad] = useState(true)
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get('page') || 1) - 1
+  )
+  const [groupImages, setGroupImages] = useState(
+    searchParams.get('group') !== 'false'
+  )
+  const [sortBy, setSortBy] = useState<'asc' | 'desc'>(
+    (searchParams.get('sortBy') as 'asc' | 'desc') || 'desc'
+  )
 
-  const [currentPage, setCurrentPage] = useState(0)
-  const [groupImages, setGroupImages] = useState(false)
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
-
-  // Track internal state of groupImages so we can reset offset and currentPage to 0 if groupImages changes
   const [groupImagesState, setGroupImagesState] = useState(groupImages)
-
   const [offset, setOffset] = useState(0)
   const [totalImages, setTotalImages] = useState(0)
   const [images, setImages] = useState<PhotoData[]>([])
   const [searchInput, setSearchInput] = useState('')
+
+  const updateUrl = useCallback(() => {
+    const query = new URLSearchParams()
+    query.set('page', (currentPage + 1).toString()) // Set page as currentPage + 1
+    query.set('sortBy', sortBy)
+    query.set('group', groupImages.toString())
+
+    router.push(`${pathname}?${query.toString()}`)
+  }, [currentPage, sortBy, groupImages, router, pathname])
+
+  useEffect(() => {
+    if (!initLoad) {
+      updateUrl()
+    }
+  }, [currentPage, groupImages, sortBy, updateUrl, initLoad])
 
   const fetchSearchResults = useCallback(async () => {
     const data = await searchPromptsFromDexie({
@@ -68,7 +89,7 @@ export default function useFetchImages(): FetchImagesResult {
         artbot_id: image.artbot_id,
         image_id: image.image_id,
         key: `image-${image.image_id}`,
-        src: '', // PhotoAlbum library requires this but we're not using it.
+        src: '',
         image_count: image.image_count || 1,
         width: image.width,
         height: image.height
@@ -107,7 +128,7 @@ export default function useFetchImages(): FetchImagesResult {
         artbot_id: image.artbot_id,
         image_id: image.image_id,
         key: `image-${image.image_id}`,
-        src: '', // PhotoAlbum library requires this but we're not using it.
+        src: '',
         image_count: image.image_count || 1,
         width: image.width,
         height: image.height
@@ -132,6 +153,17 @@ export default function useFetchImages(): FetchImagesResult {
   }, [currentPage])
 
   const debounceSearchInput = debounce(setSearchInput, 250)
+
+  // Update state when URL query parameters change
+  useEffect(() => {
+    const page = Number(searchParams.get('page') || 1) - 1 // Read page as page - 1
+    const group = searchParams.get('group') !== 'false'
+    const sort = (searchParams.get('sortBy') as 'asc' | 'desc') || 'desc'
+
+    if (currentPage !== page) setCurrentPage(page)
+    if (groupImages !== group) setGroupImages(group)
+    if (sortBy !== sort) setSortBy(sort)
+  }, [searchParams])
 
   return {
     images,

@@ -242,21 +242,22 @@ export default function Gallery() {
             }}
           />
           {!initLoad && (
-            <div className="row justify-center my-2">
+            <div className="row justify-center my-2 mt-4">
               <ReactPaginate
                 breakLabel="..."
                 nextLabel="⇢"
+                forcePage={currentPage}
                 onPageChange={(val) => {
-                  setCurrentPage(val.selected)
+                  setCurrentPage(Number(val.selected))
                   window.scrollTo(0, 0)
                 }}
                 containerClassName="row gap-0"
-                breakLinkClassName="border px-2 py-1 bg-[#8ac5d1] hover:bg-[#8ac5d1]"
-                pageLinkClassName="border px-2 py-1 bg-[#6AB7C6] hover:bg-[#8ac5d1]"
-                previousLinkClassName="rounded-l-md border px-2 py-1 bg-[#6AB7C6] hover:bg-[#8ac5d1]"
-                nextLinkClassName="rounded-r-md border px-2 py-1 bg-[#6AB7C6] hover:bg-[#8ac5d1]"
-                disabledLinkClassName="bg-[#969696] hover:bg-[#969696] cursor-default"
-                pageRangeDisplayed={5}
+                breakLinkClassName="border px-3 py-2 bg-[#8ac5d1] hover:bg-[#8ac5d1] text-white"
+                pageLinkClassName="border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+                previousLinkClassName="rounded-l-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+                nextLinkClassName="rounded-r-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+                disabledLinkClassName="bg-[#969696] hover:bg-[#969696] cursor-default text-white"
+                pageRangeDisplayed={3}
                 pageCount={Math.ceil(totalImages / 20)}
                 previousLabel="⇠"
                 renderOnZeroPageCount={null}
