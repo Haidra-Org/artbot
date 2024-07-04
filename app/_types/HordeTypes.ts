@@ -48,6 +48,12 @@ export interface HordeGeneration {
   state: string
 }
 
+export interface HordeTi {
+  name: string
+  inject_ti?: InjectTi
+  strength: number
+}
+
 export interface HordeUser {
   username: string
   id: number

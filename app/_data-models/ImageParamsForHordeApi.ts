@@ -1,9 +1,9 @@
 import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles'
 import {
   ControlTypes,
+  HordeTi,
   Lora,
-  SourceProcessing,
-  TextualInversion
+  SourceProcessing
 } from '../_types/HordeTypes'
 import { castTiInject } from '../_utils/hordeUtils'
 import { blobToBase64 } from '../_utils/imageUtils'
@@ -42,7 +42,7 @@ export interface ImageParams {
   post_processing: string[]
   n: number
   loras?: Lora[]
-  tis?: TextualInversion[]
+  tis?: HordeTi[]
   transparent?: boolean
   workflow?: 'qr_code' | ''
   extra_texts?: Array<{
