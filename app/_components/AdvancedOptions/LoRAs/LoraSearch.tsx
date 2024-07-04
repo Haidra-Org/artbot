@@ -13,14 +13,20 @@ import useCivitAi from '@/app/_hooks/useCivitai'
 import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
-import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
+import {
+  Embedding,
+  SavedEmbedding,
+  SavedLora
+} from '@/app/_data-models/Civitai'
 import { MasonryItem, MasonryLayout } from '../../Masonry'
 
 export default function LoraSearch({
+  civitAiType = 'LORA',
   onUseLoraClick = () => {},
   searchType = 'search'
 }: {
-  onUseLoraClick?: (savedLora: SavedLora) => void
+  civitAiType?: 'LORA' | 'TextualInversion'
+  onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void
   searchType?: 'search' | 'favorite' | 'recent'
 }) {
   const {
@@ -30,7 +36,7 @@ export default function LoraSearch({
     setPendingSearch
   } = useCivitAi({
     searchType,
-    type: 'LORA'
+    type: civitAiType
   })
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputVersionId, setInputVersionId] = useState(false)
@@ -75,12 +81,24 @@ export default function LoraSearch({
     return photoData
   })
 
-  let title = 'LoRA Search'
+  const subject = civitAiType === 'LORA' ? 'LoRA' : 'Embedding'
+
+  let title = `${subject} Search`
 
   if (searchType === 'favorite') {
-    title = 'Favorite LoRAs'
+    title = `Favorite ${subject}s`
   } else if (searchType === 'recent') {
-    title = 'Recently used LoRAs'
+    title = `Recently used ${subject}s`
+  }
+
+  let placeholder = 'Enter LoRA or Lycoris name'
+
+  if (inputVersionId) {
+    placeholder = 'Enter CivitAI version ID'
+  }
+
+  if (civitAiType === 'TextualInversion') {
+    placeholder = 'Enter textual inversion or embedding name'
   }
 
   return (
@@ -89,7 +107,7 @@ export default function LoraSearch({
         {title} <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
       <div className="row w-full">
-        {searchType === 'search' && (
+        {searchType === 'search' && civitAiType === 'LORA' && (
           <Button
             outline={!inputVersionId}
             onClick={() => {
@@ -103,11 +121,7 @@ export default function LoraSearch({
         )}
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder={
-            inputVersionId
-              ? 'Enter CivitAI version ID'
-              : 'Search for LoRA or Lycoris'
-          }
+          placeholder={placeholder}
           onChange={(e) => {
             if (e.target.value.trim()) {
               setPendingSearch(true)
@@ -132,6 +146,7 @@ export default function LoraSearch({
             onClick={() => {
               const savedLora = new SavedLora({
                 id: searchInput.trim(),
+                civitAiType: 'LORA',
                 versionId: searchInput.trim(),
                 versionName: '',
                 isArtbotManualEntry: true,
@@ -187,7 +202,11 @@ export default function LoraSearch({
         <MasonryLayout>
           {transformedData.map((image) => (
             <MasonryItem key={`${image.key}`}>
-              <LoraImage onUseLoraClick={onUseLoraClick} image={image} />
+              <LoraImage
+                civitAiType={civitAiType}
+                onUseLoraClick={onUseLoraClick}
+                image={image}
+              />
             </MasonryItem>
           ))}
         </MasonryLayout>

@@ -181,7 +181,7 @@ export default function ModelsInfo({
             </Button>
             <DropdownMenu
               menuButton={
-                <Button>
+                <Button as="div">
                   <IconSortDescending />
                 </Button>
               }
@@ -228,7 +228,7 @@ export default function ModelsInfo({
         </div>
         {Object.keys(sortedFilteredModels).map((key) => (
           <Section key={key} anchor={key} className="text-white">
-            <div className="col pl-2 pr-1">
+            <div className="col pr-1">
               <h2 className="row font-bold text-white gap-1 text-lg">{key}</h2>
               <div className="row w-full gap-2">
                 <Button

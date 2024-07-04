@@ -1,4 +1,4 @@
-import { SavedLora } from '../_data-models/Civitai'
+import { SavedEmbedding, SavedLora } from '../_data-models/Civitai'
 
 interface JsonData {
   [key: string]: string[]
@@ -14,14 +14,21 @@ export const mergeArrays = (jsonData: JsonData): string[] => {
   return mergedArray
 }
 
-export const flattenKeywords = (jsonData: SavedLora[] = []): string[] => {
-  return jsonData.reduce((acc: string[], embedding: SavedLora) => {
-    if (!embedding || !embedding.modelVersions) return acc
+export const flattenKeywords = (
+  jsonData: SavedEmbedding[] | SavedLora[] = []
+): string[] => {
+  return jsonData.reduce(
+    (acc: string[], embedding: SavedEmbedding | SavedLora) => {
+      if (!embedding || !embedding.modelVersions) return acc
 
-    if (embedding.modelVersions.length > 0) {
-      // Flatten and concatenate the trainedWords of the first model version to the accumulator
-      acc = acc.concat(embedding.modelVersions[0].trainedWords)
-    }
-    return acc
-  }, [])
+      if (embedding._civitAiType === 'TextualInversion') {
+        acc = acc.concat(embedding.tags)
+      } else if (embedding.modelVersions.length > 0) {
+        // Flatten and concatenate the trainedWords of the first model version to the accumulator
+        acc = acc.concat(embedding.modelVersions[0].trainedWords)
+      }
+      return acc
+    },
+    []
+  )
 }

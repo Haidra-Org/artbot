@@ -77,13 +77,30 @@ export default function PromptInputForm() {
     setOpenNegativePrompt(negOpen)
   }, [])
 
-  const hasTrainedWords = input.loras.some((embedding) => {
+  let hasTrainedWords = false
+
+  input.loras.forEach((embedding) => {
     if (!embedding || !embedding.modelVersions || embedding.isArtbotManualEntry)
       return false
 
-    return embedding.modelVersions.some(
-      (modelVersion) => modelVersion.trainedWords.length > 0
-    )
+    if (
+      embedding.modelVersions.some(
+        (modelVersion) => modelVersion.trainedWords.length > 0
+      )
+    ) {
+      hasTrainedWords = true
+    }
+  })
+
+  // Now do the same for input.tis
+  input.tis.forEach((t) => {
+    if (t.inject_ti === 'prompt' || t.inject_ti === 'negprompt') {
+      return false
+    }
+
+    if (t.tags.length > 0) {
+      hasTrainedWords = true
+    }
   })
 
   return (

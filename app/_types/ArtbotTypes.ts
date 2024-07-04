@@ -1,11 +1,6 @@
 import { Embedding } from '../_data-models/Civitai'
 import PromptInput from '../_data-models/PromptInput'
-import { GenMetadata, InjectTi } from './HordeTypes'
-
-export interface AiHordeEmbedding extends Embedding {
-  strength: number
-  inject_ti?: InjectTi
-}
+import { GenMetadata } from './HordeTypes'
 
 type AppSettingsTableKeys = 'favoriteModels' | 'imageSize'
 

@@ -1,3 +1,5 @@
+import { InjectTi } from '../_types/HordeTypes'
+
 // Define the type for the ModelVersion constructor parameters
 interface ModelVersionParams {
   id: number | string
@@ -97,14 +99,28 @@ interface SavedLoraParams extends Partial<EmbeddingParams> {
   versionId: number | string | boolean // id of ModelVersion,
   versionName: string
   isArtbotManualEntry?: boolean
+  civitAiType?: 'LORA' | 'TextualInversion'
 
   // Config params used for AI Horde image requests
   strength: number // AKA "model" field for AI Horde
   clip: number
 }
 
+interface SavedEmbeddingParams extends Partial<EmbeddingParams> {
+  id: number | string // parentID of Embedding (e.g., Embedding.id)
+  versionId: number | string | boolean // id of ModelVersion,
+  versionName: string
+  isArtbotManualEntry?: boolean
+  civitAiType?: 'LORA' | 'TextualInversion'
+
+  // Config params used for AI Horde image requests
+  strength: number
+  inject_ti?: InjectTi
+}
+
 // Define the SaveLora class extending from Embedding
 export class SavedLora extends Embedding {
+  _civitAiType = 'LORA'
   versionId: number | string | boolean // bool is Artbot specific to disable Horde is_version flag.
   versionName: string
   isArtbotManualEntry: boolean
@@ -127,20 +143,43 @@ export class SavedLora extends Embedding {
         thumbsDownCount: 0
       }
     })
+    this._civitAiType = params.civitAiType || 'LORA'
     this.versionId = params.versionId
     this.versionName = params.versionName
     this.isArtbotManualEntry = params.isArtbotManualEntry || false
     this.strength = params.strength
     this.clip = params.clip
   }
+}
 
-  // Additional methods can be added here
-  getModelVersionById(versionId: number | string): ModelVersion | undefined {
-    return this.modelVersions.find((version) => version.id === versionId)
-  }
+export class SavedEmbedding extends Embedding {
+  _civitAiType = 'TextualInversion'
+  versionId: number | string | boolean
+  versionName: string
+  isArtbotManualEntry: boolean
+  strength: number
+  inject_ti?: InjectTi
 
-  // Example method to display information
-  displayInfo() {
-    console.log(`SaveLora - Name: ${this.name}, Version ID: ${this.versionId}`)
+  constructor(params: SavedEmbeddingParams) {
+    super({
+      id: params.id ?? '',
+      description: params.description ?? '',
+      modelVersions: params.modelVersions ?? [],
+      name: params.name ?? '',
+      nsfw: params.nsfw ?? false,
+      tags: params.tags ?? [],
+      stats: params.stats ?? {
+        downloadCount: 0,
+        ratingCount: 0,
+        rating: 0,
+        thumbsUpCount: 0,
+        thumbsDownCount: 0
+      }
+    })
+    this.versionId = params.versionId
+    this.versionName = params.versionName
+    this.isArtbotManualEntry = params.isArtbotManualEntry || false
+    this.strength = params.strength
+    this.inject_ti = params.inject_ti || 'prompt'
   }
 }
