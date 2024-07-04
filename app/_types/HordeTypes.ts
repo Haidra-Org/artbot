@@ -133,10 +133,7 @@ export interface ImageModelDetails {
   size_on_disk_bytes: number
 }
 
-export enum InjectTi {
-  Prompt = 'prompt',
-  NegPrompt = 'negprompt'
-}
+export type InjectTi = 'prompt' | 'negprompt' | 'none'
 
 export interface Lora {
   /** "label" is specifically added by ArtBot in order to store a

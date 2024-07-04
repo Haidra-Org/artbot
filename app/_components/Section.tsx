@@ -39,7 +39,7 @@ export default function Section({
       <div
         className={clsx(
           'col px-2 py-2 gap-2 w-full',
-          anchor ? 'pl-3 pr-2' : ''
+          anchor ? 'pl-5 pr-2' : ''
         )}
       >
         {title && <h2 className="row font-bold text-white">{title}</h2>}

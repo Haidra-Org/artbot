@@ -1,3 +1,5 @@
+import { InjectTi } from '../_types/HordeTypes'
+
 // Define the type for the ModelVersion constructor parameters
 interface ModelVersionParams {
   id: number | string
@@ -113,7 +115,7 @@ interface SavedEmbeddingParams extends Partial<EmbeddingParams> {
 
   // Config params used for AI Horde image requests
   strength: number
-  inject_ti?: 'manual' | 'negprompt' | 'prompt'
+  inject_ti?: InjectTi
 }
 
 // Define the SaveLora class extending from Embedding
@@ -156,7 +158,7 @@ export class SavedEmbedding extends Embedding {
   versionName: string
   isArtbotManualEntry: boolean
   strength: number
-  inject_ti?: 'manual' | 'negprompt' | 'prompt'
+  inject_ti?: InjectTi
 
   constructor(params: SavedEmbeddingParams) {
     super({

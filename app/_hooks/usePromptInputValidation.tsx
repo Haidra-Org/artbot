@@ -25,10 +25,26 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
     let updateCriticalError = false
     const updateErrors: PromptError[] = []
 
-    // Check for LoRA or Embedding keywords
-    const keywordTags: string[] = flattenKeywords(input.loras)
-    let missingKeywords = keywordTags.length > 0 ? true : false
-    keywordTags.forEach((tag) => {
+    // Check for Embedding Keywords
+    const tiTags: string[] = flattenKeywords(input.tis)
+    let missingTiKeywords = tiTags.length > 0 ? true : false
+    tiTags.forEach((tag) => {
+      if (input.prompt.includes(tag)) {
+        missingTiKeywords = false
+      }
+    })
+
+    if (missingTiKeywords) {
+      updateErrors.push({
+        message: `Keyword tags for embedding not found within prompt.`,
+        type: 'warning'
+      })
+    }
+
+    // Check for LoRA Keywords
+    const loraTags: string[] = flattenKeywords(input.loras)
+    let missingKeywords = loraTags.length > 0 ? true : false
+    loraTags.forEach((tag) => {
       if (input.prompt.includes(tag)) {
         missingKeywords = false
       }
@@ -36,11 +52,12 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
 
     if (missingKeywords) {
       updateErrors.push({
-        message: `Keyword for LoRA or embedding not found in prompt.`,
+        message: `Keyword tags for LoRA not found in prompt.`,
         type: 'warning'
       })
     }
 
+    // Prompt length
     if (input.prompt.length > 1000 && AppSettings.get('useReplacementFilter')) {
       updateErrors.push({
         message: `Prompt is too long for replacement filter. Max 1,000 characters. Please shorten prompt or disable replacement filter. Current length: ${input.prompt.length}`,

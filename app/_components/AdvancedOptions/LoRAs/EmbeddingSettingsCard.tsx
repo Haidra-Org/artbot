@@ -8,6 +8,8 @@ import DeleteConfirmation from '../../Modal_DeleteConfirmation'
 import NiceModal from '@ebay/nice-modal-react'
 import LoraDetails from './LoraDetails'
 import { SavedEmbedding } from '@/app/_data-models/Civitai'
+import Select, { SelectOption } from '../../Select'
+import { InjectTi } from '@/app/_types/HordeTypes'
 
 interface UpdateSaveEmbeddingParams {
   tis: SavedEmbedding[]
@@ -49,14 +51,10 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
   const { input, setInput } = useInput()
   const [strength, setStrength] = useState(ti.strength)
 
-  const loraIndex = input.loras.findIndex(
-    (l) => String(l.versionId) === String(ti.versionId)
-  )
+  const tiIndex = input.tis.findIndex((l) => String(l.id) === String(ti.id))
 
   const handleRemoveEmbedding = () => {
-    const updateTis = input.tis.filter(
-      (l) => String(l.versionId) !== String(ti.versionId)
-    )
+    const updateTis = input.tis.filter((l) => String(l.id) !== String(ti.id))
 
     setInput({ tis: updateTis })
   }
@@ -64,7 +62,7 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
   const handleUpdateLora = (type: 'strength' | 'clip', value: number) => {
     // Map through the loras array and update the specific Lora
     const updateLoras = input.loras.map((l) => {
-      if (String(l.versionId) === String(ti.versionId)) {
+      if (String(l.id) === String(ti.id)) {
         // Return a new instance of SaveLora with the updated property
         return new SavedEmbedding({
           ...l,
@@ -78,9 +76,10 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
     setInput({ tis: updateLoras })
   }
 
-  const currentVersion = ti.modelVersions.filter(
-    (ver) => ver.id === ti.versionId
-  )
+  // NOTE: Not used right now, as AI Horde does not support TI versions
+  // const currentVersion = ti.modelVersions.filter(
+  //   (ver) => ver.id === ti.versionId
+  // )
 
   return (
     <div className="rounded bg-[#1d4d74] p-2 col">
@@ -129,7 +128,8 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
           </Button>
         </div>
       </div>
-      {ti?.modelVersions && ti.modelVersions[0] && (
+      {/* NOTE: AI Horde does not currently support TI versions */}
+      {/* {ti?.modelVersions && ti.modelVersions[0] && (
         <OptionLabel
           className="row md:row"
           title={
@@ -142,7 +142,36 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
             {currentVersion && currentVersion[0].name}
           </span>
         </OptionLabel>
-      )}
+      )} */}
+      <OptionLabel
+        className="row md:row"
+        title={
+          <span className="row font-bold text-sm text-white gap-1">Inject</span>
+        }
+      >
+        <Select
+          onChange={(option: SelectOption) => {
+            const updatedTis = updateSaveLoraProperty({
+              tis: input.tis,
+              index: tiIndex,
+              updates: {
+                inject_ti: option.value as InjectTi
+              }
+            })
+
+            setInput({ tis: updatedTis })
+          }}
+          options={[
+            { value: 'prompt', label: 'Prompt' },
+            { value: 'negprompt', label: 'Negative Prompt' },
+            { value: 'manual', label: 'None' }
+          ]}
+          value={{
+            value: ti.inject_ti as string,
+            label: ti.inject_ti as string
+          }}
+        />
+      </OptionLabel>
       <OptionLabel
         className="row md:row"
         title={
@@ -161,7 +190,7 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
               } else {
                 const updatedTis = updateSaveLoraProperty({
                   tis: input.tis,
-                  index: loraIndex,
+                  index: tiIndex,
                   updates: { strength: parseFloat(Number(strength).toFixed(2)) }
                 })
 
@@ -180,7 +209,7 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
               }
               const updatedTis = updateSaveLoraProperty({
                 tis: input.tis,
-                index: loraIndex,
+                index: tiIndex,
                 updates: {
                   strength: parseFloat(Number(strength - 0.05).toFixed(2))
                 }
@@ -198,11 +227,13 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
 
               const updatedTis = updateSaveLoraProperty({
                 tis: input.tis,
-                index: loraIndex,
+                index: tiIndex,
                 updates: {
                   strength: parseFloat(Number(strength + 0.05).toFixed(2))
                 }
               })
+
+              console.log(`updatedTis`, updatedTis)
 
               setStrength(parseFloat(Number(strength + 0.05).toFixed(2)))
               setInput({

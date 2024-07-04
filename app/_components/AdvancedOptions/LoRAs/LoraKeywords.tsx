@@ -30,7 +30,7 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
     [prompt, setInput, usedTags]
   )
 
-  const tags = input.loras.reduce(
+  const loraTags = input.loras.reduce(
     (acc, embedding) => {
       if (!embedding || !embedding.modelVersions) return acc
 
@@ -44,6 +44,23 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
     },
     {} as { [loraName: string]: string[] }
   )
+
+  const tiTags = input.tis.reduce(
+    (acc, embedding) => {
+      if (!embedding || !embedding.modelVersions) return acc
+
+      // Check if the embedding has any model versions and get the trainedWords from the first model version
+      if (embedding.tags.length > 0) {
+        acc[embedding.name] = embedding.tags
+      } else {
+        acc[embedding.name] = [] // If no model versions, return an empty array
+      }
+      return acc
+    },
+    {} as { [loraName: string]: string[] }
+  )
+
+  const tags = { ...loraTags, ...tiTags }
 
   const categories = Object.keys(tags)
 

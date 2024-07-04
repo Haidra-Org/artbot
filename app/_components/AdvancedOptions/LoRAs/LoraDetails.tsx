@@ -210,6 +210,12 @@ export default function LoraDetails({
           </div>
           <div className="col w-full max-w-[768px]">
             <Section>
+              {civitAiType === 'TextualInversion' && (
+                <div className="w-full row">
+                  Note: AI Horde does not currently support different versions
+                  for Embeddings.
+                </div>
+              )}
               <OptionLabel
                 title={
                   <span className="row font-bold text-sm text-white gap-1">
@@ -219,6 +225,7 @@ export default function LoraDetails({
               >
                 <div className="w-full row">
                   <Select
+                    disabled={civitAiType === 'TextualInversion'}
                     onChange={(option) => {
                       // @ts-expect-error Need to properly type this
                       setModelVersion(option.value)
@@ -300,7 +307,8 @@ export default function LoraDetails({
             }}
           >
             <div className="row">
-              <IconDeviceFloppy /> Use LoRA
+              <IconDeviceFloppy /> Use{' '}
+              {civitAiType === 'LORA' ? 'LoRA' : 'Embedding'}
             </div>
           </Button>
         </div>
