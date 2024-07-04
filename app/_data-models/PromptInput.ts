@@ -1,15 +1,10 @@
-import {
-  AiHordeEmbedding,
-  ImageOrientations,
-  JobType,
-  Workflow
-} from '@/app/_types/ArtbotTypes'
+import { ImageOrientations, JobType, Workflow } from '@/app/_types/ArtbotTypes'
 import {
   ControlTypes,
   SourceProcessing,
   StylePresetConfig
 } from '@/app/_types/HordeTypes'
-import { SavedLora } from './Civitai'
+import { SavedEmbedding, SavedLora } from './Civitai'
 
 class PromptInput {
   // ArtBot ID for mainting relationships in IndexedDb
@@ -57,7 +52,7 @@ class PromptInput {
   source_processing?: SourceProcessing = SourceProcessing.Prompt
   steps: number = 20
   tiling: boolean = false
-  tis: AiHordeEmbedding[] = []
+  tis: SavedEmbedding[] = []
   transparent: boolean = false
   triggers: Array<string> = []
   upscaled: boolean = false

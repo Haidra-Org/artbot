@@ -1,14 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react'
 import styles from './loraSearch.module.css'
-import { Embedding, SavedLora } from '@/app/_data-models/Civitai'
+import {
+  Embedding,
+  SavedEmbedding,
+  SavedLora
+} from '@/app/_data-models/Civitai'
 import LoraDetails from './LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
 import { IconBox } from '@tabler/icons-react'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 
 interface LoraImageProps {
-  onUseLoraClick?: (savedLora: SavedLora) => void
+  civitAiType?: 'LORA' | 'TextualInversion'
+  onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void
   image: {
     key: string
     name: string
@@ -21,7 +26,11 @@ interface LoraImageProps {
   }
 }
 
-const LoraImageV2 = ({ onUseLoraClick = () => {}, image }: LoraImageProps) => {
+const LoraImageV2 = ({
+  civitAiType = 'LORA',
+  onUseLoraClick = () => {},
+  image
+}: LoraImageProps) => {
   if (!image) return null
 
   const baseFilters = AppSettings.get('civitAiBaseModelFilter')
@@ -35,6 +44,7 @@ const LoraImageV2 = ({ onUseLoraClick = () => {}, image }: LoraImageProps) => {
         NiceModal.show('embeddingDetails', {
           children: (
             <LoraDetails
+              civitAiType={civitAiType}
               details={image.details}
               onUseLoraClick={onUseLoraClick}
             />

@@ -1,8 +1,8 @@
-import { AiHordeEmbedding } from '../_types/ArtbotTypes'
+import { SavedEmbedding } from '../_data-models/Civitai'
 import { TextualInversion } from '../_types/HordeTypes'
 
 export const castTiInject = (
-  tis: AiHordeEmbedding[] | TextualInversion[]
+  tis: SavedEmbedding[] | TextualInversion[]
 ): TextualInversion[] => {
   let updatedTis: TextualInversion[] = []
   if (tis && Array.isArray(tis) && tis.length > 0) {

@@ -8,24 +8,34 @@ import LoraSearch from './LoraSearch'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import LoraSettingsCard from './LoraSettingsCard'
 import { useCallback } from 'react'
-import { SavedLora } from '@/app/_data-models/Civitai'
+import { SavedEmbedding, SavedLora } from '@/app/_data-models/Civitai'
 
 const MAX_LORAS = 5
 
 export default function AddLora() {
   const { input, setInput } = useInput()
 
+  // Define a type guard to check if the object is of type SavedLora
+  const isSavedLora = (obj: SavedEmbedding | SavedLora): obj is SavedLora => {
+    return (obj as SavedLora)._civitAiType === 'LORA'
+  }
+
   const handleUseLoraClick = useCallback(
-    (savedLora: SavedLora) => {
+    (savedLoraOrEmbedding: SavedEmbedding | SavedLora) => {
+      if (!isSavedLora(savedLoraOrEmbedding)) {
+        // If it's not a SavedLora, we do nothing.
+        return
+      }
+
       if (input.loras.length >= MAX_LORAS) return
 
       const found =
         input.loras.filter(
-          (lora) => String(lora.name) === String(savedLora.versionId)
+          (lora) => String(lora.name) === String(savedLoraOrEmbedding.versionId)
         ) || ([] as unknown as SavedLora)
       if (found.length > 0) return
 
-      const updateLoras = [...input.loras, savedLora]
+      const updateLoras = [...input.loras, savedLoraOrEmbedding]
       setInput({ loras: updateLoras })
     },
     [input, setInput]

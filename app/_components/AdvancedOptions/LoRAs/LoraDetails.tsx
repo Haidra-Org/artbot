@@ -22,15 +22,22 @@ import {
 } from '@/app/_db/imageEnhancementModules'
 import { useWindowSize } from '@/app/_hooks/useWindowSize'
 import { AppSettings } from '@/app/_data-models/AppSettings'
-import { Embedding, ModelVersion, SavedLora } from '@/app/_data-models/Civitai'
+import {
+  Embedding,
+  ModelVersion,
+  SavedEmbedding,
+  SavedLora
+} from '@/app/_data-models/Civitai'
 import Link from 'next/link'
 
 export default function LoraDetails({
+  civitAiType = 'LORA',
   details,
   onUseLoraClick = () => {}
 }: {
+  civitAiType?: 'LORA' | 'TextualInversion'
   details: Embedding
-  onUseLoraClick?: (savedLora: SavedLora) => void
+  onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void
 }) {
   const [baseFilters] = useState(AppSettings.get('civitAiBaseModelFilter'))
   const { height } = useWindowSize()
@@ -68,24 +75,45 @@ export default function LoraDetails({
   }
 
   const handleUseLoraClick = useCallback(() => {
-    const savedLora = new SavedLora({
-      ...details,
-      versionId: modelVersion.id,
-      versionName: modelVersion.name,
-      strength: 1,
-      clip: 1
-    })
+    let savedLora: SavedEmbedding | SavedLora
+    if (civitAiType === 'LORA') {
+      savedLora = new SavedLora({
+        ...details,
+        civitAiType: 'LORA',
+        versionId: modelVersion.id,
+        versionName: modelVersion.name,
+        strength: 1,
+        clip: 1
+      })
+    } else {
+      savedLora = new SavedEmbedding({
+        ...details,
+        civitAiType: 'TextualInversion',
+        versionId: modelVersion.id,
+        versionName: modelVersion.name,
+        strength: 0,
+        inject_ti: 'prompt'
+      })
+    }
 
     updateRecentlyUsedImageEnhancement({
       model: {
         ...details
       },
-      modifier: 'lora',
+      modifier: civitAiType === 'LORA' ? 'lora' : 'ti',
       model_id: model_id as string
     })
+
     onUseLoraClick(savedLora)
     return savedLora
-  }, [details, modelVersion, model_id, onUseLoraClick])
+  }, [
+    civitAiType,
+    details,
+    modelVersion.id,
+    modelVersion.name,
+    model_id,
+    onUseLoraClick
+  ])
 
   const versionOptions = modelVersions.map((version) => {
     return {
@@ -105,7 +133,7 @@ export default function LoraDetails({
     <div>
       <div className="col w-full">
         <h2 className="row font-bold">
-          LoRA Details{' '}
+          {civitAiType === 'LORA' ? 'LoRA' : 'Textual Inversion'} Details{' '}
           <span className="text-xs font-normal">(via CivitAI)</span>
         </h2>
         <PageTitle>{details.name}</PageTitle>
