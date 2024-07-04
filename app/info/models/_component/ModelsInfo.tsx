@@ -181,7 +181,7 @@ export default function ModelsInfo({
             </Button>
             <DropdownMenu
               menuButton={
-                <Button>
+                <Button as="div">
                   <IconSortDescending />
                 </Button>
               }
