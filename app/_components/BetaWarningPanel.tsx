@@ -16,11 +16,11 @@ export default function BetaWarningPanel() {
         create images you like, save them to your machine. Otherwise, they will
         be lost forever. Please report issues and leave feedback in the{' '}
         <Link
-          href="https://discord.com/channels/781145214752129095/1251316910117748817"
+          href="https://discord.com/channels/781145214752129095/1258784663405596752"
           className="primary-color font-bold"
           target="_blank"
         >
-          ArtBot v2 thread on Discord.
+          ArtBot v2 feedback thread on Discord.
         </Link>
       </div>
     </div>
