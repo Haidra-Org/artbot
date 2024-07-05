@@ -151,7 +151,11 @@ const StylePresetModal = ({
         </Button>
         <DropdownMenu
           menuButton={
-            <Button onClick={() => {}} title="View other preset example images">
+            <Button
+              as="div"
+              onClick={() => {}}
+              title="View other preset example images"
+            >
               <IconPhotoCog />
             </Button>
           }

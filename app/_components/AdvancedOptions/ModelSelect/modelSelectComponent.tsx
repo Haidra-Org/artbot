@@ -56,6 +56,20 @@ export default function ModelSelect() {
         />
         <Button
           onClick={() => {
+            // Choose random element from: availableModels array
+
+            const randomModel =
+              availableModels[
+                Math.floor(Math.random() * availableModels.length)
+              ]
+
+            setInput({ models: [randomModel.name] })
+          }}
+        >
+          <IconWand />
+        </Button>
+        <Button
+          onClick={() => {
             NiceModal.show('modal', {
               children: (
                 <ModelModalWrapper
@@ -72,20 +86,6 @@ export default function ModelSelect() {
           }}
         >
           <IconListDetails />
-        </Button>
-        <Button
-          onClick={() => {
-            // Choose random element from: availableModels array
-
-            const randomModel =
-              availableModels[
-                Math.floor(Math.random() * availableModels.length)
-              ]
-
-            setInput({ models: [randomModel.name] })
-          }}
-        >
-          <IconWand />
         </Button>
       </div>
     </OptionLabel>
