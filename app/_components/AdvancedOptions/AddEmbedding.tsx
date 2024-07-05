@@ -68,7 +68,18 @@ export default function AddEmbedding() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <div>Favorite TIs - hello!</div>
+                children: (
+                  <LoraSearch
+                    onUseLoraClick={handleUseLoraClick}
+                    civitAiType="TextualInversion"
+                    searchType="favorite"
+                  />
+                ),
+                modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
+                  width: 'calc(100% - 32px)'
+                }
               })
             }}
           >
@@ -77,7 +88,18 @@ export default function AddEmbedding() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <div>Recently used TIs- hello!</div>
+                children: (
+                  <LoraSearch
+                    onUseLoraClick={handleUseLoraClick}
+                    civitAiType="TextualInversion"
+                    searchType="recent"
+                  />
+                ),
+                modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
+                  width: 'calc(100% - 32px)'
+                }
               })
             }}
           >

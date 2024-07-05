@@ -9,7 +9,8 @@ import {
   getFavoriteEnhancements,
   getRecentlyUsedEnhancements
 } from '../_db/imageEnhancementModules'
-import LORAS from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
+import LORASJson from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
+import EmbeddingsJson from '../_components/AdvancedOptions/LoRAs/_Embeddings.json'
 import { Embedding } from '../_data-models/Civitai'
 
 const searchCache = new CacheMap({ limit: 30, expireMinutes: 20 })
@@ -148,11 +149,14 @@ export default function useCivitAi({
   const [totalItems, setTotalItems] = useState(-1) // Setting 0 here causes brief flash between loading finished and totalItems populated
   const [totalPages, setTotalPages] = useState(0)
 
-  const fetchRecentOrFavoriteLoras = async (type: 'favorite' | 'recent') => {
+  const fetchRecentOrFavoriteLoras = async (
+    searchType: 'favorite' | 'recent'
+  ) => {
+    const enhancmentType = type === 'LORA' ? 'lora' : 'ti'
     const results =
-      type === 'favorite'
-        ? await getFavoriteEnhancements('lora')
-        : await getRecentlyUsedEnhancements('lora')
+      searchType === 'favorite'
+        ? await getFavoriteEnhancements(enhancmentType)
+        : await getRecentlyUsedEnhancements(enhancmentType)
     const models = results.map((f) => f.model)
 
     setSearchResults(models as unknown as Embedding[])
@@ -197,9 +201,10 @@ export default function useCivitAi({
     } else if (searchType === 'recent') {
       fetchRecentOrFavoriteLoras('recent')
     } else if (searchType === 'search') {
-      setSearchResults(LORAS.items as unknown as Embedding[])
+      const defaultResults = type === 'LORA' ? LORASJson : EmbeddingsJson
+      setSearchResults(defaultResults.items as unknown as Embedding[])
     }
-  }, [searchType])
+  }, [searchType, type])
 
   useEffect(() => {
     // fetchCivitAiResults()

@@ -164,7 +164,7 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
           options={[
             { value: 'prompt', label: 'Prompt' },
             { value: 'negprompt', label: 'Negative Prompt' },
-            { value: 'manual', label: 'None' }
+            { value: 'none', label: 'None' }
           ]}
           value={{
             value: ti.inject_ti as string,
