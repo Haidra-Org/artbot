@@ -1,26 +1,22 @@
 'use client'
 
-import { useInput } from '@/app/_providers/PromptInputProvider'
-import { AvailableImageModel } from '@/app/_types/HordeTypes'
-import { IconAlertTriangle } from '@tabler/icons-react'
+import NiceModal from '@ebay/nice-modal-react'
 import OptionLabel from '../OptionLabel'
-import SelectCombo, { SelectOption } from '../../ComboBox'
+import { useInput } from '@/app/_providers/PromptInputProvider'
+import Button from '../../Button'
+import { IconListDetails, IconWand } from '@tabler/icons-react'
+import ModelModalWrapper from './modalWrapper'
 import { useStore } from 'statery'
 import { ModelStore } from '@/app/_stores/ModelStore'
+import SelectCombo, { SelectOption } from '../../ComboBox'
 
-export default function ModelSelectComponent({
-  models,
-  hasError = false
-}: {
-  models: AvailableImageModel[]
-  hasError: boolean
-}) {
+export default function ModelSelect() {
+  const { availableModels, modelDetails } = useStore(ModelStore)
   const { input, setInput } = useInput()
-  const { modelDetails } = useStore(ModelStore)
 
   const findModelCountByName = (name: string) => {
     // Find the model by name and return its count, or undefined if not found
-    const model = models.find((model) => model.name === name)
+    const model = availableModels.find((model) => model.name === name)
     return model?.count ? ` (${model.count})` : ''
   }
 
@@ -29,15 +25,10 @@ export default function ModelSelectComponent({
       title={
         <span className="row font-bold text-sm text-white gap-1">
           Image model
-          {hasError && (
-            <div style={{ color: 'orange' }}>
-              <IconAlertTriangle />
-            </div>
-          )}
         </span>
       }
     >
-      <div className="w-full">
+      <div className="w-full row">
         <SelectCombo
           onChange={(option: SelectOption) => {
             if (!option || !option.value) return
@@ -52,7 +43,7 @@ export default function ModelSelectComponent({
               modelDetails: modelInfo
             })
           }}
-          options={models.map((model) => ({
+          options={availableModels.map((model) => ({
             value: model.name,
             label: model.name + findModelCountByName(model.name)
           }))}
@@ -63,6 +54,39 @@ export default function ModelSelectComponent({
               : input.models[0]
           }}
         />
+        <Button
+          onClick={() => {
+            NiceModal.show('modal', {
+              children: (
+                <ModelModalWrapper
+                  handleSelectModel={(model: string) => {
+                    if (model) {
+                      setInput({ models: [model] })
+                      NiceModal.remove('modal')
+                    }
+                  }}
+                />
+              ),
+              modalClassName: 'w-full md:min-w-[640px] max-w-[648px]'
+            })
+          }}
+        >
+          <IconListDetails />
+        </Button>
+        <Button
+          onClick={() => {
+            // Choose random element from: availableModels array
+
+            const randomModel =
+              availableModels[
+                Math.floor(Math.random() * availableModels.length)
+              ]
+
+            setInput({ models: [randomModel.name] })
+          }}
+        >
+          <IconWand />
+        </Button>
       </div>
     </OptionLabel>
   )

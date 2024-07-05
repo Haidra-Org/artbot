@@ -1,5 +1,5 @@
 import { AvailableImageModel } from '@/app/_types/HordeTypes'
-import ModelSelectComponent from './modelSelectComponentV2'
+import ModelSelectComponent from './modelSelectComponent'
 import models from './models.json'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 
