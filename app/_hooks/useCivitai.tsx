@@ -204,7 +204,7 @@ export default function useCivitAi({
       const defaultResults = type === 'LORA' ? LORASJson : EmbeddingsJson
       setSearchResults(defaultResults.items as unknown as Embedding[])
     }
-  }, [searchType, type])
+  }, [fetchRecentOrFavoriteLoras, searchType, type])
 
   useEffect(() => {
     // fetchCivitAiResults()
