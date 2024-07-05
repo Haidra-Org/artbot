@@ -14,6 +14,24 @@ export const mergeArrays = (jsonData: JsonData): string[] => {
   return mergedArray
 }
 
+function isSavedEmbedding(
+  embedding: SavedEmbedding | SavedLora
+): embedding is SavedEmbedding {
+  return (
+    (embedding as SavedEmbedding)._civitAiType !== undefined &&
+    (embedding as SavedEmbedding)._civitAiType === 'TextualInversion'
+  )
+}
+
+function isSavedLora(
+  embedding: SavedEmbedding | SavedLora
+): embedding is SavedLora {
+  return (
+    (embedding as SavedLora)._civitAiType !== undefined &&
+    (embedding as SavedLora)._civitAiType === 'Lora'
+  )
+}
+
 export const flattenKeywords = (
   jsonData: SavedEmbedding[] | SavedLora[] = []
 ): string[] => {
@@ -21,9 +39,9 @@ export const flattenKeywords = (
     (acc: string[], embedding: SavedEmbedding | SavedLora) => {
       if (!embedding || !embedding.modelVersions) return acc
 
-      if (embedding._civitAiType === 'TextualInversion') {
+      if (isSavedEmbedding(embedding) && embedding.inject_ti === 'none') {
         acc = acc.concat(embedding.tags)
-      } else if (embedding.modelVersions.length > 0) {
+      } else if (isSavedLora(embedding) && embedding.modelVersions.length > 0) {
         // Flatten and concatenate the trainedWords of the first model version to the accumulator
         acc = acc.concat(embedding.modelVersions[0].trainedWords)
       }

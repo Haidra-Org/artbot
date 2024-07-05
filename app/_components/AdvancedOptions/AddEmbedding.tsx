@@ -5,7 +5,7 @@ import Button from '../Button'
 import Section from '../Section'
 import NiceModal from '@ebay/nice-modal-react'
 import LoraSearch from './LoRAs/LoraSearch'
-import { useCallback } from 'react'
+import { Suspense, useCallback } from 'react'
 import { SavedEmbedding, SavedLora } from '@/app/_data-models/Civitai'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import EmbeddingSettingsCard from './LoRAs/EmbeddingSettingsCard'
@@ -50,10 +50,12 @@ export default function AddEmbedding() {
             onClick={() => {
               NiceModal.show('modal', {
                 children: (
-                  <LoraSearch
-                    onUseLoraClick={handleUseLoraClick}
-                    civitAiType="TextualInversion"
-                  />
+                  <Suspense>
+                    <LoraSearch
+                      onUseLoraClick={handleUseLoraClick}
+                      civitAiType="TextualInversion"
+                    />
+                  </Suspense>
                 ),
                 modalStyle: {
                   maxWidth: '1600px',
@@ -68,7 +70,20 @@ export default function AddEmbedding() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <div>Favorite TIs - hello!</div>
+                children: (
+                  <Suspense>
+                    <LoraSearch
+                      onUseLoraClick={handleUseLoraClick}
+                      civitAiType="TextualInversion"
+                      searchType="favorite"
+                    />
+                  </Suspense>
+                ),
+                modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
+                  width: 'calc(100% - 32px)'
+                }
               })
             }}
           >
@@ -77,7 +92,20 @@ export default function AddEmbedding() {
           <Button
             onClick={() => {
               NiceModal.show('modal', {
-                children: <div>Recently used TIs- hello!</div>
+                children: (
+                  <Suspense>
+                    <LoraSearch
+                      onUseLoraClick={handleUseLoraClick}
+                      civitAiType="TextualInversion"
+                      searchType="recent"
+                    />
+                  </Suspense>
+                ),
+                modalStyle: {
+                  maxWidth: '1600px',
+                  minHeight: `calc(100vh - 32px)`,
+                  width: 'calc(100% - 32px)'
+                }
               })
             }}
           >

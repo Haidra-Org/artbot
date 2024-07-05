@@ -7,7 +7,7 @@ import NiceModal from '@ebay/nice-modal-react'
 import LoraSearch from './LoraSearch'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import LoraSettingsCard from './LoraSettingsCard'
-import { useCallback } from 'react'
+import { Suspense, useCallback } from 'react'
 import { SavedEmbedding, SavedLora } from '@/app/_data-models/Civitai'
 
 const MAX_LORAS = 5
@@ -55,7 +55,11 @@ export default function AddLora() {
             disabled={input.loras.length >= MAX_LORAS}
             onClick={() => {
               NiceModal.show('modal', {
-                children: <LoraSearch onUseLoraClick={handleUseLoraClick} />,
+                children: (
+                  <Suspense>
+                    <LoraSearch onUseLoraClick={handleUseLoraClick} />,
+                  </Suspense>
+                ),
                 modalStyle: {
                   maxWidth: '1600px',
                   minHeight: `calc(100vh - 32px)`,
@@ -70,10 +74,12 @@ export default function AddLora() {
             onClick={() => {
               NiceModal.show('modal', {
                 children: (
-                  <LoraSearch
-                    onUseLoraClick={handleUseLoraClick}
-                    searchType="favorite"
-                  />
+                  <Suspense>
+                    <LoraSearch
+                      onUseLoraClick={handleUseLoraClick}
+                      searchType="favorite"
+                    />
+                  </Suspense>
                 ),
                 modalStyle: {
                   maxWidth: '1600px',
@@ -89,10 +95,12 @@ export default function AddLora() {
             onClick={() => {
               NiceModal.show('modal', {
                 children: (
-                  <LoraSearch
-                    onUseLoraClick={handleUseLoraClick}
-                    searchType="recent"
-                  />
+                  <Suspense>
+                    <LoraSearch
+                      onUseLoraClick={handleUseLoraClick}
+                      searchType="recent"
+                    />
+                  </Suspense>
                 ),
                 modalStyle: {
                   maxWidth: '1600px',

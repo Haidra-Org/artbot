@@ -69,7 +69,7 @@ export default function LoraDetails({
       model: {
         ...details
       },
-      type: 'lora',
+      type: civitAiType === 'LORA' ? 'lora' : 'ti',
       model_id: model_id as string
     })
   }
