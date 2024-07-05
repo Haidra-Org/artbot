@@ -144,10 +144,30 @@ export default function LoraDetails({
               await handleFavoriteClick()
               setIsFavorite(!isFavorite)
             }}
+            style={{
+              height: '36px',
+              width: '36px'
+            }}
           >
             {isFavorite ? <IconHeartFilled color={'red'} /> : <IconHeart />}
           </Button>
-          <div className="row gap-2 rounded-md bg-slate-500 p-1 pr-2 text-white text-sm font-bold">
+          <Button
+            onClick={() => {
+              handleUseLoraClick()
+              NiceModal.remove('modal')
+              NiceModal.remove('embeddingDetails')
+            }}
+            style={{
+              height: '36px'
+              // width: '36px'
+            }}
+          >
+            <div className="row">
+              <IconDeviceFloppy /> Use{' '}
+              {civitAiType === 'LORA' ? 'LoRA' : 'Embedding'}
+            </div>
+          </Button>
+          <div className="row gap-2 rounded-md bg-slate-500 p-1 pr-2 text-white text-sm font-bold h-[36px]">
             <IconBox stroke={1.5} />
             {modelVersion.baseModel}
           </div>
