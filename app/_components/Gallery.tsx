@@ -1,7 +1,6 @@
 'use client'
 
 import NiceModal from '@ebay/nice-modal-react'
-import PhotoAlbum from 'react-photo-album'
 import React, { useCallback, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
 import {
@@ -18,10 +17,11 @@ import {
 import useFetchImages, { PhotoData } from '../_hooks/useFetchImages'
 import ImageView from './ImageView'
 import Button from './Button'
-import ImageThumbnail from './ImageThumbnail'
 import GalleryImageCardOverlay from './GalleryImageCardOverlay'
 import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
+import ImageThumbnailV2 from './ImageThumbnailV2'
+import { MasonryLayout } from './Masonry'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
@@ -51,8 +51,8 @@ export default function Gallery() {
           />
         ),
         modalStyle: {
-          maxWidth: '1536px',
-          width: 'calc(100% - 32px)'
+          margin: '16px',
+          maxWidth: '1536px'
         }
       })
     },
@@ -75,6 +75,8 @@ export default function Gallery() {
   useEffect(() => {
     viewedPendingPage()
   }, [])
+
+  console.log(`images`, images)
 
   return (
     <div className="w-full">
@@ -170,104 +172,58 @@ export default function Gallery() {
       </div>
       {/* {showSearch && <ImageSearch setSearchInput={setSearchInput} />} */}
       {images.length > 0 && (
-        <>
-          <PhotoAlbum
-            layout="rows"
-            spacing={4}
-            photos={images}
-            renderPhoto={(renderPhotoProps) => {
-              const { layout, imageProps } = renderPhotoProps || {}
-
-              const { photo }: { photo: PhotoData } = renderPhotoProps || {}
-              const { alt } = imageProps || {}
-
-              return (
-                <div
-                  key={photo.artbot_id}
-                  style={{
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    height: layout.height,
-                    justifyContent: 'center',
-                    // marginBottom: layoutOptions.spacing, // Use for "masonry" layout
-                    marginBottom: 0, // Use for "rows" layout
-                    position: 'relative',
-                    width: layout.width
-                  }}
-                  tabIndex={0}
-                  onClick={() => {
-                    handleImageOpen(photo.artbot_id, photo.image_id)
-                  }}
-                  onKeyDown={(e) =>
-                    handleImageKeypress(e, photo.artbot_id, photo.image_id)
-                  }
-                >
-                  {groupImages && (
-                    <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
-                  )}
-                  {!groupImages && (
-                    <ImageThumbnail alt={alt} image_id={photo.image_id} />
-                  )}
-                  <GalleryImageCardOverlay
-                    imageCount={photo.image_count}
-                    style={{
-                      height:
-                        photo.height > layout.height
-                          ? layout.height
-                          : photo.height,
-                      width:
-                        photo.width > layout.width ? layout.width : photo.width
-                    }}
-                  />
-                </div>
-              )
-            }}
-            rowConstraints={(containerWidth) => {
-              let minPhotos = 2
-
-              if (containerWidth >= 768) {
-                minPhotos = 3
-              } else if (containerWidth >= 1024) {
-                minPhotos = 4
-              } else if (containerWidth >= 1280) {
-                minPhotos = 5
-              }
-
-              return {
-                minPhotos,
-                maxPhotos: 5,
-                singleRowMaxHeight: 256
-              }
-            }}
-          />
-          {!initLoad && (
-            <div className="row justify-center my-2 mt-4">
-              <ReactPaginate
-                breakLabel="..."
-                nextLabel="⇢"
-                forcePage={currentPage}
-                onPageChange={(val) => {
-                  setCurrentPage(Number(val.selected))
-                  window.scrollTo(0, 0)
+        <MasonryLayout gap={4}>
+          {images.map((image: PhotoData) => {
+            return (
+              <div
+                className="cursor-pointer"
+                key={image.artbot_id}
+                tabIndex={0}
+                onClick={() => {
+                  handleImageOpen(image.artbot_id, image.image_id)
                 }}
-                containerClassName="row gap-0"
-                breakLinkClassName="border px-3 py-2 bg-[#8ac5d1] hover:bg-[#8ac5d1] text-white"
-                pageLinkClassName="border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
-                previousLinkClassName="rounded-l-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
-                nextLinkClassName="rounded-r-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
-                disabledLinkClassName="bg-[#969696] hover:bg-[#969696] cursor-default text-white"
-                pageRangeDisplayed={3}
-                pageCount={Math.ceil(totalImages / 20)}
-                previousLabel="⇠"
-                renderOnZeroPageCount={null}
-              />
-            </div>
-          )}
-        </>
+                onKeyDown={(e) =>
+                  handleImageKeypress(e, image.artbot_id, image.image_id)
+                }
+              >
+                <ImageThumbnailV2
+                  alt={''}
+                  artbot_id={image.artbot_id}
+                  image_id={image.image_id}
+                  height={image.height}
+                  width={image.width}
+                />
+                <GalleryImageCardOverlay imageCount={image.image_count} />
+              </div>
+            )
+          })}
+        </MasonryLayout>
       )}
       {images.length === 0 && !initLoad && (
         <div className="text-center text-2xl">No results found</div>
+      )}
+      {!initLoad && Math.ceil(totalImages / 20) > 1 && (
+        <div className="row justify-center my-2 mt-4">
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel="⇢"
+            forcePage={currentPage}
+            onPageChange={(val) => {
+              setCurrentPage(Number(val.selected))
+              window.scrollTo(0, 0)
+            }}
+            containerClassName="row gap-0"
+            breakLinkClassName="border px-3 py-2 bg-[#8ac5d1] hover:bg-[#8ac5d1] text-white"
+            pageLinkClassName="border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+            previousLinkClassName="rounded-l-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+            nextLinkClassName="rounded-r-md border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
+            disabledLinkClassName="bg-[#969696] hover:bg-[#969696] cursor-default text-white"
+            pageRangeDisplayed={3}
+            pageCount={Math.ceil(totalImages / 20)}
+            previousLabel="⇠"
+            renderOnZeroPageCount={null}
+          />
+        </div>
       )}
     </div>
   )
