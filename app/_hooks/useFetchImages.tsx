@@ -57,7 +57,6 @@ export default function useFetchImages(): FetchImagesResult {
   const [sortBy, setSortBy] = useState<'asc' | 'desc'>(
     (searchParams.get('sortBy') as 'asc' | 'desc') || 'desc'
   )
-  const [groupImagesState, setGroupImagesState] = useState(groupImages)
   const [offset, setOffset] = useState(0)
   const [totalImages, setTotalImages] = useState(0)
   const [images, setImages] = useState<PhotoData[]>([])
@@ -103,13 +102,13 @@ export default function useFetchImages(): FetchImagesResult {
   const fetchImages = useCallback(async () => {
     let data = []
     let count = 0
-    let updateOffset = offset
+    const updateOffset = offset
 
-    if (groupImages !== groupImagesState) {
-      updateOffset = 0
-      setOffset(0)
-      setGroupImagesState(groupImages)
-    }
+    // if (groupImages !== groupImagesState) {
+    //   updateOffset = 0
+    //   setOffset(0)
+    //   setGroupImagesState(groupImages)
+    // }
 
     if (groupImages) {
       count = await countCompletedJobsFromDexie()
@@ -136,7 +135,7 @@ export default function useFetchImages(): FetchImagesResult {
     setTotalImages(count)
     setImages(imagesArray)
     setInitLoad(false)
-  }, [groupImages, groupImagesState, offset, sortBy])
+  }, [groupImages, offset, sortBy])
 
   useEffect(() => {
     if (searchInput) {

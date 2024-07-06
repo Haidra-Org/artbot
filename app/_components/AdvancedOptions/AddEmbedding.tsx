@@ -34,8 +34,6 @@ export default function AddEmbedding() {
 
       const updateTis = [...input.tis, savedLoraOrEmbedding]
 
-      console.log(`updateTis`, updateTis)
-
       setInput({ tis: updateTis })
     },
     [input, setInput]

@@ -149,18 +149,19 @@ export default function useCivitAi({
   const [totalItems, setTotalItems] = useState(-1) // Setting 0 here causes brief flash between loading finished and totalItems populated
   const [totalPages, setTotalPages] = useState(0)
 
-  const fetchRecentOrFavoriteLoras = async (
-    searchType: 'favorite' | 'recent'
-  ) => {
-    const enhancmentType = type === 'LORA' ? 'lora' : 'ti'
-    const results =
-      searchType === 'favorite'
-        ? await getFavoriteEnhancements(enhancmentType)
-        : await getRecentlyUsedEnhancements(enhancmentType)
-    const models = results.map((f) => f.model)
+  const fetchRecentOrFavoriteLoras = useCallback(
+    async (searchType: 'favorite' | 'recent') => {
+      const enhancmentType = type === 'LORA' ? 'lora' : 'ti'
+      const results =
+        searchType === 'favorite'
+          ? await getFavoriteEnhancements(enhancmentType)
+          : await getRecentlyUsedEnhancements(enhancmentType)
+      const models = results.map((f) => f.model)
 
-    setSearchResults(models as unknown as Embedding[])
-  }
+      setSearchResults(models as unknown as Embedding[])
+    },
+    [type]
+  )
 
   const fetchCivitAiResults = useCallback(
     async (input?: string) => {
