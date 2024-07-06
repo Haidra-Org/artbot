@@ -76,8 +76,6 @@ export default function Gallery() {
     viewedPendingPage()
   }, [])
 
-  console.log(`images`, images)
-
   return (
     <div className="w-full">
       <Section className="w-full mb-2">

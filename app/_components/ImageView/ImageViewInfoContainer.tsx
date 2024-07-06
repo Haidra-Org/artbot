@@ -1,4 +1,5 @@
 import {
+  IconPhotoUp,
   IconPlaylistAdd,
   IconPlaylistX,
   IconSettings
@@ -11,6 +12,7 @@ import ImageDetails from '../ImageDetails'
 import useImageDetails, { JobDetails } from '@/app/_hooks/useImageDetails'
 import { useState } from 'react'
 import { formatStylePresetPrompt } from '@/app/_utils/stringUtils'
+import ImageViewSourceImage from './ImageViewSourceImage'
 
 export default function ImageViewInfoContainer({
   onDelete
@@ -69,6 +71,13 @@ export default function ImageViewInfoContainer({
           Image details
         </div>
         <ImageDetails imageDetails={imageDetails as JobDetails} />
+      </div>
+      <div className="col gap-2 w-full mt-4">
+        <div className="row gap-2 text-sm font-bold">
+          <IconPhotoUp stroke={1} />
+          Source image
+        </div>
+        <ImageViewSourceImage imageDetails={imageDetails as JobDetails} />
       </div>
     </div>
   )

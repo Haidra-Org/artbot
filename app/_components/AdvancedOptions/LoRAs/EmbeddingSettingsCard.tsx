@@ -233,8 +233,6 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
                 }
               })
 
-              console.log(`updatedTis`, updatedTis)
-
               setStrength(parseFloat(Number(strength + 0.05).toFixed(2)))
               setInput({
                 tis: updatedTis

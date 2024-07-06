@@ -73,6 +73,15 @@ export const getImagesForArtbotJobFromDexie = async (
   return db.imageFiles.where({ artbot_id }).toArray() || []
 }
 
+export const getSourceImagesForArtbotJobFromDexie = async (
+  artbot_id: string
+): Promise<ImageFileInterface[]> => {
+  return db.imageFiles
+    .where('[artbot_id+imageType]')
+    .equals([artbot_id, ImageType.SOURCE])
+    .toArray()
+}
+
 export const updateArtBotIdForImageFiles = async (
   artbot_id: string,
   new_artbot_id: string
