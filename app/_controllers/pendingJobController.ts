@@ -34,9 +34,6 @@ const requestCache = new Map()
 const MAX_JOBS = 10
 
 let pendingLastChecked = 0
-let waitingLastChecked = 0
-
-const waitingInterval = 250
 const pendingInterval = 6025
 
 // Handles loading any pending images from Dexie on initial app load.
@@ -280,11 +277,6 @@ export const checkPendingJobs = async () => {
 export const checkForWaitingJobs = async () => {
   let pendingJobs = []
 
-  // Return early if the function was called again too soon
-  if (Date.now() - waitingLastChecked < waitingInterval) {
-    return
-  }
-
   pendingJobs = getPendingImagesByStatusFromAppState([
     JobStatus.Requested,
     JobStatus.Queued,
@@ -298,11 +290,8 @@ export const checkForWaitingJobs = async () => {
   const [waitingJob] = getPendingImagesByStatusFromAppState([JobStatus.Waiting])
 
   if (!waitingJob) {
-    waitingLastChecked = 0
     return
   }
-
-  waitingLastChecked = Date.now()
 
   const [imageRequest] =
     (await getImageRequestsFromDexieById([waitingJob.artbot_id])) || []
@@ -368,7 +357,7 @@ export const initJobController = () => {
 
   setInterval(() => {
     checkForWaitingJobs()
-  }, 500)
+  }, 2050)
 
   setInterval(() => {
     checkPendingJobs()
