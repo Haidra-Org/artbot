@@ -60,8 +60,8 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
   }
 
   const handleUpdateLora = (type: 'strength' | 'clip', value: number) => {
-    // Map through the loras array and update the specific Lora
-    const updateLoras = input.loras.map((l) => {
+    // Map through the tis array and update the specific ti
+    const updateLoras = input.tis.map((l) => {
       if (String(l.id) === String(ti.id)) {
         // Return a new instance of SaveLora with the updated property
         return new SavedEmbedding({
