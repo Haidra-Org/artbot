@@ -163,8 +163,6 @@ export default function useFetchImages(): FetchImagesResult {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
-  console.log(`use FetchImages?`, images)
-
   return {
     images,
     totalImages,
