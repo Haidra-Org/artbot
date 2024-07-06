@@ -35,10 +35,15 @@ export default function ImageDetails({
     async function fetchParams() {
       if (!imageFile || !imageRequest) return
 
-      const raw = await ImageParamsForHordeApi.build({
-        ...imageRequest,
-        seed: (imageFile.seed as string) || imageRequest.seed
-      } as PromptInput)
+      const raw = await ImageParamsForHordeApi.build(
+        {
+          ...imageRequest,
+          seed: (imageFile.seed as string) || imageRequest.seed
+        } as PromptInput,
+        {
+          hideBase64String: true
+        }
+      )
 
       setRawParams(raw)
     }

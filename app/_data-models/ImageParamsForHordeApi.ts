@@ -16,7 +16,9 @@ import PromptInput from './PromptInput'
 interface HordeApiParamsBuilderInterface {
   setBaseParams(imageDetails: PromptInput): ImageParamsForHordeApi
   setWorkerPreferences(): ImageParamsForHordeApi
-  setSourceProcessing(): Promise<ImageParamsForHordeApi>
+  setSourceProcessing(
+    hideBase64String: boolean
+  ): Promise<ImageParamsForHordeApi>
   setEmbeddings(): ImageParamsForHordeApi
   setControlType(): ImageParamsForHordeApi
   setStylePresets(): ImageParamsForHordeApi
@@ -241,7 +243,9 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     return this
   }
 
-  async setSourceProcessing(): Promise<ImageParamsForHordeApi> {
+  async setSourceProcessing(
+    hideBase64String: boolean
+  ): Promise<ImageParamsForHordeApi> {
     const sourceImages = await getImagesForArtbotJobFromDexie(
       this.imageDetails.artbot_id,
       ImageType.SOURCE
@@ -263,9 +267,9 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       this.apiParams.source_processing = SourceProcessing.Remix
 
       const [initImage, ...extraImages] = sourceImages
-      this.apiParams.source_image = await blobToBase64(
-        initImage.imageBlob as Blob
-      )
+      this.apiParams.source_image = hideBase64String
+        ? '[ true ]'
+        : await blobToBase64(initImage.imageBlob as Blob)
 
       for (const image of extraImages) {
         if (image && image.imageBlob) {
@@ -284,14 +288,16 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     if (source_processing === SourceProcessing.Img2Img) {
       this.apiParams.params.denoising_strength =
         Number(denoising_strength) || 0.75
-      this.apiParams.source_image = base64String
+      this.apiParams.source_image = hideBase64String ? '[ true ]' : base64String
       this.apiParams.source_processing = SourceProcessing.Img2Img
 
       if (sourceMask && sourceMask.length > 0) {
         const maskBase64String = await blobToBase64(
           sourceMask[0].imageBlob as Blob
         )
-        this.apiParams.source_mask = maskBase64String
+        this.apiParams.source_mask = hideBase64String
+          ? '[ true ]'
+          : maskBase64String
       }
     }
 
@@ -301,7 +307,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     ) {
       this.apiParams.params.denoising_strength =
         Number(denoising_strength) || 0.75
-      this.apiParams.source_image = base64String
+      this.apiParams.source_image = hideBase64String ? '[ true ]' : base64String
 
       // SourceProcessing / source_processing outpainting not officially supported as of yet...
       this.apiParams.source_processing = SourceProcessing.InPainting
@@ -445,16 +451,22 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
 
   static async build(
     imageDetails: PromptInput,
-    hasError: boolean = false
+    options: {
+      hideBase64String?: boolean
+      hasError?: boolean
+    } = {
+      hideBase64String: false,
+      hasError: false
+    }
   ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput }> {
     const instance = new ImageParamsForHordeApi(imageDetails)
     instance.setEmbeddings()
     instance.setWorkerPreferences()
-    await instance.setSourceProcessing()
+    await instance.setSourceProcessing(options.hideBase64String as boolean)
     instance.setControlType()
     instance.setWorkflows()
     instance.setStylePresets()
-    instance.setErrorHandling(hasError)
+    instance.setErrorHandling(options.hasError as boolean)
     instance.validate()
 
     return {
