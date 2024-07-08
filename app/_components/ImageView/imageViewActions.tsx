@@ -129,17 +129,15 @@ export default function ImageViewActions({
                 const jsonString = JSON.stringify(updatedImageRequest)
                 sessionStorage.setItem('userInput', jsonString)
 
-                const uploadedImages = await cloneImageRowsInDexie(
+                await deleteImageFileByArtbotIdTx(
+                  AppConstants.IMAGE_UPLOAD_TEMP_ID
+                )
+
+                await cloneImageRowsInDexie(
                   imageRequest.artbot_id,
                   AppConstants.IMAGE_UPLOAD_TEMP_ID,
                   ImageType.SOURCE
                 )
-
-                if (uploadedImages.length === 0) {
-                  await deleteImageFileByArtbotIdTx(
-                    AppConstants.IMAGE_UPLOAD_TEMP_ID
-                  )
-                }
 
                 NiceModal.remove('modal')
                 router.push('/create')
