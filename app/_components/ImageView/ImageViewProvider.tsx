@@ -9,7 +9,7 @@ import React, {
   useState
 } from 'react'
 
-interface ImageDetails {
+export interface ImageDetails {
   jobDetails: HordeJob
   imageFiles: ImageFileInterface[]
   imageRequest: ImageRequest
