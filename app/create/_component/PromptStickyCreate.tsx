@@ -24,7 +24,7 @@ export default function PromptStickyCreate() {
       className={`transition-opacity duration-300 ${isSticky ? 'sticky top-0 opacity-100' : 'opacity-0'}`}
     >
       <div className="row w-full items-center">
-        <PromptActionPanel isSticky />
+        {isSticky && <PromptActionPanel isSticky />}
       </div>
     </div>
   )
