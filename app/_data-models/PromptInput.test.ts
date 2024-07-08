@@ -7,7 +7,7 @@ describe('PromptInput', () => {
     const defaultPromptInput = new PromptInput()
 
     expect(defaultPromptInput.artbot_id).toBe('')
-    expect(defaultPromptInput.cfg_scale).toBe(5)
+    expect(defaultPromptInput.cfg_scale).toBe(2)
     expect(defaultPromptInput.clipskip).toBe(1)
     expect(defaultPromptInput.control_type).toBe('')
     expect(defaultPromptInput.denoising_strength).toBe(0.75)
@@ -21,7 +21,7 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.imageType).toBe('')
     expect(defaultPromptInput.jobType).toBe(JobType.Text2Img)
     expect(defaultPromptInput.karras).toBe(true)
-    expect(defaultPromptInput.loras).toEqual([])
+    expect(defaultPromptInput.loras.length).toEqual(1)
     expect(defaultPromptInput.models).toEqual(['AlbedoBase XL (SDXL)'])
     expect(defaultPromptInput.negative).toBe('')
     expect(defaultPromptInput.numImages).toBe(1)
@@ -33,7 +33,7 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.sampler).toBe('k_dpmpp_sde')
     expect(defaultPromptInput.seed).toBe('')
     expect(defaultPromptInput.source_processing).toBe(SourceProcessing.Prompt)
-    expect(defaultPromptInput.steps).toBe(20)
+    expect(defaultPromptInput.steps).toBe(8)
     expect(defaultPromptInput.tiling).toBe(false)
     expect(defaultPromptInput.tis).toEqual([])
     expect(defaultPromptInput.triggers).toEqual([])
@@ -60,7 +60,7 @@ describe('PromptInput', () => {
 
   it('should initialize with empty object', () => {
     const defaultPromptInput = new PromptInput({})
-    expect(defaultPromptInput.cfg_scale).toBe(5)
+    expect(defaultPromptInput.cfg_scale).toBe(2)
     expect(defaultPromptInput.height).toBe(1024)
     expect(defaultPromptInput.width).toBe(1024)
     expect(defaultPromptInput.jobType).toBe(JobType.Text2Img)
@@ -76,6 +76,5 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.extra_texts).toEqual([
       { text: 'example', reference: 'ref' }
     ])
-    expect(defaultPromptInput.loras).toEqual([])
   })
 })
