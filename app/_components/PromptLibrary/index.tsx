@@ -177,6 +177,15 @@ export default function PromptLibrary({
               }}
               setPrompt={setPrompt}
             />
+            <PromptHistoryCard
+              // @ts-expect-error Only partial data needed for suggestion
+              prompt={{
+                artbot_id: '_suggestion',
+                prompt:
+                  '(worst quality, low quality:1.4), bad anatomy, bad hands, cropped, missing fingers, missing toes, too many toes, too many fingers, missing arms, long neck, Humpbacked, deformed, disfigured, poorly drawn face, distorted face, mutation, mutated, extra limb, ugly, poorly drawn hands, missing limb, floating limbs, disconnected limbs, malformed hands, out of focus, long body, monochrome, symbol, text, logo, door frame, window frame, mirror frame'
+              }}
+              setPrompt={setPrompt}
+            />
           </>
         )}
         {!showSuggestions &&
