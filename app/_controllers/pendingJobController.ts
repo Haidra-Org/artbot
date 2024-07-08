@@ -25,13 +25,12 @@ import generateImage from '../_api/horde/generate'
 import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
 import { AppSettings } from '../_data-models/AppSettings'
+import { AppConstants } from '../_data-models/AppConstants'
 
 const MAX_REQUESTS_PER_SECOND = 2
 const REQUEST_INTERVAL = 1000 / MAX_REQUESTS_PER_SECOND
 const CACHE_TIMEOUT = 750
 const requestCache = new Map()
-
-const MAX_JOBS = 10
 
 let pendingLastChecked = 0
 const pendingInterval = 6025
@@ -134,7 +133,7 @@ export const downloadImages = async ({
         imageType: ImageType.IMAGE,
         imageStatus: ImageStatus.OK, // TODO: FIXME: handle censored or errors.
         model: generationsList[index].model,
-        imageBlob: response.blob,
+        imageBlobBuffer: response.blobBuffer,
         gen_metadata: generationsList[index].gen_metadata,
         seed: generationsList[index].seed,
         worker_id: generationsList[index].worker_id,
@@ -283,7 +282,7 @@ export const checkForWaitingJobs = async () => {
     JobStatus.Processing
   ])
 
-  if (pendingJobs.length >= MAX_JOBS) {
+  if (pendingJobs.length >= AppConstants.MAX_CONCURRENT_JOBS) {
     return
   }
 

@@ -6,6 +6,7 @@ import { AppSettings } from '../_data-models/AppSettings'
 import { useStore } from 'statery'
 import { ModelStore } from '../_stores/ModelStore'
 import { Workflow } from '../_types/ArtbotTypes'
+import { AppConstants } from '../_data-models/AppConstants'
 
 export interface PromptError {
   message: string
@@ -65,6 +66,16 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
       })
     }
 
+    if (
+      input.models[0].toLowerCase().indexOf('pony') >= 0 &&
+      input.clipskip < 2
+    ) {
+      updateErrors.push({
+        message: `PonyXL-based models require CLIP setting of at least 2.`,
+        type: 'critical'
+      })
+    }
+
     // filter through input.workflows and find element that matchs type==='qr_code', if so, console.log error
     const workflowBaselineMatch =
       baselineModel === 'stable diffusion 1' ||
@@ -94,6 +105,21 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
     ) {
       updateErrors.push({
         message: 'Remix option can only be used with "Stable Cascade models',
+        type: 'critical'
+      })
+    }
+
+    // Max supported pixels
+    if (input.height * input.width > AppConstants.MAX_IMAGE_PIXELS) {
+      updateErrors.push({
+        message: `Image size of ${(input.height * input.width).toLocaleString()} pixels larger than supported max of ${AppConstants.MAX_IMAGE_PIXELS.toLocaleString()} pixels. Try reducing image dimensions.`,
+        type: 'critical'
+      })
+    }
+
+    if (input.height * input.width < 576 * 576 && input.hires) {
+      updateErrors.push({
+        message: `Hi-res fix is not supported for images with less than ${(576 * 576).toLocaleString()} pixels (~576 x 576).  Disable hi-red fix or try increasing image dimensions.`,
         type: 'critical'
       })
     }

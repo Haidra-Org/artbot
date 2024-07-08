@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid'
+import { ImageBlobBuffer } from '../_data-models/ImageFile_Dexie'
 import { isSafariBrowser, isiOS } from './browserUtils'
 
 function URI2Blob(dataURI: string, mimeType: string): Blob {
@@ -100,6 +102,10 @@ export const initBlob = () => {
     //   return await writeMetadata(this, mergeExifData({}, userComment))
     // }
   }
+}
+
+export const bufferToBlob = (buffer: ImageBlobBuffer) => {
+  return new Blob([buffer.arrayBuffer], { type: buffer.type })
 }
 
 export const base64toBlob = async (base64Data: string) => {
@@ -211,6 +217,16 @@ export const getBase64 = (file: Blob): Promise<string> => {
   })
 }
 
+export const blobToArrayBuffer = async (blob: Blob) => {
+  const arrayBuffer = await blob.arrayBuffer()
+  return {
+    arrayBuffer,
+    type: blob.type,
+    size: blob.size,
+    id: nanoid(6)
+  }
+}
+
 export const inferMimeTypeFromBase64 = (base64: string) => {
   if (base64.indexOf('data:') === 0) {
     let [data] = base64?.split(',') || ['']
@@ -281,8 +297,10 @@ export const nearestWholeMultiple = (input: number, X = 64) => {
   return output
 }
 
-export const blobToClipboard = async (imageBlob: Blob) => {
+export const blobToClipboard = async (imageBlobBuffer: ImageBlobBuffer) => {
   initBlob()
+
+  const imageBlob = bufferToBlob(imageBlobBuffer)
 
   const makeImagePromiseForSafari = async () => {
     return await imageBlob.toPNG()

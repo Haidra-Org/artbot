@@ -1,4 +1,5 @@
 import { toastController } from '@/app/_controllers/toastController'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 import {
   duplicateAndModifyArtbotId,
   getImagesForArtbotJobFromDexie
@@ -28,12 +29,12 @@ export default function useCreateImageRequest() {
     try {
       const pendingJob = await addPendingJobToDexie({ ...input })
       const uploadedImages = await getImagesForArtbotJobFromDexie(
-        '__TEMP_USER_IMG_UPLOAD__'
+        AppConstants.IMAGE_UPLOAD_TEMP_ID
       )
 
       if (uploadedImages && uploadedImages.length > 0) {
         await duplicateAndModifyArtbotId(
-          '__TEMP_USER_IMG_UPLOAD__',
+          AppConstants.IMAGE_UPLOAD_TEMP_ID,
           pendingJob.artbot_id
         )
       }

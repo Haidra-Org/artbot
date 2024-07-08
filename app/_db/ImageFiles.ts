@@ -108,6 +108,40 @@ export const duplicateAndModifyArtbotId = async (
   return duplicatedRows
 }
 
+export const cloneImageRowsInDexie = async (
+  artbot_id: string,
+  new_artbot_id: string,
+  imageType: ImageType | null = null // Default to null if no type is passed
+) => {
+  let originalRows
+
+  if (imageType) {
+    originalRows = await db.imageFiles
+      .where('[artbot_id+imageType]')
+      .equals([artbot_id, imageType])
+      .toArray()
+  } else {
+    originalRows = await db.imageFiles
+      .where('artbot_id')
+      .equals(artbot_id)
+      .toArray()
+  }
+
+  if (originalRows.length === 0) {
+    return []
+  }
+
+  const duplicatedRows = originalRows.map((row) => {
+    const newRow = { ...row, artbot_id: new_artbot_id }
+    delete newRow.id
+    return newRow
+  })
+
+  await db.imageFiles.bulkAdd(duplicatedRows)
+
+  return duplicatedRows
+}
+
 export const updateImageFileFieldByImageId = async (
   image_id: string,
   fieldName: string,

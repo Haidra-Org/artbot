@@ -1,49 +1,85 @@
 // import { Store } from 'react-notifications-component'
-import { addPromptToDexie } from '../_db/promptsHistory'
 import { getImageRequestsFromDexieById } from '../_db/imageRequests'
-import { addPendingJobToDexie } from '../_db/jobTransactions'
 import { addPendingImageToAppState } from '../_stores/PendingImagesStore'
 import { toastController } from '../_controllers/toastController'
+import { db } from '../_db/dexie'
+import { ImageType } from '../_data-models/ImageFile_Dexie'
+import { nanoid } from 'nanoid'
+import { HordeJob, ImageRequest, JobStatus } from '../_types/ArtbotTypes'
+import { cloneImageRowsInDexie } from '../_db/ImageFiles'
+import { cleanImageRequestForReuse } from '../_utils/inputUtils'
+import { AppConstants } from '../_data-models/AppConstants'
 
 export default function useRerollImage() {
   const rerollImage = async (artbot_id: string) => {
-    const data = await getImageRequestsFromDexieById([artbot_id])
+    return await db
+      .transaction(
+        'rw',
+        [
+          db.imageFiles,
+          db.imageRequests,
+          db.hordeJobs,
+          db.promptsHistory,
+          db.promptsJobMap
+        ],
+        async () => {
+          const data = await getImageRequestsFromDexieById([artbot_id])
 
-    if (!data) {
-      return
-    }
+          if (!data || data.length === 0) {
+            return
+          }
 
-    const [imageRequest] = data
+          const [imageRequest] = data as ImageRequest[]
+          const updatedImageRequest = cleanImageRequestForReuse(imageRequest, {
+            artbot_id: nanoid(AppConstants.NANO_ID_LENGTH),
+            numImages: 1
+          })
 
-    // Remove / update fields for re-roll
-    // @ts-expect-error Clearing field for new job
-    delete imageRequest.id
-    // @ts-expect-error Clearing field for new job
-    delete imageRequest.artbot_id
-    // @ts-expect-error Clearing field for new job
-    delete imageRequest.seed
-    imageRequest.numImages = 1
+          const job: HordeJob = {
+            artbot_id: updatedImageRequest.artbot_id,
+            job_id: nanoid(AppConstants.NANO_ID_LENGTH),
+            horde_id: '',
+            created_timestamp: Date.now(),
+            updated_timestamp: Date.now(),
+            status: JobStatus.Waiting,
+            queue_position: null,
+            init_wait_time: null,
+            wait_time: null,
+            images_requested: 1,
+            images_completed: 0,
+            images_failed: 0,
+            height: updatedImageRequest.height,
+            width: updatedImageRequest.width
+          }
 
-    // Clones behavior in imageActionPanel
-    // TODO: Turn into a hook?
-    const pendingJob = await addPendingJobToDexie({ ...imageRequest })
+          // Iterate through existingImageSources array using for of.
+          await cloneImageRowsInDexie(
+            artbot_id,
+            updatedImageRequest.artbot_id,
+            ImageType.SOURCE
+          )
 
-    if (pendingJob) {
-      addPendingImageToAppState(pendingJob)
-    }
+          // Add pending job to database
+          await db.hordeJobs.add(job)
+          await db.imageRequests.add(updatedImageRequest)
 
-    await addPromptToDexie({
-      artbot_id: pendingJob.artbot_id,
-      prompt: imageRequest.prompt
-    })
+          // Add pending job to app state
+          addPendingImageToAppState(job)
 
-    toastController({
-      message: 'Re-rolled! Creating new image request.',
-      type: 'success'
-    })
-
-    // TODO: Add a temporary job ID so images can be associated with previous job?
-    // TODO: Need to check for / handle image uploads
+          toastController({
+            // message: 'Re-rolled! Creating new image request.',
+            message: <span>Re-rolled! Creating new image request.</span>,
+            type: 'success'
+          })
+        }
+      )
+      .catch((err) => {
+        console.error('Transaction failed: ', err)
+        toastController({
+          message: `Unable to re-roll image. ${err}`,
+          type: 'error'
+        })
+      })
   }
 
   return [rerollImage]

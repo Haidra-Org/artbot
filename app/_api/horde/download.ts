@@ -1,9 +1,12 @@
 // Not really a Horde specific API endpoint, but this
 // downloads images returned from the Horde.
 
+import { ImageBlobBuffer } from '@/app/_data-models/ImageFile_Dexie'
+import { blobToArrayBuffer } from '@/app/_utils/imageUtils'
+
 export interface DownloadSuccessResponse {
   success: boolean
-  blob: Blob
+  blobBuffer: ImageBlobBuffer
 }
 export interface DownloadErrorResponse {
   success: boolean
@@ -35,10 +38,11 @@ export default async function downloadImage(
     }
 
     const blob = await imageData.blob()
+    const blobBuffer = await blobToArrayBuffer(blob)
 
     return {
       success: true,
-      blob
+      blobBuffer
     }
   } catch (err) {
     const error = err as Error

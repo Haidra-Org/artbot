@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { useSwipeable } from 'react-swipeable'
 import {
   IconCopy,
   IconDotsCircleHorizontal,
@@ -17,27 +18,58 @@ import { useImageView } from './ImageViewProvider'
 import useFavorite from '@/app/_hooks/useFavorite'
 import useRerollImage from '@/app/_hooks/useRerollImage'
 import { deleteImageFromDexie } from '@/app/_db/jobTransactions'
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Section from '../Section'
 import DropdownMenu from '../DropdownMenu'
 import { MenuDivider, MenuItem } from '@szhsin/react-menu'
-import useImageBlobUrl from '@/app/_hooks/useImageBlobUrl'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils'
 import { toastController } from '@/app/_controllers/toastController'
 import { blobToClipboard } from '@/app/_utils/imageUtils'
+import { useRouter } from 'next/navigation'
+import { cleanImageRequestForReuse } from '@/app/_utils/inputUtils'
+import {
+  cloneImageRowsInDexie,
+  deleteImageFileByArtbotIdTx
+} from '@/app/_db/ImageFiles'
+import { AppConstants } from '@/app/_data-models/AppConstants'
+import { ImageType } from '@/app/_data-models/ImageFile_Dexie'
+import Image from '../Image'
 
-export default function ImageViewActions({
+function ImageViewActions({
   onDelete
 }: {
+  currentImageId: string
   onDelete: () => void
 }) {
+  const router = useRouter()
+
   const showFullScreen = useFullScreenHandle()
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const { artbot_id, imageBlob, imageId, imageData } = useImageView()
-  const imageUrl = useImageBlobUrl(imageBlob)
+  const {
+    artbot_id,
+    imageBlobBuffer,
+    imageId,
+    imageData,
+    getNextImage,
+    getPrevImage
+  } = useImageView()
+
   const [rerollImage] = useRerollImage()
   const [isFavorite, toggleFavorite] = useFavorite(artbot_id, imageId as string)
+
+  const handlers = useSwipeable({
+    onSwipedRight: () => {
+      getPrevImage()
+    },
+    onSwipedLeft: () => {
+      getNextImage()
+    },
+    preventScrollOnSwipe: true,
+    swipeDuration: 250,
+    trackTouch: true,
+    delta: 35
+  })
 
   const handleDelete = useCallback(async () => {
     NiceModal.show('delete', {
@@ -83,10 +115,11 @@ export default function ImageViewActions({
             onClick={() => {
               showFullScreen.exit()
             }}
+            {...handlers}
           >
-            <img
+            <Image
               className="max-h-screen max-w-full"
-              src={imageUrl}
+              imageBlobBuffer={imageBlobBuffer}
               alt="image"
             />
           </div>
@@ -109,12 +142,40 @@ export default function ImageViewActions({
             }
           >
             <MenuItem>Use prompt</MenuItem>
-            <MenuItem>Use all settings</MenuItem>
+            <MenuItem
+              onClick={async () => {
+                const { imageRequest } = imageData
+                const updatedImageRequest = cleanImageRequestForReuse(
+                  imageRequest,
+                  { keepSeed: true }
+                )
+
+                const jsonString = JSON.stringify(updatedImageRequest)
+                sessionStorage.setItem('userInput', jsonString)
+
+                await deleteImageFileByArtbotIdTx(
+                  AppConstants.IMAGE_UPLOAD_TEMP_ID
+                )
+
+                await cloneImageRowsInDexie(
+                  imageRequest.artbot_id,
+                  AppConstants.IMAGE_UPLOAD_TEMP_ID,
+                  ImageType.SOURCE
+                )
+
+                NiceModal.remove('modal')
+                router.push('/create')
+              }}
+            >
+              Use all settings
+            </MenuItem>
             <MenuDivider />
             <MenuItem>Copy JSON parameters</MenuItem>
             <MenuItem
               onClick={async () => {
-                const success = await blobToClipboard(imageBlob as Blob)
+                if (!imageBlobBuffer) return
+
+                const success = await blobToClipboard(imageBlobBuffer)
                 if (success) {
                   toastController({
                     message: 'Image copied to clipboard!'
@@ -199,3 +260,8 @@ export default function ImageViewActions({
     </>
   )
 }
+
+export default React.memo(ImageViewActions, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return prevProps.currentImageId === nextProps.currentImageId
+})

@@ -13,6 +13,7 @@ import {
 import useHordeApiKey from '@/app/_hooks/useHordeApiKey'
 import { useCallback, useEffect, useState } from 'react'
 import { toastController } from '@/app/_controllers/toastController'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 
 export default function Apikey() {
   const [handleLogin] = useHordeApiKey()
@@ -41,7 +42,7 @@ export default function Apikey() {
   useEffect(() => {
     const key = AppSettings.get('apiKey')
 
-    if (key === '0000000000') return
+    if (key === AppConstants.AI_HORDE_ANON_KEY) return
     setApikey(key)
   }, [])
 

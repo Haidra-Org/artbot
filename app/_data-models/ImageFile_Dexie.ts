@@ -16,6 +16,13 @@ export enum ImageType {
   UPSCALE = 'upscale'
 }
 
+export interface ImageBlobBuffer {
+  type: string
+  arrayBuffer: ArrayBuffer
+  size: number
+  id: string // unique ID for memo comparison
+}
+
 export interface ImageFileInterface {
   id?: number
   artbot_id: string
@@ -25,7 +32,7 @@ export interface ImageFileInterface {
   imageStatus?: ImageStatus
   sampler?: string
   model?: string
-  imageBlob?: Blob | null
+  imageBlobBuffer?: ImageBlobBuffer | null
   gen_metadata?: GenMetadata[]
   strength?: number | null // Used when adding multiple images (e.g., remix)
   seed?: string
@@ -45,7 +52,7 @@ class ImageFile implements ImageFileInterface {
   model: string = ''
 
   // Other fields
-  imageBlob?: Blob | null = null
+  imageBlob?: ImageBlobBuffer | null = null
   gen_metadata?: GenMetadata[] = []
   seed: string = ''
   strength: number | null = null

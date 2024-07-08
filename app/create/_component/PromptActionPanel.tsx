@@ -16,6 +16,7 @@ import {
 import { useRouter } from 'next/navigation'
 import useCreateImageRequest from '../_hook/useCreateImageRequest'
 import clsx from 'clsx'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 
 export default function PromptActionPanel({
   height = 36,
@@ -61,7 +62,7 @@ export default function PromptActionPanel({
                   onDelete={async () => {
                     setInput({ ...new PromptInput() })
                     await deleteImageFileByArtbotIdTx(
-                      '__TEMP_USER_IMG_UPLOAD__'
+                      AppConstants.IMAGE_UPLOAD_TEMP_ID
                     )
                     setSourceImages([])
                     window.scrollTo(0, 0)

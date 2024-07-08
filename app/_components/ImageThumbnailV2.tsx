@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { checkImageExistsInDexie } from '../_db/ImageFiles'
+import { bufferToBlob } from '../_utils/imageUtils'
 
 const defaultImage =
   'data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw=='
@@ -53,11 +54,12 @@ const ImageThumbnailV2 = React.memo(
         if (
           dexieImage &&
           dexieImage !== true &&
-          'imageBlob' in dexieImage &&
-          dexieImage.imageBlob &&
+          'imageBlobBuffer' in dexieImage &&
+          dexieImage.imageBlobBuffer &&
           isMounted
         ) {
-          const url = URL.createObjectURL(dexieImage.imageBlob)
+          const blob = bufferToBlob(dexieImage.imageBlobBuffer)
+          const url = URL.createObjectURL(blob)
           setImageUrl(url)
         }
       }
@@ -71,6 +73,8 @@ const ImageThumbnailV2 = React.memo(
           URL.revokeObjectURL(imageUrl)
         }
       }
+      // imageUrl in this dep array causes issue with URL.createObjectURL re-rendering thousands of times.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [artbot_id, image_id])
 
     useEffect(() => {

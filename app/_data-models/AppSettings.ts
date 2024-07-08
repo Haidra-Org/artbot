@@ -5,6 +5,7 @@
  */
 
 import { CivitAiBaseModels } from '../_types/ArtbotTypes'
+import { AppConstants } from './AppConstants'
 
 export const rootSettingsKey = 'ArtBotSettings'
 
@@ -31,7 +32,7 @@ class AppSettings {
   static defaultValues: AppSettingsParams = {
     allowedWorkers: [],
     allowNsfwImages: false,
-    apiKey: '0000000000', // Default API key
+    apiKey: AppConstants.AI_HORDE_ANON_KEY, // Default API key
     autoDowngrade: true,
     blockedWorkers: [],
     civitAiBaseModelFilter: ['SD 1.x', 'SD 2.x', 'SDXL'],
