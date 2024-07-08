@@ -104,7 +104,7 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
   return (
     <div className="rounded bg-[#1d4d74] p-2 col">
       <div className="w-full row justify-between text-sm font-mono font-bold text-white">
-        {lora.isArtbotManualEntry ? (
+        {lora.isArtbotManualEntry && lora.id !== '247778' ? (
           <span>LoRA by Version ID: {lora.name}</span>
         ) : (
           <span>{lora.name}</span>

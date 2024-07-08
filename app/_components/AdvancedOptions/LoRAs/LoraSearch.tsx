@@ -18,7 +18,7 @@ import {
   SavedEmbedding,
   SavedLora
 } from '@/app/_data-models/Civitai'
-import { MasonryItem, MasonryLayout } from '../../Masonry'
+import { MasonryLayout } from '../../Masonry'
 
 export default function LoraSearch({
   civitAiType = 'LORA',
@@ -38,6 +38,8 @@ export default function LoraSearch({
     searchType,
     type: civitAiType
   })
+
+  const modalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputVersionId, setInputVersionId] = useState(false)
   const [searchInput, setSearchInput] = useState('')
@@ -102,7 +104,7 @@ export default function LoraSearch({
   }
 
   return (
-    <div className="col w-full h-full">
+    <div className="col w-full h-full" ref={modalRef}>
       <h2 className="row font-bold">
         {title} <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
@@ -199,15 +201,18 @@ export default function LoraSearch({
         </div>
       )}
       <div>
-        <MasonryLayout>
+        <MasonryLayout containerRef={modalRef}>
           {transformedData.map((image) => (
-            <MasonryItem key={`${image.key}`}>
+            <div
+              key={`${image.key}`}
+              style={{ width: '100%', marginBottom: '20px' }}
+            >
               <LoraImage
                 civitAiType={civitAiType}
                 onUseLoraClick={onUseLoraClick}
                 image={image}
               />
-            </MasonryItem>
+            </div>
           ))}
         </MasonryLayout>
       </div>
