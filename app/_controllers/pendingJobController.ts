@@ -133,7 +133,7 @@ export const downloadImages = async ({
         imageType: ImageType.IMAGE,
         imageStatus: ImageStatus.OK, // TODO: FIXME: handle censored or errors.
         model: generationsList[index].model,
-        imageBlob: response.blob,
+        imageBlobBuffer: response.blobBuffer,
         gen_metadata: generationsList[index].gen_metadata,
         seed: generationsList[index].seed,
         worker_id: generationsList[index].worker_id,

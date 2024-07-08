@@ -3,14 +3,15 @@ import React from 'react'
 import { useImageView } from './ImageViewProvider'
 import CarouselImage from '../Carousel/CarouselImage'
 import Carousel from '../Carousel'
+import { ImageBlobBuffer } from '@/app/_data-models/ImageFile_Dexie'
 
 // Prevents re-rendering of the same image multiple times as parent is updated
 const ImageViewImage = React.memo(() => {
-  const { imageBlob, imageData, setCurrentImageId } = useImageView()
+  const { imageBlobBuffer, imageData, setCurrentImageId } = useImageView()
   const { imageFiles } = imageData
 
   if (!imageFiles) return null
-  if (!imageBlob) return null
+  if (!imageBlobBuffer) return null
 
   return (
     <div style={{ maxWidth: `${imageData?.imageRequest?.width}px` }}>
@@ -24,7 +25,7 @@ const ImageViewImage = React.memo(() => {
         {imageFiles.map((image) => (
           <CarouselImage
             key={image.image_id}
-            imageBlob={image.imageBlob as Blob}
+            imageBlobBuffer={image.imageBlobBuffer as ImageBlobBuffer}
             maxWidth={imageData?.imageRequest?.width}
           />
         ))}

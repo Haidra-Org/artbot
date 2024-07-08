@@ -1,21 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
-import useImageBlobUrl from '@/app/_hooks/useImageBlobUrl'
 import React from 'react'
+import Image from '../Image'
+import { ImageBlobBuffer } from '@/app/_data-models/ImageFile_Dexie'
 
 interface CarouselImageProps {
-  imageBlob: Blob
+  imageBlobBuffer: ImageBlobBuffer
   maxHeight?: number
   maxWidth?: number
 }
 
-const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlob }) => {
-  const imageUrl = useImageBlobUrl(imageBlob)
-
-  if (!imageUrl) return null
+const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlobBuffer }) => {
+  if (!imageBlobBuffer) return null
 
   return (
-    <img
-      src={imageUrl}
+    <Image
+      imageBlobBuffer={imageBlobBuffer}
       alt="Carousel Slide"
       style={{
         maxWidth: '100%',

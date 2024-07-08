@@ -13,4 +13,9 @@ export class AppConstants {
   static NANO_ID_LENGTH = 13
 
   static IMAGE_UPLOAD_TEMP_ID = '__TEMP_USER_IMG_UPLOAD__'
+
+  /**
+   * Maximum supported resolution for image requests to the AI Horde
+   */
+  static MAX_IMAGE_PIXELS = 4194304
 }

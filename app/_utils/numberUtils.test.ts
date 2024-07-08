@@ -1,6 +1,10 @@
 import { nearestWholeMultiple } from './imageUtils'
 import { formatKudos } from './numberUtils'
 
+jest.mock('nanoid', () => ({
+  nanoid: jest.fn(() => 'mocked-nanoid')
+}))
+
 describe('formatKudos', () => {
   test('returns "..." when the number is 0', () => {
     expect(formatKudos(0)).toBe('...')

@@ -3,6 +3,8 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from 'react'
 import { checkImageExistsInDexie } from '../_db/ImageFiles'
+import { bufferToBlob } from '../_utils/imageUtils'
+import { ImageBlobBuffer } from '../_data-models/ImageFile_Dexie'
 
 const defaultImage =
   'data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw=='
@@ -36,11 +38,16 @@ const ImageThumbnail = React.memo(
         if (
           dexieImage &&
           dexieImage !== true &&
-          'imageBlob' in dexieImage &&
-          dexieImage.imageBlob &&
+          'imageBlobBuffer' in dexieImage &&
+          dexieImage.imageBlobBuffer &&
           isMounted
         ) {
-          const url = URL.createObjectURL(dexieImage.imageBlob)
+          if (!dexieImage.imageBlobBuffer) return
+
+          const blob = bufferToBlob(
+            dexieImage.imageBlobBuffer as ImageBlobBuffer
+          )
+          const url = URL.createObjectURL(blob)
           setImageUrl(url)
         }
       }

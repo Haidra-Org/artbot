@@ -27,7 +27,7 @@ export default function ImageViewInfoContainer({
   return (
     <div className={styles.ImageInfoContainer}>
       <div className="row w-full justify-center">
-        <ImageViewActions onDelete={onDelete} />
+        <ImageViewActions currentImageId={currentImageId} onDelete={onDelete} />
       </div>
       <div className="col gap-1 w-full">
         <div className="row gap-2 text-sm font-bold">

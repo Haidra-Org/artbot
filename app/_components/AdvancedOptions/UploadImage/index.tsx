@@ -7,6 +7,7 @@ import { IconPhotoPlus, IconX } from '@tabler/icons-react'
 
 import {
   base64toBlob,
+  blobToArrayBuffer,
   cropToNearest64,
   getBase64
 } from '@/app/_utils/imageUtils'
@@ -91,6 +92,8 @@ export default function UploadImage() {
 
   const handleUpload = useCallback(
     async ({ source_image }: { source_image: Blob }) => {
+      const imageBlobBuffer = await blobToArrayBuffer(source_image)
+
       const image: ImageFileInterface = {
         artbot_id: AppConstants.IMAGE_UPLOAD_TEMP_ID,
         apiResponse: '',
@@ -99,7 +102,7 @@ export default function UploadImage() {
         imageType: ImageType.SOURCE,
         imageStatus: ImageStatus.OK,
         model: '',
-        imageBlob: source_image,
+        imageBlobBuffer,
         seed: '',
         worker_id: '',
         worker_name: '',

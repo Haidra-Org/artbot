@@ -1,4 +1,7 @@
-import { ImageFileInterface } from '@/app/_data-models/ImageFile_Dexie'
+import {
+  ImageBlobBuffer,
+  ImageFileInterface
+} from '@/app/_data-models/ImageFile_Dexie'
 import { getImagesForJobFromDexie } from '@/app/_db/jobTransactions'
 import { HordeJob, ImageRequest } from '@/app/_types/ArtbotTypes'
 import React, {
@@ -18,23 +21,27 @@ export interface ImageDetails {
 interface DefaultContext {
   artbot_id: string
   currentImageId: string
-  imageBlob: Blob | undefined
+  imageBlobBuffer: ImageBlobBuffer | undefined
   imageData: ImageDetails
   imageId: string
   setCurrentImageId: (image_id: string) => void
+  getPrevImage: () => void
+  getNextImage: () => void
 }
 
 const defaultContext: DefaultContext = {
   artbot_id: '',
   currentImageId: '',
-  imageBlob: undefined,
+  imageBlobBuffer: undefined,
   imageData: {
     jobDetails: {} as HordeJob,
     imageFiles: [] as ImageFileInterface[],
     imageRequest: {} as ImageRequest
   },
   imageId: '' as string,
-  setCurrentImageId: () => {}
+  setCurrentImageId: () => {},
+  getPrevImage: () => {},
+  getNextImage: () => {}
 }
 
 const ImageViewContext = createContext(defaultContext)
@@ -52,7 +59,7 @@ export const ImageViewProvider = ({
   children: React.ReactNode
   image_id?: string
 }) => {
-  const [imageBlob, setImageBlob] = useState<Blob>()
+  const [imageBlobBuffer, setImageBlobBuffer] = useState<ImageBlobBuffer>()
   const [imageData, setImageData] = useState<ImageDetails>({
     jobDetails: {} as HordeJob,
     imageFiles: [] as ImageFileInterface[],
@@ -72,11 +79,13 @@ export const ImageViewProvider = ({
         setImageId(data.imageFiles[0].image_id)
       }
 
-      const blob = data.imageFiles.find(
+      const blobBuffer = data.imageFiles.find(
         (image) => image.image_id === imageId
-      )?.imageBlob
+      )?.imageBlobBuffer
 
-      setImageBlob(blob as Blob)
+      if (!blobBuffer) return
+
+      setImageBlobBuffer(blobBuffer)
       setImageData(data as ImageDetails)
     } catch (err) {
       console.error('ImageViewProvider - Error fetching data:', err)
@@ -87,15 +96,37 @@ export const ImageViewProvider = ({
     fetchData()
   }, [artbot_id, fetchData, image_id])
 
+  const getPrevImage = useCallback(() => {
+    const currentIndex = imageData.imageFiles.findIndex(
+      (image) => image.image_id === currentImageId
+    )
+    const prevIndex =
+      (currentIndex - 1 + imageData.imageFiles.length) %
+      imageData.imageFiles.length
+    const prevImageId = imageData.imageFiles[prevIndex].image_id
+    setCurrentImageId(prevImageId)
+  }, [currentImageId, imageData.imageFiles])
+
+  const getNextImage = useCallback(() => {
+    const currentIndex = imageData.imageFiles.findIndex(
+      (image) => image.image_id === currentImageId
+    )
+    const nextIndex = (currentIndex + 1) % imageData.imageFiles.length
+    const nextImageId = imageData.imageFiles[nextIndex].image_id
+    setCurrentImageId(nextImageId)
+  }, [currentImageId, imageData.imageFiles])
+
   return (
     <ImageViewContext.Provider
       value={{
         artbot_id,
         currentImageId,
-        imageBlob,
+        imageBlobBuffer,
         imageData,
         imageId,
-        setCurrentImageId
+        setCurrentImageId,
+        getPrevImage,
+        getNextImage
       }}
     >
       {children}

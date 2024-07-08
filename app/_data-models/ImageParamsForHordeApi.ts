@@ -6,11 +6,11 @@ import {
   SourceProcessing
 } from '../_types/HordeTypes'
 import { castTiInject } from '../_utils/hordeUtils'
-import { blobToBase64 } from '../_utils/imageUtils'
+import { blobToBase64, bufferToBlob } from '../_utils/imageUtils'
 import { formatStylePresetPrompt } from '../_utils/stringUtils'
 import { AppSettings } from './AppSettings'
 import { SavedLora } from './Civitai'
-import { ImageType } from './ImageFile_Dexie'
+import { ImageBlobBuffer, ImageType } from './ImageFile_Dexie'
 import PromptInput from './PromptInput'
 
 interface HordeApiParamsBuilderInterface {
@@ -267,12 +267,16 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       this.apiParams.source_processing = SourceProcessing.Remix
 
       const [initImage, ...extraImages] = sourceImages
+      const initImageBlob = bufferToBlob(
+        initImage.imageBlobBuffer as ImageBlobBuffer
+      )
+
       this.apiParams.source_image = hideBase64String
         ? '[ true ]'
-        : await blobToBase64(initImage.imageBlob as Blob)
+        : await blobToBase64(initImageBlob as Blob)
 
       for (const image of extraImages) {
-        if (image && image.imageBlob) {
+        if (image && image.imageBlobBuffer) {
           // const base64String = await blobToBase64(image.imageBlob as Blob)
           // if (idx === 0 && image.imageType === ImageType.Image) {
           //   // process the image as needed
@@ -282,7 +286,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     }
 
     const [image] = sourceImages
-    const base64String = await blobToBase64(image.imageBlob as Blob)
+    const imageBlob = bufferToBlob(image.imageBlobBuffer as ImageBlobBuffer)
+    const base64String = await blobToBase64(imageBlob as Blob)
 
     // Handle source_processing, source_image, source_mask, etc.
     if (source_processing === SourceProcessing.Img2Img) {
@@ -292,9 +297,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       this.apiParams.source_processing = SourceProcessing.Img2Img
 
       if (sourceMask && sourceMask.length > 0) {
-        const maskBase64String = await blobToBase64(
-          sourceMask[0].imageBlob as Blob
+        const imageBlob = bufferToBlob(
+          sourceMask[0].imageBlobBuffer as ImageBlobBuffer
         )
+        const maskBase64String = await blobToBase64(imageBlob as Blob)
         this.apiParams.source_mask = hideBase64String
           ? '[ true ]'
           : maskBase64String
@@ -313,9 +319,10 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       this.apiParams.source_processing = SourceProcessing.InPainting
 
       if (sourceMask && sourceMask.length > 0) {
-        const maskBase64String = await blobToBase64(
-          sourceMask[0].imageBlob as Blob
+        const imageBlob = bufferToBlob(
+          sourceMask[0].imageBlobBuffer as ImageBlobBuffer
         )
+        const maskBase64String = await blobToBase64(imageBlob as Blob)
         this.apiParams.source_mask = maskBase64String
       }
     }
