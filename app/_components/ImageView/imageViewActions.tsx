@@ -26,12 +26,21 @@ import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils'
 import { toastController } from '@/app/_controllers/toastController'
 import { blobToClipboard } from '@/app/_utils/imageUtils'
+import { useRouter } from 'next/navigation'
+import { cleanImageRequestForReuse } from '@/app/_utils/inputUtils'
+import {
+  cloneImageRowsInDexie,
+  deleteImageFileByArtbotIdTx
+} from '@/app/_db/ImageFiles'
+import { AppConstants } from '@/app/_data-models/AppConstants'
+import { ImageType } from '@/app/_data-models/ImageFile_Dexie'
 
 export default function ImageViewActions({
   onDelete
 }: {
   onDelete: () => void
 }) {
+  const router = useRouter()
   const showFullScreen = useFullScreenHandle()
   const [isFullscreen, setIsFullscreen] = useState(false)
   const { artbot_id, imageBlob, imageId, imageData } = useImageView()
@@ -109,7 +118,35 @@ export default function ImageViewActions({
             }
           >
             <MenuItem>Use prompt</MenuItem>
-            <MenuItem>Use all settings</MenuItem>
+            <MenuItem
+              onClick={async () => {
+                const { imageRequest } = imageData
+                const updatedImageRequest = cleanImageRequestForReuse(
+                  imageRequest,
+                  { keepSeed: true }
+                )
+
+                const jsonString = JSON.stringify(updatedImageRequest)
+                sessionStorage.setItem('userInput', jsonString)
+
+                const uploadedImages = await cloneImageRowsInDexie(
+                  imageRequest.artbot_id,
+                  AppConstants.IMAGE_UPLOAD_TEMP_ID,
+                  ImageType.SOURCE
+                )
+
+                if (uploadedImages.length === 0) {
+                  await deleteImageFileByArtbotIdTx(
+                    AppConstants.IMAGE_UPLOAD_TEMP_ID
+                  )
+                }
+
+                NiceModal.remove('modal')
+                router.push('/create')
+              }}
+            >
+              Use all settings
+            </MenuItem>
             <MenuDivider />
             <MenuItem>Copy JSON parameters</MenuItem>
             <MenuItem
