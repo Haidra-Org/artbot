@@ -20,6 +20,7 @@ import { decodeAndDecompress, getHashData } from '../_utils/urlUtils'
 import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi'
 import { AppSettings } from '../_data-models/AppSettings'
 import { clientHeader } from '../_data-models/ClientHeader'
+import { AppConstants } from '../_data-models/AppConstants'
 
 type PromptInputContextType = {
   input: PromptInput
@@ -75,7 +76,8 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
       const { apiParams } = await ImageParamsForHordeApi.build(input)
       apiParams.dry_run = true
 
-      const apikey = AppSettings.get('apiKey')?.trim() || '0000000000'
+      const apikey =
+        AppSettings.get('apiKey')?.trim() || AppConstants.AI_HORDE_ANON_KEY
       const response = await fetch(
         `https://aihorde.net/api/v2/generate/async`,
         {
@@ -144,7 +146,7 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
 
   const loadUploadedImages = useCallback(async () => {
     const images = await getImagesForArtbotJobFromDexie(
-      '__TEMP_USER_IMG_UPLOAD__'
+      AppConstants.IMAGE_UPLOAD_TEMP_ID
     )
     setSourceImages(images)
   }, [])

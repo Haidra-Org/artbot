@@ -16,6 +16,7 @@ import {
 import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { useEffect } from 'react'
 import { setAvailableModels, setImageModels } from '@/app/_stores/ModelStore'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 
 export default function AppInitComponent({
   modelsAvailable,
@@ -29,7 +30,8 @@ export default function AppInitComponent({
   const getUserInfoOnLoad = async () => {
     const apikey = AppSettings.get('apiKey')
 
-    if (!apikey || !apikey.trim() || apikey === '0000000000') return
+    if (!apikey || !apikey.trim() || apikey === AppConstants.AI_HORDE_ANON_KEY)
+      return
 
     await handleLogin(apikey)
   }

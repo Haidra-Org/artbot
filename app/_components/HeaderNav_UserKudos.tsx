@@ -12,6 +12,7 @@ import NiceModal from '@ebay/nice-modal-react'
 
 import { UserStore } from '../_stores/UserStore'
 import UserKudosModal from './Modal_UserKudos'
+import { AppConstants } from '../_data-models/AppConstants'
 
 export default function UserKudos() {
   const { userDetails } = useStore(UserStore)
@@ -25,7 +26,8 @@ export default function UserKudos() {
   useEffect(() => {
     const apikey = AppSettings.get('apiKey')
 
-    if (!apikey || !apikey.trim() || apikey === '0000000000') return
+    if (!apikey || !apikey.trim() || apikey === AppConstants.AI_HORDE_ANON_KEY)
+      return
     setClientApiKey(apikey)
     setIsClient(true)
   }, [userDetails])

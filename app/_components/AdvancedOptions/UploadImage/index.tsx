@@ -27,6 +27,7 @@ import {
   deleteImageFileByImageIdTx,
   updateImageFileFieldByImageId
 } from '@/app/_db/ImageFiles'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 
 const imgConfig = {
   quality: 0.95,
@@ -91,10 +92,10 @@ export default function UploadImage() {
   const handleUpload = useCallback(
     async ({ source_image }: { source_image: Blob }) => {
       const image: ImageFileInterface = {
-        artbot_id: '__TEMP_USER_IMG_UPLOAD__',
+        artbot_id: AppConstants.IMAGE_UPLOAD_TEMP_ID,
         apiResponse: '',
         horde_id: '',
-        image_id: nanoid(13),
+        image_id: nanoid(AppConstants.NANO_ID_LENGTH),
         imageType: ImageType.SOURCE,
         imageStatus: ImageStatus.OK,
         model: '',

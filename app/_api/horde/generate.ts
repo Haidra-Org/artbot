@@ -1,3 +1,4 @@
+import { AppConstants } from '@/app/_data-models/AppConstants'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { HordeApiParams } from '@/app/_data-models/ImageParamsForHordeApi'
@@ -30,7 +31,8 @@ export default async function generateImage(
 ): Promise<GenerateSuccessResponse | GenerateErrorResponse> {
   let statusCode
   try {
-    const apikey = AppSettings.get('apiKey')?.trim() || '0000000000'
+    const apikey =
+      AppSettings.get('apiKey')?.trim() || AppConstants.AI_HORDE_ANON_KEY
     const res = await fetch(`https://aihorde.net/api/v2/generate/async`, {
       body: JSON.stringify(imageParams),
       cache: 'no-store',

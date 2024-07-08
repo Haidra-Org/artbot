@@ -1,3 +1,4 @@
+import { AppConstants } from './AppConstants'
 import { AppSettings, AppSettingsParams, rootSettingsKey } from './AppSettings'
 
 describe('AppSettings', () => {
@@ -64,7 +65,7 @@ describe('AppSettings', () => {
   test('should return default API key if none is set', () => {
     jest.spyOn(localStorage, 'getItem').mockReturnValueOnce('{}')
     const apiKey = AppSettings.apikey()
-    expect(apiKey).toBe('0000000000')
+    expect(apiKey).toBe(AppConstants.AI_HORDE_ANON_KEY)
   })
 
   test('should save all settings to localStorage', () => {

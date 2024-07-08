@@ -6,6 +6,7 @@ import { getImageFileFromDexie } from './ImageFiles'
 import PromptInput from '../_data-models/PromptInput'
 import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
 import { ImageFileInterface, ImageType } from '../_data-models/ImageFile_Dexie'
+import { AppConstants } from '../_data-models/AppConstants'
 
 export const addImageAndDefaultFavToDexie = async (
   image: ImageFileInterface
@@ -29,11 +30,11 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
 
   // @ts-expect-error remove any instance of "artbot_id" since we always want to create a new ID
   delete updatedInput.artbot_id
-  updatedInput.artbot_id = nanoid(13)
+  updatedInput.artbot_id = nanoid(AppConstants.NANO_ID_LENGTH)
 
   const job: HordeJob = {
     artbot_id: updatedInput.artbot_id,
-    job_id: nanoid(13),
+    job_id: nanoid(AppConstants.NANO_ID_LENGTH),
     horde_id: '',
     created_timestamp: Date.now(),
     updated_timestamp: Date.now(),
