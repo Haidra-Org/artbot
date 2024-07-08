@@ -17,6 +17,10 @@ interface UpdateSaveEmbeddingParams {
   updates: Partial<SavedEmbedding>
 }
 
+function roundToNearest005(value: number): number {
+  return Math.round(value * 20) / 20
+}
+
 // Function to update specified properties of a SaveLora instance in an array
 function updateSaveLoraProperty({
   tis,
@@ -49,7 +53,7 @@ function updateSaveLoraProperty({
 
 export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
   const { input, setInput } = useInput()
-  const [strength, setStrength] = useState(ti.strength)
+  const [strength, setStrength] = useState<string>(ti.strength.toString())
 
   const tiIndex = input.tis.findIndex((l) => String(l.id) === String(ti.id))
 
@@ -59,21 +63,29 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
     setInput({ tis: updateTis })
   }
 
-  const handleUpdateLora = (type: 'strength' | 'clip', value: number) => {
-    // Map through the tis array and update the specific ti
-    const updateLoras = input.tis.map((l) => {
-      if (String(l.id) === String(ti.id)) {
-        // Return a new instance of SaveLora with the updated property
-        return new SavedEmbedding({
-          ...l,
-          [type]: parseFloat(value.toFixed(2)) // Ensure the value is correctly formatted
-        })
-      }
-      return l // Return the unchanged Lora
-    })
+  const handleUpdateLora = (type: 'strength', value: string) => {
+    if (value === '') {
+      setStrength('')
+    } else {
+      const numericValue = parseFloat(value)
+      if (!isNaN(numericValue)) {
+        const roundedValue = roundToNearest005(numericValue)
+        const formattedValue = parseFloat(roundedValue.toFixed(2))
 
-    setStrength(value)
-    setInput({ tis: updateLoras })
+        const updateTis = input.tis.map((l) => {
+          if (String(l.id) === String(ti.id)) {
+            return new SavedEmbedding({
+              ...l,
+              [type]: formattedValue
+            })
+          }
+          return l
+        })
+
+        setStrength(formattedValue.toString())
+        setInput({ tis: updateTis })
+      }
+    }
   }
 
   // NOTE: Not used right now, as AI Horde does not support TI versions
@@ -185,60 +197,37 @@ export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
             min={-5.0}
             max={5.0}
             onBlur={() => {
-              if (isNaN(strength)) {
-                setStrength(1.0)
+              if (strength === '' || isNaN(parseFloat(strength))) {
+                setStrength(ti.strength.toString())
               } else {
+                const roundedValue = roundToNearest005(parseFloat(strength))
+                const formattedValue = parseFloat(roundedValue.toFixed(2))
                 const updatedTis = updateSaveLoraProperty({
                   tis: input.tis,
                   index: tiIndex,
-                  updates: { strength: parseFloat(Number(strength).toFixed(2)) }
+                  updates: { strength: formattedValue }
                 })
 
-                setStrength(parseFloat(Number(strength).toFixed(2)))
-                setInput({
-                  tis: updatedTis
-                })
+                setStrength(formattedValue.toString())
+                setInput({ tis: updatedTis })
               }
             }}
-            onChange={(num) => {
-              handleUpdateLora('strength', num as unknown as number)
+            onChange={(value) => {
+              handleUpdateLora('strength', value as string)
             }}
             onMinusClick={() => {
-              if (Number(strength) - 0.05 < -5.0) {
-                return
-              }
-              const updatedTis = updateSaveLoraProperty({
-                tis: input.tis,
-                index: tiIndex,
-                updates: {
-                  strength: parseFloat(Number(strength - 0.05).toFixed(2))
-                }
-              })
-
-              setStrength(parseFloat(Number(strength - 0.05).toFixed(2)))
-              setInput({
-                tis: updatedTis
-              })
+              const currentValue = parseFloat(strength) || 0
+              if (currentValue - 0.05 < -5.0) return
+              const newValue = roundToNearest005(currentValue - 0.05)
+              handleUpdateLora('strength', newValue.toString())
             }}
             onPlusClick={() => {
-              if (Number(strength) + 0.05 > 5.0) {
-                return
-              }
-
-              const updatedTis = updateSaveLoraProperty({
-                tis: input.tis,
-                index: tiIndex,
-                updates: {
-                  strength: parseFloat(Number(strength + 0.05).toFixed(2))
-                }
-              })
-
-              setStrength(parseFloat(Number(strength + 0.05).toFixed(2)))
-              setInput({
-                tis: updatedTis
-              })
+              const currentValue = parseFloat(strength) || 0
+              if (currentValue + 0.05 > 5.0) return
+              const newValue = roundToNearest005(currentValue + 0.05)
+              handleUpdateLora('strength', newValue.toString())
             }}
-            value={ti.strength}
+            value={strength as unknown as number}
           />
         </div>
       </OptionLabel>
