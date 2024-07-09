@@ -11,7 +11,7 @@ class PromptInput {
   artbot_id: string = ''
 
   // Fields used for AI Horde image requests
-  cfg_scale: number = 5
+  cfg_scale: number = 2
   clipskip: number = 1
   control_type?: ControlTypes = '' as ControlTypes
   denoising_strength?: number | '' = 0.75
@@ -28,7 +28,18 @@ class PromptInput {
   imageType: string = ''
   jobType: JobType = JobType.Text2Img
   karras: boolean = true
-  loras: SavedLora[] = []
+  loras: SavedLora[] = [
+    new SavedLora({
+      id: '247778',
+      civitAiType: 'LORA',
+      versionId: '247778',
+      versionName: '',
+      isArtbotManualEntry: true,
+      name: 'SDXL | LCM TurboMix LoRA (SDE sampler)',
+      strength: 1,
+      clip: 1
+    })
+  ]
   models: Array<string> = ['AlbedoBase XL (SDXL)']
   modelDetails: {
     baseline: string
@@ -50,7 +61,7 @@ class PromptInput {
   sampler: string = 'k_dpmpp_sde'
   seed: string = ''
   source_processing?: SourceProcessing = SourceProcessing.Prompt
-  steps: number = 20
+  steps: number = 8
   tiling: boolean = false
   tis: SavedEmbedding[] = []
   transparent: boolean = false

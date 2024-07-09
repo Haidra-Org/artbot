@@ -4,6 +4,7 @@ import PageTitle from '../../PageTitle'
 import Carousel from '../../Carousel'
 import Button from '../../Button'
 import {
+  IconAlertTriangle,
   IconBox,
   IconDeviceFloppy,
   IconExternalLink,
@@ -29,6 +30,7 @@ import {
   SavedLora
 } from '@/app/_data-models/Civitai'
 import Link from 'next/link'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 
 export default function LoraDetails({
   civitAiType = 'LORA',
@@ -270,7 +272,7 @@ export default function LoraDetails({
                 </div>
               </OptionLabel>
               {modelVersion?.description && (
-                <div className="w-full col">
+                <div className="w-full col gap-0">
                   <span className="row font-bold text-sm text-white gap-1">
                     Version details:
                   </span>
@@ -286,9 +288,47 @@ export default function LoraDetails({
                       fontWeight: 400,
                       gap: '8px',
                       maxWidth: '768px',
-                      padding: '8px'
+                      padding: '0 8px 8px 8px'
                     }}
                   />
+                </div>
+              )}
+              {modelVersion?.files?.length > 0 && (
+                <div className="w-full col gap-0">
+                  <span className="row font-bold text-sm text-white gap-1">
+                    Version size:
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '14px'
+                    }}
+                  >
+                    {(modelVersion?.files[0].sizeKB / 1024).toFixed(2)} MB
+                  </span>
+                  {modelVersion?.files[0].sizeKB / 1024 >
+                    AppConstants.MAX_LORA_SIZE_MB && (
+                    <div
+                      className="col items-start gap-0 mt-2"
+                      style={{
+                        fontSize: '14px'
+                      }}
+                    >
+                      <div
+                        className="row items-start"
+                        style={{
+                          fontSize: '14px'
+                        }}
+                      >
+                        <IconAlertTriangle color="#db9200" />
+                        <strong>Warning:</strong>
+                      </div>
+                      <div>
+                        The selected version is larger than the AI Horde limit
+                        of 220 MB. Most GPU workers will not be able to utilize
+                        this {civitAiType === 'LORA' ? 'LoRA' : 'embedding'}.
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </Section>

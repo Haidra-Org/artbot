@@ -57,7 +57,7 @@ export default function AddLora() {
               NiceModal.show('modal', {
                 children: (
                   <Suspense>
-                    <LoraSearch onUseLoraClick={handleUseLoraClick} />,
+                    <LoraSearch onUseLoraClick={handleUseLoraClick} />
                   </Suspense>
                 ),
                 modalStyle: {

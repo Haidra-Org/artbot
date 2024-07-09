@@ -2,15 +2,16 @@
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
+  IconChevronLeft,
+  IconChevronRight,
   IconDeviceFloppy,
   IconFilter,
   IconGrid3x3
 } from '@tabler/icons-react'
 
 import Button from '../../Button'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useCivitAi from '@/app/_hooks/useCivitai'
-import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import {
@@ -18,7 +19,8 @@ import {
   SavedEmbedding,
   SavedLora
 } from '@/app/_data-models/Civitai'
-import { MasonryItem, MasonryLayout } from '../../Masonry'
+import { MasonryLayout } from '../../Masonry'
+import clsx from 'clsx'
 
 export default function LoraSearch({
   civitAiType = 'LORA',
@@ -30,23 +32,30 @@ export default function LoraSearch({
   searchType?: 'search' | 'favorite' | 'recent'
 }) {
   const {
-    fetchCivitAiResults,
+    currentPage,
+    debouncedSearchRequest,
+    // hasError,
     pendingSearch,
     searchResults,
-    setPendingSearch
+    goToNextPage,
+    goToPreviousPage,
+    hasNextPage,
+    hasPreviousPage
   } = useCivitAi({
     searchType,
     type: civitAiType
   })
+
+  const modalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [inputVersionId, setInputVersionId] = useState(false)
   const [searchInput, setSearchInput] = useState('')
   const [showFilter, setShowFilter] = useState(false)
 
-  // Memoize the debounced function so it doesn't get recreated on every render
-  const debouncedSearchRequest = useMemo(() => {
-    return debounce(fetchCivitAiResults, 750)
-  }, [fetchCivitAiResults])
+  // // Memoize the debounced function so it doesn't get recreated on every render
+  // const debouncedSearchRequest = useMemo(() => {
+  //   return debounce(fetchCivitAiResults, 750)
+  // }, [fetchCivitAiResults])
 
   useEffect(() => {
     if (inputVersionId || !searchInput.trim()) return
@@ -64,8 +73,8 @@ export default function LoraSearch({
   const transformedData = searchResults.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
     // Extracting the first model version and its first image
-    const firstModelVersion = embedding.modelVersions[0]
-    const firstImage = firstModelVersion.images[0]
+    const firstModelVersion = embedding.modelVersions[0] || {}
+    const firstImage = firstModelVersion.images[0] || {}
 
     const photoData = {
       key: String(embedding.id), // Ensuring the key is a string
@@ -102,7 +111,7 @@ export default function LoraSearch({
   }
 
   return (
-    <div className="col w-full h-full">
+    <div className="col w-full h-full" ref={modalRef}>
       <h2 className="row font-bold">
         {title} <span className="text-xs font-normal">(via CivitAI)</span>
       </h2>
@@ -124,7 +133,7 @@ export default function LoraSearch({
           placeholder={placeholder}
           onChange={(e) => {
             if (e.target.value.trim()) {
-              setPendingSearch(true)
+              debouncedSearchRequest(e.target.value.trim())
             }
 
             setSearchInput(e.target.value)
@@ -199,18 +208,47 @@ export default function LoraSearch({
         </div>
       )}
       <div>
-        <MasonryLayout>
+        <MasonryLayout containerRef={modalRef}>
           {transformedData.map((image) => (
-            <MasonryItem key={`${image.key}`}>
+            <div
+              key={`${image.key}`}
+              style={{ width: '100%', marginBottom: '20px' }}
+            >
               <LoraImage
                 civitAiType={civitAiType}
                 onUseLoraClick={onUseLoraClick}
                 image={image}
               />
-            </MasonryItem>
+            </div>
           ))}
         </MasonryLayout>
       </div>
+      {(hasPreviousPage || hasNextPage) && (
+        <div className="w-full row justify-center gap-2">
+          <div
+            className={clsx(
+              'cursor-pointer',
+              hasPreviousPage && 'primary-color'
+            )}
+            onClick={() => {
+              if (!hasPreviousPage) return
+              goToPreviousPage()
+            }}
+          >
+            <IconChevronLeft />
+          </div>
+          <div>{currentPage}</div>
+          <div
+            className={clsx('cursor-pointer', hasNextPage && 'primary-color')}
+            onClick={() => {
+              if (!hasNextPage) return
+              goToNextPage()
+            }}
+          >
+            <IconChevronRight />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

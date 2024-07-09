@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React from 'react'
+import React, { useRef } from 'react'
 import styles from './loraSearch.module.css'
 import {
   Embedding,
@@ -10,6 +10,7 @@ import LoraDetails from './LoraDetails'
 import NiceModal from '@ebay/nice-modal-react'
 import { IconBox } from '@tabler/icons-react'
 import { AppSettings } from '@/app/_data-models/AppSettings'
+import useResizeObserver from '@/app/_hooks/useResizeObserver'
 
 interface LoraImageProps {
   civitAiType?: 'LORA' | 'TextualInversion'
@@ -26,16 +27,18 @@ interface LoraImageProps {
   }
 }
 
-const LoraImageV2 = ({
+const LoraImage = ({
   civitAiType = 'LORA',
   onUseLoraClick = () => {},
   image
 }: LoraImageProps) => {
+  const baseFilters = AppSettings.get('civitAiBaseModelFilter')
+  const containerRef = useRef<HTMLDivElement>(null)
+  const containerWidth = useResizeObserver(containerRef)
   if (!image) return null
 
-  const baseFilters = AppSettings.get('civitAiBaseModelFilter')
-  const aspectRatio = image.width / image.height
-  const paddingTop = `${(1 / aspectRatio) * 100}%`
+  // Maintain aspect ratio 320:400 -> 4:5
+  const height = (containerWidth / 4) * 5
 
   return (
     <div
@@ -52,12 +55,22 @@ const LoraImageV2 = ({
           id: 'LoraDetails'
         })
       }}
-      style={{ paddingTop }}
+      ref={containerRef}
+      style={{
+        width: '100%',
+        height: `${height}px`,
+        position: 'relative',
+        maxHeight: '400px',
+        maxWidth: '320px'
+      }}
     >
       <img
         src={image.src}
         alt={image.name}
         style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
           filter:
             !baseFilters.includes('NSFW') && image.nsfwLevel >= 7
               ? 'blur(12px)'
@@ -114,4 +127,4 @@ const LoraImageV2 = ({
   )
 }
 
-export default LoraImageV2
+export default LoraImage

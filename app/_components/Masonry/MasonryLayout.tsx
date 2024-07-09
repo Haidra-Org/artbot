@@ -1,16 +1,21 @@
 'use client'
 
-import { useWindowSize } from '@/app/_hooks/useWindowSize'
-import { ReactNode, ReactElement, Children } from 'react'
+import { useContainerWidth } from '@/app/_hooks/useContainerWidth'
+import { ReactNode, ReactElement, Children, useRef, RefObject } from 'react'
+
+interface MasonryLayoutProps {
+  children: ReactNode
+  gap?: number
+  containerRef?: RefObject<HTMLDivElement>
+}
 
 const MasonryLayout = ({
   children,
-  gap = 20
-}: {
-  children: ReactNode
-  gap?: number
-}) => {
-  const { width } = useWindowSize()
+  gap = 20,
+  containerRef
+}: MasonryLayoutProps) => {
+  const defaultRef = useRef<HTMLDivElement>(null)
+  const width = useContainerWidth(containerRef || defaultRef)
 
   if (!children || !width) return null
 
@@ -71,7 +76,11 @@ const MasonryLayout = ({
     )
   }
 
-  return <div style={{ display: 'flex' }}>{result}</div>
+  return (
+    <div style={{ display: 'flex' }} ref={containerRef || defaultRef}>
+      {result}
+    </div>
+  )
 }
 
 export default MasonryLayout

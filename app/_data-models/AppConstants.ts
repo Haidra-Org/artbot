@@ -18,4 +18,6 @@ export class AppConstants {
    * Maximum supported resolution for image requests to the AI Horde
    */
   static MAX_IMAGE_PIXELS = 4194304
+
+  static MAX_LORA_SIZE_MB = 220
 }

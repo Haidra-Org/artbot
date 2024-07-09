@@ -15,6 +15,10 @@ interface UpdateSaveLoraParams {
   updates: Partial<SavedLora>
 }
 
+function roundToNearest005(value: number): number {
+  return Math.round(value * 20) / 20
+}
+
 // Function to update specified properties of a SaveLora instance in an array
 function updateSaveLoraProperty({
   loras,
@@ -50,8 +54,8 @@ function updateSaveLoraProperty({
 
 export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
   const { input, setInput } = useInput()
-  const [strength, setStrength] = useState(lora.strength)
-  const [clip, setClip] = useState(lora.clip)
+  const [strength, setStrength] = useState<string>(lora.strength.toString())
+  const [clip, setClip] = useState<string>(lora.clip.toString())
 
   const loraIndex = input.loras.findIndex(
     (l) => String(l.versionId) === String(lora.versionId)
@@ -65,21 +69,32 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
     setInput({ loras: updateLoras })
   }
 
-  const handleUpdateLora = (type: 'strength' | 'clip', value: number) => {
-    // Map through the loras array and update the specific Lora
-    const updateLoras = input.loras.map((l) => {
-      if (String(l.versionId) === String(lora.versionId)) {
-        // Return a new instance of SaveLora with the updated property
-        return new SavedLora({
-          ...l,
-          [type]: parseFloat(value.toFixed(2)) // Ensure the value is correctly formatted
-        })
-      }
-      return l // Return the unchanged Lora
-    })
+  const handleUpdateLora = (type: 'strength' | 'clip', value: string) => {
+    if (value === '') {
+      if (type === 'strength') setStrength('')
+      else setClip('')
+    } else {
+      const numericValue = parseFloat(value)
+      if (!isNaN(numericValue)) {
+        const roundedValue = roundToNearest005(numericValue)
+        const formattedValue = parseFloat(roundedValue.toFixed(2))
 
-    setStrength(value)
-    setInput({ loras: updateLoras })
+        const updateLoras = input.loras.map((l) => {
+          if (String(l.versionId) === String(lora.versionId)) {
+            return new SavedLora({
+              ...l,
+              [type]: formattedValue
+            })
+          }
+          return l
+        })
+
+        if (type === 'strength') setStrength(formattedValue.toString())
+        else setClip(formattedValue.toString())
+
+        setInput({ loras: updateLoras })
+      }
+    }
   }
 
   const currentVersion = lora.modelVersions.filter(
@@ -89,7 +104,7 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
   return (
     <div className="rounded bg-[#1d4d74] p-2 col">
       <div className="w-full row justify-between text-sm font-mono font-bold text-white">
-        {lora.isArtbotManualEntry ? (
+        {lora.isArtbotManualEntry && lora.id !== '247778' ? (
           <span>LoRA by Version ID: {lora.name}</span>
         ) : (
           <span>{lora.name}</span>
@@ -160,60 +175,37 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
             min={-5.0}
             max={5.0}
             onBlur={() => {
-              if (isNaN(strength)) {
-                setStrength(1.0)
+              if (strength === '' || isNaN(parseFloat(strength))) {
+                setStrength(lora.strength.toString())
               } else {
+                const roundedValue = roundToNearest005(parseFloat(strength))
+                const formattedValue = parseFloat(roundedValue.toFixed(2))
                 const updatedLoras = updateSaveLoraProperty({
                   loras: input.loras,
                   index: loraIndex,
-                  updates: { strength: parseFloat(Number(strength).toFixed(2)) }
+                  updates: { strength: formattedValue }
                 })
 
-                setStrength(parseFloat(Number(strength).toFixed(2)))
-                setInput({
-                  loras: updatedLoras
-                })
+                setStrength(formattedValue.toString())
+                setInput({ loras: updatedLoras })
               }
             }}
-            onChange={(num) => {
-              handleUpdateLora('strength', num as unknown as number)
+            onChange={(value) => {
+              handleUpdateLora('strength', value as string)
             }}
             onMinusClick={() => {
-              if (Number(strength) - 0.05 < -5.0) {
-                return
-              }
-              const updatedLoras = updateSaveLoraProperty({
-                loras: input.loras,
-                index: loraIndex,
-                updates: {
-                  strength: parseFloat(Number(strength - 0.05).toFixed(2))
-                }
-              })
-
-              setStrength(parseFloat(Number(strength - 0.05).toFixed(2)))
-              setInput({
-                loras: updatedLoras
-              })
+              const currentValue = parseFloat(strength) || 0
+              if (currentValue - 0.05 < -5.0) return
+              const newValue = roundToNearest005(currentValue - 0.05)
+              handleUpdateLora('strength', newValue.toString())
             }}
             onPlusClick={() => {
-              if (Number(strength) + 0.05 > 5.0) {
-                return
-              }
-
-              const updatedLoras = updateSaveLoraProperty({
-                loras: input.loras,
-                index: loraIndex,
-                updates: {
-                  strength: parseFloat(Number(strength + 0.05).toFixed(2))
-                }
-              })
-
-              setStrength(parseFloat(Number(strength + 0.05).toFixed(2)))
-              setInput({
-                loras: updatedLoras
-              })
+              const currentValue = parseFloat(strength) || 0
+              if (currentValue + 0.05 > 5.0) return
+              const newValue = roundToNearest005(currentValue + 0.05)
+              handleUpdateLora('strength', newValue.toString())
             }}
-            value={lora.strength}
+            value={strength as unknown as number}
           />
         </div>
       </OptionLabel>
@@ -228,63 +220,37 @@ export default function LoraSettingsCard({ lora }: { lora: SavedLora }) {
             min={-5.0}
             max={5.0}
             onBlur={() => {
-              if (isNaN(clip)) {
-                setClip(1.0)
+              if (clip === '' || isNaN(parseFloat(clip))) {
+                setClip(lora.clip.toString())
               } else {
+                const roundedValue = roundToNearest005(parseFloat(clip))
+                const formattedValue = parseFloat(roundedValue.toFixed(2))
                 const updatedLoras = updateSaveLoraProperty({
                   loras: input.loras,
                   index: loraIndex,
-                  updates: {
-                    clip: parseFloat(Number(clip).toFixed(2))
-                  }
+                  updates: { clip: formattedValue }
                 })
 
-                setClip(parseFloat(Number(clip).toFixed(2)))
-                setInput({
-                  loras: updatedLoras
-                })
+                setClip(formattedValue.toString())
+                setInput({ loras: updatedLoras })
               }
             }}
-            onChange={(num) => {
-              handleUpdateLora('clip', num as unknown as number)
+            onChange={(value) => {
+              handleUpdateLora('clip', value as string)
             }}
             onMinusClick={() => {
-              if (Number(clip) - 0.05 < -5.0) {
-                return
-              }
-
-              const updatedLoras = updateSaveLoraProperty({
-                loras: input.loras,
-                index: loraIndex,
-                updates: {
-                  clip: parseFloat(Number(clip - 0.05).toFixed(2))
-                }
-              })
-
-              setClip(parseFloat(Number(clip - 0.05).toFixed(2)))
-              setInput({
-                loras: updatedLoras
-              })
+              const currentValue = parseFloat(clip) || 0
+              if (currentValue - 0.05 < -5.0) return
+              const newValue = roundToNearest005(currentValue - 0.05)
+              handleUpdateLora('clip', newValue.toString())
             }}
             onPlusClick={() => {
-              if (Number(clip) + 0.05 > 5.0) {
-                return
-              }
-
-              const updatedLoras = updateSaveLoraProperty({
-                loras: input.loras,
-                index: loraIndex,
-                updates: {
-                  clip: parseFloat(Number(clip + 0.05).toFixed(2))
-                }
-              })
-
-              setClip(parseFloat(Number(clip + 0.05).toFixed(2)))
-              setInput({
-                loras: updatedLoras
-              })
+              const currentValue = parseFloat(clip) || 0
+              if (currentValue + 0.05 > 5.0) return
+              const newValue = roundToNearest005(currentValue + 0.05)
+              handleUpdateLora('clip', newValue.toString())
             }}
-            value={lora.clip}
+            value={clip as unknown as number}
           />
         </div>
       </OptionLabel>
