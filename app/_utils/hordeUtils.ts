@@ -1,4 +1,5 @@
 import { SavedEmbedding } from '../_data-models/Civitai'
+import { JobStatus } from '../_types/ArtbotTypes'
 import { HordeTi } from '../_types/HordeTypes'
 
 export const castTiInject = (tis: SavedEmbedding[]): HordeTi[] => {
@@ -23,4 +24,23 @@ export const castTiInject = (tis: SavedEmbedding[]): HordeTi[] => {
   }
 
   return updatedTis
+}
+
+export const formatJobStatus = (status: JobStatus) => {
+  switch (status) {
+    case 'waiting':
+      return 'Waiting'
+    case 'queued':
+      return 'Queued'
+    case 'requested':
+      return 'Requested'
+    case 'processing':
+      return 'Processing'
+    case 'done':
+      return 'Done'
+    case 'error':
+      return 'Error'
+    default:
+      return status
+  }
 }

@@ -23,8 +23,6 @@ export default function ForceWorkerModal() {
   useEffect(() => {
     const worker = sessionStorage.getItem('forceSelectedWorker')
 
-    console.log(`worker`, worker)
-
     if (worker) {
       setForceSelectedWorker(true)
       setSelectedWorker(worker || '')

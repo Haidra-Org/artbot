@@ -16,7 +16,6 @@ import {
   IconPlaylistAdd,
   IconPlaylistX,
   IconRecycle,
-  IconSettings,
   IconTrash
 } from '@tabler/icons-react'
 import ImageDetails from '../ImageDetails'
@@ -34,6 +33,7 @@ import { updatePendingImage } from '@/app/_controllers/pendingJobController'
 import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
 import { formatPendingPercentage } from '@/app/_utils/numberUtils'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
+import { formatJobStatus } from '@/app/_utils/hordeUtils'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -58,25 +58,6 @@ const countErrorMessages = (
     message,
     count
   }))
-}
-
-function formatJobStatus(status: JobStatus) {
-  switch (status) {
-    case 'waiting':
-      return 'Waiting'
-    case 'queued':
-      return 'Queued'
-    case 'requested':
-      return 'Requested'
-    case 'processing':
-      return 'Processing'
-    case 'done':
-      return 'Done'
-    case 'error':
-      return 'Error'
-    default:
-      return status
-  }
 }
 
 export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
@@ -225,21 +206,15 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
           </div>
         </div>
       )}
-      <div className="col gap-2 w-full">
-        <div className="row gap-2 text-sm font-bold">
-          <IconSettings stroke={1} />
-          Image details
-        </div>
-        <ImageDetails
-          imageDetails={
-            {
-              jobDetails: jobDetails,
-              imageRequest: imageDetails,
-              imageFile: {}
-            } as JobDetails
-          }
-        />
-      </div>
+      <ImageDetails
+        imageDetails={
+          {
+            jobDetails: jobDetails,
+            imageRequest: imageDetails,
+            imageFile: {}
+          } as JobDetails
+        }
+      />
       <div className="row justify-end gap-2">
         <Button
           onClick={() => {

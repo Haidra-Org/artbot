@@ -1,8 +1,7 @@
 import {
   IconPhotoUp,
   IconPlaylistAdd,
-  IconPlaylistX,
-  IconSettings
+  IconPlaylistX
 } from '@tabler/icons-react'
 import ImageViewActions from './imageViewActions'
 import styles from './imageView.module.css'
@@ -65,20 +64,8 @@ export default function ImageViewInfoContainer({
           </div>
         </div>
       )}
-      <div className="col gap-2 w-full">
-        <div className="row gap-2 text-sm font-bold">
-          <IconSettings stroke={1} />
-          Image details
-        </div>
-        <ImageDetails imageDetails={imageDetails as JobDetails} />
-      </div>
-      <div className="col gap-2 w-full mt-4">
-        <div className="row gap-2 text-sm font-bold">
-          <IconPhotoUp stroke={1} />
-          Source image
-        </div>
-        <ImageViewSourceImage imageDetails={imageDetails as JobDetails} />
-      </div>
+      <ImageDetails imageDetails={imageDetails as JobDetails} />
+      <ImageViewSourceImage imageDetails={imageDetails as JobDetails} />
     </div>
   )
 }
