@@ -2,6 +2,8 @@
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
+  // IconChevronLeft,
+  // IconChevronRight,
   IconDeviceFloppy,
   IconFilter,
   IconGrid3x3
@@ -30,9 +32,11 @@ export default function LoraSearch({
   searchType?: 'search' | 'favorite' | 'recent'
 }) {
   const {
+    // currentPage,
     fetchCivitAiResults,
     pendingSearch,
     searchResults,
+    // setCurrentPage,
     setPendingSearch
   } = useCivitAi({
     searchType,
@@ -62,6 +66,8 @@ export default function LoraSearch({
       }, 400)
     }
   }, [])
+
+  console.log('searchResults', searchResults)
 
   const transformedData = searchResults.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
@@ -216,6 +222,27 @@ export default function LoraSearch({
           ))}
         </MasonryLayout>
       </div>
+      {/* {(currentPage > 1 || hasNextPage) && (
+        <div className="w-full row justify-center gap-2">
+          <div
+            onClick={() => {
+              if (currentPage === 1) return
+              setCurrentPage(currentPage - 1)
+            }}
+          >
+            <IconChevronLeft />
+          </div>
+          <div>{currentPage}</div>
+          <div
+            onClick={() => {
+              if (!hasNextPage) return
+              setCurrentPage(currentPage + 1)
+            }}
+          >
+            <IconChevronRight />
+          </div>
+        </div>
+      )} */}
     </div>
   )
 }

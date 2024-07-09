@@ -1,17 +1,28 @@
-export const debounce = (
-  // @ts-expect-error Any sort of args can be in the callback
-  func: (...args) => void,
-  wait: number = 250
-) => {
-  let timeout: number | undefined
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface DebouncedFunction<F extends (...args: any[]) => any> {
+  (...args: Parameters<F>): void
+  cancel: () => void
+}
 
-  return function executedFunction(...args: unknown[]) {
-    const later = () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<F extends (...args: any[]) => any>(
+  func: F,
+  waitFor: number
+): DebouncedFunction<F> {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeout !== null) {
       clearTimeout(timeout)
-      func(...args)
     }
-
-    clearTimeout(timeout)
-    timeout = window.setTimeout(later, wait)
+    timeout = setTimeout(() => func(...args), waitFor)
   }
+
+  debounced.cancel = () => {
+    if (timeout !== null) {
+      clearTimeout(timeout)
+    }
+  }
+
+  return debounced
 }
