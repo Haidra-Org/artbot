@@ -179,7 +179,7 @@ export default function WorkerList({
             }}
           />
           <Button
-            disabled={userWorkersList.length >= MAX_ENTRIES}
+            disabled={userWorkersList.length >= MAX_ENTRIES || !selectedWorker}
             onClick={() => {
               const option = {
                 label: workers.filter((w) => w.id === selectedWorker)[0]?.name,
