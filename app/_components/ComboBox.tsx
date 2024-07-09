@@ -50,18 +50,6 @@ export default function SelectCombo({
   const [searchQuery, setSearchQuery] = useState('')
   const ref = useRef(null)
 
-  const [optionsPosition, setOptionsPosition] = useState({ top: 0, left: 0 })
-
-  useEffect(() => {
-    if (searchInputRef.current) {
-      const rect = searchInputRef.current.getBoundingClientRect()
-      setOptionsPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX
-      })
-    }
-  }, [optionsPanelOpen])
-
   useEffect(() => {
     setSearchInput(value.label)
   }, [value.label])
@@ -177,20 +165,21 @@ export default function SelectCombo({
             </div>
             {optionsPanelOpen && filteredOptions.length > 0 && (
               <Portal>
-                <ComboboxOptions
-                  static
-                  className="combobox-options absolute !z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-gray-50 border border-gray-300 text-gray-900 text-[16px] focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
+                <div
+                  className="absolute !z-[1000] w-full"
                   style={{
-                    position: 'fixed',
-                    top: `${optionsPosition.top + 12}px`,
-                    left: `${optionsPosition.left}px`,
-                    width: searchInputRef.current
-                      ? `${searchInputRef.current.offsetWidth}px`
-                      : 'auto'
+                    top: `${(searchInputRef.current as HTMLInputElement).getBoundingClientRect().bottom + window.scrollY + 8}px`,
+                    left: `${(searchInputRef.current as HTMLInputElement).getBoundingClientRect().left + window.scrollX - 8}px`,
+                    width:
+                      (searchInputRef.current as HTMLInputElement).offsetWidth +
+                      40
                   }}
                 >
-                  {filteredOptions.map((option, idx) => {
-                    return (
+                  <ComboboxOptions
+                    static
+                    className="combobox-options absolute !z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-gray-50 border border-gray-300 text-gray-900 text-[16px] focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
+                  >
+                    {filteredOptions.map((option, idx) => (
                       <ComboboxOption
                         key={`option-${option.value}-${idx}`}
                         value={option}
@@ -208,9 +197,9 @@ export default function SelectCombo({
                       >
                         {option.component ? option.component : option.label}
                       </ComboboxOption>
-                    )
-                  })}
-                </ComboboxOptions>
+                    ))}
+                  </ComboboxOptions>
+                </div>
               </Portal>
             )}
           </>

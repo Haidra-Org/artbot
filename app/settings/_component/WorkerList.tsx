@@ -168,7 +168,6 @@ export default function WorkerList({
         </div>
         <div className="w-full row">
           <SelectCombo
-            disabled={userWorkersList.length >= MAX_ENTRIES}
             onChange={(option) => {
               if (!option) return
               setSelectedWorker(option.value as string)
