@@ -67,13 +67,11 @@ export default function LoraSearch({
     }
   }, [])
 
-  console.log('searchResults', searchResults)
-
   const transformedData = searchResults.map((embedding: Embedding) => {
     // TODO: Should probably find image with lowest NSFW rating.
     // Extracting the first model version and its first image
-    const firstModelVersion = embedding.modelVersions[0]
-    const firstImage = firstModelVersion.images[0]
+    const firstModelVersion = embedding.modelVersions[0] || {}
+    const firstImage = firstModelVersion.images[0] || {}
 
     const photoData = {
       key: String(embedding.id), // Ensuring the key is a string

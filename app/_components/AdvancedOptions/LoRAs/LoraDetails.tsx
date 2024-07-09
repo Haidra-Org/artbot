@@ -131,8 +131,6 @@ export default function LoraDetails({
     }
   })
 
-  console.log(`lora details`, details)
-
   return (
     <div>
       <div className="col w-full">
