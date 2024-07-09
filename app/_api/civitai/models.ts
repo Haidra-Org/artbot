@@ -88,16 +88,27 @@ export const getCivitaiSearchResults = async ({
   page = 1,
   limit = 20,
   type = 'LORA',
-  signal
-}: SearchParams): Promise<{
+  signal,
+  url
+}: SearchParams & { url?: string }): Promise<{
   items: Embedding[]
   metadata: CivitAiMetadata
   error?: boolean
 }> => {
   try {
-    const searchParams = buildQuery({ input, page, limit, type })
+    let fetchUrl: string
+    let cacheKey: string
 
-    const cachedData = searchCache.get<CivitAiApiResponse>(searchParams)
+    if (url) {
+      fetchUrl = url
+      cacheKey = url
+    } else {
+      const searchParams = buildQuery({ input, page, limit, type })
+      fetchUrl = `${API_BASE_URL}/models?${searchParams}`
+      cacheKey = searchParams
+    }
+
+    const cachedData = searchCache.get<CivitAiApiResponse>(cacheKey)
     if (cachedData) {
       return {
         items: cachedData.items || [],
@@ -111,7 +122,7 @@ export const getCivitaiSearchResults = async ({
     // Use the provided signal if available, otherwise use our internal controller's signal
     const fetchSignal = signal || controller.signal
 
-    const response = await fetch(`${API_BASE_URL}/models?${searchParams}`, {
+    const response = await fetch(fetchUrl, {
       signal: fetchSignal
     })
 
@@ -122,7 +133,7 @@ export const getCivitaiSearchResults = async ({
     }
 
     const data: CivitAiApiResponse = await response.json()
-    searchCache.set(searchParams, data)
+    searchCache.set(cacheKey, data)
 
     return {
       items: data.items || [],

@@ -25,8 +25,11 @@ export default function useCivitAi({
   const [searchResults, setSearchResults] = useState<Embedding[]>([])
   const [hasError, setHasError] = useState<string | boolean>(false)
   const [currentPage, setCurrentPage] = useState(1)
-  // const [totalItems, setTotalItems] = useState(-1)
-  // const [totalPages, setTotalPages] = useState(0)
+  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null)
+  const [previousPages, setPreviousPages] = useState<string[]>([])
+  const [currentSearchTerm, setCurrentSearchTerm] = useState<
+    string | undefined
+  >(undefined)
 
   const abortControllerRef = useRef<AbortController | null>(null)
   const debouncedSearchRef = useRef<DebouncedFunction<
@@ -52,7 +55,7 @@ export default function useCivitAi({
   )
 
   const fetchCivitAiResults = useCallback(
-    async (input?: string) => {
+    async (input?: string, url?: string) => {
       setPendingSearch(true)
       setHasError(false)
 
@@ -65,9 +68,10 @@ export default function useCivitAi({
       try {
         const result = await getCivitaiSearchResults({
           input,
-          page: 1,
+          page: currentPage,
           type,
-          signal: abortControllerRef.current.signal
+          signal: abortControllerRef.current.signal,
+          url
         })
 
         if (result.error) {
@@ -76,8 +80,12 @@ export default function useCivitAi({
           )
         } else {
           setSearchResults(result.items)
-          // setTotalItems(result.metadata.totalItems)
-          // setTotalPages(result.metadata.totalPages)
+          setNextPageUrl(result.metadata.nextPage || null)
+          if (!url) {
+            setCurrentSearchTerm(input)
+            setPreviousPages([])
+            setCurrentPage(1)
+          }
         }
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') {
@@ -90,7 +98,7 @@ export default function useCivitAi({
         setPendingSearch(false)
       }
     },
-    [type]
+    [currentPage, type]
   )
 
   useEffect(() => {
@@ -103,12 +111,32 @@ export default function useCivitAi({
     }
   }, [fetchCivitAiResults])
 
-  // Expose a function to trigger the debounced search
   const debouncedSearchRequest = useCallback((input?: string) => {
     if (debouncedSearchRef.current) {
       debouncedSearchRef.current(input)
     }
   }, [])
+
+  const goToNextPage = useCallback(() => {
+    if (nextPageUrl) {
+      setPreviousPages((prev) => [
+        ...prev,
+        `page=${currentPage}&input=${currentSearchTerm}`
+      ])
+      fetchCivitAiResults(undefined, nextPageUrl)
+      setCurrentPage((prev) => prev + 1)
+    }
+  }, [nextPageUrl, fetchCivitAiResults, currentPage, currentSearchTerm])
+
+  const goToPreviousPage = useCallback(() => {
+    if (previousPages.length > 0) {
+      const prevPage = previousPages[previousPages.length - 1]
+      setPreviousPages((prev) => prev.slice(0, -1))
+      const [page, input] = prevPage.split('&input=')
+      setCurrentPage(parseInt(page.split('=')[1]))
+      fetchCivitAiResults(input)
+    }
+  }, [previousPages, fetchCivitAiResults])
 
   useEffect(() => {
     if (searchType === 'favorite') {
@@ -140,8 +168,10 @@ export default function useCivitAi({
     pendingSearch,
     searchResults,
     setCurrentPage,
-    setPendingSearch
-    // totalItems,
-    // totalPages
+    setPendingSearch,
+    goToNextPage,
+    goToPreviousPage,
+    hasNextPage: !!nextPageUrl,
+    hasPreviousPage: previousPages.length > 0
   }
 }

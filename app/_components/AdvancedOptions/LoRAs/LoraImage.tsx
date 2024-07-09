@@ -56,7 +56,13 @@ const LoraImage = ({
         })
       }}
       ref={containerRef}
-      style={{ width: '100%', height: `${height}px`, position: 'relative' }}
+      style={{
+        width: '100%',
+        height: `${height}px`,
+        position: 'relative',
+        maxHeight: '400px',
+        maxWidth: '320px'
+      }}
     >
       <img
         src={image.src}

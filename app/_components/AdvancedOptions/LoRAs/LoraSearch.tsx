@@ -2,17 +2,16 @@
 import NiceModal from '@ebay/nice-modal-react'
 import {
   IconArrowBarLeft,
-  // IconChevronLeft,
-  // IconChevronRight,
+  IconChevronLeft,
+  IconChevronRight,
   IconDeviceFloppy,
   IconFilter,
   IconGrid3x3
 } from '@tabler/icons-react'
 
 import Button from '../../Button'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useCivitAi from '@/app/_hooks/useCivitai'
-import { debounce } from '@/app/_utils/debounce'
 import LoraFilter from './LoraFilter'
 import LoraImage from './LoraImage'
 import {
@@ -21,6 +20,7 @@ import {
   SavedLora
 } from '@/app/_data-models/Civitai'
 import { MasonryLayout } from '../../Masonry'
+import clsx from 'clsx'
 
 export default function LoraSearch({
   civitAiType = 'LORA',
@@ -32,12 +32,15 @@ export default function LoraSearch({
   searchType?: 'search' | 'favorite' | 'recent'
 }) {
   const {
-    // currentPage,
-    fetchCivitAiResults,
+    currentPage,
+    debouncedSearchRequest,
+    // hasError,
     pendingSearch,
     searchResults,
-    // setCurrentPage,
-    setPendingSearch
+    goToNextPage,
+    goToPreviousPage,
+    hasNextPage,
+    hasPreviousPage
   } = useCivitAi({
     searchType,
     type: civitAiType
@@ -49,10 +52,10 @@ export default function LoraSearch({
   const [searchInput, setSearchInput] = useState('')
   const [showFilter, setShowFilter] = useState(false)
 
-  // Memoize the debounced function so it doesn't get recreated on every render
-  const debouncedSearchRequest = useMemo(() => {
-    return debounce(fetchCivitAiResults, 750)
-  }, [fetchCivitAiResults])
+  // // Memoize the debounced function so it doesn't get recreated on every render
+  // const debouncedSearchRequest = useMemo(() => {
+  //   return debounce(fetchCivitAiResults, 750)
+  // }, [fetchCivitAiResults])
 
   useEffect(() => {
     if (inputVersionId || !searchInput.trim()) return
@@ -130,7 +133,7 @@ export default function LoraSearch({
           placeholder={placeholder}
           onChange={(e) => {
             if (e.target.value.trim()) {
-              setPendingSearch(true)
+              debouncedSearchRequest(e.target.value.trim())
             }
 
             setSearchInput(e.target.value)
@@ -220,27 +223,32 @@ export default function LoraSearch({
           ))}
         </MasonryLayout>
       </div>
-      {/* {(currentPage > 1 || hasNextPage) && (
+      {(hasPreviousPage || hasNextPage) && (
         <div className="w-full row justify-center gap-2">
           <div
+            className={clsx(
+              'cursor-pointer',
+              hasPreviousPage && 'primary-color'
+            )}
             onClick={() => {
-              if (currentPage === 1) return
-              setCurrentPage(currentPage - 1)
+              if (!hasPreviousPage) return
+              goToPreviousPage()
             }}
           >
             <IconChevronLeft />
           </div>
           <div>{currentPage}</div>
           <div
+            className={clsx('cursor-pointer', hasNextPage && 'primary-color')}
             onClick={() => {
               if (!hasNextPage) return
-              setCurrentPage(currentPage + 1)
+              goToNextPage()
             }}
           >
             <IconChevronRight />
           </div>
         </div>
-      )} */}
+      )}
     </div>
   )
 }
