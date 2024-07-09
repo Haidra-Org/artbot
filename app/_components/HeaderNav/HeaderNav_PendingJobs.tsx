@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {
   PendingImagesStore,
   viewedPendingPage
-} from '../_stores/PendingImagesStore'
+} from '../../_stores/PendingImagesStore'
 
 export default function HeaderNavPendingJobs() {
   const { completedJobsNotViewed, pendingImages } = useStore(PendingImagesStore)

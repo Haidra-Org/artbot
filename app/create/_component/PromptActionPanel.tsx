@@ -140,7 +140,6 @@ export default function PromptActionPanel({
           </Button>
         )}
         <Button
-          theme={forceSelectedWorker ? 'success' : 'default'}
           onClick={() => {
             NiceModal.show('modal', {
               children: <ForceWorkerModal />,
@@ -148,6 +147,10 @@ export default function PromptActionPanel({
             })
           }}
           style={{
+            backgroundColor: forceSelectedWorker
+              ? 'orange'
+              : 'rgb(106, 183, 198)',
+            borderColor: forceSelectedWorker ? 'orange' : 'rgb(106, 183, 198)',
             height: `${height}px`,
             width: `40px`
           }}

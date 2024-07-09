@@ -54,8 +54,8 @@
 }
 
 .warning {
-  background-color: #e6ae06;
-  border-color: #e6ae06;
+  background-color: orange;
+  border-color: orange;
   font-weight: 700;
   color: white;
 }

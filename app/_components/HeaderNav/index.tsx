@@ -4,6 +4,7 @@ import Link from 'next/link'
 import HamburgerNavButton from './HamburgerNavButton'
 import UserKudos from './HeaderNav_UserKudos'
 import HeaderNavPendingJobs from './HeaderNav_PendingJobs'
+import HeaderNavUserWarning from './HeaderNav_UserWarning'
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -54,6 +55,7 @@ export default function HeaderNav() {
         </div>
         <div className="row gap-4">
           <HeaderNavPendingJobs />
+          <HeaderNavUserWarning />
           <UserKudos />
         </div>
       </div>
