@@ -87,6 +87,8 @@ const ImageThumbnailV2 = React.memo(
       }
 
       return () => {
+        // TODO: FIXME.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         imgRef.current?.removeEventListener('load', calculateAspectRatio)
       }
     }, [calculateAspectRatio])

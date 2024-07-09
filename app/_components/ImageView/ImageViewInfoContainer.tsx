@@ -1,8 +1,4 @@
-import {
-  IconPhotoUp,
-  IconPlaylistAdd,
-  IconPlaylistX
-} from '@tabler/icons-react'
+import { IconPlaylistAdd, IconPlaylistX } from '@tabler/icons-react'
 import ImageViewActions from './imageViewActions'
 import styles from './imageView.module.css'
 
