@@ -15,7 +15,22 @@ function classNames(...classes: string[]) {
 }
 
 export interface SelectOption {
+  /**
+   * This is the "nice" display label for the option
+   */
   label: string
+
+  /**
+   * This is used to filter options. e.g., if you want to filer by a name and id, you can pass both values in here:
+   * {label: 'Nice Name', filterLabel: 'Nice Name abc123xyz}
+   */
+  filterLabel?: string
+
+  /**
+   * An optional component to format how the dropdown options are presented.
+   */
+  component?: React.ReactNode
+
   value: string | number
 }
 
@@ -66,6 +81,14 @@ export default function SelectCombo({
   })
 
   const filteredOptions = options.filter((option) => {
+    if (!option.label) return false
+
+    if (option.filterLabel) {
+      return option.filterLabel
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    }
+
     return option.label.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
@@ -154,7 +177,7 @@ export default function SelectCombo({
                         )
                       }
                     >
-                      {option.label}
+                      {option.component ? option.component : option.label}
                     </ComboboxOption>
                   )
                 })}
