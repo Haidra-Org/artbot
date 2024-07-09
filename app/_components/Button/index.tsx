@@ -5,7 +5,7 @@ import React, { CSSProperties, ReactNode, ElementType, forwardRef } from 'react'
 import styles from './button.module.css'
 
 // Extend this as needed
-type ButtonTheme = 'default' | 'danger' | 'warning'
+type ButtonTheme = 'default' | 'danger' | 'warning' | 'success'
 
 interface ButtonProps<T extends ElementType = 'button'> {
   as?: T

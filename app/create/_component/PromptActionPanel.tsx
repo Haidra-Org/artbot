@@ -8,8 +8,10 @@ import { deleteImageFileByArtbotIdTx } from '@/app/_db/ImageFiles'
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import NiceModal from '@ebay/nice-modal-react'
 import {
+  IconDevicesPc,
   IconHourglass,
   IconInfoTriangle,
+  IconLock,
   IconSquarePlus,
   IconTrash
 } from '@tabler/icons-react'
@@ -17,6 +19,9 @@ import { useRouter } from 'next/navigation'
 import useCreateImageRequest from '../_hook/useCreateImageRequest'
 import clsx from 'clsx'
 import { AppConstants } from '@/app/_data-models/AppConstants'
+import ForceWorkerModal from './ForceWorkerModal'
+import { useStore } from 'statery'
+import { UserStore } from '@/app/_stores/UserStore'
 
 export default function PromptActionPanel({
   height = 36,
@@ -25,6 +30,7 @@ export default function PromptActionPanel({
   height?: number
   isSticky?: boolean
 }) {
+  const { forceSelectedWorker } = useStore(UserStore)
   const { kudos, setInput, setSourceImages } = useInput()
   const {
     emptyInput,
@@ -87,7 +93,6 @@ export default function PromptActionPanel({
             Reset?
           </span>
         </Button>
-
         <Button
           disabled={emptyInput || requestPending || hasCriticalError}
           onClick={handleCreateClick}
@@ -134,6 +139,25 @@ export default function PromptActionPanel({
             </span>
           </Button>
         )}
+        <Button
+          theme={forceSelectedWorker ? 'success' : 'default'}
+          onClick={() => {
+            NiceModal.show('modal', {
+              children: <ForceWorkerModal />,
+              modalClassName: 'max-w-[640px]'
+            })
+          }}
+          style={{
+            height: `${height}px`,
+            width: `40px`
+          }}
+        >
+          {forceSelectedWorker ? (
+            <IconLock stroke={1.5} />
+          ) : (
+            <IconDevicesPc stroke={1.5} />
+          )}
+        </Button>
       </div>
     </div>
   )

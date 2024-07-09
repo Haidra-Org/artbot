@@ -42,6 +42,17 @@
   background-color: #f9595a;
 }
 
+.success {
+  background-color: #3F876B;
+  border-color: #3F876B;
+  font-weight: 700;
+  color: white;
+}
+
+.success:hover {
+  background-color: #3F876B;
+}
+
 .warning {
   background-color: #e6ae06;
   border-color: #e6ae06;
