@@ -111,6 +111,34 @@ export interface HordeUser {
   }
 }
 
+export interface HordeWorker {
+  id: string
+  info: string
+  bridge_agent: string
+  kudos_details: { generated: number; uptime: number }
+  kudos_rewards: number
+  loading?: boolean
+  lora: boolean
+  img2img: boolean
+  maintenance_mode: boolean
+  max_pixels: number
+  models: string[]
+  name: string
+  nsfw: boolean
+  online: boolean
+  painting: boolean
+  performance: string
+  'post-processing': boolean
+  requests_fulfilled: number
+  team: {
+    id: string | null
+    name: string | null
+  }
+  threads: number
+  trusted: boolean
+  uptime: number
+}
+
 export interface ImageModelDetails {
   name: string
   baseline: string
