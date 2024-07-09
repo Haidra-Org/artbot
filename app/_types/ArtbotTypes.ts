@@ -111,6 +111,15 @@ export interface PromptsJobMap {
   prompt_id: number
 }
 
+/**
+ * Worker added to user's list of allowed or blocked workers
+ */
+export interface SelectedUserWorker {
+  label: string
+  timestamp: string
+  value: string
+}
+
 export interface Workflow {
   type: 'qr_code' | ''
   position: WorkflowPosition

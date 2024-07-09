@@ -3,11 +3,23 @@ import { AppSettings, AppSettingsParams, rootSettingsKey } from './AppSettings'
 
 describe('AppSettings', () => {
   const initialSettings: AppSettingsParams = {
-    allowedWorkers: [{ value: 'worker1' }],
+    allowedWorkers: [
+      {
+        label: 'worker1',
+        timestamp: '2020-01-01 00:00:00',
+        value: 'abc-def'
+      }
+    ],
     allowNsfwImages: false,
     apiKey: 'testApiKey',
     autoDowngrade: true,
-    blockedWorkers: [{ value: 'worker2' }],
+    blockedWorkers: [
+      {
+        label: 'worker2',
+        timestamp: '2020-01-01 00:00:00',
+        value: 'xyz-123'
+      }
+    ],
     civitAiBaseModelFilter: ['SD 2.x'],
     negativePanelOpen: false,
     runInBackground: true,

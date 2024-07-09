@@ -35,10 +35,12 @@ export interface SelectOption {
 }
 
 export default function SelectCombo({
+  disabled = false,
   onChange = () => {},
   options,
   value
 }: {
+  disabled?: boolean
   onChange: (option: SelectOption) => void
   options: SelectOption[]
   value: SelectOption
