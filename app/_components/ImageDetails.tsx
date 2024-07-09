@@ -182,7 +182,7 @@ export default function ImageDetails({
                     </div>
                     <div className="row">
                       <strong>CLIP: </strong>
-                      {lora.strength}
+                      {lora.clip}
                     </div>
                   </div>
                 )
