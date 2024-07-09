@@ -9,13 +9,29 @@ import {
 import { IconChevronDown } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { useClickAway } from 'react-use'
+import Portal from './Portal'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
 export interface SelectOption {
+  /**
+   * This is the "nice" display label for the option
+   */
   label: string
+
+  /**
+   * This is used to filter options. e.g., if you want to filer by a name and id, you can pass both values in here:
+   * {label: 'Nice Name', filterLabel: 'Nice Name abc123xyz}
+   */
+  filterLabel?: string
+
+  /**
+   * An optional component to format how the dropdown options are presented.
+   */
+  component?: React.ReactNode
+
   value: string | number
 }
 
@@ -47,7 +63,14 @@ export default function SelectCombo({
     onChange(option)
   }
 
-  const handleSelectOption = (option: SelectOption) => {
+  const handleSelectOption = (
+    option: SelectOption,
+    event?: React.MouseEvent
+  ) => {
+    if (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
     handleUnfocusInput()
     setOptionsPanelOpen(false)
     setSearchInput(option.label)
@@ -60,12 +83,22 @@ export default function SelectCombo({
     }
   }
 
-  useClickAway(ref, () => {
-    handleSelectOption(value)
-    handleUnfocusInput()
+  useClickAway(ref, (event) => {
+    if (!(event.target as Element).closest('.combobox-options')) {
+      handleSelectOption(value)
+      handleUnfocusInput()
+    }
   })
 
   const filteredOptions = options.filter((option) => {
+    if (!option.label) return false
+
+    if (option.filterLabel) {
+      return option.filterLabel
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    }
+
     return option.label.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
@@ -131,34 +164,43 @@ export default function SelectCombo({
               </ComboboxButton>
             </div>
             {optionsPanelOpen && filteredOptions.length > 0 && (
-              <ComboboxOptions
-                static
-                className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-gray-50 border border-gray-300 text-gray-900 text-[16px] focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
-              >
-                {filteredOptions.map((option, idx) => {
-                  return (
-                    <ComboboxOption
-                      key={`option-${option.value}-${idx}`}
-                      value={option}
-                      onClick={(e) => {
-                        // Need prevent default here so that ComboBoxInput
-                        // onClick event doesn't capture this click.
-                        e.preventDefault()
-
-                        handleSelectOption(option)
-                      }}
-                      className={({ focus }) =>
-                        classNames(
-                          focus ? 'bg-indigo-600 ' : '',
-                          'text-black dark:text-white relative cursor-default rounded-md select-none py-2 pl-1 pr-9 hover:bg-indigo-600 hover:text-white'
-                        )
-                      }
-                    >
-                      {option.label}
-                    </ComboboxOption>
-                  )
-                })}
-              </ComboboxOptions>
+              <Portal>
+                <div
+                  className="absolute !z-[1000] w-full"
+                  style={{
+                    top: `${(searchInputRef.current as HTMLInputElement).getBoundingClientRect().bottom + window.scrollY + 8}px`,
+                    left: `${(searchInputRef.current as HTMLInputElement).getBoundingClientRect().left + window.scrollX - 8}px`,
+                    width:
+                      (searchInputRef.current as HTMLInputElement).offsetWidth +
+                      40
+                  }}
+                >
+                  <ComboboxOptions
+                    static
+                    className="combobox-options absolute !z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 focus:outline-none sm:text-sm bg-gray-50 border border-gray-300 text-gray-900 text-[16px] focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
+                  >
+                    {filteredOptions.map((option, idx) => (
+                      <ComboboxOption
+                        key={`option-${option.value}-${idx}`}
+                        value={option}
+                        onClick={(e: React.MouseEvent) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleSelectOption(option, e)
+                        }}
+                        className={({ focus }) =>
+                          classNames(
+                            focus ? 'bg-indigo-600 ' : '',
+                            'text-black dark:text-white relative cursor-default rounded-md select-none py-2 pl-1 pr-9 hover:bg-indigo-600 hover:text-white'
+                          )
+                        }
+                      >
+                        {option.component ? option.component : option.label}
+                      </ComboboxOption>
+                    ))}
+                  </ComboboxOptions>
+                </div>
+              </Portal>
             )}
           </>
         )}

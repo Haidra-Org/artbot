@@ -4,17 +4,17 @@
  * Save and load settings from browser's localStorage
  */
 
-import { CivitAiBaseModels } from '../_types/ArtbotTypes'
+import { CivitAiBaseModels, SelectedUserWorker } from '../_types/ArtbotTypes'
 import { AppConstants } from './AppConstants'
 
 export const rootSettingsKey = 'ArtBotSettings'
 
 export interface AppSettingsParams {
-  allowedWorkers: Array<{ value: string }>
+  allowedWorkers: SelectedUserWorker[]
   allowNsfwImages: boolean
   apiKey: string
   autoDowngrade: boolean
-  blockedWorkers: Array<{ value: string }>
+  blockedWorkers: SelectedUserWorker[]
   civitAiBaseModelFilter: CivitAiBaseModels[]
   negativePanelOpen: boolean
   runInBackground: boolean

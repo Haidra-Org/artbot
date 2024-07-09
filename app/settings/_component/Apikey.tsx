@@ -53,56 +53,62 @@ export default function Apikey() {
   }
 
   return (
-    <div className="col md:row w-full items-end h-auto sm:h-[70px]">
-      <Input
-        label="API key"
-        onChange={(e) => setApikey(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Enter your API key"
-        type={!showKey ? 'password' : 'text'}
-        value={apikey}
-      />
-      <div className="row !h-full w-auto justify-end gap-1 items-end">
-        <Button
-          disabled={!apikey}
-          onClick={() => {
-            setApikey('')
-            AppSettings.set('apiKey', '')
-            toastController({
-              message: 'API key removed from ArtBot!'
-            })
-          }}
-          theme="danger"
-          title="Remove / reset API key"
-        >
-          <IconTrash />
-        </Button>
-        <Button
-          onClick={() => setShowKey(!showKey)}
-          title={!showKey ? 'Show API key' : 'Hide API key'}
-        >
-          {showKey ? <IconEyeOff /> : <IconEye />}
-        </Button>
-        <Button
-          onClick={() => {
-            if (apikey) {
-              navigator.clipboard.writeText(apikey)
+    <div className="col gap-2">
+      <div>
+        Leave blank for anonymous access. An API key gives higher priority
+        access to the AI Horde distributed cluster, resulting in quicker image
+        creation times.
+      </div>
+      <div className="col md:row w-full items-end h-auto">
+        <Input
+          onChange={(e) => setApikey(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Enter your API key"
+          type={!showKey ? 'password' : 'text'}
+          value={apikey}
+        />
+        <div className="row w-auto justify-end gap-1 items-end min-h-[42px]">
+          <Button
+            disabled={!apikey}
+            onClick={() => {
+              setApikey('')
+              AppSettings.set('apiKey', '')
               toastController({
-                message: 'API key copied to clipboard!'
+                message: 'API key removed from ArtBot!'
               })
-            }
-          }}
-          title="Copy API key"
-        >
-          <IconCopy />
-        </Button>
-        <Button
-          disabled={!apikey.trim()}
-          onClick={handleApiKeySave}
-          title="Save API key"
-        >
-          <IconDeviceFloppy />
-        </Button>
+            }}
+            theme="danger"
+            title="Remove / reset API key"
+          >
+            <IconTrash />
+          </Button>
+          <Button
+            onClick={() => setShowKey(!showKey)}
+            title={!showKey ? 'Show API key' : 'Hide API key'}
+          >
+            {showKey ? <IconEyeOff /> : <IconEye />}
+          </Button>
+          <Button
+            onClick={() => {
+              if (apikey) {
+                navigator.clipboard.writeText(apikey)
+                toastController({
+                  message: 'API key copied to clipboard!'
+                })
+              }
+            }}
+            title="Copy API key"
+          >
+            <IconCopy />
+          </Button>
+          <Button
+            disabled={!apikey.trim()}
+            onClick={handleApiKeySave}
+            title="Save API key"
+          >
+            <IconDeviceFloppy />
+          </Button>
+        </div>
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ import { getSourceImagesForArtbotJobFromDexie } from '@/app/_db/ImageFiles'
 import { JobDetails } from '@/app/_hooks/useImageDetails'
 import { useEffect, useState } from 'react'
 import ImageThumbnail from '../ImageThumbnail'
+import { IconPhotoUp } from '@tabler/icons-react'
 
 export default function ImageViewSourceImage({
   imageDetails
@@ -26,7 +27,11 @@ export default function ImageViewSourceImage({
   if (srcImages.length === 0) return null
 
   return (
-    <div>
+    <div className="col gap-2 w-full mt-4">
+      <div className="row gap-2 text-sm font-bold">
+        <IconPhotoUp stroke={1} />
+        Source image
+      </div>
       <ImageThumbnail image_id={srcImages[0]?.image_id} alt="Source Image" />
     </div>
   )

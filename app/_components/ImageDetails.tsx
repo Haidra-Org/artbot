@@ -2,7 +2,12 @@ import {
   HordeApiParams,
   ImageParamsForHordeApi
 } from '@/app/_data-models/ImageParamsForHordeApi'
-import { IconCaretRight, IconCopy } from '@tabler/icons-react'
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconCopy,
+  IconSettings
+} from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import PromptInput from '../_data-models/PromptInput'
 import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'
@@ -11,15 +16,19 @@ import { toastController } from '../_controllers/toastController'
 import { JobDetails } from '../_hooks/useImageDetails'
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
 import { JobStatus } from '../_types/ArtbotTypes'
+import DropdownMenu from './DropdownMenu'
+import { MenuButton, MenuItem } from '@szhsin/react-menu'
+import { formatJobStatus } from '../_utils/hordeUtils'
+import { calculateTimeDifference } from '../_utils/numberUtils'
 
 export default function ImageDetails({
   imageDetails
 }: {
   imageDetails: JobDetails
 }) {
-  const [display, setDisplay] = useState<'info' | 'request' | 'response'>(
-    'info'
-  )
+  const [display, setDisplay] = useState<
+    'info' | 'job' | 'request' | 'response'
+  >('info')
   const [rawParams, setRawParams] = useState<{
     apiParams: HordeApiParams
     imageDetails: PromptInput
@@ -77,8 +86,120 @@ export default function ImageDetails({
     }
   }
 
+  let sectionTitle = 'Image details'
+
+  if (display === 'job') {
+    sectionTitle = 'Job details'
+  }
+
+  if (display === 'request') {
+    sectionTitle = 'Request parameters'
+  }
+
+  if (display === 'response') {
+    sectionTitle = 'API response'
+  }
+
   return (
-    <div className="col">
+    <div className="col gap-2 w-full">
+      <div className="row gap-2 text-sm font-bold">
+        <IconSettings stroke={1} />
+        {sectionTitle}
+        <DropdownMenu
+          menuButton={({ open }) => (
+            <MenuButton
+              style={{
+                marginLeft: '-8px'
+              }}
+            >
+              {open ? <IconChevronDown /> : <IconChevronRight />}
+            </MenuButton>
+          )}
+        >
+          <MenuItem className="font-normal" onClick={() => setDisplay('info')}>
+            Image details
+          </MenuItem>
+          <MenuItem className="font-normal" onClick={() => setDisplay('job')}>
+            Job details
+          </MenuItem>
+          <MenuItem
+            className="font-normal"
+            onClick={() => setDisplay('request')}
+          >
+            Request parameters
+          </MenuItem>
+          {jobDetails.status === JobStatus.Done && (
+            <MenuItem
+              className="font-normal"
+              onClick={() => setDisplay('response')}
+            >
+              API response
+            </MenuItem>
+          )}
+        </DropdownMenu>
+      </div>
+      {display === 'job' && (
+        <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
+          <div>
+            <strong>Status: </strong>
+            {formatJobStatus(jobDetails.status)}
+          </div>
+          <div className="mt-4">
+            <strong>Created: </strong>
+            {new Date(jobDetails.created_timestamp).toLocaleString()}
+          </div>
+          <div>
+            <strong>
+              {jobDetails.status === JobStatus.Done ? 'Completed' : 'Updated'}:{' '}
+            </strong>
+            {new Date(jobDetails.updated_timestamp).toLocaleString()}
+          </div>
+          {jobDetails.status === JobStatus.Done && (
+            <div>
+              <strong>Duration: </strong>
+              {calculateTimeDifference({
+                timestamp1: jobDetails.updated_timestamp,
+                timestamp2: jobDetails.created_timestamp,
+                unit: 'seconds'
+              })}{' '}
+              seconds
+            </div>
+          )}
+          <div className="mt-4">
+            <strong>Images requested: </strong>
+            {jobDetails.images_requested}
+          </div>
+          <div>
+            <strong>Images completed: </strong>
+            {jobDetails.images_completed}
+          </div>
+          <div>
+            <strong>Images failed: </strong>
+            {jobDetails.images_failed}
+          </div>
+          {jobDetails?.errors && jobDetails?.errors.length > 0 && (
+            <div className="mt-4">
+              <strong>Errors: </strong>
+              {jobDetails?.errors.length > 0 && (
+                <div>
+                  {jobDetails?.errors.map(({ message }, idx) => (
+                    <div key={idx} className={`image_error_${idx} text-xs`}>
+                      - {message}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {jobDetails.horde_id && (
+            <div className="mt-4">
+              <strong>Horde Job ID: </strong>
+              <div>{jobDetails.horde_id}</div>
+            </div>
+          )}
+        </div>
+      )}
       {display === 'info' && (
         <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
           <div>
@@ -265,9 +386,9 @@ export default function ImageDetails({
             </div>
           )}
 
-          <div className="col gap-1">
+          <div className="col gap-1 mt-4">
             {imageFile.worker_name && (
-              <div className="mt-4">
+              <div>
                 <strong>Worker name: </strong>
                 <div>{imageFile.worker_name}</div>
               </div>
@@ -306,47 +427,6 @@ export default function ImageDetails({
           </pre>
         </div>
       )}
-      <div className="col gap-1">
-        <div className="row gap-1 w-full">
-          <div className="w-[28px]">
-            {display === 'info' && <IconCaretRight />}
-          </div>
-          <button
-            className="cursor-pointer row text-[14px]"
-            tabIndex={0}
-            onClick={() => setDisplay('info')}
-          >
-            Image details
-          </button>
-        </div>
-
-        <div className="row gap-1 w-full">
-          <div className="w-[28px]">
-            {display === 'request' && <IconCaretRight />}
-          </div>
-          <button
-            className="cursor-pointer row text-[14px]"
-            tabIndex={0}
-            onClick={() => setDisplay('request')}
-          >
-            Request parameters
-          </button>
-        </div>
-        {jobDetails.status === JobStatus.Done && (
-          <div className="row gap-1 w-full">
-            <div className="w-[28px]">
-              {display === 'response' && <IconCaretRight />}
-            </div>
-            <button
-              className="cursor-pointer row text-[14px]"
-              tabIndex={0}
-              onClick={() => setDisplay('response')}
-            >
-              API response
-            </button>
-          </div>
-        )}
-      </div>
       <button
         className="cursor-pointer row text-[14px]"
         tabIndex={0}

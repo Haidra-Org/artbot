@@ -202,10 +202,9 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     }
 
     // If user has enabled forceSelectedWorker, override any other worker preference setting.
-    const worker = sessionStorage.getItem('forceSelectedWorker')
-    if (worker) {
-      const workerId = JSON.parse(worker).value
-      this.apiParams.workers = [workerId]
+    const forceWorkerId = sessionStorage.getItem('forceSelectedWorker')
+    if (forceWorkerId) {
+      this.apiParams.workers = [forceWorkerId]
       delete this.apiParams.worker_blacklist
       delete this.apiParams.slow_workers
 
