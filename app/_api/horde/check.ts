@@ -1,3 +1,4 @@
+import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 
 interface HordeSuccessResponse {
@@ -32,7 +33,7 @@ export default async function checkImage(
   let statusCode
   try {
     const res = await fetch(
-      `https://aihorde.net/api/v2/generate/check/${jobId}`,
+      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/generate/check/${jobId}`,
       {
         cache: 'no-store',
         headers: {

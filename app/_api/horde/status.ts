@@ -1,3 +1,4 @@
+import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { HordeGeneration } from '@/app/_types/HordeTypes'
 
@@ -45,7 +46,7 @@ export default async function imageStatus(
 
   try {
     const res = await fetch(
-      `https://aihorde.net/api/v2/generate/status/${jobId}`,
+      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/generate/status/${jobId}`,
       {
         cache: 'no-store',
         headers: {
