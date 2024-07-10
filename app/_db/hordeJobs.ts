@@ -220,7 +220,7 @@ export const getJobsFromDexieById = async (artbotIds: string[]) => {
 }
 
 /**
- * Updates a horde job by its unique artbot_id with the given updates.
+ * Updates a horde job by its unique artbot_id with the given updates within a transaction.
  * Only fields present in updates are modified, excluding artbot_id.
  * @param artbot_id The unique identifier for the horde job to update.
  * @param updates A partial HordeJob object with updates to apply.
@@ -231,5 +231,9 @@ export const updateHordeJobById = async (
 ) => {
   // Automatically set the updated_timestamp to the current time
   const updateData = { ...updates, updated_timestamp: Date.now() }
-  await db.hordeJobs.where({ artbot_id }).modify(updateData)
+
+  // Perform the update within a Dexie transaction
+  await db.transaction('rw', db.hordeJobs, async () => {
+    await db.hordeJobs.where({ artbot_id }).modify(updateData)
+  })
 }

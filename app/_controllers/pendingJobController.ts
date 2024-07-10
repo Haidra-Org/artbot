@@ -7,6 +7,7 @@ import { addImageAndDefaultFavToDexie } from '@/app/_db/jobTransactions'
 import { HordeJob, ImageError, JobStatus } from '../_types/ArtbotTypes'
 import {
   addPendingImageToAppState,
+  getPendingImageByIdFromAppState,
   getPendingImagesByStatusFromAppState,
   updateCompletedJobInPendingImagesStore,
   updatePendingImageInAppState
@@ -59,11 +60,41 @@ export const updatePendingImage = async (
   artbot_id: string,
   options: Partial<HordeJob>
 ) => {
-  updatePendingImageInAppState(artbot_id, {
+  const pendingImageDataToUpdate = getPendingImageByIdFromAppState(artbot_id)
+
+  if (
+    options.status &&
+    options.status === JobStatus.Queued &&
+    !pendingImageDataToUpdate.horde_received_timestamp
+  ) {
+    options.horde_received_timestamp = Date.now()
+  }
+
+  if (
+    options.status &&
+    options.status === JobStatus.Done &&
+    !pendingImageDataToUpdate.horde_completed_timestamp
+  ) {
+    options.horde_completed_timestamp = Date.now()
+  }
+
+  if (options.wait_time) {
+    // If init_wait_time is null or the new wait_time is greater, update init_wait_time
+    if (
+      pendingImageDataToUpdate.init_wait_time === null ||
+      options.wait_time > pendingImageDataToUpdate.init_wait_time
+    ) {
+      options.init_wait_time = options.wait_time
+    }
+  }
+
+  // IndexedDb update should run first before app state update
+  // Due to cascading affect on PendingImagesPanel
+  await updateHordeJobById(artbot_id, {
     ...options
   })
 
-  await updateHordeJobById(artbot_id, {
+  updatePendingImageInAppState(artbot_id, {
     ...options
   })
 }
