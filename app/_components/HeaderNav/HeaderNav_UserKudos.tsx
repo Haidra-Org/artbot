@@ -10,9 +10,9 @@ import { AppSettings } from '@/app/_data-models/AppSettings'
 import { formatKudos } from '@/app/_utils/numberUtils'
 import NiceModal from '@ebay/nice-modal-react'
 
-import { UserStore } from '../_stores/UserStore'
-import UserKudosModal from './Modal_UserKudos'
-import { AppConstants } from '../_data-models/AppConstants'
+import { UserStore } from '../../_stores/UserStore'
+import UserKudosModal from '../Modal_UserKudos'
+import { AppConstants } from '../../_data-models/AppConstants'
 
 export default function UserKudos() {
   const { userDetails } = useStore(UserStore)

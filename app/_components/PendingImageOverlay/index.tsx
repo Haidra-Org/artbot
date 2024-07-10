@@ -64,16 +64,14 @@ function PendingImageOverlay({
 
           deletePendingImageFromAppState(artbot_id)
 
-          // TODO: FIXME: Handle Errors
-          // if (pendingJob?.status === JobStatus.Done) {
-          //   await deleteJobFromDexie(artbot_id)
-          // }
-
           if (pendingJob?.status !== JobStatus.Done) {
             await deleteJobFromDexie(artbot_id)
           }
         }}
         title="Remove pending job from queue"
+        style={{
+          zIndex: 1
+        }}
       >
         <IconX stroke={'#000'} strokeWidth={2} />
       </div>

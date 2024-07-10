@@ -25,6 +25,8 @@ export interface HordeJob {
   job_id: string // Indexed in IndexedDB
   horde_id: string // Indexed in IndexedDB
   created_timestamp: number
+  horde_received_timestamp: number
+  horde_completed_timestamp: number
   updated_timestamp: number
   status: JobStatus // Indexed in IndexedDB
   errors?: ImageError[] | null
