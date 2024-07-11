@@ -51,8 +51,8 @@ export default function Gallery() {
           />
         ),
         modalStyle: {
-          margin: '16px',
-          maxWidth: '1536px'
+          maxWidth: '1536px',
+          width: `calc(100% - 12px)`
         }
       })
     },
