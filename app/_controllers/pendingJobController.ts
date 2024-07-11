@@ -287,7 +287,8 @@ export const checkPendingJobs = async () => {
         updatePendingImage(pendingJobs[index].artbot_id, {
           status,
           queue_position: response.queue_position,
-          wait_time: response.wait_time
+          wait_time: response.wait_time,
+          api_response: { ...response }
         })
       }
     } else {

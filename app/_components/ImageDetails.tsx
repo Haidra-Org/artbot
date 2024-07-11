@@ -104,15 +104,13 @@ export default function ImageDetails({
     <div className="col gap-2 w-full">
       <div className="row gap-2 text-sm font-bold">
         <IconSettings stroke={1} />
-        {sectionTitle}
         <DropdownMenu
           menuButton={({ open }) => (
-            <MenuButton
-              style={{
-                marginLeft: '-8px'
-              }}
-            >
-              {open ? <IconChevronDown /> : <IconChevronRight />}
+            <MenuButton>
+              <div className="row gap-2">
+                {sectionTitle}
+                {open ? <IconChevronDown /> : <IconChevronRight />}
+              </div>
             </MenuButton>
           )}
         >
@@ -128,14 +126,12 @@ export default function ImageDetails({
           >
             Request parameters
           </MenuItem>
-          {jobDetails.status === JobStatus.Done && (
-            <MenuItem
-              className="font-normal"
-              onClick={() => setDisplay('response')}
-            >
-              API response
-            </MenuItem>
-          )}
+          <MenuItem
+            className="font-normal"
+            onClick={() => setDisplay('response')}
+          >
+            API response
+          </MenuItem>
         </DropdownMenu>
       </div>
       {display === 'job' && (
@@ -417,7 +413,7 @@ export default function ImageDetails({
           </pre>
         </div>
       )}
-      {display === 'response' && (
+      {display === 'response' && jobDetails.status === JobStatus.Done && (
         <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
           <pre
             className="whitespace-pre-wrap"
@@ -429,6 +425,34 @@ export default function ImageDetails({
           </pre>
         </div>
       )}
+      {display === 'response' &&
+        jobDetails.status !== JobStatus.Done &&
+        jobDetails.api_response && (
+          <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
+            <pre
+              className="whitespace-pre-wrap"
+              style={{
+                overflowWrap: 'break-word'
+              }}
+            >
+              {JSON.stringify(jobDetails.api_response, null, 2)}
+            </pre>
+          </div>
+        )}
+      {display === 'response' &&
+        jobDetails.status !== JobStatus.Done &&
+        !jobDetails.api_response && (
+          <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
+            <pre
+              className="whitespace-pre-wrap"
+              style={{
+                overflowWrap: 'break-word'
+              }}
+            >
+              Waiting for API response from AI Horde.
+            </pre>
+          </div>
+        )}
       <button
         className="cursor-pointer row text-[14px]"
         tabIndex={0}
