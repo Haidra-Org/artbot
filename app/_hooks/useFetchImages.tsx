@@ -14,6 +14,8 @@ import {
   useState
 } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useStore } from 'statery'
+import { AppStore } from '../_stores/AppStore'
 
 const LIMIT = 20
 
@@ -45,6 +47,7 @@ export default function useFetchImages(): FetchImagesResult {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { online } = useStore(AppStore)
 
   // Initialize state with query parameters or defaults
   const [initLoad, setInitLoad] = useState(true)
@@ -64,12 +67,18 @@ export default function useFetchImages(): FetchImagesResult {
 
   // Update the URL with current state values
   const updateUrl = useCallback(() => {
+    // Do not push changes to URL if offline
+    // as the query params break ServiceWorker caching.
+    if (!online) {
+      return
+    }
+
     const query = new URLSearchParams()
     query.set('page', (currentPage + 1).toString()) // Set page as currentPage + 1
     query.set('sortBy', sortBy)
     query.set('group', groupImages.toString())
     router.push(`${pathname}?${query.toString()}`)
-  }, [currentPage, sortBy, groupImages, router, pathname])
+  }, [online, currentPage, sortBy, groupImages, router, pathname])
 
   useEffect(() => {
     if (!initLoad) {
