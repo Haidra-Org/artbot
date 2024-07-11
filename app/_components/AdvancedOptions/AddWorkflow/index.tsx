@@ -132,10 +132,11 @@ export default function AddWorkflow() {
             <div className="w-full row">
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                onChange={(e) => {
-                  setQrCodeText(e.target.value)
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const target = e.target as HTMLInputElement
+                  setQrCodeText(target.value)
                   handleEditWorkflow(
-                    e.target.value,
+                    target.value,
                     qrCodePosition.value as WorkflowPosition
                   )
                 }}

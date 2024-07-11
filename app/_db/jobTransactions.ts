@@ -37,6 +37,8 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
     job_id: nanoid(AppConstants.NANO_ID_LENGTH),
     horde_id: '',
     created_timestamp: Date.now(),
+    horde_completed_timestamp: 0,
+    horde_received_timestamp: 0,
     updated_timestamp: Date.now(),
     status: JobStatus.Waiting,
     queue_position: null,

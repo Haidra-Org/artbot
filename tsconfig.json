@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -8,9 +8,9 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "incremental": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -19,7 +19,12 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": [
+      "jest",
+      // This allows Serwist to type `window.serwist`.
+      "@serwist/next/typings"
+    ]
   },
   "include": [
     "next.config.mjs",
@@ -30,5 +35,5 @@
     "jest.config.js",
     "global.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "public/sw.js"]
 }

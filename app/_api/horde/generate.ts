@@ -33,16 +33,19 @@ export default async function generateImage(
   try {
     const apikey =
       AppSettings.get('apiKey')?.trim() || AppConstants.AI_HORDE_ANON_KEY
-    const res = await fetch(`https://aihorde.net/api/v2/generate/async`, {
-      body: JSON.stringify(imageParams),
-      cache: 'no-store',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Client-Agent': clientHeader(),
-        apikey: apikey
+    const res = await fetch(
+      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/generate/async`,
+      {
+        body: JSON.stringify(imageParams),
+        cache: 'no-store',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Client-Agent': clientHeader(),
+          apikey: apikey
+        }
       }
-    })
+    )
 
     statusCode = res.status
     const data: HordeSuccessResponse | HordeErrorResponse = await res.json()
