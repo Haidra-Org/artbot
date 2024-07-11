@@ -8,9 +8,9 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "incremental": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -19,7 +19,10 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": [
+      "jest"
+    ]
   },
   "include": [
     "next.config.mjs",
