@@ -4,7 +4,7 @@ import {
 } from '@/app/_db/hordeJobs'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { addImageAndDefaultFavToDexie } from '@/app/_db/jobTransactions'
-import { HordeJob, ImageError, JobStatus } from '../_types/ArtbotTypes'
+import { ImageError, JobStatus } from '../_types/ArtbotTypes'
 import {
   addPendingImageToAppState,
   getPendingImageByIdFromAppState,
@@ -27,6 +27,7 @@ import { sleep } from '../_utils/sleep'
 import checkImage from '../_api/horde/check'
 import { AppSettings } from '../_data-models/AppSettings'
 import { AppConstants } from '../_data-models/AppConstants'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 const MAX_REQUESTS_PER_SECOND = 2
 const REQUEST_INTERVAL = 1000 / MAX_REQUESTS_PER_SECOND
@@ -58,7 +59,7 @@ export const loadPendingImagesFromDexie = async () => {
  */
 export const updatePendingImage = async (
   artbot_id: string,
-  options: Partial<HordeJob>
+  options: Partial<ArtBotHordeJob>
 ) => {
   const pendingImageDataToUpdate = getPendingImageByIdFromAppState(artbot_id)
 
@@ -104,7 +105,7 @@ export const downloadImages = async ({
   generations,
   kudos
 }: {
-  jobDetails: HordeJob
+  jobDetails: ArtBotHordeJob
   generations: HordeGeneration[]
   kudos: number
 }) => {
@@ -375,7 +376,8 @@ export const checkForWaitingJobs = async () => {
         horde_id: apiResponse.id,
         init_wait_time: jobDetails.wait_time,
         status,
-        wait_time: jobDetails.wait_time
+        wait_time: jobDetails.wait_time,
+        api_response: { ...jobDetails }
       })
     }
   }

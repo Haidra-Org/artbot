@@ -5,10 +5,11 @@ import { toastController } from '../_controllers/toastController'
 import { db } from '../_db/dexie'
 import { ImageType } from '../_data-models/ImageFile_Dexie'
 import { nanoid } from 'nanoid'
-import { HordeJob, ImageRequest, JobStatus } from '../_types/ArtbotTypes'
+import { ImageRequest, JobStatus } from '../_types/ArtbotTypes'
 import { cloneImageRowsInDexie } from '../_db/ImageFiles'
 import { cleanImageRequestForReuse } from '../_utils/inputUtils'
 import { AppConstants } from '../_data-models/AppConstants'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 export default function useRerollImage() {
   const rerollImage = async (artbot_id: string) => {
@@ -35,7 +36,7 @@ export default function useRerollImage() {
             numImages: 1
           })
 
-          const job: HordeJob = {
+          const job = new ArtBotHordeJob({
             artbot_id: updatedImageRequest.artbot_id,
             job_id: nanoid(AppConstants.NANO_ID_LENGTH),
             horde_id: '',
@@ -52,7 +53,7 @@ export default function useRerollImage() {
             images_failed: 0,
             height: updatedImageRequest.height,
             width: updatedImageRequest.width
-          }
+          })
 
           // Iterate through existingImageSources array using for of.
           await cloneImageRowsInDexie(

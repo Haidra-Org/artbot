@@ -3,18 +3,18 @@ import Dexie, { Table } from 'dexie'
 import {
   AppSettingsTable,
   FavoriteImage,
-  HordeJob,
   ImageEnhancementModulesTable,
   ImageRequest,
   PromptsHistory,
   PromptsJobMap
 } from '@/app/_types/ArtbotTypes'
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 class ArtBot_v2 extends Dexie {
   public declare appSettings: Table<AppSettingsTable, number>
   public declare favorites: Table<FavoriteImage, number>
-  public declare hordeJobs: Table<HordeJob, number>
+  public declare hordeJobs: Table<ArtBotHordeJob, number>
   public declare imageEnhancementModules: Table<
     ImageEnhancementModulesTable,
     number

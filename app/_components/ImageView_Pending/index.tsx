@@ -4,12 +4,7 @@ import { useRouter } from 'next/navigation'
 import Section from '../Section'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getJobsFromDexieById } from '@/app/_db/hordeJobs'
-import {
-  HordeJob,
-  ImageError,
-  ImageRequest,
-  JobStatus
-} from '@/app/_types/ArtbotTypes'
+import { ImageError, ImageRequest, JobStatus } from '@/app/_types/ArtbotTypes'
 import {
   IconEdit,
   IconInfoCircle,
@@ -34,6 +29,7 @@ import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
 import { formatPendingPercentage } from '@/app/_utils/numberUtils'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { formatJobStatus } from '@/app/_utils/hordeUtils'
+import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -64,7 +60,7 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   const router = useRouter()
   const { pendingImages } = useStore(PendingImagesStore)
   const [imageDetails, setImageDetails] = useState<ImageRequest>()
-  const [jobDetails, setJobDetails] = useState<HordeJob>()
+  const [jobDetails, setJobDetails] = useState<ArtBotHordeJob>()
 
   const serverHasJob =
     jobDetails &&

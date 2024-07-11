@@ -48,6 +48,20 @@ export interface HordeGeneration {
   state: string
 }
 
+export interface HordeJobResponse {
+  finished: number
+  processing: number
+  restarted: number
+  waiting: number
+  done: boolean
+  faulted: boolean
+  wait_time: number | null // null if not yet available (ArtBot)
+  queue_position: number | null // null if not yet available (ArtBot)
+  kudos: number
+  is_possible: boolean
+  generations?: HordeGeneration[]
+}
+
 export interface HordeTi {
   name: string
   inject_ti?: InjectTi

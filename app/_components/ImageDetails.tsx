@@ -182,11 +182,13 @@ export default function ImageDetails({
               <strong>Errors: </strong>
               {jobDetails?.errors.length > 0 && (
                 <div>
-                  {jobDetails?.errors.map(({ message }, idx) => (
-                    <div key={idx} className={`image_error_${idx} text-xs`}>
-                      - {message}
-                    </div>
-                  ))}
+                  {jobDetails?.errors.map(
+                    ({ message }: { message: string }, idx: number) => (
+                      <div key={idx} className={`image_error_${idx} text-xs`}>
+                        - {message}
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>

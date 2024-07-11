@@ -1,11 +1,12 @@
 import Dexie from 'dexie'
 import { db } from './dexie'
-import { HordeJob, ImagesForGallery, JobStatus } from '../_types/ArtbotTypes'
+import { ImagesForGallery, JobStatus } from '../_types/ArtbotTypes'
 import {
   ImageFileInterface,
   ImageStatus,
   ImageType
 } from '../_data-models/ImageFile_Dexie'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 export const countCompletedJobsFromDexie = async () => {
   return db.hordeJobs.where('status').equals(JobStatus.Done).count()
@@ -52,7 +53,7 @@ export const fetchCompletedJobsFromDexie = async (
   // Handles issues where job doesn't complete properly or doesn't have images due to errors.
   const jobsWithImageId = tempJobsWithImageId.filter(
     (job) => job !== null
-  ) as (HordeJob & { image_id: string })[]
+  ) as (ArtBotHordeJob & { image_id: string })[]
 
   return jobsWithImageId as ImagesForGallery[]
 }
@@ -97,7 +98,7 @@ export const fetchCompletedJobsByArtbotIdsFromDexie = async (
   // Handles issues where job doesn't complete properly or doesn't have images due to errors.
   let validJobs = tempJobsWithImageId.filter(
     (job) => job !== null
-  ) as HordeJob[]
+  ) as ArtBotHordeJob[]
 
   validJobs = validJobs.sort((a, b) => {
     if (!a.id || !b.id) {
@@ -227,7 +228,7 @@ export const getJobsFromDexieById = async (artbotIds: string[]) => {
  */
 export const updateHordeJobById = async (
   artbot_id: string,
-  updates: Partial<Omit<HordeJob, 'artbot_id'>>
+  updates: Partial<Omit<ArtBotHordeJob, 'artbot_id'>>
 ) => {
   // Automatically set the updated_timestamp to the current time
   const updateData = { ...updates, updated_timestamp: Date.now() }

@@ -1,9 +1,10 @@
+import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
 import {
   ImageBlobBuffer,
   ImageFileInterface
 } from '@/app/_data-models/ImageFile_Dexie'
 import { getImagesForJobFromDexie } from '@/app/_db/jobTransactions'
-import { HordeJob, ImageRequest } from '@/app/_types/ArtbotTypes'
+import { ImageRequest } from '@/app/_types/ArtbotTypes'
 import React, {
   createContext,
   useCallback,
@@ -13,7 +14,7 @@ import React, {
 } from 'react'
 
 export interface ImageDetails {
-  jobDetails: HordeJob
+  jobDetails: ArtBotHordeJob
   imageFiles: ImageFileInterface[]
   imageRequest: ImageRequest
 }
@@ -34,7 +35,7 @@ const defaultContext: DefaultContext = {
   currentImageId: '',
   imageBlobBuffer: undefined,
   imageData: {
-    jobDetails: {} as HordeJob,
+    jobDetails: {} as ArtBotHordeJob,
     imageFiles: [] as ImageFileInterface[],
     imageRequest: {} as ImageRequest
   },
@@ -61,7 +62,7 @@ export const ImageViewProvider = ({
 }) => {
   const [imageBlobBuffer, setImageBlobBuffer] = useState<ImageBlobBuffer>()
   const [imageData, setImageData] = useState<ImageDetails>({
-    jobDetails: {} as HordeJob,
+    jobDetails: {} as ArtBotHordeJob,
     imageFiles: [] as ImageFileInterface[],
     imageRequest: {} as ImageRequest
   })

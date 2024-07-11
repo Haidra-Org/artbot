@@ -1,4 +1,5 @@
-import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
+import { JobStatus } from '../_types/ArtbotTypes'
 import {
   PendingImagesStore,
   addPendingImageToAppState,
@@ -15,7 +16,7 @@ describe('PendingImagesStore', () => {
   })
 
   it('should add a pending image to the store', () => {
-    const job: HordeJob = {
+    const job = new ArtBotHordeJob({
       artbot_id: '1',
       job_id: 'job1',
       horde_id: 'horde1',
@@ -24,15 +25,13 @@ describe('PendingImagesStore', () => {
       horde_completed_timestamp: Date.now(),
       updated_timestamp: Date.now(),
       status: JobStatus.Waiting,
-      queue_position: null,
       init_wait_time: null,
-      wait_time: null,
       images_requested: 1,
       images_completed: 0,
       images_failed: 0,
       height: 512,
       width: 512
-    }
+    })
 
     addPendingImageToAppState(job)
 
@@ -40,7 +39,7 @@ describe('PendingImagesStore', () => {
   })
 
   it('should retrieve a pending image by artbot_id', () => {
-    const job: HordeJob = {
+    const job = new ArtBotHordeJob({
       artbot_id: '1',
       job_id: 'job1',
       horde_id: 'horde1',
@@ -49,15 +48,15 @@ describe('PendingImagesStore', () => {
       horde_completed_timestamp: Date.now(),
       updated_timestamp: Date.now(),
       status: JobStatus.Waiting,
-      queue_position: null,
+      queue_position: 0,
       init_wait_time: null,
-      wait_time: null,
+      wait_time: 0,
       images_requested: 1,
       images_completed: 0,
       images_failed: 0,
       height: 512,
       width: 512
-    }
+    })
 
     addPendingImageToAppState(job)
 
@@ -66,7 +65,7 @@ describe('PendingImagesStore', () => {
   })
 
   it('should retrieve pending images by status', () => {
-    const job1: HordeJob = {
+    const job1 = new ArtBotHordeJob({
       artbot_id: '1',
       job_id: 'job1',
       horde_id: 'horde1',
@@ -75,17 +74,17 @@ describe('PendingImagesStore', () => {
       horde_completed_timestamp: Date.now(),
       updated_timestamp: Date.now(),
       status: JobStatus.Waiting,
-      queue_position: null,
+      queue_position: 0,
       init_wait_time: null,
-      wait_time: null,
+      wait_time: 0,
       images_requested: 1,
       images_completed: 0,
       images_failed: 0,
       height: 512,
       width: 512
-    }
+    })
 
-    const job2: HordeJob = {
+    const job2 = new ArtBotHordeJob({
       artbot_id: '2',
       job_id: 'job2',
       horde_id: 'horde2',
@@ -94,15 +93,15 @@ describe('PendingImagesStore', () => {
       horde_completed_timestamp: Date.now(),
       updated_timestamp: Date.now(),
       status: JobStatus.Processing,
-      queue_position: null,
+      queue_position: 0,
       init_wait_time: null,
-      wait_time: null,
+      wait_time: 0,
       images_requested: 1,
       images_completed: 0,
       images_failed: 0,
       height: 512,
       width: 512
-    }
+    })
 
     addPendingImageToAppState(job1)
     addPendingImageToAppState(job2)
@@ -121,7 +120,7 @@ describe('PendingImagesStore', () => {
   })
 
   it('should delete a pending image from the store', () => {
-    const job: HordeJob = {
+    const job = new ArtBotHordeJob({
       artbot_id: '1',
       job_id: 'job1',
       horde_id: 'horde1',
@@ -130,15 +129,15 @@ describe('PendingImagesStore', () => {
       horde_completed_timestamp: Date.now(),
       updated_timestamp: Date.now(),
       status: JobStatus.Waiting,
-      queue_position: null,
+      queue_position: 0,
       init_wait_time: null,
-      wait_time: null,
+      wait_time: 0,
       images_requested: 1,
       images_completed: 0,
       images_failed: 0,
       height: 512,
       width: 512
-    }
+    })
 
     addPendingImageToAppState(job)
     deletePendingImageFromAppState('1')
@@ -147,7 +146,7 @@ describe('PendingImagesStore', () => {
   })
 
   it('should update a pending image in the store', () => {
-    const job: HordeJob = {
+    const job = new ArtBotHordeJob({
       artbot_id: '1',
       job_id: 'job1',
       horde_id: 'horde1',
@@ -156,17 +155,17 @@ describe('PendingImagesStore', () => {
       horde_completed_timestamp: Date.now(),
       updated_timestamp: Date.now(),
       status: JobStatus.Waiting,
-      queue_position: null,
+      queue_position: 0,
       init_wait_time: null,
-      wait_time: null,
+      wait_time: 0,
       images_requested: 1,
       images_completed: 0,
       images_failed: 0,
       height: 512,
       width: 512
-    }
+    })
 
-    const updatedJob: Partial<HordeJob> = {
+    const updatedJob: Partial<ArtBotHordeJob> = {
       status: JobStatus.Processing,
       images_completed: 1
     }

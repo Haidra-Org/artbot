@@ -1,9 +1,10 @@
 import { makeStore } from 'statery'
-import { HordeJob, JobStatus } from '@/app/_types/ArtbotTypes'
+import { JobStatus } from '@/app/_types/ArtbotTypes'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 interface PendingImagesStoreInterface {
   completedJobsNotViewed: number
-  pendingImages: HordeJob[]
+  pendingImages: ArtBotHordeJob[]
   pendingJobCompletedTimestamp: number
   pendingPageTimestamp: number
 }
@@ -37,7 +38,7 @@ export const viewedPendingPage = () => {
   }))
 }
 
-export const addPendingImageToAppState = (pendingJob: HordeJob) => {
+export const addPendingImageToAppState = (pendingJob: ArtBotHordeJob) => {
   PendingImagesStore.set((state) => ({
     pendingImages: [...state.pendingImages, pendingJob]
   }))
@@ -49,7 +50,7 @@ export const getPendingImageByIdFromAppState = (arbot_id: string) => {
       (job) => job.artbot_id === arbot_id
     ) || {}
 
-  return jobDetails as HordeJob
+  return jobDetails as ArtBotHordeJob
 }
 
 export const getPendingImagesByStatusFromAppState = (status: JobStatus[]) => {
@@ -68,10 +69,9 @@ export const deletePendingImageFromAppState = (artbot_id: string) => {
 
 export const updatePendingImageInAppState = (
   artbot_id: string,
-  updates: Partial<HordeJob>
+  updates: Partial<ArtBotHordeJob>
 ) => {
   PendingImagesStore.set((state) => {
-    // Map through the existing pendingImages to find and update the relevant item
     const updatedPendingImages = state.pendingImages.map((job) => {
       if (job.artbot_id === artbot_id) {
         // Fix issue where init_wait_time might be set to 0.
@@ -79,14 +79,18 @@ export const updatePendingImageInAppState = (
           updates.init_wait_time = updates.wait_time
         }
 
-        // Found the job to update, apply the updates to it
-        return { ...job, ...updates }
+        // Check if job already exists and is an instance of ArtBotHordeJob
+        if (job instanceof ArtBotHordeJob) {
+          job.update(updates)
+          return job
+        } else {
+          return new ArtBotHordeJob({ ...(job as ArtBotHordeJob), ...updates })
+        }
       }
-      // Not the job we're interested in, leave it as is
       return job
     })
 
     // Return the new state with updated pendingImages
-    return { pendingImages: updatedPendingImages }
+    return { ...state, pendingImages: updatedPendingImages }
   })
 }
