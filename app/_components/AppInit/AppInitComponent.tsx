@@ -17,6 +17,8 @@ import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { useEffect } from 'react'
 import { setAvailableModels, setImageModels } from '@/app/_stores/ModelStore'
 import { AppConstants } from '@/app/_data-models/AppConstants'
+import { useRouter } from 'next/navigation'
+import { setAppOnlineStatus } from '@/app/_stores/AppStore'
 
 export default function AppInitComponent({
   modelsAvailable,
@@ -25,7 +27,23 @@ export default function AppInitComponent({
   modelsAvailable: AvailableImageModel[]
   modelDetails: { [key: string]: ImageModelDetails }
 }) {
+  const router = useRouter()
   const [handleLogin] = useHordeApiKey()
+
+  const initHeartbeat = async () => {
+    try {
+      const res = await fetch('/api/heartbeat')
+      const { success } = (await res.json()) || {}
+
+      if (success) {
+        setAppOnlineStatus(true)
+      } else {
+        setAppOnlineStatus(false)
+      }
+    } catch (err) {
+      setAppOnlineStatus(false)
+    }
+  }
 
   const getUserInfoOnLoad = async () => {
     const apikey = AppSettings.get('apiKey')
@@ -47,7 +65,19 @@ export default function AppInitComponent({
     getUserInfoOnLoad()
     loadPendingImagesFromDexie()
     initJobController()
+
+    initHeartbeat()
+    const interval = setInterval(initHeartbeat, 10 * 1000)
+
+    return () => {
+      clearInterval(interval)
+    }
   })
 
+  useEffect(() => {
+    router.prefetch('/create')
+    router.prefetch('/images')
+    router.prefetch('/settings')
+  }, [router])
   return null
 }
