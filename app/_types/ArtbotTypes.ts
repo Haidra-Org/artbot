@@ -1,6 +1,6 @@
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 import { Embedding } from '../_data-models/Civitai'
 import PromptInput from '../_data-models/PromptInput'
-import { GenMetadata } from './HordeTypes'
 
 type AppSettingsTableKeys = 'favoriteModels' | 'imageSize'
 
@@ -30,29 +30,7 @@ export interface FavoriteImage {
   favorited: boolean
 }
 
-export interface HordeJob {
-  id?: number
-  artbot_id: string // Indexed in IndexedDB
-  job_id: string // Indexed in IndexedDB
-  horde_id: string // Indexed in IndexedDB
-  created_timestamp: number
-  horde_received_timestamp: number
-  horde_completed_timestamp: number
-  updated_timestamp: number
-  status: JobStatus // Indexed in IndexedDB
-  errors?: ImageError[] | null
-  queue_position: number | null
-  init_wait_time: number | null
-  wait_time: number | null
-  images_requested: number
-  images_completed: number
-  images_failed: number
-  height: number
-  width: number
-  gen_metadata?: GenMetadata[]
-}
-
-export interface ImagesForGallery extends HordeJob {
+export interface ImagesForGallery extends ArtBotHordeJob {
   image_id: string
   width: number
   height: number

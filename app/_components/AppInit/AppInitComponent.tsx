@@ -32,7 +32,9 @@ export default function AppInitComponent({
 
   const initHeartbeat = async () => {
     try {
-      const res = await fetch('/api/heartbeat')
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_PATH}/api/heartbeat`
+      )
       const { success } = (await res.json()) || {}
 
       if (success) {

@@ -20,7 +20,7 @@ export default function HeaderNav() {
         <Link href="/">
           <div className="row items-center p-2 text-white h-[42px]">
             <img
-              src={`/artbot-logo.png`}
+              src={`${process.env.NEXT_PUBLIC_API_BASE_PATH}/artbot-logo.png`}
               height={30}
               width={30}
               alt="AI ArtBot logo"

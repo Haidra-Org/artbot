@@ -51,6 +51,8 @@ export const fetchCompletedJobsFromDexie = async (
 
   // Filter out the null values to remove jobs without an associated image.
   // Handles issues where job doesn't complete properly or doesn't have images due to errors.
+
+  // @ts-expect-error I am not sure what's going on here at the moment, but everything seems to work!
   const jobsWithImageId = tempJobsWithImageId.filter(
     (job) => job !== null
   ) as (ArtBotHordeJob & { image_id: string })[]

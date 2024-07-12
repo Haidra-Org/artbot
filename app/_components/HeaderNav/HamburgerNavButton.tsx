@@ -78,7 +78,7 @@ export default function HamburgerNavButton() {
           <div className="row w-full justify-between p-2">
             <div onClick={handleCloseMenu}>
               <img
-                src={`/artbot-logo.png`}
+                src={`${process.env.NEXT_PUBLIC_API_BASE_PATH}/artbot-logo.png`}
                 height={30}
                 width={30}
                 alt="AI ArtBot logo"

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE
   },
   description: APP_DESCRIPTION,
-  manifest: '/manifest.json',
+  manifest: `${process.env.NEXT_PUBLIC_API_BASE_PATH}/manifest.json`,
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

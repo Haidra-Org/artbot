@@ -81,7 +81,9 @@ export default function StyleTags({ input, setInput }: StyleTagsProps) {
 
   useEffect(() => {
     async function fetchStyleTags() {
-      const response = await fetch('/api/styles')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_PATH}/api/styles`
+      )
       const jsonReponse = await response.json()
       const { data } = jsonReponse
 
