@@ -5,6 +5,7 @@ import Section from '../Section'
 import { mergeArrays } from '@/app/_utils/arrayUtils'
 import PromptInput from '@/app/_data-models/PromptInput'
 import Button from '../Button'
+import { appBasepath } from '@/app/_utils/browserUtils'
 
 interface JsonData {
   [key: string]: string[]
@@ -81,9 +82,7 @@ export default function StyleTags({ input, setInput }: StyleTagsProps) {
 
   useEffect(() => {
     async function fetchStyleTags() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_PATH}/api/styles`
-      )
+      const response = await fetch(`${appBasepath()}/api/styles`)
       const jsonReponse = await response.json()
       const { data } = jsonReponse
 

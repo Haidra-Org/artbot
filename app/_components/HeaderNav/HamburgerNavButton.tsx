@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 import useLockedBody from '@/app/_hooks/useLockedBody'
+import { appBasepath } from '@/app/_utils/browserUtils'
 import {
   IconCamera,
   IconHelp,
@@ -78,7 +79,7 @@ export default function HamburgerNavButton() {
           <div className="row w-full justify-between p-2">
             <div onClick={handleCloseMenu}>
               <img
-                src={`${process.env.NEXT_PUBLIC_API_BASE_PATH}/artbot-logo.png`}
+                src={`${appBasepath()}/artbot-logo.png`}
                 height={30}
                 width={30}
                 alt="AI ArtBot logo"

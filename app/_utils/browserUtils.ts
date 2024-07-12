@@ -1,3 +1,16 @@
+// This is needed to handle instances where API_BASE_PATH is not set (or is ""),
+// which is casted to "undefined". We need to properly handle that here.
+export const appBasepath = () => {
+  const path = process.env.NEXT_PUBLIC_API_BASE_PATH
+
+  if (path) {
+    return path
+  }
+
+  // Return EMPTY string, and not "/", otherwise BAD_THINGS_HAPPEN.
+  return ''
+}
+
 export const isiOS = () => {
   return (
     [

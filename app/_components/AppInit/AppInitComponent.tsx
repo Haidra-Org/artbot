@@ -19,6 +19,7 @@ import { setAvailableModels, setImageModels } from '@/app/_stores/ModelStore'
 import { AppConstants } from '@/app/_data-models/AppConstants'
 import { useRouter } from 'next/navigation'
 import { setAppOnlineStatus } from '@/app/_stores/AppStore'
+import { appBasepath } from '@/app/_utils/browserUtils'
 
 export default function AppInitComponent({
   modelsAvailable,
@@ -32,9 +33,7 @@ export default function AppInitComponent({
 
   const initHeartbeat = async () => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_PATH}/api/heartbeat`
-      )
+      const res = await fetch(`${appBasepath()}/api/heartbeat`)
       const { success } = (await res.json()) || {}
 
       if (success) {

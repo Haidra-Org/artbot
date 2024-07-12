@@ -5,6 +5,7 @@ import HamburgerNavButton from './HamburgerNavButton'
 import UserKudos from './HeaderNav_UserKudos'
 import HeaderNavPendingJobs from './HeaderNav_PendingJobs'
 import HeaderNavUserWarning from './HeaderNav_UserWarning'
+import { appBasepath } from '@/app/_utils/browserUtils'
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -20,7 +21,7 @@ export default function HeaderNav() {
         <Link href="/">
           <div className="row items-center p-2 text-white h-[42px]">
             <img
-              src={`${process.env.NEXT_PUBLIC_API_BASE_PATH}/artbot-logo.png`}
+              src={`${appBasepath()}/artbot-logo.png`}
               height={30}
               width={30}
               alt="AI ArtBot logo"

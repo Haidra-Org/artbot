@@ -8,6 +8,7 @@ import ContentWrapper from './_components/ContentWrapper'
 import BetaWarningPanel from './_components/BetaWarningPanel'
 import MobileFooter from './_components/MobileFooter'
 import AppInit from './_components/AppInit'
+import { appBasepath } from './_utils/browserUtils'
 
 const APP_NAME = 'ArtBot'
 const APP_DEFAULT_TITLE = 'ArtBot for Stable Diffusion'
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE
   },
   description: APP_DESCRIPTION,
-  manifest: `${process.env.NEXT_PUBLIC_API_BASE_PATH}/manifest.json`,
+  manifest: `${appBasepath()}/manifest.json`,
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
