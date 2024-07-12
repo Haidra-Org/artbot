@@ -1,24 +1,12 @@
 import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
-
-interface HordeSuccessResponse {
-  done: boolean
-  faulted: boolean
-  finished: number
-  is_possible: boolean
-  kudos: number
-  processing: number
-  queue_position: number
-  restarted: number
-  wait_time: number
-  waiting: number
-}
+import { HordeJobResponse } from '@/app/_types/HordeTypes'
 
 interface HordeErrorResponse {
   message: string
 }
 
-export interface CheckSuccessResponse extends HordeSuccessResponse {
+export interface CheckSuccessResponse extends HordeJobResponse {
   success: boolean
 }
 
@@ -44,7 +32,7 @@ export default async function checkImage(
     )
 
     statusCode = res.status
-    const data: HordeSuccessResponse | HordeErrorResponse = await res.json()
+    const data: HordeJobResponse | HordeErrorResponse = await res.json()
 
     if ('done' in data && 'is_possible' in data) {
       return {

@@ -67,7 +67,7 @@ export default function AppInitComponent({
     initJobController()
 
     initHeartbeat()
-    const interval = setInterval(initHeartbeat, 10 * 1000)
+    const interval = setInterval(initHeartbeat, 15 * 1000)
 
     return () => {
       clearInterval(interval)

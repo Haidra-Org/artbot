@@ -7,10 +7,8 @@ import {
 import LORASJson from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
 import EmbeddingsJson from '../_components/AdvancedOptions/LoRAs/_Embeddings.json'
 import { Embedding } from '../_data-models/Civitai'
-import {
-  EnhancementType,
-  getCivitaiSearchResults
-} from '../_api/civitai/models'
+import { getCivitaiSearchResults } from '../_api/civitai/models'
+import { CivitAiEnhancementType } from '../_types/ArtbotTypes'
 
 export type SearchType = 'search' | 'favorite' | 'recent'
 
@@ -19,7 +17,7 @@ export default function useCivitAi({
   type = 'LORA'
 }: {
   searchType?: SearchType
-  type: EnhancementType
+  type: CivitAiEnhancementType
 }) {
   const [pendingSearch, setPendingSearch] = useState(false)
   const [searchResults, setSearchResults] = useState<Embedding[]>([])

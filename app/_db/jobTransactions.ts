@@ -4,9 +4,10 @@ import { nanoid } from 'nanoid'
 import { db } from './dexie'
 import { getImageFileFromDexie } from './ImageFiles'
 import PromptInput from '../_data-models/PromptInput'
-import { HordeJob, JobStatus } from '../_types/ArtbotTypes'
+import { JobStatus } from '../_types/ArtbotTypes'
 import { ImageFileInterface, ImageType } from '../_data-models/ImageFile_Dexie'
 import { AppConstants } from '../_data-models/AppConstants'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 export const addImageAndDefaultFavToDexie = async (
   image: ImageFileInterface
@@ -32,7 +33,7 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
   delete updatedInput.artbot_id
   updatedInput.artbot_id = nanoid(AppConstants.NANO_ID_LENGTH)
 
-  const job: HordeJob = {
+  const job = new ArtBotHordeJob({
     artbot_id: updatedInput.artbot_id,
     job_id: nanoid(AppConstants.NANO_ID_LENGTH),
     horde_id: '',
@@ -49,7 +50,7 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
     images_failed: 0,
     height: updatedInput.height,
     width: updatedInput.width
-  }
+  })
 
   await db.transaction('rw', [db.imageRequests, db.hordeJobs], async () => {
     await db.hordeJobs.add(job)

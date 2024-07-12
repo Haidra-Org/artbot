@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useStore } from 'statery'
-import { HordeJob } from '../_types/ArtbotTypes'
 import { PendingImagesStore } from '../_stores/PendingImagesStore'
 import { deepEqual } from '../_utils/deepEqual'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 export const usePendingJob = (artbot_id: string) => {
   const { pendingImages } = useStore(PendingImagesStore)
-  const [pendingJob, setPendingJob] = useState<HordeJob>({} as HordeJob)
+  const [pendingJob, setPendingJob] = useState<ArtBotHordeJob>(
+    {} as ArtBotHordeJob
+  )
 
   useEffect(() => {
     const updatedJob =
       pendingImages.find((job) => job.artbot_id === artbot_id) ||
-      ({} as HordeJob)
+      ({} as ArtBotHordeJob)
 
     if (!deepEqual(updatedJob, pendingJob)) {
       setPendingJob(updatedJob)

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getImageDetailsFromDexie } from '../_db/jobTransactions'
 import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
-import { HordeJob, ImageRequest } from '../_types/ArtbotTypes'
+import { ImageRequest } from '../_types/ArtbotTypes'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 
 export interface JobDetails {
-  jobDetails: HordeJob
+  jobDetails: ArtBotHordeJob
   imageFile: ImageFileInterface
   imageRequest: ImageRequest
 }

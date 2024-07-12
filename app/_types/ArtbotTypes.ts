@@ -13,6 +13,17 @@ export type AppSettingsTable = {
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
 export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW'
 
+export type CivitAiEnhancementType = 'LORA' | 'LoCon' | 'TextualInversion'
+
+export interface CivitAiSearchParams {
+  input?: string
+  page?: number
+  limit?: number
+  type: CivitAiEnhancementType
+  signal?: AbortSignal
+  url?: string
+}
+
 export interface FavoriteImage {
   artbot_id: string
   image_id: string
@@ -63,6 +74,11 @@ export type ImageErrors = 'csam' | 'notfound' | 'nsfw' | 'other'
 export interface ImageError {
   type: ImageErrors
   message: string
+}
+
+export interface ImageMetaData {
+  Comment?: string
+  Software?: string
 }
 
 export type ImageOrientations =
