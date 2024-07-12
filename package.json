@@ -39,6 +39,7 @@
     "clsx": "2.1.1",
     "dexie": "4.0.7",
     "embla-carousel-react": "8.1.6",
+    "file-saver": "2.0.5",
     "isomorphic-dompurify": "2.13.0",
     "js-sha256": "0.11.0",
     "nanoid": "5.0.7",
@@ -60,6 +61,7 @@
   },
   "devDependencies": {
     "@types/clone-deep": "4.0.4",
+    "@types/file-saver": "2.0.7",
     "@types/jest": "29.5.12",
     "@types/node": "20.14.10",
     "@types/pako": "2.0.3",

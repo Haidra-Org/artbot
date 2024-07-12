@@ -18,14 +18,14 @@ import { useImageView } from './ImageViewProvider'
 import useFavorite from '@/app/_hooks/useFavorite'
 import useRerollImage from '@/app/_hooks/useRerollImage'
 import { deleteImageFromDexie } from '@/app/_db/jobTransactions'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Section from '../Section'
 import DropdownMenu from '../DropdownMenu'
 import { MenuDivider, MenuItem } from '@szhsin/react-menu'
 import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils'
 import { toastController } from '@/app/_controllers/toastController'
-import { blobToClipboard } from '@/app/_utils/imageUtils'
+import { blobToClipboard, bufferToBlob } from '@/app/_utils/imageUtils'
 import { useRouter } from 'next/navigation'
 import { cleanImageRequestForReuse } from '@/app/_utils/inputUtils'
 import {
@@ -33,8 +33,13 @@ import {
   deleteImageFileByArtbotIdTx
 } from '@/app/_db/ImageFiles'
 import { AppConstants } from '@/app/_data-models/AppConstants'
-import { ImageType } from '@/app/_data-models/ImageFile_Dexie'
+import { ImageBlobBuffer, ImageType } from '@/app/_data-models/ImageFile_Dexie'
 import Image from '../Image'
+
+type WorkerResponse = {
+  pngBlob?: Blob
+  error?: string
+}
 
 function ImageViewActions({
   onDelete
@@ -71,6 +76,21 @@ function ImageViewActions({
     delta: 35
   })
 
+  const workerRef = useRef<Worker | null>(null)
+
+  useEffect(() => {
+    // Initialize the worker
+    workerRef.current = new Worker(
+      new URL('./downloadImageWorker.ts', import.meta.url),
+      { type: 'module' }
+    )
+
+    // Clean up the worker when the component unmounts
+    return () => {
+      workerRef.current?.terminate()
+    }
+  }, [])
+
   const handleDelete = useCallback(async () => {
     NiceModal.show('delete', {
       children: (
@@ -86,6 +106,51 @@ function ImageViewActions({
       )
     })
   }, [imageId, onDelete])
+
+  const downloadImage = useCallback(
+    async (image: Blob) => {
+      const { saveAs } = (await import('file-saver')).default
+
+      const filename =
+        imageData.imageRequest.prompt
+          .replace(/[^a-z0-9]/gi, '_')
+          .toLowerCase()
+          .slice(0, 120) + `.png`
+
+      saveAs(image, filename)
+    },
+    [imageData.imageRequest.prompt]
+  )
+
+  const handleDownload = useCallback(
+    async (imageBlobBuffer: ImageBlobBuffer | null, comment: string) => {
+      if (!imageBlobBuffer || !workerRef.current) {
+        return
+      }
+
+      const imageBlob = bufferToBlob(imageBlobBuffer)
+
+      return new Promise<void>((resolve, reject) => {
+        if (!workerRef.current) {
+          reject(new Error('Worker not initialized'))
+          return
+        }
+
+        workerRef.current.onmessage = (e: MessageEvent<WorkerResponse>) => {
+          if (e.data.pngBlob) {
+            downloadImage(e.data.pngBlob)
+            resolve()
+          } else if (e.data.error) {
+            console.error('Worker error:', e.data.error)
+            reject(new Error(e.data.error))
+          }
+        }
+
+        workerRef.current.postMessage({ imageBlob, comment })
+      })
+    },
+    [downloadImage]
+  )
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -225,7 +290,15 @@ function ImageViewActions({
           >
             <IconWindowMaximize stroke={1} />
           </Button>
-          <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
+          <Button
+            onClick={() =>
+              handleDownload(
+                imageBlobBuffer as ImageBlobBuffer,
+                'This is a test!!'
+              )
+            }
+            style={{ height: '38px', width: '38px' }}
+          >
             <IconDownload stroke={1} />
           </Button>
           <Button

@@ -20,6 +20,7 @@
       "@/*": ["./*"]
     },
     "resolveJsonModule": true,
+    "target": "es2015",
     "types": [
       "jest",
       // This allows Serwist to type `window.serwist`.
