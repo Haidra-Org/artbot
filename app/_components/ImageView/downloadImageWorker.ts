@@ -1,16 +1,17 @@
 import { PNG } from 'pngjs'
 import { Buffer } from 'buffer'
 import { addMetadata } from 'meta-png'
+import { ImageMetaData } from '@/app/_types/ArtbotTypes'
 
 type WorkerMessage = {
   imageBlob: Blob
-  comment: string
+  metadata: ImageMetaData
 }
 
 self.addEventListener('message', (e: MessageEvent<WorkerMessage>) => {
-  const { imageBlob, comment } = e.data
+  const { imageBlob, metadata } = e.data
 
-  convertAndAddMetadata(imageBlob, comment)
+  convertAndAddMetadata(imageBlob, metadata)
     .then((pngBlob) => {
       ;(self as unknown as DedicatedWorkerGlobalScope).postMessage({ pngBlob })
     })
@@ -38,14 +39,36 @@ async function convertBlobToPngUint8Array(blob: Blob): Promise<Uint8Array> {
 }
 
 async function convertAndAddMetadata(
-  imageBufferArray: Blob
-  // comment: string
+  imageBufferArray: Blob,
+  metadata: ImageMetaData = {} as ImageMetaData
 ): Promise<Blob | undefined> {
   try {
     const imageBlob = await convertBlob(imageBufferArray, 'image/png')
     const PNGUint8Array = await convertBlobToPngUint8Array(imageBlob)
-    const updated = addMetadata(PNGUint8Array, 'foo', 'bar')
-    return new Blob([updated], { type: 'image/png' })
+
+    let updatedPNGUint8Array = PNGUint8Array
+
+    Object.keys(metadata).forEach((key) => {
+      if (!key) return
+
+      if (key in metadata) {
+        const metadataValue = metadata[key as keyof ImageMetaData] ?? ''
+        updatedPNGUint8Array = addMetadata(
+          updatedPNGUint8Array,
+          key,
+          // @ts-expect-error Not sure why this won't validate in TypeScript, but we should be fine here.
+          metadata[metadataValue]
+        )
+      }
+    })
+
+    updatedPNGUint8Array = addMetadata(
+      updatedPNGUint8Array,
+      'Software',
+      'ArtBot for Stable Diffusion | tinybots.net/artbot'
+    )
+
+    return new Blob([updatedPNGUint8Array], { type: 'image/png' })
   } catch (error) {
     console.error('Error in convertAndAddMetadata:', error)
   }

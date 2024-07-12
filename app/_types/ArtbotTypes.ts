@@ -76,6 +76,11 @@ export interface ImageError {
   message: string
 }
 
+export interface ImageMetaData {
+  Comment?: string
+  Software?: string
+}
+
 export type ImageOrientations =
   | 'landscape_16x9'
   | 'landscape_3x2'

@@ -79,13 +79,11 @@ function ImageViewActions({
   const workerRef = useRef<Worker | null>(null)
 
   useEffect(() => {
-    // Initialize the worker
     workerRef.current = new Worker(
       new URL('./downloadImageWorker.ts', import.meta.url),
       { type: 'module' }
     )
 
-    // Clean up the worker when the component unmounts
     return () => {
       workerRef.current?.terminate()
     }
@@ -123,7 +121,7 @@ function ImageViewActions({
   )
 
   const handleDownload = useCallback(
-    async (imageBlobBuffer: ImageBlobBuffer | null, comment: string) => {
+    async (imageBlobBuffer: ImageBlobBuffer | null, metadata: object) => {
       if (!imageBlobBuffer || !workerRef.current) {
         return
       }
@@ -146,10 +144,21 @@ function ImageViewActions({
           }
         }
 
-        workerRef.current.postMessage({ imageBlob, comment })
+        workerRef.current.postMessage({ imageBlob, metadata })
       })
     },
-    [downloadImage]
+    [
+      downloadImage,
+      imageData.imageRequest.cfg_scale,
+      imageData.imageRequest.height,
+      imageData.imageRequest.models,
+      imageData.imageRequest.negative,
+      imageData.imageRequest.prompt,
+      imageData.imageRequest.sampler,
+      imageData.imageRequest.seed,
+      imageData.imageRequest.steps,
+      imageData.imageRequest.width
+    ]
   )
 
   useEffect(() => {
@@ -291,12 +300,21 @@ function ImageViewActions({
             <IconWindowMaximize stroke={1} />
           </Button>
           <Button
-            onClick={() =>
-              handleDownload(
-                imageBlobBuffer as ImageBlobBuffer,
-                'This is a test!!'
-              )
-            }
+            onClick={() => {
+              const comment: string =
+                `${imageData.imageRequest.prompt}\n` +
+                (imageData.imageRequest.negative
+                  ? `Negative prompt: ${imageData.imageRequest.negative}\n`
+                  : ``) +
+                `Steps: ${imageData.imageRequest.steps}, Sampler: ${imageData.imageRequest.sampler}, CFG scale: ${imageData.imageRequest.cfg_scale}, Seed: ${imageData.imageRequest.seed}` +
+                `, Size: ${imageData.imageRequest.width}x${imageData.imageRequest.height}, model: ${imageData.imageRequest.models}`
+
+              const metaData = {
+                Comment: comment
+              }
+
+              handleDownload(imageBlobBuffer as ImageBlobBuffer, metaData)
+            }}
             style={{ height: '38px', width: '38px' }}
           >
             <IconDownload stroke={1} />
