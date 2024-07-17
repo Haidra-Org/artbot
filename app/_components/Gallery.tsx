@@ -169,8 +169,8 @@ export default function Gallery() {
       {/* {showSearch && <ImageSearch setSearchInput={setSearchInput} />} */}
       {images.length > 0 && (
         <PhotoAlbum
-          layout="masonry"
-          spacing={4}
+          layout="rows"
+          spacing={0}
           photos={images}
           renderPhoto={(renderPhotoProps) => {
             const { photo, imageProps } = renderPhotoProps || {}
@@ -178,7 +178,7 @@ export default function Gallery() {
 
             return (
               <div
-                className="cursor-pointer"
+                className="cursor-pointer m-[2px]"
                 key={photo.artbot_id}
                 tabIndex={0}
                 onClick={() => {
