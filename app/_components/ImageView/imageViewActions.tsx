@@ -36,11 +36,6 @@ import { AppConstants } from '@/app/_data-models/AppConstants'
 import { ImageBlobBuffer, ImageType } from '@/app/_data-models/ImageFile_Dexie'
 import Image from '../Image'
 
-type WorkerResponse = {
-  pngBlob?: Blob
-  error?: string
-}
-
 function ImageViewActions({
   onDelete
 }: {
@@ -53,6 +48,7 @@ function ImageViewActions({
   const [isFullscreen, setIsFullscreen] = useState(false)
   const {
     artbot_id,
+    currentImageId,
     imageBlobBuffer,
     imageId,
     imageData,
@@ -94,16 +90,15 @@ function ImageViewActions({
       children: (
         <DeleteConfirmation
           onDelete={async () => {
-            await deleteImageFromDexie(imageId as string)
+            await deleteImageFromDexie(currentImageId as string)
             await onDelete()
 
-            // For now, just close modal on delete
             NiceModal.remove('modal')
           }}
         />
       )
     })
-  }, [imageId, onDelete])
+  }, [currentImageId, onDelete])
 
   const downloadImage = useCallback(
     async (image: Blob) => {
@@ -134,7 +129,7 @@ function ImageViewActions({
           return
         }
 
-        workerRef.current.onmessage = (e: MessageEvent<WorkerResponse>) => {
+        workerRef.current.onmessage = (e: MessageEvent) => {
           if (e.data.pngBlob) {
             downloadImage(e.data.pngBlob)
             resolve()
@@ -147,18 +142,7 @@ function ImageViewActions({
         workerRef.current.postMessage({ imageBlob, metadata })
       })
     },
-    [
-      downloadImage,
-      imageData.imageRequest.cfg_scale,
-      imageData.imageRequest.height,
-      imageData.imageRequest.models,
-      imageData.imageRequest.negative,
-      imageData.imageRequest.prompt,
-      imageData.imageRequest.sampler,
-      imageData.imageRequest.seed,
-      imageData.imageRequest.steps,
-      imageData.imageRequest.width
-    ]
+    [downloadImage]
   )
 
   useEffect(() => {

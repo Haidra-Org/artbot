@@ -44,11 +44,11 @@ export default function Gallery() {
             artbot_id={artbot_id}
             image_id={!groupImages ? image_id : undefined}
             onDelete={fetchImages}
+            singleImage={!groupImages}
           />
         ),
         modalStyle: {
-          maxWidth: '1536px',
-          width: `calc(100% - 12px)`
+          maxWidth: '1536px'
         }
       })
     },
