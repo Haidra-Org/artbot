@@ -6,6 +6,7 @@ import UserKudos from './HeaderNav_UserKudos'
 import HeaderNavPendingJobs from './HeaderNav_PendingJobs'
 import HeaderNavUserWarning from './HeaderNav_UserWarning'
 import { appBasepath } from '@/app/_utils/browserUtils'
+import HeaderNavHordePerformance from './HeaderNav_HordePerformance'
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -58,6 +59,7 @@ export default function HeaderNav() {
           <HeaderNavPendingJobs />
           <HeaderNavUserWarning />
           <UserKudos />
+          <HeaderNavHordePerformance />
         </div>
       </div>
     </header>
