@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useStore } from 'statery'
 import { AppStore } from '../_stores/AppStore'
@@ -65,8 +65,6 @@ export default function useFetchImages(): FetchImagesResult {
   const [totalImages, setTotalImages] = useState(0)
   const [initialSyncComplete, setInitialSyncComplete] = useState(false)
 
-  const isUrlUpdate = useRef(false)
-
   // Calculate offset based on current page
   const offset = currentPage * LIMIT
 
@@ -96,8 +94,6 @@ export default function useFetchImages(): FetchImagesResult {
 
   // Initial sync effect to set the state from URL parameters
   useEffect(() => {
-    if (initialSyncComplete) return
-
     const query = new URLSearchParams(searchParams)
     const page = Number(query.get('page') || 1) - 1
     const group = query.get('group') !== 'false'
@@ -114,16 +110,13 @@ export default function useFetchImages(): FetchImagesResult {
     }
 
     setInitialSyncComplete(true)
-  }, [searchParams, currentPage, groupImages, sortBy, initialSyncComplete])
+    // Adding anything besides "searchParams" breaks ability to filter images based on URL params
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   // Effect to update URL when store changes
   useEffect(() => {
-    if (!initLoad && initialSyncComplete && online) {
-      if (isUrlUpdate.current) {
-        isUrlUpdate.current = false
-        return
-      }
-
+    if (initialSyncComplete && online) {
       const query = new URLSearchParams()
       query.set('page', (currentPage + 1).toString())
       query.set('sortBy', sortBy)
@@ -134,7 +127,6 @@ export default function useFetchImages(): FetchImagesResult {
     currentPage,
     groupImages,
     sortBy,
-    initLoad,
     initialSyncComplete,
     online,
     router,
@@ -148,10 +140,35 @@ export default function useFetchImages(): FetchImagesResult {
     }
   }, [fetchImages, initialSyncComplete])
 
+  // Effect to handle browser back button navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const query = new URLSearchParams(window.location.search)
+      const page = Number(query.get('page') || 1) - 1
+      const group = query.get('group') !== 'false'
+      const sort = (query.get('sortBy') as 'asc' | 'desc') || 'desc'
+
+      if (currentPage !== page) {
+        setGalleryCurrentPage(page)
+      }
+      if (groupImages !== group) {
+        setGalleryGroupImages(group)
+      }
+      if (sortBy !== sort) {
+        setGallerySortBy(sort)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [currentPage, groupImages, sortBy])
+
   return {
     initLoad,
     images,
     totalImages,
-    fetchImages // Exposing the fetchImages function
+    fetchImages
   }
 }
