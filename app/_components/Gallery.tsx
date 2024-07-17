@@ -14,7 +14,6 @@ import {
   IconSortDescending
 } from '@tabler/icons-react'
 
-import useFetchImages, { PhotoData } from '../_hooks/useFetchImages'
 import ImageView from './ImageView'
 import Button from './Button'
 import GalleryImageCardOverlay from './GalleryImageCardOverlay'
@@ -22,23 +21,20 @@ import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
 import ImageThumbnailV2 from './ImageThumbnailV2'
 import { MasonryLayout } from './Masonry'
+import {
+  GalleryStore,
+  setGalleryCurrentPage,
+  setGalleryGroupImages,
+  setGallerySortBy
+} from '../_stores/GalleryStore'
+import { useStore } from 'statery'
+import useFetchImages, { PhotoData } from '../_hooks/useFetchImages'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
 
-  const {
-    currentPage,
-    fetchImages,
-    groupImages,
-    images,
-    initLoad,
-    setCurrentPage,
-    setGroupImages,
-    // setSearchInput,
-    setSortBy,
-    sortBy,
-    totalImages
-  } = useFetchImages()
+  const { currentPage, groupImages, sortBy } = useStore(GalleryStore)
+  const { fetchImages, images, initLoad, totalImages } = useFetchImages()
 
   const handleImageOpen = useCallback(
     (artbot_id: string, image_id?: string) => {
@@ -98,8 +94,8 @@ export default function Gallery() {
             </Button> */}
             <Button
               onClick={() => {
-                setCurrentPage(0)
-                setGroupImages(!groupImages)
+                setGalleryCurrentPage(0)
+                setGalleryGroupImages(!groupImages)
               }}
               title="Group or ungroup images by batched image request"
             >
@@ -118,7 +114,9 @@ export default function Gallery() {
               </span>
             </Button>
             <Button
-              onClick={() => setSortBy(sortBy === 'desc' ? 'asc' : 'desc')}
+              onClick={() =>
+                setGallerySortBy(sortBy === 'desc' ? 'asc' : 'desc')
+              }
             >
               <span className="row gap-1">
                 {sortBy === 'desc' ? (
@@ -207,7 +205,7 @@ export default function Gallery() {
             nextLabel="⇢"
             forcePage={currentPage}
             onPageChange={(val) => {
-              setCurrentPage(Number(val.selected))
+              setGalleryCurrentPage(Number(val.selected))
               window.scrollTo(0, 0)
             }}
             containerClassName="row gap-0"

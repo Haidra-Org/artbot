@@ -1,23 +1,29 @@
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useStore } from 'statery'
+import { AppStore } from '../_stores/AppStore'
+import {
+  GalleryStore,
+  setGalleryCurrentPage,
+  setGalleryGroupImages,
+  setGallerySortBy
+} from '../_stores/GalleryStore'
 import {
   countAllImagesForCompletedJobsFromDexie,
   countCompletedJobsFromDexie,
   fetchAllImagesForCompletedJobsFromDexie,
   fetchCompletedJobsFromDexie
 } from '@/app/_db/hordeJobs'
-import { searchPromptsFromDexie } from '@/app/_db/promptsHistory'
-import { debounce } from '@/app/_utils/debounce'
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState
-} from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useStore } from 'statery'
-import { AppStore } from '../_stores/AppStore'
 
 const LIMIT = 20
+
+export interface ImageFile {
+  artbot_id: string
+  image_id: string
+  width: number
+  height: number
+  image_count: number
+}
 
 export interface PhotoData {
   artbot_id: string
@@ -30,159 +36,122 @@ export interface PhotoData {
 }
 
 export interface FetchImagesResult {
+  initLoad: boolean
   images: PhotoData[]
   totalImages: number
   fetchImages: () => void
-  setSearchInput: Dispatch<SetStateAction<string>>
-  initLoad: boolean
-  currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
-  groupImages: boolean
-  setGroupImages: Dispatch<SetStateAction<boolean>>
-  sortBy: 'asc' | 'desc'
-  setSortBy: Dispatch<SetStateAction<'asc' | 'desc'>>
+}
+
+const mapToPhotoData = (data: ImageFile[]): PhotoData[] => {
+  return data.map((image) => ({
+    artbot_id: image.artbot_id,
+    image_id: image.image_id,
+    key: `image-${image.image_id}`,
+    src: '',
+    image_count: image.image_count || 1,
+    width: image.width,
+    height: image.height
+  }))
 }
 
 export default function useFetchImages(): FetchImagesResult {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { currentPage, groupImages, sortBy } = useStore(GalleryStore)
   const { online } = useStore(AppStore)
-
-  // Initialize state with query parameters or defaults
   const [initLoad, setInitLoad] = useState(true)
-  const [currentPage, setCurrentPage] = useState(
-    Number(searchParams.get('page') || 1) - 1
-  )
-  const [groupImages, setGroupImages] = useState(
-    searchParams.get('group') !== 'false'
-  )
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>(
-    (searchParams.get('sortBy') as 'asc' | 'desc') || 'desc'
-  )
-  const [offset, setOffset] = useState(0)
-  const [totalImages, setTotalImages] = useState(0)
   const [images, setImages] = useState<PhotoData[]>([])
-  const [searchInput, setSearchInput] = useState('')
+  const [totalImages, setTotalImages] = useState(0)
+  const [initialSyncComplete, setInitialSyncComplete] = useState(false)
 
-  // Update the URL with current state values
-  const updateUrl = useCallback(() => {
-    // Do not push changes to URL if offline
-    // as the query params break ServiceWorker caching.
-    if (!online) {
-      return
-    }
+  const isUrlUpdate = useRef(false)
 
-    const query = new URLSearchParams()
-    query.set('page', (currentPage + 1).toString()) // Set page as currentPage + 1
-    query.set('sortBy', sortBy)
-    query.set('group', groupImages.toString())
-    router.push(`${pathname}?${query.toString()}`)
-  }, [online, currentPage, sortBy, groupImages, router, pathname])
-
-  useEffect(() => {
-    if (!initLoad) {
-      updateUrl()
-    }
-  }, [currentPage, groupImages, sortBy, updateUrl, initLoad])
-
-  // Fetch search results from Dexie based on search input and sorting
-  const fetchSearchResults = useCallback(async () => {
-    const data = await searchPromptsFromDexie({
-      searchInput,
-      sortDirection: sortBy
-    })
-
-    const imagesArray = data.map((image) => ({
-      artbot_id: image.artbot_id,
-      image_id: image.image_id,
-      key: `image-${image.image_id}`,
-      src: '',
-      image_count: image.image_count || 1,
-      width: image.width,
-      height: image.height
-    })) as PhotoData[]
-
-    setTotalImages(imagesArray.length)
-    setImages(imagesArray)
-  }, [searchInput, sortBy])
+  // Calculate offset based on current page
+  const offset = currentPage * LIMIT
 
   // Fetch images based on current state values
   const fetchImages = useCallback(async () => {
-    let data = []
-    let count = 0
-    const updateOffset = offset
-
-    // if (groupImages !== groupImagesState) {
-    //   updateOffset = 0
-    //   setOffset(0)
-    //   setGroupImagesState(groupImages)
-    // }
+    let data: ImageFile[] = []
+    let count: number = 0
 
     if (groupImages) {
       count = await countCompletedJobsFromDexie()
-      data = await fetchCompletedJobsFromDexie(LIMIT, updateOffset, sortBy)
+      data = await fetchCompletedJobsFromDexie(LIMIT, offset, sortBy)
     } else {
       count = await countAllImagesForCompletedJobsFromDexie()
       data = await fetchAllImagesForCompletedJobsFromDexie(
         LIMIT,
-        updateOffset,
+        offset,
         sortBy
       )
     }
 
-    const imagesArray = data.map((image) => ({
-      artbot_id: image.artbot_id,
-      image_id: image.image_id,
-      key: `image-${image.image_id}`,
-      src: '',
-      image_count: image.image_count || 1,
-      width: image.width,
-      height: image.height
-    })) as PhotoData[]
+    const imagesArray = mapToPhotoData(data)
 
     setTotalImages(count)
     setImages(imagesArray)
     setInitLoad(false)
   }, [groupImages, offset, sortBy])
 
+  // Initial sync effect to set the state from URL parameters
   useEffect(() => {
-    if (searchInput) {
-      fetchSearchResults()
-    } else {
+    if (initialSyncComplete) return
+
+    const query = new URLSearchParams(searchParams)
+    const page = Number(query.get('page') || 1) - 1
+    const group = query.get('group') !== 'false'
+    const sort = (query.get('sortBy') as 'asc' | 'desc') || 'desc'
+
+    if (currentPage !== page) {
+      setGalleryCurrentPage(page)
+    }
+    if (groupImages !== group) {
+      setGalleryGroupImages(group)
+    }
+    if (sortBy !== sort) {
+      setGallerySortBy(sort)
+    }
+
+    setInitialSyncComplete(true)
+  }, [searchParams, currentPage, groupImages, sortBy, initialSyncComplete])
+
+  // Effect to update URL when store changes
+  useEffect(() => {
+    if (!initLoad && initialSyncComplete && online) {
+      if (isUrlUpdate.current) {
+        isUrlUpdate.current = false
+        return
+      }
+
+      const query = new URLSearchParams()
+      query.set('page', (currentPage + 1).toString())
+      query.set('sortBy', sortBy)
+      query.set('group', groupImages.toString())
+      router.push(`${pathname}?${query.toString()}`)
+    }
+  }, [
+    currentPage,
+    groupImages,
+    sortBy,
+    initLoad,
+    initialSyncComplete,
+    online,
+    router,
+    pathname
+  ])
+
+  // Effect to fetch images when dependencies change
+  useEffect(() => {
+    if (initialSyncComplete) {
       fetchImages()
     }
-  }, [fetchImages, fetchSearchResults, searchInput])
-
-  useEffect(() => {
-    setOffset(currentPage * LIMIT)
-  }, [currentPage])
-
-  const debounceSearchInput = debounce(setSearchInput, 250)
-
-  // Update state when URL query parameters change
-  useEffect(() => {
-    const page = Number(searchParams.get('page') || 1) - 1 // Read page as page - 1
-    const group = searchParams.get('group') !== 'false'
-    const sort = (searchParams.get('sortBy') as 'asc' | 'desc') || 'desc'
-
-    if (currentPage !== page) setCurrentPage(page)
-    if (groupImages !== group) setGroupImages(group)
-    if (sortBy !== sort) setSortBy(sort)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [fetchImages, initialSyncComplete])
 
   return {
+    initLoad,
     images,
     totalImages,
-    fetchImages,
-    setSearchInput: debounceSearchInput,
-    initLoad,
-    currentPage,
-    setCurrentPage,
-    groupImages,
-    setGroupImages,
-    sortBy,
-    setSortBy
+    fetchImages // Exposing the fetchImages function
   }
 }

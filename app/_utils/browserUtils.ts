@@ -3,6 +3,11 @@
 export const appBasepath = () => {
   const path = process.env.NEXT_PUBLIC_API_BASE_PATH
 
+  // People shouldn't add only a slash to the config basepath, but they probably will anyway.
+  if (path === '/') {
+    return ''
+  }
+
   if (path) {
     return path
   }
