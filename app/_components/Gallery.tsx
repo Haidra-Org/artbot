@@ -20,7 +20,6 @@ import GalleryImageCardOverlay from './GalleryImageCardOverlay'
 import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
 import ImageThumbnailV2 from './ImageThumbnailV2'
-import { MasonryLayout } from './Masonry'
 import {
   GalleryStore,
   setGalleryCurrentPage,
@@ -28,7 +27,8 @@ import {
   setGallerySortBy
 } from '../_stores/GalleryStore'
 import { useStore } from 'statery'
-import useFetchImages, { PhotoData } from '../_hooks/useFetchImages'
+import useFetchImages from '../_hooks/useFetchImages'
+import PhotoAlbum from 'react-photo-album'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
@@ -168,32 +168,38 @@ export default function Gallery() {
       </div>
       {/* {showSearch && <ImageSearch setSearchInput={setSearchInput} />} */}
       {images.length > 0 && (
-        <MasonryLayout gap={4}>
-          {images.map((image: PhotoData) => {
+        <PhotoAlbum
+          layout="masonry"
+          spacing={4}
+          photos={images}
+          renderPhoto={(renderPhotoProps) => {
+            const { photo, imageProps } = renderPhotoProps || {}
+            const { alt } = imageProps || {}
+
             return (
               <div
                 className="cursor-pointer"
-                key={image.artbot_id}
+                key={photo.artbot_id}
                 tabIndex={0}
                 onClick={() => {
-                  handleImageOpen(image.artbot_id, image.image_id)
+                  handleImageOpen(photo.artbot_id, photo.image_id)
                 }}
                 onKeyDown={(e) =>
-                  handleImageKeypress(e, image.artbot_id, image.image_id)
+                  handleImageKeypress(e, photo.artbot_id, photo.image_id)
                 }
               >
                 <ImageThumbnailV2
-                  alt={''}
-                  artbot_id={image.artbot_id}
-                  image_id={image.image_id}
-                  height={image.height}
-                  width={image.width}
+                  alt={alt}
+                  artbot_id={photo.artbot_id}
+                  image_id={photo.image_id}
+                  height={photo.height}
+                  width={photo.width}
                 />
-                <GalleryImageCardOverlay imageCount={image.image_count} />
+                <GalleryImageCardOverlay imageCount={photo.image_count} />
               </div>
             )
-          })}
-        </MasonryLayout>
+          }}
+        />
       )}
       {images.length === 0 && !initLoad && (
         <div className="text-center text-2xl">No results found</div>
