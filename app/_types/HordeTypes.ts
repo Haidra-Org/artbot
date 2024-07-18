@@ -49,17 +49,34 @@ export interface HordeGeneration {
 }
 
 export interface HordeJobResponse {
-  finished: number
-  processing: number
-  restarted: number
-  waiting: number
-  done: boolean
+  done: number
   faulted: boolean
-  wait_time: number | null // null if not yet available (ArtBot)
-  queue_position: number | null // null if not yet available (ArtBot)
-  kudos: number
-  is_possible: boolean
+  finished: number
   generations?: HordeGeneration[]
+  is_possible: boolean
+  kudos: number
+  processing: number
+  queue_position: number | null // null if not yet available (ArtBot)
+  restarted: number
+  shared?: boolean
+  wait_time: number | null // null if not yet available (ArtBot)
+  waiting: number
+}
+
+export interface HordePerformance {
+  queued_requests: number
+  queued_text_requests: number
+  worker_count: number
+  text_worker_count: number
+  thread_count: number
+  text_thread_count: number
+  queued_megapixelsteps: number
+  past_minute_megapixelsteps: number
+  queued_forms: number
+  interrogator_count: number
+  interrogator_thread_count: number
+  queued_tokens: number
+  past_minute_tokens: number
 }
 
 export interface HordeTi {

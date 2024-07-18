@@ -25,7 +25,7 @@ class ArtBot_v2 extends Dexie {
   public declare promptsJobMap: Table<PromptsJobMap, number>
 
   public constructor() {
-    super('ArtBot_v2')
+    super(process.env.NEXT_PUBLIC_DEXIE_DB as string)
     this.version(1).stores({
       appSettings: '++id, &key',
       favorites: '++id, artbot_id, image_id, favorited',

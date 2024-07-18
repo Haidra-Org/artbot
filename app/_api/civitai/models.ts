@@ -1,9 +1,9 @@
 import { CivitAiSearchParams } from '@/app/_types/ArtbotTypes'
 import { AppSettings } from '../../_data-models/AppSettings'
 import { Embedding } from '@/app/_data-models/Civitai'
+import { AppConstants } from '@/app/_data-models/AppConstants'
 
 const API_BASE_URL = 'https://civitai.com/api/v1'
-const REQUEST_TIMEOUT_MS = 8000
 
 export interface CivitAiMetadata {
   nextCursor: string
@@ -34,7 +34,7 @@ export const getCivitaiSearchResults = async ({
     const timeoutId = setTimeout(() => {
       console.log('Request timed out')
       resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
-    }, REQUEST_TIMEOUT_MS)
+    }, AppConstants.CIVITAI_API_TIMEOUT_MS)
 
     const messageHandler = (event: MessageEvent) => {
       clearTimeout(timeoutId)

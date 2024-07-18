@@ -54,11 +54,13 @@ export const useImageView = () => {
 export const ImageViewProvider = ({
   artbot_id,
   children,
-  image_id
+  image_id,
+  singleImage = false
 }: {
   artbot_id: string
   children: React.ReactNode
   image_id?: string
+  singleImage?: boolean
 }) => {
   const [imageBlobBuffer, setImageBlobBuffer] = useState<ImageBlobBuffer>()
   const [imageData, setImageData] = useState<ImageDetails>({
@@ -71,11 +73,17 @@ export const ImageViewProvider = ({
 
   const fetchData = useCallback(async () => {
     try {
+      let imageId = currentImageId
       const data = await getImagesForJobFromDexie(artbot_id)
       if (!data) return
 
-      let imageId = currentImageId
-      if (!currentImageId) {
+      if (singleImage && imageId) {
+        data.imageFiles = data.imageFiles.filter(
+          (image) => image.image_id === imageId
+        )
+      }
+
+      if (!imageId) {
         imageId = data.imageFiles[0].image_id
         setImageId(data.imageFiles[0].image_id)
       }
@@ -91,7 +99,7 @@ export const ImageViewProvider = ({
     } catch (err) {
       console.error('ImageViewProvider - Error fetching data:', err)
     }
-  }, [artbot_id, currentImageId])
+  }, [artbot_id, currentImageId, singleImage])
 
   useEffect(() => {
     fetchData()

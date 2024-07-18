@@ -204,7 +204,7 @@ export default function PendingImagesPanel({
       </Section>
       <PendingImagePanelStats setFilter={setFilter} />
       <div className="w-full font-mono text-xs" ref={topDivRef}>
-        Filter: {filter} ({filteredImages.length} image
+        Filter: {filter} ({filteredImages.length} image request
         {filteredImages.length !== 1 ? 's' : ''})
       </div>
       {images.length === 0 && (
@@ -283,7 +283,12 @@ export default function PendingImagesPanel({
                       })
                     } else {
                       NiceModal.show('modal', {
-                        children: <ImageView artbot_id={photo.artbot_id} />
+                        children: (
+                          <ImageView
+                            artbot_id={photo.artbot_id}
+                            showPendingPanel={true}
+                          />
+                        )
                       })
                     }
                   }}
@@ -301,7 +306,6 @@ export default function PendingImagesPanel({
                   <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
                   <PendingImageOverlay
                     artbot_id={photo.artbot_id}
-                    imageCount={photo.image_count}
                     status={photo.hordeStatus}
                   />
                 </div>

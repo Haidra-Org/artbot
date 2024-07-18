@@ -32,10 +32,12 @@ import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
 const MAX_REQUESTS_PER_SECOND = 2
 const REQUEST_INTERVAL = 1000 / MAX_REQUESTS_PER_SECOND
 const CACHE_TIMEOUT = 750
+
 const requestCache = new Map()
+const statusCache = new Map()
 
 let pendingLastChecked = 0
-const pendingInterval = 6025
+const pendingInterval = 1500
 
 // Handles loading any pending images from Dexie on initial app load.
 export const loadPendingImagesFromDexie = async () => {
@@ -102,11 +104,9 @@ export const updatePendingImage = async (
 
 export const downloadImages = async ({
   jobDetails,
-  generations,
   kudos
 }: {
   jobDetails: ArtBotHordeJob
-  generations: HordeGeneration[]
   kudos: number
 }) => {
   const downloadImagesPromise = []
@@ -118,29 +118,52 @@ export const downloadImages = async ({
   const imageErrors: ImageError[] = []
   const gen_metadata: GenMetadata[] = []
 
+  const lastChecked = statusCache.get(jobDetails.horde_id)
+  if (lastChecked && Date.now() - lastChecked < 6025) {
+    return { success: false }
+  }
+
+  if (!lastChecked || Date.now() - lastChecked > 6025) {
+    statusCache.set(jobDetails.horde_id, Date.now())
+  }
+
+  const response = await imageStatus(jobDetails.horde_id)
+
+  if (
+    !response.success ||
+    !('generations' in response) ||
+    !response.generations
+  ) {
+    return { success: false }
+  }
+
+  const generations = response.generations
+
   for (const generation of generations) {
+    if (generation && generation.censored) {
+      images_failed++
+
+      if (!AppSettings.get('allowNsfwImages')) {
+        imageErrors.push({
+          type: 'nsfw',
+          message: 'Image blocked due to user NSFW setting.'
+        })
+      } else {
+        imageErrors.push({
+          type: 'csam',
+          message:
+            'The GPU worker was unable to complete this request. Try again? (Error code: X)'
+        })
+      }
+
+      continue
+    }
+
     const exists = await checkImageExistsInDexie({ image_id: generation.id })
 
     if (!exists) {
-      if (generation.censored) {
-        images_failed++
-
-        if (!AppSettings.get('allowNsfwImages')) {
-          imageErrors.push({
-            type: 'nsfw',
-            message: 'Image blocked due to user NSFW setting.'
-          })
-        } else {
-          imageErrors.push({
-            type: 'csam',
-            message:
-              'The GPU worker was unable to complete this request. Try again? (Error code: X)'
-          })
-        }
-      } else {
-        images_completed++
-        gen_metadata.push(generation.gen_metadata as unknown as GenMetadata)
-      }
+      images_completed++
+      gen_metadata.push(generation.gen_metadata as unknown as GenMetadata)
 
       downloadImagesPromise.push(downloadImage(generation.img))
       generationsList.push(generation)
@@ -187,7 +210,8 @@ export const downloadImages = async ({
     images_completed,
     images_failed,
     errors: imageErrors,
-    gen_metadata
+    gen_metadata,
+    api_response: { ...response }
   })
 
   if (jobDetails.images_requested === images_failed) {
@@ -231,7 +255,7 @@ export const checkPendingJobs = async () => {
     return false
   })
 
-  const imageCheckPromises = filteredHordeIds.map((id) => imageStatus(id))
+  const imageCheckPromises = filteredHordeIds.map((id) => checkImage(id))
 
   const results = await Promise.allSettled(imageCheckPromises)
 
@@ -258,18 +282,32 @@ export const checkPendingJobs = async () => {
             }
           ]
         })
-      } else if (response.done) {
-        const { success } = await downloadImages({
+      } else if (response.finished > 0 || response.done) {
+        // Artificial delay to prevent rate limiting and allow statusCache to update
+        await sleep(50)
+        await downloadImages({
           jobDetails: pendingJobs[index],
-          generations: response.generations,
           kudos: response.kudos
         })
 
-        await updatePendingImage(pendingJobs[index].artbot_id, {
-          status: success ? JobStatus.Done : JobStatus.Error
-        })
+        if (response.done) {
+          const success =
+            pendingJobs[index].images_requested !==
+            pendingJobs[index].images_failed
 
-        updateCompletedJobInPendingImagesStore()
+          await updatePendingImage(pendingJobs[index].artbot_id, {
+            status: success ? JobStatus.Done : JobStatus.Error,
+            images_completed: response.finished
+          })
+          updateCompletedJobInPendingImagesStore()
+        } else {
+          updatePendingImage(pendingJobs[index].artbot_id, {
+            queue_position: response.queue_position,
+            wait_time: response.wait_time,
+            images_completed: response.finished,
+            api_response: { ...response }
+          })
+        }
       } else {
         let status = JobStatus.Queued
 
@@ -394,5 +432,5 @@ export const initJobController = () => {
 
   setInterval(() => {
     checkPendingJobs()
-  }, 500)
+  }, 2000)
 }

@@ -8,18 +8,29 @@ import ImageViewInfoContainer from './ImageViewInfoContainer'
 export default function ImageView({
   artbot_id,
   image_id,
-  onDelete = () => {}
+  onDelete = () => {},
+  showPendingPanel = false,
+  singleImage = false
 }: {
   artbot_id: string
   image_id?: string
   onDelete?: () => void
+  showPendingPanel?: boolean
+  singleImage?: boolean
 }) {
   return (
-    <ImageViewProvider artbot_id={artbot_id} image_id={image_id as string}>
+    <ImageViewProvider
+      artbot_id={artbot_id}
+      image_id={image_id as string}
+      singleImage={singleImage}
+    >
       <div className="mt-[24px]">
         <div className={styles.ImageViewer}>
           <ImageViewImage />
-          <ImageViewInfoContainer onDelete={onDelete} />
+          <ImageViewInfoContainer
+            showPendingPanel={showPendingPanel}
+            onDelete={onDelete}
+          />
         </div>
       </div>
     </ImageViewProvider>

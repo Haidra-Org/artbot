@@ -3,6 +3,7 @@
 import React from 'react'
 import {
   IconAlertTriangle,
+  IconCheck,
   IconLibraryPhoto,
   IconPhotoUp,
   IconX
@@ -17,11 +18,9 @@ import { formatPendingPercentage } from '@/app/_utils/numberUtils'
 
 function PendingImageOverlay({
   artbot_id,
-  imageCount = 1,
   status
 }: {
   artbot_id: string
-  imageCount?: number
   status: JobStatus
 }) {
   const [pendingJob] = usePendingJob(artbot_id)
@@ -50,8 +49,16 @@ function PendingImageOverlay({
     serverWorkingMessage = `Queued... ${pendingJob.queue_position ? `(Position #${pendingJob.queue_position})` : ''}`
   }
 
+  let imagesProcessingMsg = ''
+
+  if (pendingJob.processing === 1) {
+    imagesProcessingMsg = '(1 image)'
+  } else if (pendingJob.processing > 1) {
+    imagesProcessingMsg = `(${pendingJob.processing} images)`
+  }
+
   if (status === JobStatus.Processing) {
-    serverWorkingMessage = `Processing...`
+    serverWorkingMessage = `Processing... ${imagesProcessingMsg}`
   }
 
   return (
@@ -179,7 +186,7 @@ function PendingImageOverlay({
             {pendingJob.init_wait_time &&
             pendingJob.wait_time === 0 &&
             pendingJob.wait_time < pendingJob.init_wait_time ? (
-              <span>Finishing up...</span>
+              <span>Finishing up... {imagesProcessingMsg}</span>
             ) : (
               <span></span>
             )}
@@ -233,10 +240,16 @@ function PendingImageOverlay({
           />
         </div>
       )}
-      {imageCount > 1 && (
+      {status !== JobStatus.Done && pendingJob.images_completed >= 0 && (
+        <div className={styles.ImagesCompleted}>
+          <IconCheck stroke={1.5} color="green" />
+          {pendingJob.images_completed} / {pendingJob.images_requested}
+        </div>
+      )}
+      {status === JobStatus.Done && pendingJob.images_completed > 1 && (
         <div className={styles.ImageCount}>
           <IconLibraryPhoto stroke={1.5} />
-          {imageCount}
+          {pendingJob.images_completed}
         </div>
       )}
     </div>

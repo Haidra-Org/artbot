@@ -110,3 +110,20 @@
   opacity: .75;
   width: 40px;
 }
+
+.ImagesCompleted {
+  align-items: center;
+  background-color: black;
+  top: 0;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  font-size: 12px;
+  gap: 4px;
+  height: 24px;
+  padding: 4px;
+  left: 0;
+  position: absolute;
+  opacity: .75;
+  width: auto;
+}

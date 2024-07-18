@@ -13,6 +13,7 @@ import Modal from '@/app/_components/Modal'
 
 NiceModal.register('delete', Modal) // Appears on top of other image modals
 NiceModal.register('embeddingDetails', Modal) // Appears on top of LoRA search modal
+NiceModal.register('hordePerfModal', Modal)
 NiceModal.register('modal', Modal)
 
 export default function ModalProvider({ children }: { children: ReactNode }) {

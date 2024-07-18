@@ -14,31 +14,27 @@ import {
   IconSortDescending
 } from '@tabler/icons-react'
 
-import useFetchImages, { PhotoData } from '../_hooks/useFetchImages'
 import ImageView from './ImageView'
 import Button from './Button'
 import GalleryImageCardOverlay from './GalleryImageCardOverlay'
 import { viewedPendingPage } from '../_stores/PendingImagesStore'
 import Section from './Section'
 import ImageThumbnailV2 from './ImageThumbnailV2'
-import { MasonryLayout } from './Masonry'
+import {
+  GalleryStore,
+  setGalleryCurrentPage,
+  setGalleryGroupImages,
+  setGallerySortBy
+} from '../_stores/GalleryStore'
+import { useStore } from 'statery'
+import useFetchImages from '../_hooks/useFetchImages'
+import PhotoAlbum from 'react-photo-album'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
 
-  const {
-    currentPage,
-    fetchImages,
-    groupImages,
-    images,
-    initLoad,
-    setCurrentPage,
-    setGroupImages,
-    // setSearchInput,
-    setSortBy,
-    sortBy,
-    totalImages
-  } = useFetchImages()
+  const { currentPage, groupImages, sortBy } = useStore(GalleryStore)
+  const { fetchImages, images, initLoad, totalImages } = useFetchImages()
 
   const handleImageOpen = useCallback(
     (artbot_id: string, image_id?: string) => {
@@ -48,11 +44,11 @@ export default function Gallery() {
             artbot_id={artbot_id}
             image_id={!groupImages ? image_id : undefined}
             onDelete={fetchImages}
+            singleImage={!groupImages}
           />
         ),
         modalStyle: {
-          maxWidth: '1536px',
-          width: `calc(100% - 12px)`
+          maxWidth: '1536px'
         }
       })
     },
@@ -98,8 +94,8 @@ export default function Gallery() {
             </Button> */}
             <Button
               onClick={() => {
-                setCurrentPage(0)
-                setGroupImages(!groupImages)
+                setGalleryCurrentPage(0)
+                setGalleryGroupImages(!groupImages)
               }}
               title="Group or ungroup images by batched image request"
             >
@@ -118,7 +114,9 @@ export default function Gallery() {
               </span>
             </Button>
             <Button
-              onClick={() => setSortBy(sortBy === 'desc' ? 'asc' : 'desc')}
+              onClick={() =>
+                setGallerySortBy(sortBy === 'desc' ? 'asc' : 'desc')
+              }
             >
               <span className="row gap-1">
                 {sortBy === 'desc' ? (
@@ -170,32 +168,38 @@ export default function Gallery() {
       </div>
       {/* {showSearch && <ImageSearch setSearchInput={setSearchInput} />} */}
       {images.length > 0 && (
-        <MasonryLayout gap={4}>
-          {images.map((image: PhotoData) => {
+        <PhotoAlbum
+          layout="columns"
+          spacing={0}
+          photos={images}
+          renderPhoto={(renderPhotoProps) => {
+            const { photo, imageProps } = renderPhotoProps || {}
+            const { alt } = imageProps || {}
+
             return (
               <div
-                className="cursor-pointer"
-                key={image.artbot_id}
+                className="cursor-pointer m-[2px]"
+                key={photo.artbot_id}
                 tabIndex={0}
                 onClick={() => {
-                  handleImageOpen(image.artbot_id, image.image_id)
+                  handleImageOpen(photo.artbot_id, photo.image_id)
                 }}
                 onKeyDown={(e) =>
-                  handleImageKeypress(e, image.artbot_id, image.image_id)
+                  handleImageKeypress(e, photo.artbot_id, photo.image_id)
                 }
               >
                 <ImageThumbnailV2
-                  alt={''}
-                  artbot_id={image.artbot_id}
-                  image_id={image.image_id}
-                  height={image.height}
-                  width={image.width}
+                  alt={alt}
+                  artbot_id={photo.artbot_id}
+                  image_id={photo.image_id}
+                  height={photo.height}
+                  width={photo.width}
                 />
-                <GalleryImageCardOverlay imageCount={image.image_count} />
+                <GalleryImageCardOverlay imageCount={photo.image_count} />
               </div>
             )
-          })}
-        </MasonryLayout>
+          }}
+        />
       )}
       {images.length === 0 && !initLoad && (
         <div className="text-center text-2xl">No results found</div>
@@ -207,7 +211,7 @@ export default function Gallery() {
             nextLabel="⇢"
             forcePage={currentPage}
             onPageChange={(val) => {
-              setCurrentPage(Number(val.selected))
+              setGalleryCurrentPage(Number(val.selected))
               window.scrollTo(0, 0)
             }}
             containerClassName="row gap-0"

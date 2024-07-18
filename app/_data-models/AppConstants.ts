@@ -3,6 +3,8 @@ export class AppConstants {
 
   static AI_HORDE_PROD_URL = 'https://aihorde.net'
 
+  static CIVITAI_API_TIMEOUT_MS = 15000
+
   /**
    * Maximum number of simulatenous jobs that can be running on the Horde.
    * Should be lower for anon users. Logged in users should be able to increase this in settings app.
