@@ -116,6 +116,15 @@ export default function useFetchImages(): FetchImagesResult {
 
   // Effect to update URL when store changes
   useEffect(() => {
+    if (
+      pathname === '/images' &&
+      currentPage === 0 &&
+      sortBy === 'desc' &&
+      groupImages
+    ) {
+      return
+    }
+
     if (initialSyncComplete && online) {
       const query = new URLSearchParams()
       query.set('page', (currentPage + 1).toString())
