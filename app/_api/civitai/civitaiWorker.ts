@@ -59,6 +59,7 @@ const buildQuery = (
 
 const getCivitaiSearchResults = async (
   searchParams: CivitAiSearchParams,
+  userBaseModelFilters: string[] = [],
   API_BASE_URL: string
 ): Promise<CivitAiApiResponse> => {
   let fetchUrl: string
@@ -66,7 +67,7 @@ const getCivitaiSearchResults = async (
   if (searchParams.url) {
     fetchUrl = searchParams.url
   } else {
-    const queryParams = buildQuery(searchParams)
+    const queryParams = buildQuery(searchParams, userBaseModelFilters)
     fetchUrl = `${API_BASE_URL}/models?${queryParams}`
   }
 
@@ -90,7 +91,11 @@ self.addEventListener('message', async (event: MessageEvent) => {
   }
 
   try {
-    const result = await getCivitaiSearchResults(searchParams, API_BASE_URL)
+    const result = await getCivitaiSearchResults(
+      searchParams,
+      userBaseModelFilters,
+      API_BASE_URL
+    )
     searchCache.set(cacheKey, result)
     self.postMessage({ type: 'result', data: result, cached: false })
   } catch (error: unknown) {
