@@ -96,7 +96,7 @@ export default function ImageDetails({
     sectionTitle = 'Request parameters'
   }
 
-  if (display === 'response') {
+  if (display === 'image-response' || display === 'job-response') {
     sectionTitle = 'API response'
   }
 
