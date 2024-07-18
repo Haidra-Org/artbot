@@ -49,17 +49,18 @@ export interface HordeGeneration {
 }
 
 export interface HordeJobResponse {
-  finished: number
-  processing: number
-  restarted: number
-  waiting: number
-  done: boolean
+  done: number
   faulted: boolean
-  wait_time: number | null // null if not yet available (ArtBot)
-  queue_position: number | null // null if not yet available (ArtBot)
-  kudos: number
-  is_possible: boolean
+  finished: number
   generations?: HordeGeneration[]
+  is_possible: boolean
+  kudos: number
+  processing: number
+  queue_position: number | null // null if not yet available (ArtBot)
+  restarted: number
+  shared?: boolean
+  wait_time: number | null // null if not yet available (ArtBot)
+  waiting: number
 }
 
 export interface HordePerformance {

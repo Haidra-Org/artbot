@@ -28,7 +28,7 @@ export class ArtBotHordeJob implements HordeJobResponse {
   processing: number
   restarted: number
   waiting: number
-  done: boolean
+  done: number
   faulted: boolean
   wait_time: number | null
   queue_position: number | null
@@ -61,7 +61,7 @@ export class ArtBotHordeJob implements HordeJobResponse {
     this.processing = params.processing || 0
     this.restarted = params.restarted || 0
     this.waiting = params.waiting || 0
-    this.done = params.done || false
+    this.done = params.done || 0
     this.faulted = params.faulted || false
     this.wait_time = params.wait_time || null
     this.queue_position = params.queue_position || null

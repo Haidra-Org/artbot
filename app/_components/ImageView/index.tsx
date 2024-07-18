@@ -9,11 +9,13 @@ export default function ImageView({
   artbot_id,
   image_id,
   onDelete = () => {},
+  showPendingPanel = false,
   singleImage = false
 }: {
   artbot_id: string
   image_id?: string
   onDelete?: () => void
+  showPendingPanel?: boolean
   singleImage?: boolean
 }) {
   return (
@@ -25,7 +27,10 @@ export default function ImageView({
       <div className="mt-[24px]">
         <div className={styles.ImageViewer}>
           <ImageViewImage />
-          <ImageViewInfoContainer onDelete={onDelete} />
+          <ImageViewInfoContainer
+            showPendingPanel={showPendingPanel}
+            onDelete={onDelete}
+          />
         </div>
       </div>
     </ImageViewProvider>

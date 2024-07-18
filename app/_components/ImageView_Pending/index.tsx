@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import Section from '../Section'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getJobsFromDexieById } from '@/app/_db/hordeJobs'
-import { ImageError, ImageRequest, JobStatus } from '@/app/_types/ArtbotTypes'
+import { ImageRequest, JobStatus } from '@/app/_types/ArtbotTypes'
 import {
   IconEdit,
   IconInfoCircle,
@@ -15,50 +14,23 @@ import {
 } from '@tabler/icons-react'
 import ImageDetails from '../ImageDetails'
 import { JobDetails } from '@/app/_hooks/useImageDetails'
-import { useStore } from 'statery'
-import {
-  PendingImagesStore,
-  deletePendingImageFromAppState
-} from '@/app/_stores/PendingImagesStore'
+import { deletePendingImageFromAppState } from '@/app/_stores/PendingImagesStore'
 import Button from '../Button'
 import cloneDeep from 'clone-deep'
 import { updateInputTimstamp } from '@/app/_stores/CreateImageStore'
 import NiceModal from '@ebay/nice-modal-react'
 import { updatePendingImage } from '@/app/_controllers/pendingJobController'
 import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
-import { formatPendingPercentage } from '@/app/_utils/numberUtils'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
-import { formatJobStatus } from '@/app/_utils/hordeUtils'
 import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
+import PendingImageViewStatus from './ImageView_PendingStatus'
 
 interface PendingImageViewProps {
   artbot_id: string
 }
 
-const countErrorMessages = (
-  errors: ImageError[]
-): { message: string; count: number }[] => {
-  const errorCountMap: { [key: string]: number } = errors.reduce(
-    (acc: { [key: string]: number }, error: ImageError) => {
-      if (acc[error.message]) {
-        acc[error.message] += 1
-      } else {
-        acc[error.message] = 1
-      }
-      return acc
-    },
-    {}
-  )
-
-  return Object.entries(errorCountMap).map(([message, count]) => ({
-    message,
-    count
-  }))
-}
-
 export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
   const router = useRouter()
-  const { pendingImages } = useStore(PendingImagesStore)
   const [imageDetails, setImageDetails] = useState<ImageRequest>()
   const [jobDetails, setJobDetails] = useState<ArtBotHordeJob>()
 
@@ -66,14 +38,6 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
     jobDetails &&
     (jobDetails.status === JobStatus.Queued ||
       jobDetails.status === JobStatus.Processing)
-
-  const pendingImage = pendingImages.find(
-    (image) => image.artbot_id === artbot_id
-  )
-
-  const imageError =
-    pendingImage?.status === JobStatus.Error ||
-    pendingImage?.images_failed === pendingImage?.images_requested
 
   const handleCancelPendingJob = useCallback(async () => {
     if (!jobDetails || !jobDetails.horde_id) return
@@ -107,81 +71,13 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
     fetchData()
   }, [artbot_id])
 
-  const JobErrorsComponent = (errors: ImageError[] = []) => {
-    const countedErrors = countErrorMessages(errors)
-
-    return (
-      <div className="mt-2">
-        <strong>Errors:</strong>{' '}
-        {countedErrors.length > 0 && (
-          <div>
-            {countedErrors.map(({ message, count }, idx) => (
-              <div key={idx} className={`image_error_${idx} text-xs`}>
-                ({count} {count === 1 ? 'image' : 'images'}) {message}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  const pctComplete = formatPendingPercentage({
-    init: pendingImage?.init_wait_time as number,
-    remaining: pendingImage?.wait_time as number
-  })
-
   return (
     <div className="col w-full justify-center">
       <h2 className="row font-bold">Pending Image Details</h2>
       <div className="row font-bold text-sm text-white">
         <IconInfoCircle /> Job Details
       </div>
-      <Section className="p-0">
-        <div className="text-white font-mono p-0 w-full text-[14px] col gap-0">
-          <div>
-            <strong>Job status:</strong>{' '}
-            {imageError
-              ? 'AI Horde Error'
-              : formatJobStatus(pendingImage?.status as JobStatus)}
-          </div>
-          {pendingImage &&
-            pendingImage?.queue_position !== null &&
-            pendingImage?.queue_position > 0 && (
-              <div>
-                <strong>Queue position:</strong> {pendingImage?.queue_position}
-              </div>
-            )}
-          {jobDetails?.status !== JobStatus.Done &&
-            jobDetails?.status !== JobStatus.Error && (
-              <div>
-                <strong>Wait time:</strong> {pendingImage?.wait_time} seconds{' '}
-                {pctComplete ? <span>({pctComplete}% complete)</span> : ''}
-              </div>
-            )}
-          <div>
-            <strong>Images requested:</strong> {jobDetails?.images_requested}
-          </div>
-          {jobDetails?.images_completed ? (
-            <div>
-              <strong>Images completed:</strong> {jobDetails?.images_completed}
-            </div>
-          ) : (
-            ''
-          )}
-          {jobDetails?.images_failed ? (
-            <div>
-              <strong>Images failed to complete:</strong>{' '}
-              {jobDetails?.images_failed}
-            </div>
-          ) : (
-            ''
-          )}
-          {jobDetails?.errors &&
-            jobDetails?.errors.length > 0 &&
-            JobErrorsComponent(jobDetails?.errors)}
-        </div>
-      </Section>
+      <PendingImageViewStatus artbot_id={artbot_id} />
       <div className="col gap-1 w-full">
         <div className="row gap-2 text-sm font-bold">
           <IconPlaylistAdd stroke={1} />

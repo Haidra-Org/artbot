@@ -8,11 +8,14 @@ import useImageDetails, { JobDetails } from '@/app/_hooks/useImageDetails'
 import { useState } from 'react'
 import { formatStylePresetPrompt } from '@/app/_utils/stringUtils'
 import ImageViewSourceImage from './ImageViewSourceImage'
+import PendingImageViewStatus from '../ImageView_Pending/ImageView_PendingStatus'
 
 export default function ImageViewInfoContainer({
-  onDelete
+  onDelete,
+  showPendingPanel = false
 }: {
   onDelete: () => void
+  showPendingPanel?: boolean
 }) {
   const [showPromptPreset, setShowPromptPreset] = useState(false)
   const { currentImageId, imageData, imageId } = useImageView()
@@ -24,6 +27,9 @@ export default function ImageViewInfoContainer({
       <div className="row w-full justify-center">
         <ImageViewActions currentImageId={currentImageId} onDelete={onDelete} />
       </div>
+      {showPendingPanel && (
+        <PendingImageViewStatus artbot_id={imageRequest?.artbot_id} />
+      )}
       <div className="col gap-1 w-full">
         <div className="row gap-2 text-sm font-bold">
           <IconPlaylistAdd stroke={1} />

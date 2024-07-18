@@ -1,27 +1,12 @@
 import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
-import { HordeGeneration } from '@/app/_types/HordeTypes'
-
-interface HordeSuccessResponse {
-  generations: HordeGeneration[]
-  shared: boolean
-  finished: number
-  processing: number
-  restarted: number
-  waiting: number
-  done: boolean
-  faulted: boolean
-  wait_time: number
-  queue_position: number
-  kudos: number
-  is_possible: boolean
-}
+import { HordeJobResponse } from '@/app/_types/HordeTypes'
 
 interface HordeErrorResponse {
   message: string
 }
 
-export interface StatusSuccessResponse extends HordeSuccessResponse {
+export interface StatusSuccessResponse extends HordeJobResponse {
   success: boolean
   message?: string
 }
@@ -57,7 +42,7 @@ export default async function imageStatus(
     )
 
     statusCode = res.status
-    const data: HordeSuccessResponse | HordeErrorResponse = await res.json()
+    const data: HordeJobResponse | HordeErrorResponse = await res.json()
 
     if ('done' in data) {
       return {

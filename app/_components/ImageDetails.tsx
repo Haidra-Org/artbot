@@ -27,7 +27,7 @@ export default function ImageDetails({
   imageDetails: JobDetails
 }) {
   const [display, setDisplay] = useState<
-    'info' | 'job' | 'request' | 'response'
+    'info' | 'job' | 'job-response' | 'request' | 'image-response'
   >('info')
   const [rawParams, setRawParams] = useState<{
     apiParams: HordeApiParams
@@ -68,7 +68,7 @@ export default function ImageDetails({
     if (!navigator.clipboard) {
       toastController({
         message:
-          'Unable to copy image parameterss to clipboard. JSON output to browser console.',
+          'Unable to copy image parameters to clipboard. JSON output to browser console.',
         type: 'error'
       })
 
@@ -126,11 +126,19 @@ export default function ImageDetails({
           >
             Request parameters
           </MenuItem>
+          {jobDetails.status === JobStatus.Done && (
+            <MenuItem
+              className="font-normal"
+              onClick={() => setDisplay('image-response')}
+            >
+              API response for image
+            </MenuItem>
+          )}
           <MenuItem
             className="font-normal"
-            onClick={() => setDisplay('response')}
+            onClick={() => setDisplay('job-response')}
           >
-            API response
+            API response for job
           </MenuItem>
         </DropdownMenu>
       </div>
@@ -413,7 +421,7 @@ export default function ImageDetails({
           </pre>
         </div>
       )}
-      {display === 'response' && jobDetails.status === JobStatus.Done && (
+      {display === 'image-response' && (
         <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
           <pre
             className="whitespace-pre-wrap"
@@ -425,34 +433,30 @@ export default function ImageDetails({
           </pre>
         </div>
       )}
-      {display === 'response' &&
-        jobDetails.status !== JobStatus.Done &&
-        jobDetails.api_response && (
-          <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
-            <pre
-              className="whitespace-pre-wrap"
-              style={{
-                overflowWrap: 'break-word'
-              }}
-            >
-              {JSON.stringify(jobDetails.api_response, null, 2)}
-            </pre>
-          </div>
-        )}
-      {display === 'response' &&
-        jobDetails.status !== JobStatus.Done &&
-        !jobDetails.api_response && (
-          <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
-            <pre
-              className="whitespace-pre-wrap"
-              style={{
-                overflowWrap: 'break-word'
-              }}
-            >
-              Waiting for API response from AI Horde.
-            </pre>
-          </div>
-        )}
+      {display === 'job-response' && jobDetails.api_response && (
+        <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
+          <pre
+            className="whitespace-pre-wrap"
+            style={{
+              overflowWrap: 'break-word'
+            }}
+          >
+            {JSON.stringify(jobDetails.api_response, null, 2)}
+          </pre>
+        </div>
+      )}
+      {display === 'job-response' && !jobDetails.api_response && (
+        <div className="bg-[#1E293B] text-white font-mono p-2 w-full text-[14px] col gap-0">
+          <pre
+            className="whitespace-pre-wrap"
+            style={{
+              overflowWrap: 'break-word'
+            }}
+          >
+            Waiting for API response from AI Horde.
+          </pre>
+        </div>
+      )}
       <button
         className="cursor-pointer row text-[14px]"
         tabIndex={0}
