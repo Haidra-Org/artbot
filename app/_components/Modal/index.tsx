@@ -17,21 +17,8 @@ interface ModalProps {
   onClose: () => void
 }
 
-function DisableBack(closeModal: () => void) {
-  // Push a new state to the history
-  window.history.pushState({ modalOpen: true }, '', window.location.href)
-
-  // Intercept the back button action
-  window.onpopstate = function onPopState(event) {
-    if (event.state && event.state.modalOpen) {
-      if (closeModal) {
-        closeModal()
-      }
-      // Remove the state we just added
-      window.history.replaceState(null, '', window.location.href)
-    }
-  }
-}
+// Global modal stack
+let modalStack: string[] = []
 
 function Modal({
   children,
@@ -57,31 +44,47 @@ function Modal({
   }, [onClose, modal])
 
   useEffect(() => {
+    if (modal.visible) {
+      if (!modalStack.includes(modal.id)) {
+        modalStack.push(modal.id)
+        window.history.pushState({ modalId: modal.id }, '')
+      }
+    } else {
+      modalStack = modalStack.filter((id) => id !== modal.id)
+      if (modalStack.length > 0) {
+        window.history.replaceState(
+          { modalId: modalStack[modalStack.length - 1] },
+          ''
+        )
+      }
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state as { modalId?: string } | null
+      if (!state || !state.modalId || state.modalId !== modal.id) {
+        handleClose()
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [modal.id, modal.visible, handleClose])
+
+  useEffect(() => {
     if (fullscreen) {
       setCloseOnEsc(false)
     } else if (!fullscreen) {
-      setTimeout(() => setCloseOnEsc(true), 250)
+      const timer = setTimeout(() => setCloseOnEsc(true), 250)
+      return () => clearTimeout(timer)
     }
   }, [fullscreen])
 
-  // Need to utilize ref here to handle enabling or disabling closeOnEsc
   useEffect(() => {
     closeOnEscRef.current = closeOnEsc
   }, [closeOnEsc])
-
-  // Allows back button to close button to close modal.
-  useEffect(() => {
-    if (modal.visible) {
-      DisableBack(() => modal.remove())
-    }
-
-    return () => {
-      window.onpopstate = null
-      if (modal.visible) {
-        window.history.replaceState(null, '', window.location.href)
-      }
-    }
-  }, [modal])
 
   return (
     <ResponsiveModal
