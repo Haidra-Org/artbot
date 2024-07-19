@@ -35,6 +35,7 @@ import {
 import { AppConstants } from '@/app/_data-models/AppConstants'
 import { ImageBlobBuffer, ImageType } from '@/app/_data-models/ImageFile_Dexie'
 import Image from '../Image'
+import { sleep } from '@/app/_utils/sleep'
 
 function ImageViewActions({
   onDelete
@@ -222,6 +223,12 @@ function ImageViewActions({
                 )
 
                 NiceModal.remove('modal')
+
+                // Why sleep here?
+                // The Modal component disabled pop state so that a back click triggers a modal close.
+                // As such, that will disable the ability to push to a new page.
+                // Waiting for a moment prevents that.
+                await sleep(100)
                 router.push('/create')
               }}
             >
