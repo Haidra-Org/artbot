@@ -169,7 +169,7 @@ export default function Gallery() {
       {/* {showSearch && <ImageSearch setSearchInput={setSearchInput} />} */}
       {images.length > 0 && (
         <PhotoAlbum
-          layout="columns"
+          layout="rows"
           spacing={0}
           photos={images}
           renderPhoto={(renderPhotoProps) => {
