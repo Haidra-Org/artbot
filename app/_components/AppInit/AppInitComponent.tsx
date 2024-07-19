@@ -9,10 +9,6 @@ import useHordeApiKey from '../../_hooks/useHordeApiKey'
 import { AppSettings } from '../../_data-models/AppSettings'
 import { useEffectOnce } from '../../_hooks/useEffectOnce'
 import { initDexie } from '../../_db/dexie'
-import {
-  initJobController,
-  loadPendingImagesFromDexie
-} from '../../_controllers/pendingJobController'
 import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { useEffect } from 'react'
 import { setAvailableModels, setImageModels } from '@/app/_stores/ModelStore'
@@ -20,6 +16,8 @@ import { AppConstants } from '@/app/_data-models/AppConstants'
 import { useRouter } from 'next/navigation'
 import { setAppOnlineStatus } from '@/app/_stores/AppStore'
 import { appBasepath } from '@/app/_utils/browserUtils'
+import { loadPendingImagesFromDexie } from '@/app/_controllers/pendingJobs/loadPendingImages'
+import { initJobController } from '@/app/_controllers/pendingJobs'
 
 export default function AppInitComponent({
   modelsAvailable,

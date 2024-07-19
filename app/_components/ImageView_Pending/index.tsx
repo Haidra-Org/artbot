@@ -19,11 +19,11 @@ import Button from '../Button'
 import cloneDeep from 'clone-deep'
 import { updateInputTimstamp } from '@/app/_stores/CreateImageStore'
 import NiceModal from '@ebay/nice-modal-react'
-import { updatePendingImage } from '@/app/_controllers/pendingJobController'
 import { deleteJobFromDexie } from '@/app/_db/jobTransactions'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
 import PendingImageViewStatus from './ImageView_PendingStatus'
+import { updatePendingImage } from '@/app/_controllers/pendingJobs/updatePendingImage'
 
 interface PendingImageViewProps {
   artbot_id: string
