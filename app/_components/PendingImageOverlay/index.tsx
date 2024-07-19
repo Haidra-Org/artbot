@@ -3,7 +3,6 @@
 import React from 'react'
 import {
   IconAlertTriangle,
-  IconCheck,
   IconLibraryPhoto,
   IconPhotoCheck,
   IconPhotoUp,

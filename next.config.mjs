@@ -17,7 +17,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_BASE_PATH: BASE_PATH,
     NEXT_PUBLIC_DEXIE_DB: DEXIE_DB,
-    NEXT_TELEMETRY_DISABLED: 1 // disable Vercel / NextJS telemetry
+    NEXT_TELEMETRY_DISABLED: "1" // disable Vercel / NextJS telemetry
   },
   output: 'standalone'
 }

@@ -190,6 +190,7 @@ export const downloadImages = async ({
     images_failed,
     errors: imageErrors,
     gen_metadata,
+    // @ts-expect-error TODO: FIXME: handle this properly
     api_response: { ...response }
   })
 }
