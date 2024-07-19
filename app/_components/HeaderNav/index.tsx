@@ -58,8 +58,8 @@ export default function HeaderNav() {
         <div className="row gap-4">
           <HeaderNavPendingJobs />
           <HeaderNavUserWarning />
-          <UserKudos />
           <HeaderNavHordePerformance />
+          <UserKudos />
         </div>
       </div>
     </header>

@@ -3,8 +3,8 @@
 import React from 'react'
 import {
   IconAlertTriangle,
-  IconCheck,
   IconLibraryPhoto,
+  IconPhotoCheck,
   IconPhotoUp,
   IconX
 } from '@tabler/icons-react'
@@ -242,7 +242,7 @@ function PendingImageOverlay({
       )}
       {status !== JobStatus.Done && pendingJob.images_completed >= 0 && (
         <div className={styles.ImagesCompleted}>
-          <IconCheck stroke={1.5} color="green" />
+          <IconPhotoCheck stroke={1} size={20} />
           {pendingJob.images_completed} / {pendingJob.images_requested}
         </div>
       )}

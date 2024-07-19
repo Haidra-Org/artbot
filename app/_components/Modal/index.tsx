@@ -17,6 +17,22 @@ interface ModalProps {
   onClose: () => void
 }
 
+function DisableBack(closeModal: () => void) {
+  // Push a new state to the history
+  window.history.pushState({ modalOpen: true }, '', window.location.href)
+
+  // Intercept the back button action
+  window.onpopstate = function onPopState(event) {
+    if (event.state && event.state.modalOpen) {
+      if (closeModal) {
+        closeModal()
+      }
+      // Remove the state we just added
+      window.history.replaceState(null, '', window.location.href)
+    }
+  }
+}
+
 function Modal({
   children,
   fullscreen = false,
@@ -52,6 +68,20 @@ function Modal({
   useEffect(() => {
     closeOnEscRef.current = closeOnEsc
   }, [closeOnEsc])
+
+  // Allows back button to close button to close modal.
+  useEffect(() => {
+    if (modal.visible) {
+      DisableBack(() => modal.remove())
+    }
+
+    return () => {
+      window.onpopstate = null
+      if (modal.visible) {
+        window.history.replaceState(null, '', window.location.href)
+      }
+    }
+  }, [modal])
 
   return (
     <ResponsiveModal

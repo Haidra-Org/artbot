@@ -28,6 +28,7 @@
     ]
   },
   "include": [
+    "ecosystem.config.js",
     "next.config.mjs",
     "next-env.d.ts",
     "**/*.ts",

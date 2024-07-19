@@ -49,7 +49,7 @@ export interface HordeGeneration {
 }
 
 export interface HordeJobResponse {
-  done: number
+  done: boolean
   faulted: boolean
   finished: number
   generations?: HordeGeneration[]
