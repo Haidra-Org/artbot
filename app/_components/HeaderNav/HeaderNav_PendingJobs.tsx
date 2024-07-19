@@ -23,9 +23,9 @@ export default function HeaderNavPendingJobs() {
       >
         <div className="relative text-black dark:text-white">
           {pendingImages.length === 0 ? (
-            <IconPhotoCheck stroke={1} />
+            <IconPhotoCheck stroke={1} size={20} />
           ) : (
-            <IconPhoto stroke={1} />
+            <IconPhoto stroke={1} size={20} />
           )}
           {completedJobsNotViewed > 0 && (
             <span
