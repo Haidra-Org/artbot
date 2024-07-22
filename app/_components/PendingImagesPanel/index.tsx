@@ -23,6 +23,7 @@ import PendingImageView from '../ImageView_Pending'
 import PendingImagePanelStats from '../PendingImagePanelStats'
 import FilterButton from './PendingImagesPanel_FilterButton'
 import ClearButton from './PendingImagesPanel_ClearButton'
+import { getBaseUrl } from '@/app/_utils/urlUtils'
 
 interface PendingImagesPanelProps {
   scrollContainer?: boolean
@@ -256,7 +257,7 @@ export default function PendingImagesPanel({
                     marginBottom: layoutOptions.spacing,
                     position: 'relative',
                     width: layout.width,
-                    backgroundImage: 'url(/tile.png)',
+                    backgroundImage: `url(${getBaseUrl()}/tile.png)`,
                     backgroundSize: 'auto',
                     backgroundRepeat: 'repeat',
                     boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
