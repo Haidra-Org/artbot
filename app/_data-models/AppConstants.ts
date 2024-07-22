@@ -1,7 +1,8 @@
 export class AppConstants {
   static AI_HORDE_ANON_KEY = '0000000000'
 
-  static AI_HORDE_PROD_URL = 'https://aihorde.net'
+  static AI_HORDE_PROD_URL =
+    process.env.NEXT_HORDE_API_HOST || 'https://aihorde.net'
 
   static CIVITAI_API_TIMEOUT_MS = 15000
 

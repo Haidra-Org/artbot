@@ -15,7 +15,7 @@ import { deleteJobFromDexie } from '../../_db/jobTransactions'
 import ParticleAnimation from '../ParticleAnimation'
 import styles from './pendingImageOverlay.module.css'
 import { formatPendingPercentage } from '@/app/_utils/numberUtils'
-import { getBaseUrl } from '@/app/_utils/urlUtils'
+import { appBasepath } from '@/app/_utils/browserUtils'
 
 function PendingImageOverlay({
   artbot_id,
@@ -210,7 +210,7 @@ function PendingImageOverlay({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundImage: `url(${getBaseUrl()}//tile.png)`,
+            backgroundImage: `url(${appBasepath()}/tile.png)`,
             backgroundSize: 'auto',
             backgroundRepeat: 'repeat',
             boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
