@@ -39,6 +39,7 @@
     "clone-deep": "4.0.1",
     "clsx": "2.1.1",
     "dexie": "4.0.8",
+    "dirty-json": "0.9.2",
     "embla-carousel-react": "8.1.6",
     "file-saver": "2.0.5",
     "isomorphic-dompurify": "2.13.0",

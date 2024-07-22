@@ -6,3 +6,5 @@ interface Blob {
 }
 
 declare global {}
+
+declare module 'dirty-json'

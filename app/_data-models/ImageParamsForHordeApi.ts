@@ -455,6 +455,79 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     return this
   }
 
+  static fromApiParams(apiParams: HordeApiParams): PromptInput {
+    const promptInput = new PromptInput()
+
+    // Extract prompt and negative prompt
+    const [prompt, negative] = apiParams.prompt.split('###')
+    promptInput.prompt = prompt
+    promptInput.negative = negative || ''
+
+    // Map params
+    promptInput.cfg_scale = apiParams.params.cfg_scale
+    promptInput.seed = apiParams.params.seed || ''
+    promptInput.sampler = apiParams.params.sampler_name || 'k_dpmpp_sde'
+    promptInput.height = apiParams.params.height
+    promptInput.width = apiParams.params.width
+    promptInput.post_processing = apiParams.params.post_processing
+    promptInput.steps = apiParams.params.steps
+    promptInput.tiling = apiParams.params.tiling
+    promptInput.karras = apiParams.params.karras
+    promptInput.hires = apiParams.params.hires_fix
+    promptInput.clipskip = apiParams.params.clip_skip
+    promptInput.numImages = apiParams.params.n
+
+    // Map loras
+    if (apiParams.params.loras) {
+      promptInput.loras = apiParams.params.loras.map(
+        (lora) =>
+          new SavedLora({
+            // @ts-expect-error Need to fix this type
+            id: lora.name,
+            civitAiType: 'LORA',
+            versionId: lora.name,
+            isArtbotManualEntry: true,
+            name: lora.name,
+            strength: lora.model,
+            clip: lora.clip
+          })
+      )
+    }
+
+    // Map other properties
+    promptInput.models = apiParams.models
+    promptInput.dry_run = apiParams.dry_run || false
+
+    // Map source processing
+    if (apiParams.source_processing) {
+      promptInput.source_processing =
+        apiParams.source_processing as SourceProcessing
+      if (apiParams.params.denoising_strength) {
+        promptInput.denoising_strength = apiParams.params.denoising_strength
+      }
+    }
+
+    // Map control type
+    if (apiParams.params.control_type) {
+      promptInput.control_type = apiParams.params.control_type as ControlTypes
+      promptInput.image_is_control = apiParams.params.image_is_control || false
+      promptInput.return_control_map =
+        apiParams.params.return_control_map || false
+    }
+
+    // Map facefixer strength
+    if (apiParams.params.facefixer_strength) {
+      promptInput.facefixer_strength = apiParams.params.facefixer_strength
+    }
+
+    // Map transparent
+    if (apiParams.params.transparent) {
+      promptInput.transparent = apiParams.params.transparent
+    }
+
+    return promptInput
+  }
+
   static async build(
     imageDetails: PromptInput,
     options: {
