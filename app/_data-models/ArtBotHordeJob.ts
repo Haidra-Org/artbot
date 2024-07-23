@@ -16,11 +16,12 @@ export class ArtBotHordeJob implements HordeJobResponse {
   updated_timestamp: number
   status: JobStatus
   errors?: ImageError[] | null
+  height: number
   init_wait_time: number | null
   images_requested: number
   images_completed: number
   images_failed: number
-  height: number
+  jobErrorMessage: string
   width: number
   gen_metadata?: GenMetadata[]
   api_response?: HordeJobResponse
@@ -55,6 +56,7 @@ export class ArtBotHordeJob implements HordeJobResponse {
     this.width = params.width || 0
     this.gen_metadata = params.gen_metadata
     this.api_response = params.api_response
+    this.jobErrorMessage = params.jobErrorMessage || ''
 
     // Specific fields from AI Horde response
     this.finished = params.finished || 0
