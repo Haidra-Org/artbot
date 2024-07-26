@@ -5,7 +5,7 @@ import HordePerformanceModal from '../Modals/Modal_HordePerformance'
 export default function HeaderNavHordePerformance() {
   return (
     <button
-      className="row text-xs"
+      className="row text-xs text-black dark:text-white"
       onClick={() => {
         NiceModal.show('hordePerfModal', {
           children: <HordePerformanceModal />

@@ -481,8 +481,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     if (apiParams.params.loras) {
       promptInput.loras = apiParams.params.loras.map(
         (lora) =>
+          // @ts-expect-error Need to fix this type
           new SavedLora({
-            // @ts-expect-error Need to fix this type
             id: lora.name,
             civitAiType: 'LORA',
             versionId: lora.name,
