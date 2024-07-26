@@ -33,7 +33,6 @@ export default function AppInitComponent({
     try {
       const res = await fetch(`${appBasepath()}/api/heartbeat`)
       const { success } = (await res.json()) || {}
-
       if (success) {
         setAppOnlineStatus(true)
       } else {

@@ -34,8 +34,8 @@ export default function ModelSelect() {
             if (!option || !option.value) return
 
             const modelInfo = {
-              baseline: modelDetails[option.value as string].baseline,
-              version: modelDetails[option.value as string].version
+              baseline: modelDetails[option.value as string]?.baseline ?? '',
+              version: modelDetails[option.value as string]?.version ?? ''
             }
 
             setInput({
