@@ -5,7 +5,7 @@ import HeaderNav from './_components/HeaderNav'
 import './globals.css'
 import ModalProvider from './_providers/ModalProvider'
 import ContentWrapper from './_components/ContentWrapper'
-import BetaWarningPanel from './_components/BetaWarningPanel'
+import BetaBanner from './_components/NotificationBeta'
 import MobileFooter from './_components/MobileFooter'
 import AppInit from './_components/AppInit'
 import { appBasepath } from './_utils/browserUtils'
@@ -80,7 +80,7 @@ export default function RootLayout({
             <HeaderNav />
             <main className="flex flex-col gap-2 w-full flex-1 sm:p-1">
               <ContentWrapper>
-                <BetaWarningPanel />
+                <BetaBanner />
                 {children}
               </ContentWrapper>
             </main>

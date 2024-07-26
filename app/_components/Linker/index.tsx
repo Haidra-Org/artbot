@@ -2,15 +2,26 @@ import Link from 'next/link'
 import { CSSProperties } from 'react'
 import styles from './linker.module.css'
 
-const Linker = (props) => {
+interface LinkerProps {
+  children?: React.ReactNode
+  disableLinkClick?: boolean
+  inline?: boolean
+  onClick?: () => void
+  href: string
+  rel?: string
+  target?: string
+}
+
+const Linker = (props: LinkerProps) => {
   const {
+    children,
     disableLinkClick = false,
     inline,
     onClick = () => {},
     ...rest
   } = props
 
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // Handle scenario where we want to have a link available for middle click / open new tab,
     // but we want the normal left click event to do something else.
     if (disableLinkClick) {
@@ -47,7 +58,9 @@ const Linker = (props) => {
         cursor: 'pointer',
         ...style
       }}
-    />
+    >
+      {children}
+    </Link>
   )
 }
 
