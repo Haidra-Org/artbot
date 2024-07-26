@@ -9,6 +9,7 @@ import BetaWarningPanel from './_components/BetaWarningPanel'
 import MobileFooter from './_components/MobileFooter'
 import AppInit from './_components/AppInit'
 import { appBasepath } from './_utils/browserUtils'
+import Footer from './_components/Footer'
 
 const APP_NAME = 'ArtBot'
 const APP_DEFAULT_TITLE = 'ArtBot for Stable Diffusion'
@@ -83,6 +84,7 @@ export default function RootLayout({
                 {children}
               </ContentWrapper>
             </main>
+            <Footer />
             <MobileFooter />
           </div>
         </ModalProvider>

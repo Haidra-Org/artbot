@@ -4,10 +4,13 @@
 
 :root {
   --background-color: rgb(242, 242, 242);
+  --footer-background: #919191;
   --footer-padding: 72px;
   --foreground-color: black;
   --input-background-color: rgb(249, 250, 251);
   --input-text-color: rgb(17, 24, 39);
+  --link-text: #17cfbb;
+  --link-active: #5eedde;
   --primary-color: rgb(20, 184, 166);
 }
 
@@ -20,6 +23,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background-color: #242424;
+    --footer-background: #383838;
     --input-background-color: rgb(55, 65, 81);
     --input-text-color: black;
     --foreground-color: white;
