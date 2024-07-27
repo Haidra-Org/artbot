@@ -17,7 +17,6 @@
 /build
 
 # misc
-buildId.json
 .DS_Store
 *.pem
 
