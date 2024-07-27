@@ -31,7 +31,7 @@ jobs:
         # # Optional, encrypted vault password
         # vault_password: ${{secrets.VAULT_PASSWORD}}
         # Optional, galaxy requirements filepath
-        # requirements: galaxy-requirements.yml
+        requirements: ansible/galaxy-requirements.yml
         # Optional, additional flags to pass to ansible-playbook
         options: |
           --inventory ansible/inventory.yml
