@@ -1,0 +1,8 @@
+---
+
+all:
+  hosts:
+    artbot_server:
+      ansible_host: 184.174.32.118
+      ansible_become: false
+      ansible_user: artbot

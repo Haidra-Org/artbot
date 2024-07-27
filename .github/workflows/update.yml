@@ -1,0 +1,38 @@
+name: Deploy new artbot version
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  build-n-deploy:
+    name: Artbot new release
+    runs-on: ubuntu-latest
+    steps:
+    - name: "✔️ Checkout"
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Run playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+        # Required, playbook filepath
+        playbook: ansible/artbot_update.yml
+        # Optional, directory where playbooks live
+        directory: ./
+        # Optional, SSH private key
+        key: ${{secrets.SSH_PRIVATE_KEY}}
+        # Optional, SSH known hosts file content
+        known_hosts: |
+          ${{secrets.SSH_ARTBOT_IP}} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKhA3ORj5KS0aMO9o5hsehVhaCN7akSHg91mjodMNag+
+        # # Optional, encrypted vault password
+        # vault_password: ${{secrets.VAULT_PASSWORD}}
+        # Optional, galaxy requirements filepath
+        # requirements: galaxy-requirements.yml
+        # Optional, additional flags to pass to ansible-playbook
+        options: |
+          --inventory ansible/inventory.yml
+          -t update
