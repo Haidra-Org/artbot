@@ -105,7 +105,7 @@ export default function FaceFixers() {
                 setInput({ facefixer_strength: num as unknown as number })
               }}
               onMinusClick={() => {
-                if (Number(input.cfg_scale) - 0.05 < 0.05) {
+                if (Number(input.facefixer_strength) - 0.05 < 0.05) {
                   return
                 }
 
