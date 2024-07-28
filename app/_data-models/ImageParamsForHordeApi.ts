@@ -39,6 +39,7 @@ export interface ImageParams {
   facefixer_strength?: number
   karras: boolean
   hires_fix: boolean
+  hires_fix_denoising_strength?: number
   clip_skip: number
   tiling: boolean
   post_processing: string[]
@@ -105,6 +106,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       facefixer_strength,
       height,
       hires = false,
+      hires_fix_denoising_strength = 0.75,
       karras = false,
       models,
       negative,
@@ -145,6 +147,11 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       shared: false, // Currently disabled on the Horde API
       slow_workers: AppSettings.get('slow_workers') === false ? false : true,
       dry_run
+    }
+
+    if (hires) {
+      this.apiParams.params.hires_fix_denoising_strength =
+        hires_fix_denoising_strength as number
     }
 
     if (facefixer_strength) {
@@ -474,6 +481,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     promptInput.tiling = apiParams.params.tiling
     promptInput.karras = apiParams.params.karras
     promptInput.hires = apiParams.params.hires_fix
+    promptInput.hires_fix_denoising_strength =
+      apiParams.params.hires_fix_denoising_strength
     promptInput.clipskip = apiParams.params.clip_skip
     promptInput.numImages = apiParams.params.n
 

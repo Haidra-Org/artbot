@@ -14,7 +14,7 @@ function classNames(...classes: string[]) {
 
 export interface SelectOption {
   label: string
-  value: string | number
+  value: string | number | boolean
 }
 
 export default function Select({
