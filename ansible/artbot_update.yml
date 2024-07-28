@@ -1,6 +1,6 @@
 ---
 
-- hosts: artbot_server
+- hosts: artbot_servers
   gather_facts: false
 
   roles:

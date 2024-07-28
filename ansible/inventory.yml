@@ -11,7 +11,7 @@ all:
       ansible_become: false
       ansible_user: artbot
   children:
-    artbot:
+    artbot_servers:
       hosts:
         artbot_server01:
         artbot_server02:  
