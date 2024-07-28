@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export default function BetaWarningPanel() {
+export default function BetaWarningBanner() {
   return (
     <div
       className="row w-full"

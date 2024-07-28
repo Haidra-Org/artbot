@@ -38,15 +38,6 @@ export default function AdditionalOptions() {
       </label>
       <label className="row gap-2 text-white">
         <Switch
-          checked={input.hires}
-          onChange={() => {
-            setInput({ hires: !input.hires })
-          }}
-        />
-        Hi-res fix
-      </label>
-      <label className="row gap-2 text-white">
-        <Switch
           checked={input.tiling}
           onChange={() => {
             setInput({ tiling: !input.tiling })

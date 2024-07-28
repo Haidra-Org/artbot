@@ -2,20 +2,20 @@ import { Metadata } from 'next'
 import PageTitle from '../_components/PageTitle'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | ArtBot for Stable Diffusion'
+  title: 'Terms and Conditions | ArtBot for Stable Diffusion'
 }
 
 async function getData() {
-  const res = await fetch('https://aihorde.net/api/v2/documents/privacy')
+  const res = await fetch('https://aihorde.net/api/v2/documents/terms')
   const data = res.json()
 
   return data
 }
 
-export default async function PrivacyPage() {
+export default async function TermsPage() {
   const data = await getData()
 
-  data.html = data.html.replace('<h1>Privacy Policy</h1>\n', '')
+  data.html = data.html.replace('<h1>Terms and Conditions</h1>\n', '')
   data.html = data.html.replace(/<h1>/g, '<h1 class="font-bold text-lg">')
   data.html = data.html.replace(
     /<h2>/g,
@@ -25,7 +25,7 @@ export default async function PrivacyPage() {
 
   return (
     <div>
-      <PageTitle>Privacy Policy</PageTitle>
+      <PageTitle>Terms and Conditions</PageTitle>
       <div
         className="col gap-4"
         dangerouslySetInnerHTML={{ __html: data.html }}

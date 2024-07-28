@@ -26,9 +26,14 @@ const ImageViewImage = React.memo(() => {
   if (!imageBlobBuffer) return null
 
   // Constrain max width of image so that multiple images don't show in carousel.
-  const imageWidth =
+  let imageWidth =
     ((windowHeight - 72) * imageData?.imageRequest?.width) /
     imageData?.imageRequest?.height
+
+  // Handle scenario where image width is smaller than calculated value
+  if (imageData?.imageRequest?.width < imageWidth) {
+    imageWidth = imageData?.imageRequest?.width
+  }
 
   return (
     <div style={{ maxWidth: `${imageWidth}px` }}>

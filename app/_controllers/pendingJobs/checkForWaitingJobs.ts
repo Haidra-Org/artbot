@@ -61,6 +61,20 @@ export const checkForWaitingJobs = async () => {
     await sleep(750)
     const jobDetails = await checkImage(apiResponse.id)
 
+    if ('is_possible' in jobDetails && !jobDetails.is_possible) {
+      await updatePendingImage(waitingJob.artbot_id, {
+        horde_id: apiResponse.id,
+        init_wait_time: jobDetails.wait_time,
+        status: JobStatus.Error,
+        jobErrorMessage:
+          'There are currently no GPU workers that can complete this requst. Try changing settings or try again later.',
+        wait_time: jobDetails.wait_time,
+        api_response: { ...jobDetails }
+      })
+
+      return
+    }
+
     if ('wait_time' in jobDetails) {
       let status = JobStatus.Queued
 

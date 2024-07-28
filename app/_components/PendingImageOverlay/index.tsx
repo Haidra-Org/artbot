@@ -15,6 +15,7 @@ import { deleteJobFromDexie } from '../../_db/jobTransactions'
 import ParticleAnimation from '../ParticleAnimation'
 import styles from './pendingImageOverlay.module.css'
 import { formatPendingPercentage } from '@/app/_utils/numberUtils'
+import { appBasepath } from '@/app/_utils/browserUtils'
 
 function PendingImageOverlay({
   artbot_id,
@@ -209,14 +210,23 @@ function PendingImageOverlay({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundImage: 'url(/tile.png)',
+            backgroundImage: `url(${appBasepath()}/tile.png)`,
             backgroundSize: 'auto',
             backgroundRepeat: 'repeat',
             boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
           }}
         >
           <IconAlertTriangle color="rgb(234 179 8)" size={48} stroke={1} />
-          <div>Error: Unable to process image</div>
+          {pendingJob.jobErrorMessage && (
+            <div
+              style={{ padding: '0 16px', textAlign: 'center', width: '100%' }}
+            >
+              Error: {pendingJob.jobErrorMessage}
+            </div>
+          )}
+          {!pendingJob.jobErrorMessage && (
+            <div>Error: Unable to process image</div>
+          )}
         </div>
       )}
       {(status === JobStatus.Queued || status === JobStatus.Processing) && (

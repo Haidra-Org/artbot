@@ -34,7 +34,7 @@ export default function HeaderNav() {
                 className="hidden md:inline"
                 style={{ fontSize: '10px', fontWeight: '700', top: '-8px' }}
               >
-                v2.0.0_beta
+                v2
               </sup>
             </div>
           </div>

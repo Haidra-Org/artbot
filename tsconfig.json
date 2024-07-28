@@ -35,6 +35,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "jest.config.js",
+    "generateBuildId.js",
     "global.d.ts"
   ],
   "exclude": ["node_modules", "public/sw.js"]

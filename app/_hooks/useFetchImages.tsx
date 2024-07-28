@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useStore } from 'statery'

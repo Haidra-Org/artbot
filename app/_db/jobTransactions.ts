@@ -22,7 +22,16 @@ export const addImageAndDefaultFavToDexie = async (
   })
 }
 
-export const addPendingJobToDexie = async (input: PromptInput) => {
+interface AddPendingJobToDexieOptions {
+  horde_id?: string
+  status?: JobStatus
+}
+
+export const addPendingJobToDexie = async (
+  input: PromptInput,
+  options = {} as AddPendingJobToDexieOptions
+) => {
+  const { horde_id, status } = options
   const updatedInput = cloneDeep(input)
 
   // No idea where the eff "id" is being added before it gets here.
@@ -36,12 +45,12 @@ export const addPendingJobToDexie = async (input: PromptInput) => {
   const job = new ArtBotHordeJob({
     artbot_id: updatedInput.artbot_id,
     job_id: nanoid(AppConstants.NANO_ID_LENGTH),
-    horde_id: '',
+    horde_id: horde_id || '',
     created_timestamp: Date.now(),
     horde_completed_timestamp: 0,
     horde_received_timestamp: 0,
     updated_timestamp: Date.now(),
-    status: JobStatus.Waiting,
+    status: status || JobStatus.Waiting,
     queue_position: null,
     init_wait_time: null,
     wait_time: null,

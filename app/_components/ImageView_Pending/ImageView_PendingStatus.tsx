@@ -106,6 +106,11 @@ export default function PendingImageViewStatus({
         ) : (
           ''
         )}
+        {pendingImage?.jobErrorMessage && (
+          <div>
+            <strong>Error message:</strong> {pendingImage?.jobErrorMessage}
+          </div>
+        )}
         {pendingImage?.errors &&
           pendingImage?.errors.length > 0 &&
           JobErrorsComponent(pendingImage?.errors)}

@@ -17,6 +17,7 @@ import UploadImage from './UploadImage'
 import Upscalers from './Upscalers'
 import StylePresetSelect from './StylePresetSelect'
 import AddWorkflow from './AddWorkflow'
+import HiresFix from './HiresFix'
 
 export default function AdvancedOptions() {
   return (
@@ -39,6 +40,9 @@ export default function AdvancedOptions() {
       </Section>
       <AddLora />
       <AddEmbedding />
+      <Section anchor="hires">
+        <HiresFix />
+      </Section>
       <AddWorkflow />
       <Section anchor="face-fixers">
         <FaceFixers />
