@@ -97,7 +97,8 @@ export default function JsonPage() {
         const prettyJson = JSON.stringify(apiResponse.errors, null, 2)
         toastController({
           message: `Error: ${apiResponse.message}\n\n${prettyJson}`,
-          type: 'error'
+          type: 'error',
+          timeout: 10000
         })
       }
     } catch (err) {
