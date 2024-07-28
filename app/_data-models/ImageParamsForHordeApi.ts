@@ -481,8 +481,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     promptInput.tiling = apiParams.params.tiling
     promptInput.karras = apiParams.params.karras
     promptInput.hires = apiParams.params.hires_fix
-    promptInput.hires_fix_denoising_strength =
-      apiParams.params.hires_fix_denoising_strength
+    promptInput.hires_fix_denoising_strength = apiParams.params
+      .hires_fix_denoising_strength as number
     promptInput.clipskip = apiParams.params.clip_skip
     promptInput.numImages = apiParams.params.n
 

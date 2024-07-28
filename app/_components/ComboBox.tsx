@@ -32,7 +32,7 @@ export interface SelectOption {
    */
   component?: React.ReactNode
 
-  value: string | number
+  value: string | number | boolean
 }
 
 export default function SelectCombo({
