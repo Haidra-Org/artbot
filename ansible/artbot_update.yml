@@ -1,0 +1,8 @@
+---
+
+- hosts: artbot_server
+  gather_facts: false
+
+  roles:
+  - name: haidra.deployments.artbot
+    tags: artbot
