@@ -2,7 +2,16 @@
 
 all:
   hosts:
-    artbot_server:
+    artbot_server01:
       ansible_host: 184.174.32.118
       ansible_become: false
       ansible_user: artbot
+    artbot_server02:
+      ansible_host: 84.46.246.103
+      ansible_become: false
+      ansible_user: artbot
+  children:
+    artbot:
+      hosts:
+        artbot_server01:
+        artbot_server02:  
