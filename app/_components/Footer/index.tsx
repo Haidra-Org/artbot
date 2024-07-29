@@ -8,11 +8,9 @@ import {
   IconCamera,
   IconExternalLink,
   IconInfoCircle,
-  IconMessage,
   IconPhoto,
   IconQuestionMark,
-  IconRobot,
-  IconTool
+  IconRobot
 } from '@tabler/icons-react'
 import Linker from '../Linker'
 
@@ -34,7 +32,7 @@ export default function Footer() {
               Create new image
             </Link>
           </div>
-          <div>
+          {/* <div>
             <Link className={styles.LinkWrapper} href="/controlnet">
               ControlNet
             </Link>
@@ -48,8 +46,8 @@ export default function Footer() {
             <Link className={styles.LinkWrapper} href="/create?panel=img2img">
               Image-to-image
             </Link>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <Link
               className={styles.LinkWrapper}
               href="/create?panel=inpainting"
@@ -61,7 +59,7 @@ export default function Footer() {
             <Link className={styles.LinkWrapper} href="/live-paint">
               Live paint
             </Link>
-          </div>
+          </div> */}
         </div>
         <div className={styles.Section}>
           <div className={styles.SectionTitle}>
@@ -89,7 +87,7 @@ export default function Footer() {
               Model details
             </Link>
           </div>
-          <div>
+          {/* <div>
             <Link className={styles.LinkWrapper} href="/info/models/updates">
               Model updates
             </Link>
@@ -98,9 +96,9 @@ export default function Footer() {
             <Link className={styles.LinkWrapper} href="/info/workers">
               Worker details
             </Link>
-          </div>
+          </div> */}
         </div>
-        <div className={styles.Section}>
+        {/* <div className={styles.Section}>
           <div className={styles.SectionTitle}>
             <IconTool stroke={1} />
             Utilities
@@ -133,7 +131,7 @@ export default function Footer() {
               User profile
             </Link>
           </div>
-        </div>
+        </div> */}
         <div className={styles.Section}>
           <div className={styles.SectionTitle}>
             <IconBuildingCommunity stroke={1} />
@@ -148,11 +146,11 @@ export default function Footer() {
               AI Horde <IconExternalLink size={18} stroke={1} />
             </div>
           </Link>
-          <div>
+          {/* <div>
             <Link className={styles.LinkWrapper} href="/showcase">
               Image showcase
             </Link>
-          </div>
+          </div> */}
         </div>
         <div className={styles.Section}>
           <div className={styles.SectionTitle}>
@@ -166,10 +164,10 @@ export default function Footer() {
           </div>
         </div>
         <div className={styles.Section}>
-          <div className={styles.SectionTitle}>
+          {/* <div className={styles.SectionTitle}>
             <IconMessage stroke={1} />
             Contact
-          </div>
+          </div> */}
           <div>
             <Link
               href="https://discord.com/channels/781145214752129095/1107628882783391744"
@@ -204,11 +202,11 @@ export default function Footer() {
               </div>
             </Link>
           </div>
-          <div>
+          {/* <div>
             <Link className={styles.LinkWrapper} href="/contact">
               Send message
             </Link>
-          </div>
+          </div> */}
         </div>
         <div className={styles.Section}>
           <div className={styles.SectionTitle}>
@@ -225,11 +223,11 @@ export default function Footer() {
               Changelog
             </Link>
           </div>
-          <div>
+          {/* <div>
             <Link className={styles.LinkWrapper} href="/contributors">
               Contributors
             </Link>
-          </div>
+          </div> */}
           <div>
             <Link
               href="https://github.com/daveschumaker/artbot-for-stable-diffusion"
@@ -242,9 +240,14 @@ export default function Footer() {
               </div>
             </Link>
           </div>
-          <div>
+          {/* <div>
             <Link className={styles.LinkWrapper} href="/settings?panel=prefs">
               Preferences
+            </Link>
+          </div> */}
+          <div>
+            <Link className={styles.LinkWrapper} href="/terms">
+              Terms of Use
             </Link>
           </div>
           <div>

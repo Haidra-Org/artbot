@@ -16,6 +16,7 @@
 # production
 /build
 build.sh
+*.tar.gz
 
 # misc
 .DS_Store

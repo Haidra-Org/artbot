@@ -239,6 +239,24 @@ export default function HamburgerNavButton() {
             </ul>
             <Link
               className={MenuOptionCss}
+              href="/terms"
+              onClick={handleCloseMenu}
+              tabIndex={open ? 0 : -1}
+            >
+              <IconHelp stroke={1.5} />
+              Terms of Use
+            </Link>
+            <Link
+              className={MenuOptionCss}
+              href="/privacy"
+              onClick={handleCloseMenu}
+              tabIndex={open ? 0 : -1}
+            >
+              <IconHelp stroke={1.5} />
+              Privacy Policy
+            </Link>
+            <Link
+              className={MenuOptionCss}
               href="/about"
               onClick={handleCloseMenu}
               tabIndex={open ? 0 : -1}
@@ -246,7 +264,7 @@ export default function HamburgerNavButton() {
               <IconHelp stroke={1.5} />
               About
             </Link>
-            <ul className={MenuSubOptionsCss}>
+            {/* <ul className={MenuSubOptionsCss}>
               <Link
                 className={MenuSubOptionCss}
                 href="/contact"
@@ -256,7 +274,7 @@ export default function HamburgerNavButton() {
                 <IconPointFilled size={12} stroke={1.5} />
                 Contact
               </Link>
-            </ul>
+            </ul> */}
           </div>
         </div>
       </div>
