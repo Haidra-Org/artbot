@@ -467,8 +467,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
 
     // Extract prompt and negative prompt
     const [prompt, negative] = apiParams.prompt.split('###')
-    promptInput.prompt = prompt
-    promptInput.negative = negative || ''
+    promptInput.prompt = prompt.trim()
+    promptInput.negative = negative.trim() || ''
 
     // Map params
     promptInput.cfg_scale = apiParams.params.cfg_scale
