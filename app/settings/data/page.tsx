@@ -17,30 +17,49 @@ export default function ImportExportDataPage() {
     if (!file) return
 
     setLoading(true)
+    const skippedItems: string[] = []
+    const addedItems: string[] = []
+
     try {
       const fileContent = await file.text()
       const jsonData = JSON.parse(fileContent) as ImageEnhancementModulesTable[]
 
       await db.transaction('rw', db.imageEnhancementModules, async () => {
         for (const item of jsonData) {
-          // Reconstruct Embedding and ModelVersion objects
-          const modelVersions = item.model.modelVersions.map(
-            (mv) => new ModelVersion(mv)
-          )
-          const embedding = new Embedding({
-            ...item.model,
-            modelVersions
-          })
+          // Check if the item already exists in the database with the same model_id and type
+          const existingItem = await db.imageEnhancementModules
+            .where(['model_id+type'])
+            .equals([item.model_id, item.type])
+            .first()
 
-          await db.imageEnhancementModules.add({
-            model_id: item.model_id,
-            timestamp: item.timestamp,
-            modifier: item.modifier,
-            type: item.type,
-            model: embedding
-          })
+          if (!existingItem) {
+            // Reconstruct Embedding and ModelVersion objects
+            const modelVersions = item.model.modelVersions.map(
+              (mv) => new ModelVersion(mv)
+            )
+            const embedding = new Embedding({
+              ...item.model,
+              modelVersions
+            })
+
+            await db.imageEnhancementModules.add({
+              model_id: item.model_id,
+              timestamp: item.timestamp,
+              modifier: item.modifier,
+              type: item.type,
+              model: embedding
+            })
+            addedItems.push(`${item.model_id} (${item.type})`)
+          } else {
+            skippedItems.push(`${item.model_id} (${item.type})`)
+          }
         }
       })
+
+      console.log(`Import completed. Added ${addedItems.length} items:`)
+      console.log(addedItems.join(', '))
+      console.log(`Skipped ${skippedItems.length} items:`)
+      console.log(skippedItems.join(', '))
     } catch (error) {
       console.error('Error importing data:', error)
     } finally {
