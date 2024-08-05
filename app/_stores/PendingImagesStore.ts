@@ -9,30 +9,34 @@ interface PendingImagesStoreInterface {
   pendingPageTimestamp: number
 }
 
-export const PendingImagesStore = makeStore<PendingImagesStoreInterface>({
+const initialState: PendingImagesStoreInterface = {
   completedJobsNotViewed: 0,
   pendingImages: [],
   pendingJobCompletedTimestamp: 0,
   pendingPageTimestamp: Date.now()
-})
+}
+
+export const PendingImagesStore =
+  makeStore<PendingImagesStoreInterface>(initialState)
 
 export const updateCompletedJobInPendingImagesStore = () => {
-  // In this instance, the user is on a larger screen device and can see the pending images panel.
-  if (
-    (window.innerWidth >= 768 && window.location.pathname === '/create') ||
+  const isLargeScreen = window.innerWidth >= 768
+  const isCreateOrPendingPage =
+    window.location.pathname === '/create' ||
     window.location.pathname === '/pending'
-  ) {
-    return
-  }
+
+  if (isLargeScreen && isCreateOrPendingPage) return
 
   PendingImagesStore.set((state) => ({
+    ...state,
     completedJobsNotViewed: state.completedJobsNotViewed + 1,
     pendingJobCompletedTimestamp: Date.now()
   }))
 }
 
 export const viewedPendingPage = () => {
-  PendingImagesStore.set(() => ({
+  PendingImagesStore.set((state) => ({
+    ...state,
     completedJobsNotViewed: 0,
     pendingPageTimestamp: Date.now()
   }))
@@ -40,27 +44,28 @@ export const viewedPendingPage = () => {
 
 export const addPendingImageToAppState = (pendingJob: ArtBotHordeJob) => {
   PendingImagesStore.set((state) => ({
+    ...state,
     pendingImages: [...state.pendingImages, pendingJob]
   }))
 }
 
-export const getPendingImageByIdFromAppState = (arbot_id: string) => {
-  const [jobDetails] =
-    PendingImagesStore.state.pendingImages.filter(
-      (job) => job.artbot_id === arbot_id
-    ) || {}
+export const getPendingImageByIdFromAppState = (
+  artbot_id: string
+): ArtBotHordeJob | undefined =>
+  PendingImagesStore.state.pendingImages.find(
+    (job) => job.artbot_id === artbot_id
+  )
 
-  return jobDetails as ArtBotHordeJob
-}
-
-export const getPendingImagesByStatusFromAppState = (status: JobStatus[]) => {
-  return PendingImagesStore.state.pendingImages.filter((job) =>
+export const getPendingImagesByStatusFromAppState = (
+  status: JobStatus[]
+): ArtBotHordeJob[] =>
+  PendingImagesStore.state.pendingImages.filter((job) =>
     status.includes(job.status as JobStatus)
   )
-}
 
 export const deletePendingImageFromAppState = (artbot_id: string) => {
   PendingImagesStore.set((state) => ({
+    ...state,
     pendingImages: state.pendingImages.filter(
       (job) => job.artbot_id !== artbot_id
     )
@@ -71,26 +76,20 @@ export const updatePendingImageInAppState = (
   artbot_id: string,
   updates: Partial<ArtBotHordeJob>
 ) => {
-  PendingImagesStore.set((state) => {
-    const updatedPendingImages = state.pendingImages.map((job) => {
-      if (job.artbot_id === artbot_id) {
-        // Fix issue where init_wait_time might be set to 0.
-        if (job.init_wait_time === 0 && updates.wait_time !== 0) {
-          updates.init_wait_time = updates.wait_time
-        }
+  PendingImagesStore.set((state) => ({
+    ...state,
+    pendingImages: state.pendingImages.map((job) => {
+      if (job.artbot_id !== artbot_id) return job
 
-        // Check if job already exists and is an instance of ArtBotHordeJob
-        if (job instanceof ArtBotHordeJob) {
-          job.update(updates)
-          return job
-        } else {
-          return new ArtBotHordeJob({ ...(job as ArtBotHordeJob), ...updates })
-        }
+      const updatedJob =
+        job instanceof ArtBotHordeJob ? job : new ArtBotHordeJob(job)
+
+      if (job.init_wait_time === 0 && updates.wait_time !== 0) {
+        updates.init_wait_time = updates.wait_time
       }
-      return job
-    })
 
-    // Return the new state with updated pendingImages
-    return { ...state, pendingImages: updatedPendingImages }
-  })
+      updatedJob.update(updates)
+      return updatedJob
+    })
+  }))
 }
