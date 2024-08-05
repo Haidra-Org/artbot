@@ -1,15 +1,6 @@
-import { Metadata } from 'next'
-import PageTitle from '../_components/PageTitle'
+// app/changelog/page.tsx
+import { redirect } from 'next/navigation'
 
-export const metadata: Metadata = {
-  title: 'Changelog | ArtBot for Stable Diffusion'
-}
-
-export default async function ChangelogPage() {
-  return (
-    <div>
-      <PageTitle>Changelog</PageTitle>
-      Placeholder for Changelog
-    </div>
-  )
+export default function ChangelogIndex() {
+  redirect('/changelog/1')
 }
