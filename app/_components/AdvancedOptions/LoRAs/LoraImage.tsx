@@ -59,6 +59,7 @@ const LoraImage = ({
       style={{
         width: '100%',
         height: `${height}px`,
+        padding: 0,
         position: 'relative',
         maxHeight: '400px',
         maxWidth: '320px'
@@ -68,6 +69,7 @@ const LoraImage = ({
         src={image.src}
         alt={image.name}
         style={{
+          maxHeight: '400px',
           width: '100%',
           height: '100%',
           objectFit: 'cover',
