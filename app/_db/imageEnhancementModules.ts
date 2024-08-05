@@ -2,6 +2,37 @@ import { Embedding } from '../_data-models/Civitai'
 import { ImageEnhancementModulesModifier } from '../_types/ArtbotTypes'
 import { db } from './dexie'
 
+export const exportImageEnhancementModules = async () => {
+  try {
+    // Fetch all records from the imageEnhancementModules table
+    const allModules = await db.imageEnhancementModules.toArray()
+
+    // Convert the data to a JSON string
+    const jsonData = JSON.stringify(allModules, null, 2)
+
+    // Create a Blob with the JSON data
+    const blob = new Blob([jsonData], { type: 'application/json' })
+
+    // Create a download link
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'imageEnhancementModules.json'
+
+    // Append the link to the body, click it, and remove it
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    // Revoke the URL to free up memory
+    URL.revokeObjectURL(url)
+
+    console.log('Image Enhancement Modules exported successfully')
+  } catch (error) {
+    console.error('Error exporting Image Enhancement Modules:', error)
+  }
+}
+
 export const getFavoriteEnhancements = async (
   modifier: ImageEnhancementModulesModifier
 ) => {
