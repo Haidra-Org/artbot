@@ -2,6 +2,45 @@ import { Embedding } from '../_data-models/Civitai'
 import { ImageEnhancementModulesModifier } from '../_types/ArtbotTypes'
 import { db } from './dexie'
 
+export const filterEnhancements = async (
+  modifier: ImageEnhancementModulesModifier,
+  type: 'favorite' | 'recent',
+  filterTerm: string,
+  page: number = 1,
+  itemsPerPage: number = 12
+) => {
+  const offset = (page - 1) * itemsPerPage
+
+  const filtered = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, type])
+    .filter(
+      (item) =>
+        item.model.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+        item.model.description?.toLowerCase().includes(filterTerm.toLowerCase())
+    )
+    .offset(offset)
+    .limit(itemsPerPage)
+    .toArray()
+
+  const totalCount = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, type])
+    .filter(
+      (item) =>
+        item.model.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+        item.model.description?.toLowerCase().includes(filterTerm.toLowerCase())
+    )
+    .count()
+
+  return {
+    items: filtered,
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / itemsPerPage)
+  }
+}
+
 export const exportImageEnhancementModules = async () => {
   try {
     // Fetch all records from the imageEnhancementModules table

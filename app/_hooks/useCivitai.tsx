@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { DebouncedFunction, debounce } from '../_utils/debounce'
 import {
+  filterEnhancements,
   getFavoriteEnhancements,
   getRecentlyUsedEnhancements
 } from '../_db/imageEnhancementModules'
@@ -25,6 +26,7 @@ export default function useCivitAi({
     previousPages: [] as string[]
   })
 
+  const [localFilterTerm, setLocalFilterTerm] = useState('')
   const [pendingSearch, setPendingSearch] = useState(false)
   const [searchResults, setSearchResults] = useState<Embedding[]>([])
   const [hasError, setHasError] = useState<string | boolean>(false)
@@ -36,6 +38,26 @@ export default function useCivitAi({
   const debouncedSearchRef = useRef<DebouncedFunction<
     typeof fetchCivitAiResults
   > | null>(null)
+
+  const filterLocalResults = useCallback(
+    async (input: string) => {
+      if (searchType === 'favorite' || searchType === 'recent') {
+        const filtered = await filterEnhancements(
+          type === 'LORA' ? 'lora' : 'ti',
+          searchType,
+          input,
+          paginationState.currentPage
+        )
+        setSearchResults(filtered.items as unknown as Embedding[])
+        setPaginationState((prev) => ({
+          ...prev,
+          nextPageUrl:
+            filtered.currentPage < filtered.totalPages ? 'next' : null
+        }))
+      }
+    },
+    [searchType, type, paginationState.currentPage]
+  )
 
   const fetchRecentOrFavoriteLoras = useCallback(
     async (searchType: 'favorite' | 'recent') => {
@@ -155,14 +177,18 @@ export default function useCivitAi({
       setPendingSearch(true)
       try {
         if (searchType === 'favorite' || searchType === 'recent') {
-          const result = await fetchRecentOrFavoriteLoras(searchType)
-          if (result) {
-            setSearchResults(result.items as unknown as Embedding[])
-            setPaginationState((prev) => ({
-              ...prev,
-              nextPageUrl:
-                result.currentPage < result.totalPages ? 'next' : null
-            }))
+          if (localFilterTerm) {
+            await filterLocalResults(localFilterTerm)
+          } else {
+            const result = await fetchRecentOrFavoriteLoras(searchType)
+            if (result) {
+              setSearchResults(result.items as unknown as Embedding[])
+              setPaginationState((prev) => ({
+                ...prev,
+                nextPageUrl:
+                  result.currentPage < result.totalPages ? 'next' : null
+              }))
+            }
           }
         } else if (paginationState.nextPageUrl) {
           await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
@@ -182,8 +208,11 @@ export default function useCivitAi({
     paginationState.currentPage,
     searchType,
     currentSearchTerm,
+    localFilterTerm,
     fetchRecentOrFavoriteLoras,
-    fetchCivitAiResults
+    fetchCivitAiResults,
+    filterLocalResults,
+    paginationState.nextPageUrl
   ])
 
   useEffect(() => {
@@ -220,6 +249,7 @@ export default function useCivitAi({
     goToNextPage,
     goToPreviousPage,
     hasNextPage: !!paginationState.nextPageUrl,
-    hasPreviousPage: paginationState.previousPages.length > 0
+    hasPreviousPage: paginationState.previousPages.length > 0,
+    setLocalFilterTerm
   }
 }
