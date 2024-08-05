@@ -111,6 +111,10 @@ export default function LoraSearch({
     }
   )
 
+  const filteredData = transformedData.filter(
+    (item): item is NonNullable<typeof item> => item !== undefined
+  )
+
   const subject = civitAiType === 'LORA' ? 'LoRA' : 'Embedding'
 
   let title = `${subject} Search`
@@ -234,7 +238,7 @@ export default function LoraSearch({
       )}
       <div>
         <MasonryLayout containerRef={modalRef}>
-          {transformedData.map((image) => (
+          {filteredData.map((image) => (
             <div
               key={`${image.key}`}
               style={{ width: '100%', marginBottom: '20px' }}
