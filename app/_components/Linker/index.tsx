@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { CSSProperties } from 'react'
 import styles from './linker.module.css'
