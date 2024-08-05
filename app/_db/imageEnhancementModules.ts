@@ -34,27 +34,58 @@ export const exportImageEnhancementModules = async () => {
 }
 
 export const getFavoriteEnhancements = async (
-  modifier: ImageEnhancementModulesModifier
+  modifier: ImageEnhancementModulesModifier,
+  page: number = 1,
+  itemsPerPage: number = 12
 ) => {
+  const offset = (page - 1) * itemsPerPage
+
   const favorites = await db.imageEnhancementModules
     .where('[modifier+type]')
     .equals([modifier, 'favorite'])
+    .offset(offset)
+    .limit(itemsPerPage)
     .toArray()
 
-  return favorites || []
+  const totalCount = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, 'favorite'])
+    .count()
+
+  return {
+    items: favorites || [],
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / itemsPerPage)
+  }
 }
 
 export const getRecentlyUsedEnhancements = async (
-  modifier: ImageEnhancementModulesModifier
+  modifier: ImageEnhancementModulesModifier,
+  page: number = 1,
+  itemsPerPage: number = 12
 ) => {
+  const offset = (page - 1) * itemsPerPage
+
   const recent = await db.imageEnhancementModules
     .where('[modifier+type]')
     .equals([modifier, 'recent'])
+    .reverse()
+    .offset(offset)
+    .limit(itemsPerPage)
     .toArray()
 
-  recent.reverse()
+  const totalCount = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, 'recent'])
+    .count()
 
-  return recent || []
+  return {
+    items: recent,
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / itemsPerPage)
+  }
 }
 
 export const getFavoriteImageEnhancementModule = async (
