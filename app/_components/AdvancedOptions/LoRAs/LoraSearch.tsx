@@ -39,7 +39,8 @@ export default function LoraSearch({
     goToNextPage,
     goToPreviousPage,
     hasNextPage,
-    hasPreviousPage
+    hasPreviousPage,
+    setLocalFilterTermAndResetPage
   } = useCivitAi({
     searchType,
     type: civitAiType
@@ -51,15 +52,15 @@ export default function LoraSearch({
   const [searchInput, setSearchInput] = useState('')
   const [showFilter, setShowFilter] = useState(false)
 
-  // // Memoize the debounced function so it doesn't get recreated on every render
-  // const debouncedSearchRequest = useMemo(() => {
-  //   return debounce(fetchCivitAiResults, 750)
-  // }, [fetchCivitAiResults])
-
-  // useEffect(() => {
-  //   if (inputVersionId || !searchInput.trim()) return
-  //   debouncedSearchRequest(searchInput)
-  // }, [debouncedSearchRequest, inputVersionId, searchInput])
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim()
+    setSearchInput(e.target.value)
+    if (searchType === 'favorite' || searchType === 'recent') {
+      setLocalFilterTermAndResetPage(value.trim())
+    } else if (value) {
+      debouncedSearchRequest(value.trim())
+    }
+  }
 
   useEffect(() => {
     if (inputRef.current) {
@@ -156,13 +157,7 @@ export default function LoraSearch({
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder={placeholder}
-          onChange={(e) => {
-            const value = e.target.value.trim()
-            setSearchInput(e.target.value)
-            if (value) {
-              debouncedSearchRequest(value)
-            }
-          }}
+          onChange={handleInputChange}
           ref={inputRef}
           value={searchInput}
         />
@@ -202,9 +197,6 @@ export default function LoraSearch({
             outline={!showFilter}
             onClick={() => {
               setShowFilter(!showFilter)
-              if (searchInput.trim()) {
-                debouncedSearchRequest(searchInput.trim())
-              }
             }}
           >
             <IconFilter />
