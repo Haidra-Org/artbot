@@ -25,7 +25,13 @@ const ImageThumbnail = ({
   const imageLoaded = useRef(false)
 
   // useCallback to memoize the fetchImage function, preventing unnecessary re-renders
-  const fetchImage = useCallback(async () => {
+  const fetchImage = async ({
+    artbot_id,
+    image_id
+  }: {
+    artbot_id?: string
+    image_id?: string
+  }) => {
     // Check if the image has already been loaded to avoid redundant fetches
     if (imageLoaded.current) return
 
@@ -49,11 +55,14 @@ const ImageThumbnail = ({
       setImageUrl(url) // Update the image URL state
       imageLoaded.current = true // Mark the image as loaded
     }
-  }, [artbot_id, image_id])
+  }
 
   // useEffect to fetch the image when the component mounts and clean up URL object when unmounts
   useEffect(() => {
-    fetchImage() // Call the fetchImage function when the component mounts
+    fetchImage({
+      artbot_id,
+      image_id
+    })
 
     // Clean up the object URL when the component unmounts to avoid memory leaks
     return () => {
@@ -61,7 +70,7 @@ const ImageThumbnail = ({
         URL.revokeObjectURL(imageUrl)
       }
     }
-  }, [fetchImage, imageUrl])
+  }, [artbot_id, imageUrl, image_id])
 
   // Render the <img> element with the retrieved or default image URL and the provided alt text
   return <img alt={alt} src={imageUrl} />
