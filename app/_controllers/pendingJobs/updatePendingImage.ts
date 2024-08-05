@@ -17,39 +17,45 @@ export const updatePendingImage = async (
 ) => {
   const pendingImageDataToUpdate = getPendingImageByIdFromAppState(artbot_id)
 
-  if (
-    options.status &&
-    options.status === JobStatus.Queued &&
-    !pendingImageDataToUpdate.horde_received_timestamp
-  ) {
-    options.horde_received_timestamp = Date.now()
-  }
-
-  if (
-    options.status &&
-    options.status === JobStatus.Done &&
-    !pendingImageDataToUpdate.horde_completed_timestamp
-  ) {
-    options.horde_completed_timestamp = Date.now()
-  }
-
-  if (options.wait_time) {
-    // If init_wait_time is null or the new wait_time is greater, update init_wait_time
+  // Add a null check here
+  if (pendingImageDataToUpdate) {
     if (
-      pendingImageDataToUpdate.init_wait_time === null ||
-      options.wait_time > pendingImageDataToUpdate.init_wait_time
+      options.status &&
+      options.status === JobStatus.Queued &&
+      !pendingImageDataToUpdate.horde_received_timestamp
     ) {
-      options.init_wait_time = options.wait_time
+      options.horde_received_timestamp = Date.now()
     }
+
+    if (
+      options.status &&
+      options.status === JobStatus.Done &&
+      !pendingImageDataToUpdate.horde_completed_timestamp
+    ) {
+      options.horde_completed_timestamp = Date.now()
+    }
+
+    if (options.wait_time) {
+      // If init_wait_time is null or the new wait_time is greater, update init_wait_time
+      if (
+        pendingImageDataToUpdate.init_wait_time === null ||
+        options.wait_time > pendingImageDataToUpdate.init_wait_time
+      ) {
+        options.init_wait_time = options.wait_time
+      }
+    }
+
+    // IndexedDb update should run first before app state update
+    // Due to cascading affect on PendingImagesPanel
+    await updateHordeJobById(artbot_id, {
+      ...options
+    })
+
+    updatePendingImageInAppState(artbot_id, {
+      ...options
+    })
+  } else {
+    console.error(`No pending image found with id: ${artbot_id}`)
+    // You might want to handle this case differently depending on your application's needs
   }
-
-  // IndexedDb update should run first before app state update
-  // Due to cascading affect on PendingImagesPanel
-  await updateHordeJobById(artbot_id, {
-    ...options
-  })
-
-  updatePendingImageInAppState(artbot_id, {
-    ...options
-  })
 }
