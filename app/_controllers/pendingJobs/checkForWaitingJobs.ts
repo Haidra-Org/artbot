@@ -1,7 +1,7 @@
 import { AppConstants } from '@/app/_data-models/AppConstants'
 import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
 import { getPendingImagesByStatusFromAppState } from '@/app/_stores/PendingImagesStore'
-import { JobStatus } from '@/app/_types/ArtbotTypes'
+import { ImageError, JobStatus } from '@/app/_types/ArtbotTypes'
 import { ImageParamsForHordeApi } from '@/app/_data-models/ImageParamsForHordeApi'
 import generateImage, { GenerateErrorResponse } from '@/app/_api/horde/generate'
 import { sleep } from '@/app/_utils/sleep'
@@ -62,10 +62,43 @@ const handleApiError = async (
   jobId: string,
   apiResponse: GenerateErrorResponse
 ) => {
+  const errorMessages: ImageError[] = []
+  const hasErrors =
+    'errors' in apiResponse && Object.keys(apiResponse.errors).length > 0
+
+  // Add the main error message
+  if (apiResponse.message && hasErrors) {
+    errorMessages.push({ type: 'default', message: apiResponse.message })
+  }
+
+  // Add specific errors from the errors object
+  if (apiResponse.errors && typeof apiResponse.errors === 'object') {
+    Object.entries(apiResponse.errors).forEach(([key, value]) => {
+      if (typeof value === 'string') {
+        errorMessages.push({ type: 'specific', field: key, message: value })
+      } else {
+        errorMessages.push({
+          type: 'specific',
+          field: key,
+          message: JSON.stringify(value)
+        })
+      }
+    })
+  }
+
+  // If no error fields were added, add a default 'other' error
+  if (!hasErrors) {
+    errorMessages.push({
+      type: 'other',
+      message: apiResponse.message || 'An unknown error occurred'
+    })
+  }
+
   await updatePendingImage(jobId, {
     status: JobStatus.Error,
-    errors: [{ type: 'other', message: apiResponse.message }]
+    errors: errorMessages
   })
+
   console.error(`API error: ${JSON.stringify(apiResponse)}`)
 }
 

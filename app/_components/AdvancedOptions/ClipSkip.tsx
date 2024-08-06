@@ -20,7 +20,7 @@ export default function ClipSkip() {
           min={1}
           max={12}
           onChange={(num) => {
-            setInput({ clipskip: num as unknown as number })
+            setInput({ clipskip: Number(num) as unknown as number })
           }}
           onMinusClick={() => {
             if (Number(input.clipskip) - 1 < 1) {
