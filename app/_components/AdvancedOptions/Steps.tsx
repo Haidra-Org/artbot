@@ -27,7 +27,7 @@ export default function Steps() {
             }
           }}
           onChange={(num) => {
-            setInput({ steps: num as unknown as number })
+            setInput({ steps: Number(num) as unknown as number })
           }}
           onMinusClick={() => {
             if (Number(input.steps) - 1 < 1) {

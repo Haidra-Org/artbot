@@ -47,10 +47,17 @@ export interface ImageEnhancementModulesTable {
   model: Embedding
 }
 
-export type ImageErrors = 'csam' | 'notfound' | 'nsfw' | 'other'
+export type ImageErrors =
+  | 'csam'
+  | 'default'
+  | 'notfound'
+  | 'nsfw'
+  | 'specific'
+  | 'other'
 
 export interface ImageError {
   type: ImageErrors
+  field?: string
   message: string
 }
 

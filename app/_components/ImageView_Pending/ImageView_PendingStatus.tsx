@@ -10,15 +10,21 @@ const countErrorMessages = (
 ): { message: string; count: number }[] => {
   const errorCountMap: { [key: string]: number } = errors.reduce(
     (acc: { [key: string]: number }, error: ImageError) => {
-      if (acc[error.message]) {
-        acc[error.message] += 1
+      const errMsg = error.field
+        ? `${error.field}: ${error.message}`
+        : error.message
+
+      if (acc[errMsg]) {
+        acc[errMsg] += 1
       } else {
-        acc[error.message] = 1
+        acc[errMsg] = 1
       }
       return acc
     },
     {}
   )
+
+  console.log(`errors?`, errors)
 
   return Object.entries(errorCountMap).map(([message, count]) => ({
     message,
