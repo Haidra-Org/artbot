@@ -266,13 +266,14 @@ export default function ImageDetails({
           </div>
           {imageRequest?.loras?.length > 0 && (
             <div className="mt-4">
-              <div>[ LoRAs ]</div>
+              <div className="mb-1">[ LoRAs ]</div>
               {imageRequest.loras.map((lora) => {
                 return (
                   <div
                     key={lora.name}
                     style={{
                       borderLeft: '2px solid #aabad4',
+                      marginLeft: '4px',
                       paddingLeft: '8px'
                     }}
                   >
@@ -296,12 +297,7 @@ export default function ImageDetails({
                       )}
                     </div>
                     <div className="row">
-                      <strong>
-                        LoRA version:{' '}
-                        {lora.modelVersions
-                          ? lora?.modelVersions[0]?.name
-                          : lora.name}
-                      </strong>
+                      <strong>LoRA version: {lora.versionName}</strong>
                     </div>
                     <div className="row">
                       <strong>Strength: </strong>
