@@ -9,8 +9,8 @@ import { useInput } from '@/app/_providers/PromptInputProvider'
 import LoraSettingsCard from './LoraSettingsCard'
 import { Suspense, useCallback } from 'react'
 import { SavedEmbedding, SavedLora } from '@/app/_data-models/Civitai'
-
-const MAX_LORAS = 5
+import { AppConstants } from '@/app/_data-models/AppConstants'
+import { toastController } from '@/app/_controllers/toastController'
 
 export default function AddLora() {
   const { input, setInput } = useInput()
@@ -27,7 +27,13 @@ export default function AddLora() {
         return
       }
 
-      if (input.loras.length >= MAX_LORAS) return
+      if (input.loras.length >= AppConstants.MAX_LORAS) {
+        toastController({
+          message: `Can't add more than ${AppConstants.MAX_LORAS} LoRAs.`,
+          type: 'error'
+        })
+        return
+      }
 
       const found =
         input.loras.filter(
@@ -47,12 +53,11 @@ export default function AddLora() {
         <h2 className="row font-bold text-white">
           LoRAs{' '}
           <span className="text-xs font-normal">
-            ({input.loras.length} / {MAX_LORAS})
+            ({input.loras.length} / {AppConstants.MAX_LORAS})
           </span>
         </h2>
         <div className="row gap-1">
           <Button
-            disabled={input.loras.length >= MAX_LORAS}
             onClick={() => {
               NiceModal.show('modal', {
                 children: (

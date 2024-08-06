@@ -106,7 +106,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       facefixer_strength,
       height,
       hires = false,
-      hires_fix_denoising_strength = 0.75,
+      hires_fix_denoising_strength = 0.65,
       karras = false,
       models,
       negative,

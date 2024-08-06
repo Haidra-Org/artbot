@@ -23,7 +23,7 @@ class PromptInput {
   facefixer_strength: number = 0.75
   height: number = 1024
   hires: boolean = false
-  hires_fix_denoising_strength: number = 0.75
+  hires_fix_denoising_strength: number = 0.65
   image_is_control: boolean = false
   imageOrientation: ImageOrientations = 'square'
   imageType: string = ''
