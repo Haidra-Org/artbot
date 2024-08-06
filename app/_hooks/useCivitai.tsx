@@ -1,10 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { DebouncedFunction, debounce } from '../_utils/debounce'
-import {
-  filterEnhancements,
-  getFavoriteEnhancements,
-  getRecentlyUsedEnhancements
-} from '../_db/imageEnhancementModules'
+import { filterEnhancements } from '../_db/imageEnhancementModules'
 import LORASJson from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
 import EmbeddingsJson from '../_components/AdvancedOptions/LoRAs/_Embeddings.json'
 import { Embedding } from '../_data-models/Civitai'
@@ -84,7 +80,7 @@ export default function useCivitAi({
           input,
           page
         )
-        setSearchResults(filtered.items as Embedding[])
+        setSearchResults(filtered.items as unknown as Embedding[])
         setPaginationState((prev) =>
           updatePaginationState(
             page,
@@ -100,7 +96,7 @@ export default function useCivitAi({
   const setLocalFilterTermAndResetPage = useCallback(
     (term: string) => {
       setLocalFilterTerm(term)
-      setPaginationState((prev) => updatePaginationState(1, null, []))
+      setPaginationState(() => updatePaginationState(1, null, []))
     },
     [updatePaginationState]
   )
@@ -139,7 +135,7 @@ export default function useCivitAi({
           )
           if (!url) {
             setCurrentSearchTerm(input)
-            setPaginationState((prev) => updatePaginationState(1, null, []))
+            setPaginationState(() => updatePaginationState(1, null, []))
           }
         }
       } catch (error) {
@@ -147,7 +143,7 @@ export default function useCivitAi({
         if (errorMessage) setHasError(errorMessage)
       }
     },
-    [type, updatePaginationState]
+    [paginationState.currentPage, type, updatePaginationState]
   )
 
   useEffect(() => {
@@ -223,7 +219,7 @@ export default function useCivitAi({
 
   useEffect(() => {
     if (searchType === 'favorite' || searchType === 'recent') {
-      setPaginationState((prev) => updatePaginationState(1, null, []))
+      setPaginationState(() => updatePaginationState(1, null, []))
     } else if (searchType === 'search') {
       setSearchResults(getDefaultResults(type))
     }
