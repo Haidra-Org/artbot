@@ -15,6 +15,7 @@
 
 # production
 /build
+buildId.json
 build.sh
 *.tar.gz
 
