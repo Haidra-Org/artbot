@@ -32,6 +32,7 @@ export default function useHordeApiKey() {
 
     try {
       const res = await fetch(userDetailsApi, {
+        cache: 'no-store',
         headers: {
           apikey: apikey,
           'Client-Agent': clientHeader(),
@@ -44,8 +45,12 @@ export default function useHordeApiKey() {
       if (isErrorResponse(data)) {
         return { success: false, message: data.message }
       } else if (isUserResponse(data)) {
-        console.log(`Successfully logged in as ${data.username}`)
-        AppSettings.set('apiKey', apikey)
+        if (!isSharedKey) {
+          console.log(`Successfully logged in as ${data.username}`)
+          AppSettings.set('apiKey', apikey)
+        } else {
+          console.log(`Successfully logged in with shared key: ${apikey}`)
+        }
         updateUser(data)
       } else {
         console.warn('useHordeApiKey: Unknown data structure received', data)

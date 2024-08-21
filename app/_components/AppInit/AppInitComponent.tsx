@@ -97,6 +97,8 @@ export default function AppInitComponent({
     if (sharedKey) {
       updateUseSharedKey(sharedKey)
       AppSettings.set('sharedKey', sharedKey)
+    } else if (AppSettings.get('sharedKey')) {
+      updateUseSharedKey(AppSettings.get('sharedKey'))
     }
   }, [sharedKey])
 

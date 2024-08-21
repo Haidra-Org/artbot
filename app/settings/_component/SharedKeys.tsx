@@ -7,16 +7,28 @@ import { AppConstants } from '@/app/_data-models/AppConstants'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import NiceModal from '@ebay/nice-modal-react'
-import { IconCopy, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import {
+  IconCopy,
+  IconEdit,
+  IconLink,
+  IconPlus,
+  IconTrash
+} from '@tabler/icons-react'
+import { useCallback, useEffect, useState } from 'react'
 import AddEditSharedKey from './AddEditSharedKey'
 import { sleep } from '@/app/_utils/sleep'
 import { SharedApiKey } from '@/app/_types/HordeTypes'
+import { getBaseUrl } from '@/app/_utils/urlUtils'
+import { useStore } from 'statery'
+import { UserStore } from '@/app/_stores/UserStore'
 
 export default function SharedKeys() {
+  const { sharedKey } = useStore(UserStore)
   const [sharedKeys, setSharedKeys] = useState<SharedApiKey[]>([])
 
-  const fetchSharedKeys = async () => {
+  const fetchSharedKeys = useCallback(async () => {
+    if (sharedKey) return
+
     const apikey = AppSettings.apikey()?.trim()
     if (!apikey || apikey === AppConstants.AI_HORDE_ANON_KEY) return
 
@@ -67,7 +79,7 @@ export default function SharedKeys() {
         // Handle error (e.g., set an error state, log, etc.)
       }
     }
-  }
+  }, [sharedKey])
 
   const handleCreateSharedKey = async ({
     id,
@@ -142,105 +154,117 @@ export default function SharedKeys() {
 
   useEffect(() => {
     fetchSharedKeys()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  if (sharedKey) return null
 
   return (
     <Section anchor="shared-api-key" title="Manage Shared API Keys">
-      {sharedKeys.length > 0 && (
-        <div className="col gap-2">
-          <div>
-            Create special API keys that can be shared with your friends or an
-            online community. Anyone using a shared key will receive your queue
-            priority, potentially allowing for quicker (or more computationally
-            expensive) image generations.
-          </div>
-          <div className="text-sm">
-            Shared key data is cached on the AI Horde backend and it may take up
-            to 5 minutes for changes to appear.
-          </div>
-          <div>
-            <Button
-              onClick={() =>
-                NiceModal.show('modal', {
-                  children: (
-                    <AddEditSharedKey onCreateClick={handleCreateSharedKey} />
-                  )
-                })
-              }
-            >
-              <IconPlus /> Create new key
-            </Button>
-          </div>
-          {sharedKeys.map((sharedKey) => (
-            <div
-              key={sharedKey.id}
-              className="row w-full items-start justify-start gap-6"
-            >
-              <div className="pt-1 flex flex-row gap-1">
-                <Button
-                  onClick={async () => {
-                    NiceModal.show('delete', {
-                      children: (
-                        <DeleteConfirmation
-                          deleteButtonTitle="Delete"
-                          title="Remove shared key??"
-                          message={
-                            <>
-                              <p>
-                                Are you sure you want to delete this shared API
-                                key?
-                              </p>
-                              <p>This cannot be undone.</p>
-                            </>
-                          }
-                          onDelete={async () => {
-                            await handleDeleteKey(sharedKey.id)
-                          }}
-                        />
-                      )
-                    })
-                  }}
-                  theme="danger"
-                  style={{
-                    height: '32px',
-                    width: '32px'
-                  }}
-                >
-                  <IconTrash />
-                </Button>
-                <Button
-                  onClick={() =>
-                    NiceModal.show('modal', {
-                      children: (
-                        <AddEditSharedKey
-                          onCreateClick={handleCreateSharedKey}
-                          sharedKey={sharedKey}
-                        />
-                      )
-                    })
-                  }
-                  style={{
-                    height: '32px',
-                    width: '32px'
-                  }}
-                >
-                  <IconEdit />
-                </Button>
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(sharedKey.id)
-                    toastController({
-                      message: 'Shared API key copied to clipboard!'
-                    })
-                  }}
-                  style={{
-                    height: '32px',
-                    width: '32px'
-                  }}
-                >
-                  <IconCopy />
-                </Button>
-                {/* <Button
+      <div className="col gap-2">
+        <div>
+          Create special API keys that can be shared with your friends or an
+          online community. Anyone using a shared key will receive your queue
+          priority, potentially allowing for quicker (or more computationally
+          expensive) image generations.
+        </div>
+        <div className="text-sm">
+          Shared key data is cached on the AI Horde backend and it may take up
+          to 5 minutes for changes to appear.
+        </div>
+        <div>
+          <Button
+            onClick={() =>
+              NiceModal.show('modal', {
+                children: (
+                  <AddEditSharedKey onCreateClick={handleCreateSharedKey} />
+                )
+              })
+            }
+          >
+            <IconPlus /> Create new key
+          </Button>
+        </div>
+        {sharedKeys.length > 0 && (
+          <div
+            className="w-full"
+            style={{
+              borderTop: '1px solid white'
+            }}
+          />
+        )}
+        {sharedKeys.length > 0 &&
+          sharedKeys.map((sharedKey) => (
+            <>
+              <div
+                key={sharedKey.id}
+                className="row w-full items-start justify-start gap-6"
+              >
+                <div className="pt-1 flex flex-row gap-1">
+                  <Button
+                    onClick={async () => {
+                      NiceModal.show('delete', {
+                        children: (
+                          <DeleteConfirmation
+                            deleteButtonTitle="Delete"
+                            title="Remove shared key?"
+                            message={
+                              <>
+                                <p>
+                                  Are you sure you want to delete this shared
+                                  API key?
+                                </p>
+                                <p>This cannot be undone.</p>
+                              </>
+                            }
+                            onDelete={async () => {
+                              await handleDeleteKey(sharedKey.id)
+                            }}
+                          />
+                        )
+                      })
+                    }}
+                    theme="danger"
+                    style={{
+                      height: '32px',
+                      width: '32px'
+                    }}
+                  >
+                    <IconTrash />
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      NiceModal.show('modal', {
+                        children: (
+                          <AddEditSharedKey
+                            onCreateClick={handleCreateSharedKey}
+                            sharedKey={sharedKey}
+                          />
+                        )
+                      })
+                    }
+                    style={{
+                      height: '32px',
+                      width: '32px'
+                    }}
+                  >
+                    <IconEdit />
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(sharedKey.id)
+                      toastController({
+                        message: 'Shared API key copied to clipboard!'
+                      })
+                    }}
+                    style={{
+                      height: '32px',
+                      width: '32px'
+                    }}
+                  >
+                    <IconCopy />
+                  </Button>
+                  {/* <Button
                   style={{
                     height: '32px',
                     width: '32px'
@@ -248,18 +272,32 @@ export default function SharedKeys() {
                 >
                   <IconLink />
                 </Button> */}
-              </div>
-              <div className="col gap-0 font-mono">
-                <div className="font-bold !text-md">{sharedKey.name}</div>
-                <div className="text-sm">API key: {sharedKey.id}</div>
-                <div className="text-sm">
-                  Kudos remaining: {sharedKey.kudos}
+                </div>
+                <div className="col gap-0 font-mono">
+                  <div className="font-bold !text-md row gap-2 items-center">
+                    <div
+                      className="primary-color cursor-pointer"
+                      onClick={() => {
+                        const url = getBaseUrl() + `?api_key=${sharedKey.id}`
+                        navigator.clipboard.writeText(url)
+                        toastController({
+                          message: 'Shared key URL copied to clipboard!'
+                        })
+                      }}
+                    >
+                      <IconLink size={20} />
+                    </div>
+                    {sharedKey.name}
+                  </div>
+                  <div className="text-sm">API key: {sharedKey.id}</div>
+                  <div className="text-sm">
+                    Kudos remaining: {sharedKey.kudos}
+                  </div>
                 </div>
               </div>
-            </div>
+            </>
           ))}
-        </div>
-      )}
+      </div>
     </Section>
   )
 }
