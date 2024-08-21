@@ -76,6 +76,7 @@ describe('AppSettings', () => {
   })
 
   test('should return default API key if none is set', () => {
+    AppSettings.set('apiKey', '')
     jest.spyOn(localStorage, 'getItem').mockReturnValueOnce('{}')
     const apiKey = AppSettings.apikey()
     expect(apiKey).toBe(AppConstants.AI_HORDE_ANON_KEY)

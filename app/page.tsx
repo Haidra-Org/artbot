@@ -1,7 +1,53 @@
 import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react'
 import Link from 'next/link'
+import NoiseToImage from './_components/FrontPage/NoiseToImage'
+
+const imageArray = [
+  {
+    url: '/front-page/himalays.png',
+    title: 'Himalayan mountains, flat design, vibrant colors, Moebius',
+    model: 'Deliberate'
+  },
+  {
+    url: '/front-page/astronaut.png',
+    title: 'An astronaut resting on Mars in a beach chair.',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/chalet.png',
+    title:
+      'Mountain chalet covered in snow, foggy, sunrise, sharp details, sharp focus, elegant, highly detailed, illustration, by Jordan Grimmer and Greg Rutkowski',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/raven.png',
+    title:
+      'Graffiti-style picture of a Raven, alcohol markers and aerosol paint',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/brisket.jpg',
+    title:
+      'macro photograph of a brisket on a table with beer, in a blurred restaurant with depth of field, bokeh, soft diffused light, professional food photography',
+    model: 'stable diffusion'
+  },
+  {
+    url: '/front-page/chipmunk.png',
+    title: 'Beautiful portrait oil painting of an aristocrat chipmunk',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/sf.png',
+    title:
+      'San Francisco Downtown, sunset, flat design poster, minimalist, modern, 4k, epic composition, flat vector art illustration, stunning realism, long shot, unreal engine 4d',
+    model: 'AlbedoBase XL (SDXL)'
+  }
+]
 
 export default function Home() {
+  // Randomize imageArray order:
+  imageArray.sort(() => Math.random() - 0.5)
+
   return (
     <div className="flex flex-col p-16 gap-8 items-center text-center">
       <h1 className="leading-[64px] text-[64px] md:text-[128px] md:leading-[128px]">
@@ -35,6 +81,7 @@ export default function Home() {
             Get started! <IconCircleArrowRight size={20} />
           </Link>
         </div>
+        <NoiseToImage images={imageArray} />
       </div>
     </div>
   )
