@@ -13,7 +13,7 @@ import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
 import { useEffect } from 'react'
 import { setAvailableModels, setImageModels } from '@/app/_stores/ModelStore'
 import { AppConstants } from '@/app/_data-models/AppConstants'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   AppStore,
   setAppBuildId,
@@ -23,6 +23,7 @@ import { appBasepath } from '@/app/_utils/browserUtils'
 import { loadPendingImagesFromDexie } from '@/app/_controllers/pendingJobs/loadPendingImages'
 import { initJobController } from '@/app/_controllers/pendingJobs'
 import { toastController } from '@/app/_controllers/toastController'
+import { updateUseSharedKey } from '@/app/_stores/UserStore'
 
 export default function AppInitComponent({
   modelsAvailable,
@@ -32,6 +33,9 @@ export default function AppInitComponent({
   modelDetails: { [key: string]: ImageModelDetails }
 }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const sharedKey = searchParams?.get('api_key')
+
   const [handleLogin] = useHordeApiKey()
 
   const initHeartbeat = async () => {
@@ -60,7 +64,7 @@ export default function AppInitComponent({
   }
 
   const getUserInfoOnLoad = async () => {
-    const apikey = AppSettings.get('apiKey')
+    const apikey = AppSettings.apikey()
 
     if (!apikey || !apikey.trim() || apikey === AppConstants.AI_HORDE_ANON_KEY)
       return
@@ -88,6 +92,15 @@ export default function AppInitComponent({
       clearInterval(intervalHeartbeat)
     }
   })
+
+  useEffect(() => {
+    if (sharedKey) {
+      updateUseSharedKey(sharedKey)
+      AppSettings.set('sharedKey', sharedKey)
+    } else if (AppSettings.get('sharedKey')) {
+      updateUseSharedKey(AppSettings.get('sharedKey'))
+    }
+  }, [sharedKey])
 
   useEffect(() => {
     router.prefetch('/create')

@@ -239,6 +239,17 @@ export interface LoraConfig {
   is_version: boolean
 }
 
+export interface SharedApiKey {
+  id: string
+  kudos: number
+  max_image_pixels: number
+  max_image_steps: number
+  max_text_tokens: number
+  name: string
+  username: string
+  utilized: number
+}
+
 export interface StylePresetConfig {
   prompt: string
   model: string

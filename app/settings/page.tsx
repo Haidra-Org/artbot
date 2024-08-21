@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import PageTitle from '../_components/PageTitle'
 import Apikey from './_component/Apikey'
-import Section from '../_components/Section'
 import WorkerList from './_component/WorkerList'
+import SharedKeys from './_component/SharedKeys'
 
 export const metadata: Metadata = {
   title: 'Settings | ArtBot for Stable Diffusion'
@@ -13,9 +13,8 @@ export default async function SettingsPage() {
     <div className="col gap-2">
       <PageTitle>Settings</PageTitle>
       <div className="col gap-4">
-        <Section anchor="api-key" title="AI Horde API key (optional)">
-          <Apikey />
-        </Section>
+        <Apikey />
+        <SharedKeys />
         <WorkerList type="allow" />
         <WorkerList type="block" />
       </div>

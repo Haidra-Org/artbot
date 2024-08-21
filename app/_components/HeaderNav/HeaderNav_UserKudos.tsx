@@ -15,7 +15,7 @@ import UserKudosModal from '../Modal_UserKudos'
 import { AppConstants } from '../../_data-models/AppConstants'
 
 export default function UserKudos() {
-  const { userDetails } = useStore(UserStore)
+  const { sharedKey, userDetails } = useStore(UserStore)
   const { kudos } = userDetails
 
   // Prevent hydration warnings
@@ -24,7 +24,7 @@ export default function UserKudos() {
 
   // Prevent hydration warnings
   useEffect(() => {
-    const apikey = AppSettings.get('apiKey')
+    const apikey = AppSettings.apikey()
 
     if (!apikey || !apikey.trim() || apikey === AppConstants.AI_HORDE_ANON_KEY)
       return
@@ -35,7 +35,8 @@ export default function UserKudos() {
   if (
     !isClient ||
     (!clientApiKey && !userDetails) ||
-    (!clientApiKey && !userDetails.username)
+    (!clientApiKey && !userDetails.username) ||
+    (!userDetails.username && !sharedKey)
   ) {
     return null
   }

@@ -9,7 +9,7 @@ const withSerwist = withSerwistInit({
   swUrl: '/sw.js',
 });
 
-const BASE_PATH = process.env.BASE_PATH || '';
+const BASE_PATH = process.env.BASE_PATH || ''; // Should be '' or '/artbot'
 const DEXIE_DB = process.env.DEXIE_DB || 'ArtBot_beta_v2';
 const HORDE_API_HOST = process.env.HORDE_API_HOST || 'https://aihorde.net'
 

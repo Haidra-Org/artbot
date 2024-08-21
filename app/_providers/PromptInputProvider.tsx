@@ -77,7 +77,7 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
       apiParams.dry_run = true
 
       const apikey =
-        AppSettings.get('apiKey')?.trim() || AppConstants.AI_HORDE_ANON_KEY
+        AppSettings.apikey()?.trim() || AppConstants.AI_HORDE_ANON_KEY
       const response = await fetch(
         `https://aihorde.net/api/v2/generate/async`,
         {

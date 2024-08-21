@@ -24,6 +24,7 @@ describe('AppSettings', () => {
     negativePanelOpen: false,
     runInBackground: true,
     saveInputOnCreate: false,
+    sharedKey: '',
     slow_workers: true,
     useAllowedWorkers: false,
     useBeta: false,
@@ -70,11 +71,12 @@ describe('AppSettings', () => {
   })
 
   test('should get specific setting from localStorage', () => {
-    const apiKey = AppSettings.get('apiKey')
+    const apiKey = AppSettings.apikey()
     expect(apiKey).toBe('testApiKey')
   })
 
   test('should return default API key if none is set', () => {
+    AppSettings.set('apiKey', '')
     jest.spyOn(localStorage, 'getItem').mockReturnValueOnce('{}')
     const apiKey = AppSettings.apikey()
     expect(apiKey).toBe(AppConstants.AI_HORDE_ANON_KEY)
