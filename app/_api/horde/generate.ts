@@ -32,7 +32,7 @@ export default async function generateImage(
   let statusCode
   try {
     const apikey =
-      AppSettings.get('apiKey')?.trim() || AppConstants.AI_HORDE_ANON_KEY
+      AppSettings.apikey()?.trim() || AppConstants.AI_HORDE_ANON_KEY
     const res = await fetch(
       `${AppConstants.AI_HORDE_PROD_URL}/api/v2/generate/async`,
       {

@@ -24,7 +24,7 @@ export default function UserKudos() {
 
   // Prevent hydration warnings
   useEffect(() => {
-    const apikey = AppSettings.get('apiKey')
+    const apikey = AppSettings.apikey()
 
     if (!apikey || !apikey.trim() || apikey === AppConstants.AI_HORDE_ANON_KEY)
       return

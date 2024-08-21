@@ -24,6 +24,7 @@ describe('AppSettings', () => {
     negativePanelOpen: false,
     runInBackground: true,
     saveInputOnCreate: false,
+    sharedKey: '',
     slow_workers: true,
     useAllowedWorkers: false,
     useBeta: false,
@@ -70,7 +71,7 @@ describe('AppSettings', () => {
   })
 
   test('should get specific setting from localStorage', () => {
-    const apiKey = AppSettings.get('apiKey')
+    const apiKey = AppSettings.apikey()
     expect(apiKey).toBe('testApiKey')
   })
 

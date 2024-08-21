@@ -19,6 +19,7 @@ export interface AppSettingsParams {
   negativePanelOpen: boolean
   runInBackground: boolean
   saveInputOnCreate: boolean
+  sharedKey: string
   slow_workers: boolean
   useAllowedWorkers: boolean
   useBeta: boolean
@@ -39,6 +40,7 @@ class AppSettings {
     negativePanelOpen: false,
     runInBackground: true,
     saveInputOnCreate: true,
+    sharedKey: '',
     slow_workers: true,
     useAllowedWorkers: false,
     useBeta: false,
@@ -54,7 +56,9 @@ class AppSettings {
   }
 
   static apikey() {
-    return this.get('apiKey') || this.defaultValues.apiKey
+    return (
+      this.get('sharedKey') || this.get('apiKey') || this.defaultValues.apiKey
+    )
   }
 
   static get<K extends keyof AppSettingsParams>(item: K): AppSettingsParams[K] {
