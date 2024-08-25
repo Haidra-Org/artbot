@@ -124,6 +124,10 @@ export const countAllImagesForCompletedJobsFromDexie = async () => {
     .count()
 }
 
+export const fetchJobByArtbotId = async (artbot_id: string) => {
+  return db.hordeJobs.where('artbot_id').equals(artbot_id).first()
+}
+
 export const fetchAllImagesForCompletedJobsFromDexie = async (
   limit: number = 20,
   offset: number = 0,

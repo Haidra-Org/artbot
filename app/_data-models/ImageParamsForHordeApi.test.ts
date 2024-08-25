@@ -48,6 +48,7 @@ describe('ImageParamsForHordeApi', () => {
           negativePanelOpen: false,
           runInBackground: false,
           saveInputOnCreate: false,
+          sharedKey: '',
           slow_workers: true,
           useAllowedWorkers: false,
           useBeta: false,

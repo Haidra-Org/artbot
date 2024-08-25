@@ -7,7 +7,7 @@ export const initJobController = () => {
 
   setInterval(() => {
     checkForWaitingJobs()
-  }, 2050)
+  }, 250)
 
   setInterval(() => {
     checkPendingJobs()

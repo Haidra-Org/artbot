@@ -2,6 +2,8 @@ import { AppConstants } from '@/app/_data-models/AppConstants'
 import { AppSettings } from '@/app/_data-models/AppSettings'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { HordeApiParams } from '@/app/_data-models/ImageParamsForHordeApi'
+// import { debugSaveApiResponse } from '../artbot/debugSaveResponse'
+import throttle from '@/app/_utils/throttle'
 
 export interface GenerateSuccessResponse {
   success: boolean
@@ -26,7 +28,7 @@ interface HordeErrorResponse {
   errors: Array<{ [key: string]: string }>
 }
 
-export default async function generateImage(
+async function generateImage(
   imageParams: HordeApiParams
 ): Promise<GenerateSuccessResponse | GenerateErrorResponse> {
   let statusCode
@@ -51,6 +53,11 @@ export default async function generateImage(
     const data: HordeSuccessResponse | HordeErrorResponse = await res.json()
 
     if ('id' in data) {
+      // await debugSaveApiResponse(
+      //   data.id,
+      //   { data, params: imageParams },
+      //   `/api/v2/generate/async`
+      // )
       return {
         success: true,
         ...data
@@ -75,3 +82,6 @@ export default async function generateImage(
     }
   }
 }
+
+// Export the throttled version as `generateImage`
+export default throttle(generateImage, 600)

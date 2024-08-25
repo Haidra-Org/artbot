@@ -18,17 +18,58 @@ import { addImageAndDefaultFavToDexie } from '@/app/_db/jobTransactions'
 import { ImageError } from '@/app/_types/ArtbotTypes'
 import { GenMetadata, HordeGeneration } from '@/app/_types/HordeTypes'
 import { updatePendingImage } from './updatePendingImage'
+import { fetchJobByArtbotId } from '@/app/_db/hordeJobs'
+import throttle from '@/app/_utils/throttle'
 
 const STATUS_CHECK_INTERVAL = 6025 // ms
-const statusCache = new Map<string, number>()
 
-const shouldCheckStatus = (hordeId: string): boolean => {
-  const lastChecked = statusCache.get(hordeId)
-  return !lastChecked || Date.now() - lastChecked >= STATUS_CHECK_INTERVAL
-}
+const throttledFunctions = new Map<string, ReturnType<typeof throttle>>()
 
-const updateStatusCache = (hordeId: string): void => {
-  statusCache.set(hordeId, Date.now())
+const getThrottledFunction = (
+  hordeId: string,
+  jobDetails: ArtBotHordeJob,
+  kudos: number
+) => {
+  if (!throttledFunctions.has(hordeId)) {
+    const throttledFn = throttle(async () => {
+      const response = await imageStatus(hordeId)
+      if (!isValidResponse(response) || !response.generations) {
+        return { success: false }
+      }
+
+      const {
+        completedGenerations,
+        downloadImagesPromise,
+        gen_metadata,
+        imageErrors,
+        images_completed,
+        images_failed
+      } = await processImageGenerations(
+        jobDetails.artbot_id,
+        response.generations
+      )
+
+      await handleSettledImageDownloads({
+        downloadImagesPromise,
+        completedGenerations,
+        images_completed,
+        jobDetails,
+        kudos
+      })
+
+      await updatePendingImage(jobDetails.artbot_id, {
+        images_completed,
+        images_failed,
+        errors: imageErrors,
+        gen_metadata,
+        api_response: response
+      })
+
+      return { success: true }
+    }, STATUS_CHECK_INTERVAL)
+    throttledFunctions.set(hordeId, throttledFn)
+  }
+  return throttledFunctions.get(hordeId)!
 }
 
 const isValidResponse = (
@@ -53,6 +94,7 @@ const handleCensoredImage = (allowNsfw: boolean): ImageError => {
 }
 
 const processImageGenerations = async (
+  jobId: string,
   generations: HordeGeneration[]
 ): Promise<{
   completedGenerations: HordeGeneration[]
@@ -66,8 +108,17 @@ const processImageGenerations = async (
 }> => {
   const gen_metadata: GenMetadata[] = []
   const imageErrors: ImageError[] = []
-  let images_completed = 0
-  let images_failed = 0
+
+  const jobDetails = (await fetchJobByArtbotId(jobId)) || ({} as ArtBotHordeJob)
+
+  let images_completed = jobDetails.images_completed || 0
+  let images_failed = jobDetails.images_failed || 0
+  console.log(`process jobDetails`, {
+    id: jobId,
+    images_completed: jobDetails.images_completed,
+    images_failed: jobDetails.images_failed
+  })
+
   const downloadImagesPromise: Promise<
     DownloadSuccessResponse | DownloadErrorResponse | null
   >[] = []
@@ -174,41 +225,10 @@ export const downloadImages = async ({
   jobDetails: ArtBotHordeJob
   kudos: number
 }): Promise<{ success: boolean }> => {
-  if (!shouldCheckStatus(jobDetails.horde_id)) {
-    return { success: false }
-  }
-
-  updateStatusCache(jobDetails.horde_id)
-
-  const response = await imageStatus(jobDetails.horde_id)
-  if (!isValidResponse(response) || !response.generations) {
-    return { success: false }
-  }
-
-  const {
-    completedGenerations,
-    downloadImagesPromise,
-    gen_metadata,
-    imageErrors,
-    images_completed,
-    images_failed
-  } = await processImageGenerations(response.generations)
-
-  await handleSettledImageDownloads({
-    downloadImagesPromise,
-    completedGenerations,
-    images_completed,
+  const throttledFn = getThrottledFunction(
+    jobDetails.horde_id,
     jobDetails,
     kudos
-  })
-
-  await updatePendingImage(jobDetails.artbot_id, {
-    images_completed,
-    images_failed,
-    errors: imageErrors,
-    gen_metadata,
-    api_response: response
-  })
-
-  return { success: true }
+  )
+  return throttledFn()
 }

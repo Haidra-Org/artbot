@@ -164,15 +164,13 @@ const handleFinishedJob = async (
   if (response.done) {
     const success = job.images_requested !== job.images_failed
     await updatePendingImage(job.artbot_id, {
-      status: success ? JobStatus.Done : JobStatus.Error,
-      images_completed: response.finished
+      status: success ? JobStatus.Done : JobStatus.Error
     })
     updateCompletedJobInPendingImagesStore()
   } else {
     updatePendingImage(job.artbot_id, {
       queue_position: response.queue_position,
       wait_time: response.wait_time,
-      images_completed: response.finished,
       api_response: { ...response }
     })
   }

@@ -41,8 +41,11 @@ export const checkForWaitingJobs = async (): Promise<void> => {
     const { apiParams } = await ImageParamsForHordeApi.build(imageRequest)
     const apiResponse = await generateImage(apiParams)
 
-    if ('errors' in apiResponse) {
-      await handleApiError(waitingJob.artbot_id, apiResponse)
+    if (!apiResponse || 'errors' in apiResponse) {
+      await handleApiError(
+        waitingJob.artbot_id,
+        apiResponse || { errors: [{ error: 'unknown error' }] }
+      )
       return
     }
 
