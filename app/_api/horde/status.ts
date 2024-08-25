@@ -1,7 +1,7 @@
 import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { HordeJobResponse } from '@/app/_types/HordeTypes'
-// import { debugSaveApiResponse } from '../artbot/debugSaveResponse'
+import { debugSaveApiResponse } from '../artbot/debugSaveResponse'
 
 interface HordeErrorResponse {
   message: string
@@ -46,7 +46,7 @@ export default async function imageStatus(
     const data: HordeJobResponse | HordeErrorResponse = await res.json()
 
     if ('done' in data) {
-      // await debugSaveApiResponse(jobId, data, `/api/v2/generate/check/${jobId}`)
+      await debugSaveApiResponse(jobId, data, `/api/v2/generate/check/${jobId}`)
 
       return {
         success: true,

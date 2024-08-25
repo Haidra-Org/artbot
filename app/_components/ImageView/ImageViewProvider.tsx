@@ -83,7 +83,7 @@ export const ImageViewProvider = ({
         )
       }
 
-      if (!imageId) {
+      if (!imageId && 'image_id' in data.imageFiles[0]) {
         imageId = data.imageFiles[0].image_id
         setImageId(data.imageFiles[0].image_id)
       }
