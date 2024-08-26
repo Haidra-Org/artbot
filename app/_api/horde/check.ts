@@ -34,55 +34,43 @@ const getQueueSystem = (
       new TaskQueue<CheckSuccessResponse | CheckErrorResponse>(
         `CheckQueue-${jobId}`,
         STATUS_CHECK_INTERVAL,
-        { preventDuplicates: true } // Enable duplicate prevention for status checks
+        { preventDuplicates: true }
       )
     )
   }
   return queueSystems.get(jobId)!
 }
 
-async function performCheck(
-  jobId: string
-): Promise<CheckSuccessResponse | CheckErrorResponse> {
-  let statusCode
-  try {
-    const res = await fetch(
-      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/generate/check/${jobId}`,
-      {
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-          'Client-Agent': clientHeader()
-        }
-      }
-    )
+// Worker initialization
+let worker: Worker | null = null
 
-    statusCode = res.status
-    const data: HordeJobResponse | HordeErrorResponse = await res.json()
-
-    if ('done' in data && 'is_possible' in data) {
-      await debugSaveApiResponse(jobId, data, `/api/v2/generate/check/${jobId}`)
-      return {
-        success: true,
-        ...data
-      }
-    } else {
-      return {
-        success: false,
-        message: (data as HordeErrorResponse).message,
-        statusCode
-      }
-    }
-  } catch (err) {
-    console.log(`Error: Unable to check status for jobId: ${jobId}`)
-    console.log(err)
-
-    return {
-      success: false,
-      statusCode: statusCode ?? 0,
-      message: 'unknown error'
-    }
+function getWorker() {
+  if (!worker && typeof Worker !== 'undefined') {
+    worker = new Worker(new URL('./check_webworker.ts', import.meta.url))
   }
+  return worker
+}
+
+const performCheckUsingWorker = (
+  jobId: string
+): Promise<CheckSuccessResponse | CheckErrorResponse> => {
+  return new Promise((resolve) => {
+    const url = `${AppConstants.AI_HORDE_PROD_URL}/api/v2/generate/check/${jobId}`
+    const headers = {
+      'Content-Type': 'application/json',
+      'Client-Agent': clientHeader()
+    }
+
+    const workerInstance = getWorker()
+    workerInstance?.postMessage({ jobId, url, headers })
+
+    workerInstance?.addEventListener('message', (event) => {
+      const { jobId: returnedJobId, result } = event.data
+      if (returnedJobId === jobId) {
+        resolve(result)
+      }
+    })
+  })
 }
 
 export default async function checkImage(
@@ -94,7 +82,14 @@ export default async function checkImage(
   return await queueSystem.enqueue(
     async () => {
       console.log(`Processing check task for jobId: ${jobId}`)
-      const result = await performCheck(jobId)
+      const result = await performCheckUsingWorker(jobId)
+      if (result.success) {
+        await debugSaveApiResponse(
+          jobId,
+          result,
+          `/api/v2/generate/check/${jobId}`
+        )
+      }
       console.log(`Check task completed for jobId: ${jobId}`)
       return result
     },
