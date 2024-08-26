@@ -19,57 +19,86 @@ import { ImageError } from '@/app/_types/ArtbotTypes'
 import { GenMetadata, HordeGeneration } from '@/app/_types/HordeTypes'
 import { updatePendingImage } from './updatePendingImage'
 import { fetchJobByArtbotId } from '@/app/_db/hordeJobs'
-import throttle from '@/app/_utils/throttle'
+import { TaskQueue } from '@/app/_data-models/TaskQueue'
 
-const STATUS_CHECK_INTERVAL = 6025 // ms
+const STATUS_CHECK_INTERVAL = 6050 // ms
 
-const throttledFunctions = new Map<string, ReturnType<typeof throttle>>()
+const queueSystems = new Map<string, TaskQueue<{ success: boolean }>>()
 
-const getThrottledFunction = (
-  hordeId: string,
-  jobDetails: ArtBotHordeJob,
-  kudos: number
-) => {
-  if (!throttledFunctions.has(hordeId)) {
-    const throttledFn = throttle(async () => {
-      const response = await imageStatus(hordeId)
-      if (!isValidResponse(response) || !response.generations) {
-        return { success: false }
-      }
-
-      const {
-        completedGenerations,
-        downloadImagesPromise,
-        gen_metadata,
-        imageErrors,
-        images_completed,
-        images_failed
-      } = await processImageGenerations(
-        jobDetails.artbot_id,
-        response.generations
+const getQueueSystem = (jobId: string): TaskQueue<{ success: boolean }> => {
+  if (!queueSystems.has(jobId)) {
+    queueSystems.set(
+      jobId,
+      new TaskQueue<{ success: boolean }>(
+        `DownloadQueue-${jobId}`,
+        STATUS_CHECK_INTERVAL,
+        { preventDuplicates: true }
       )
-
-      await handleSettledImageDownloads({
-        downloadImagesPromise,
-        completedGenerations,
-        images_completed,
-        jobDetails,
-        kudos
-      })
-
-      await updatePendingImage(jobDetails.artbot_id, {
-        images_completed,
-        images_failed,
-        errors: imageErrors,
-        gen_metadata,
-        api_response: response
-      })
-
-      return { success: true }
-    }, STATUS_CHECK_INTERVAL)
-    throttledFunctions.set(hordeId, throttledFn)
+    )
   }
-  return throttledFunctions.get(hordeId)!
+  return queueSystems.get(jobId)!
+}
+
+export const downloadImages = async ({
+  jobDetails,
+  kudos
+}: {
+  jobDetails: ArtBotHordeJob
+  kudos: number
+}): Promise<{ success: boolean }> => {
+  const queueSystem = getQueueSystem(jobDetails.artbot_id)
+  try {
+    console.log(`Enqueueing download task for jobId: ${jobDetails.artbot_id}`)
+    return await queueSystem.enqueue(
+      async () => {
+        console.log(
+          `Processing download task for jobId: ${jobDetails.artbot_id}`
+        )
+        const response = await imageStatus(jobDetails.horde_id)
+        if (!isValidResponse(response) || !response.generations) {
+          console.log(`Invalid response for jobId: ${jobDetails.artbot_id}`)
+          return { success: false }
+        }
+
+        const {
+          completedGenerations,
+          downloadImagesPromise,
+          gen_metadata,
+          imageErrors,
+          images_completed,
+          images_failed
+        } = await processImageGenerations(
+          jobDetails.artbot_id,
+          response.generations
+        )
+
+        await handleSettledImageDownloads({
+          downloadImagesPromise,
+          completedGenerations,
+          images_completed,
+          jobDetails,
+          kudos
+        })
+
+        await updatePendingImage(jobDetails.artbot_id, {
+          images_completed,
+          images_failed,
+          errors: imageErrors,
+          gen_metadata,
+          api_response: response
+        })
+
+        console.log(
+          `Download task completed for jobId: ${jobDetails.artbot_id}`
+        )
+        return { success: true }
+      },
+      jobDetails.artbot_id // Use artbot_id as the unique taskId
+    )
+  } catch (error) {
+    console.error('Error in downloadImages:', error)
+    return { success: false }
+  }
 }
 
 const isValidResponse = (
@@ -216,19 +245,4 @@ const handleSettledImageDownloads = async (params: {
       await addImageAndDefaultFavToDexie(image)
     }
   }
-}
-
-export const downloadImages = async ({
-  jobDetails,
-  kudos
-}: {
-  jobDetails: ArtBotHordeJob
-  kudos: number
-}): Promise<{ success: boolean }> => {
-  const throttledFn = getThrottledFunction(
-    jobDetails.horde_id,
-    jobDetails,
-    kudos
-  )
-  return throttledFn()
 }

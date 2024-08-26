@@ -2,6 +2,7 @@ import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { HordeJobResponse } from '@/app/_types/HordeTypes'
 import { debugSaveApiResponse } from '../artbot/debugSaveResponse'
+import { TaskQueue } from '@/app/_data-models/TaskQueue'
 
 interface HordeErrorResponse {
   message: string
@@ -16,7 +17,31 @@ export interface CheckErrorResponse extends HordeErrorResponse {
   statusCode: number
 }
 
-export default async function checkImage(
+const MAX_REQUESTS_PER_SECOND = 2
+const STATUS_CHECK_INTERVAL = 1025 / MAX_REQUESTS_PER_SECOND
+
+const queueSystems = new Map<
+  string,
+  TaskQueue<CheckSuccessResponse | CheckErrorResponse>
+>()
+
+const getQueueSystem = (
+  jobId: string
+): TaskQueue<CheckSuccessResponse | CheckErrorResponse> => {
+  if (!queueSystems.has(jobId)) {
+    queueSystems.set(
+      jobId,
+      new TaskQueue<CheckSuccessResponse | CheckErrorResponse>(
+        `CheckQueue-${jobId}`,
+        STATUS_CHECK_INTERVAL,
+        { preventDuplicates: true } // Enable duplicate prevention for status checks
+      )
+    )
+  }
+  return queueSystems.get(jobId)!
+}
+
+async function performCheck(
   jobId: string
 ): Promise<CheckSuccessResponse | CheckErrorResponse> {
   let statusCode
@@ -44,7 +69,7 @@ export default async function checkImage(
     } else {
       return {
         success: false,
-        message: data.message,
+        message: (data as HordeErrorResponse).message,
         statusCode
       }
     }
@@ -58,4 +83,21 @@ export default async function checkImage(
       message: 'unknown error'
     }
   }
+}
+
+export default async function checkImage(
+  jobId: string
+): Promise<CheckSuccessResponse | CheckErrorResponse> {
+  const queueSystem = getQueueSystem(jobId)
+
+  console.log(`Enqueueing check task for jobId: ${jobId}`)
+  return await queueSystem.enqueue(
+    async () => {
+      console.log(`Processing check task for jobId: ${jobId}`)
+      const result = await performCheck(jobId)
+      console.log(`Check task completed for jobId: ${jobId}`)
+      return result
+    },
+    jobId // Use jobId as the unique taskId
+  )
 }
