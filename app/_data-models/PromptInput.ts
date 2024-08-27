@@ -10,6 +10,13 @@ class PromptInput {
   // ArtBot ID for mainting relationships in IndexedDb
   artbot_id: string = ''
 
+  // ArtBot specific fields
+  notes: string = ''
+  preset: Array<{
+    name: string
+    settings: StylePresetConfig
+  }> = []
+
   // Fields used for AI Horde image requests
   cfg_scale: number = 2
   clipskip: number = 1
@@ -53,10 +60,6 @@ class PromptInput {
   numImages: number = 1
   parentJobId: string = ''
   post_processing: Array<string> = []
-  preset: Array<{
-    name: string
-    settings: StylePresetConfig
-  }> = []
   prompt: string = ''
   return_control_map: boolean = false
   sampler: string = 'k_dpmpp_sde'

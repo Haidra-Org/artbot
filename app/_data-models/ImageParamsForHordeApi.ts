@@ -66,6 +66,7 @@ export interface HordeApiParams {
   source_mask?: string
   r2?: boolean
   replacement_filter?: boolean
+  allow_downgrade?: boolean
   shared?: boolean
   workers?: Array<string>
   slow_workers?: boolean
@@ -97,6 +98,11 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
 
     if (replacement_filter && imageDetails.prompt.length >= 1000) {
       replacement_filter = false
+    }
+
+    let allow_downgrade = AppSettings.get('autoDowngrade') === false ? false : true
+    if (allow_downgrade) {
+      allow_downgrade = false
     }
 
     const {
@@ -137,6 +143,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         clip_skip: clipskip,
         n: numImages
       },
+      allow_downgrade,
       nsfw: allowNsfw, // Use workers that allow NSFW images
       censor_nsfw: !allowNsfw, // Show user NSFW images if created
       trusted_workers: useTrusted,
@@ -543,9 +550,9 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       hideBase64String?: boolean
       hasError?: boolean
     } = {
-      hideBase64String: false,
-      hasError: false
-    }
+        hideBase64String: false,
+        hasError: false
+      }
   ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput }> {
     const instance = new ImageParamsForHordeApi(imageDetails)
     instance.setEmbeddings()
