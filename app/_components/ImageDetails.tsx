@@ -54,6 +54,9 @@ export default function ImageDetails({
         }
       )
 
+      delete raw.apiParams.workers
+      delete raw.apiParams.worker_blacklist
+
       setRawParams(raw)
     }
 

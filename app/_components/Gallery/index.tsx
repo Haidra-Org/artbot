@@ -7,8 +7,10 @@ import {
   IconAffiliate,
   IconAffiliateFilled,
   IconCheck,
+  IconChevronDown,
   IconChevronRight,
   IconCircleCheck,
+  IconCircleDashedCheck,
   IconCopyCheck,
   IconDownload,
   // IconSearch,
@@ -18,23 +20,24 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 
-import ImageView from './ImageView'
-import Button from './Button'
-import GalleryImageCardOverlay from './GalleryImageCardOverlay'
-import { viewedPendingPage } from '../_stores/PendingImagesStore'
-import Section from './Section'
-import ImageThumbnailV2 from './ImageThumbnailV2'
+import ImageView from '../ImageView'
+import Button from '../Button'
+import GalleryImageCardOverlay from '../GalleryImageCardOverlay'
+import { viewedPendingPage } from '../../_stores/PendingImagesStore'
+import Section from '../Section'
+import ImageThumbnailV2 from '../ImageThumbnailV2'
 import {
   GalleryStore,
   setGalleryCurrentPage,
   setGalleryGroupImages,
   setGallerySortBy
-} from '../_stores/GalleryStore'
+} from '../../_stores/GalleryStore'
 import { useStore } from 'statery'
-import useFetchImages from '../_hooks/useFetchImages'
+import useFetchImages from '../../_hooks/useFetchImages'
 import PhotoAlbum from 'react-photo-album'
-import DeleteConfirmation from './Modal_DeleteConfirmation'
-import { deleteImageFromDexie } from '../_db/jobTransactions'
+import DeleteConfirmation from '../Modal_DeleteConfirmation'
+import { deleteImageFromDexie } from '../../_db/jobTransactions'
+import { handleDownloadSelectedImages } from './handleDownloads'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
@@ -229,10 +232,9 @@ export default function Gallery() {
               setSelectionMode(!selectionMode)
             }}>
               <span className="row gap-1">
-                <IconCircleCheck stroke={1.5} size={20} />
+                {selectionMode ? <IconCircleDashedCheck stroke={1.5} size={20} /> : <IconCircleCheck stroke={1.5} size={20} />}
                 <span className="hidden sm:row">
-                  {selectionMode ? 'Cancel' : 'Select'}
-                  <IconChevronRight />
+                  {selectionMode ? <IconChevronDown /> : <IconChevronRight />}
                 </span>
               </span>
             </Button>
@@ -250,7 +252,8 @@ export default function Gallery() {
               >
                 <IconCopyCheck />
               </Button>
-              <Button onClick={() => { }}
+              <Button
+                onClick={() => handleDownloadSelectedImages(selectedImages)}
               >
                 <IconDownload />
               </Button>
@@ -353,6 +356,7 @@ export default function Gallery() {
               setGalleryCurrentPage(Number(val.selected))
               window.scrollTo(0, 0)
             }}
+            activeLinkClassName='bg-[#969696] hover:bg-[#969696]'
             containerClassName="row gap-0"
             breakLinkClassName="border px-3 py-2 bg-[#8ac5d1] hover:bg-[#8ac5d1] text-white"
             pageLinkClassName="border px-3 py-2 bg-[#6AB7C6] hover:bg-[#8ac5d1] text-white"
