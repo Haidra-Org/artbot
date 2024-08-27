@@ -15,5 +15,16 @@ module.exports = {
         PORT: 3001
       }
     },
+    {
+      name: "artbot-staging",
+      script: "node",
+      args: "server.js",
+      instances: 1,
+      autorestart: true,
+      env: {
+        NODE_ENV: 'production',
+        PORT: 3003
+      }
+    },
   ],
 };

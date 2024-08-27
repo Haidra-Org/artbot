@@ -11,6 +11,14 @@ class PromptInput {
   artbot_id: string = ''
 
   // ArtBot specific fields
+  imageOrientation: ImageOrientations = 'square'
+  modelDetails: {
+    baseline: string
+    version: string
+  } = {
+      baseline: '',
+      version: ''
+    }
   notes: string = ''
   preset: Array<{
     name: string
@@ -32,7 +40,6 @@ class PromptInput {
   hires: boolean = false
   hires_fix_denoising_strength: number = 0.65
   image_is_control: boolean = false
-  imageOrientation: ImageOrientations = 'square'
   imageType: string = ''
   jobType: JobType = JobType.Text2Img
   karras: boolean = true
@@ -49,13 +56,6 @@ class PromptInput {
     })
   ]
   models: Array<string> = ['AlbedoBase XL (SDXL)']
-  modelDetails: {
-    baseline: string
-    version: string
-  } = {
-    baseline: '',
-    version: ''
-  }
   negative: string = ''
   numImages: number = 1
   parentJobId: string = ''

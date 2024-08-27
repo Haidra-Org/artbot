@@ -9,10 +9,13 @@ import {
   IconCheck,
   IconChevronRight,
   IconCircleCheck,
+  IconCopyCheck,
+  IconDownload,
   // IconSearch,
   IconSettings,
   IconSortAscending,
-  IconSortDescending
+  IconSortDescending,
+  IconTrash
 } from '@tabler/icons-react'
 
 import ImageView from './ImageView'
@@ -30,6 +33,8 @@ import {
 import { useStore } from 'statery'
 import useFetchImages from '../_hooks/useFetchImages'
 import PhotoAlbum from 'react-photo-album'
+import DeleteConfirmation from './Modal_DeleteConfirmation'
+import { deleteImageFromDexie } from '../_db/jobTransactions'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
@@ -40,6 +45,15 @@ export default function Gallery() {
   const { currentPage, groupImages, sortBy } = useStore(GalleryStore)
   const { fetchImages, images, initLoad, totalImages } = useFetchImages()
 
+  const handleDeleteSelectedImages = useCallback(async () => {
+    for (const imageId of selectedImages) {
+      await deleteImageFromDexie(imageId)
+    }
+    await fetchImages()
+    setSelectedImages([])
+    setSelectionMode(false)
+  }, [selectedImages, fetchImages])
+
   const handleImageSelect = (image_id: string) => {
     setSelectedImages(prev =>
       prev.includes(image_id)
@@ -47,6 +61,31 @@ export default function Gallery() {
         : [...prev, image_id]
     )
   }
+
+  const handleSelectAll = () => {
+    setSelectedImages(prevSelected => {
+      const currentImageIds = images
+        .map(img => img.image_id)
+        .filter((id): id is string => id !== undefined);
+
+      const allCurrentSelected = currentImageIds.every(id => prevSelected.includes(id));
+
+      if (allCurrentSelected) {
+        // If all current images are selected, remove them
+        return prevSelected.filter(id => !currentImageIds.includes(id));
+      } else {
+        // If not all are selected, add all current images
+        return [...new Set([...prevSelected, ...currentImageIds])];
+      }
+    });
+  };
+
+  const handleEscapeKey = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && selectionMode) {
+      setSelectedImages([])
+      setSelectionMode(false)
+    }
+  }, [selectionMode])
 
   // const handleImageKeypress = (
   //   e: React.KeyboardEvent,
@@ -94,6 +133,13 @@ export default function Gallery() {
     }
   }
 
+  useEffect(() => {
+    document.addEventListener('keydown', handleEscapeKey)
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey)
+    }
+  }, [handleEscapeKey])
+
   // On initial load of the gallery page, let's go ahead and reset viewed completed images to 0, since they should appear here.
   useEffect(() => {
     viewedPendingPage()
@@ -121,6 +167,7 @@ export default function Gallery() {
             </Button> */}
             <Button
               onClick={() => {
+                setSelectedImages([])
                 setGalleryCurrentPage(0)
                 setGalleryGroupImages(!groupImages)
               }}
@@ -193,9 +240,49 @@ export default function Gallery() {
         </div>
       </Section>
       {selectionMode && (
-        < div className="w-full font-mono text-xs mb-2">
-          Selected images: {selectedImages.length}
-        </div>
+        <Section className="w-full mb-2">
+          <div className='row w-full justify-between items-center'>
+            < div className="font-mono text-xs">
+              Selected: {selectedImages.length}
+            </div>
+            <div className='row gap-2'>
+              <Button onClick={handleSelectAll}
+              >
+                <IconCopyCheck />
+              </Button>
+              <Button onClick={() => { }}
+              >
+                <IconDownload />
+              </Button>
+              <Button
+                onClick={async () => {
+                  NiceModal.show('delete', {
+                    children: (
+                      <DeleteConfirmation
+                        deleteButtonTitle="Delete"
+                        title="Remove images?"
+                        message={
+                          <>
+                            <p>
+                              Are you sure you want to delete these {selectedImages.length} images?
+                            </p>
+                            <p>This cannot be undone!</p>
+                          </>
+                        }
+                        onDelete={async () => {
+                          await handleDeleteSelectedImages()
+                        }}
+                      />
+                    )
+                  })
+                }}
+                theme='danger'
+              >
+                <IconTrash />
+              </Button>
+            </div>
+          </div>
+        </Section>
       )}
       <div className="w-full font-mono text-xs mb-2">
         Page {currentPage + 1} of {Math.ceil(totalImages / 20)} ({totalImages}{' '}
@@ -236,10 +323,13 @@ export default function Gallery() {
                 />
                 <GalleryImageCardOverlay imageCount={photo.image_count} />
                 {selectionMode && photo.image_id && (
-                  <div className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 ${selectedImages.includes(photo.image_id)
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-white'
-                    }`}>
+                  <div className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2
+                    ${selectedImages.includes(photo.image_id)
+                      ? 'bg-blue-500 border-blue-500'
+                      : 'border-white bg-opacity-50 bg-gray-200'
+                    }
+                    shadow-md`}
+                  >
                     {selectedImages.includes(photo.image_id) && (
                       <IconCheck className="text-white" size={20} />
                     )}
