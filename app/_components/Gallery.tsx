@@ -1,11 +1,12 @@
 'use client'
 
 import NiceModal from '@ebay/nice-modal-react'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import ReactPaginate from 'react-paginate'
 import {
   IconAffiliate,
   IconAffiliateFilled,
+  IconCheck,
   IconChevronRight,
   IconCircleCheck,
   // IconSearch,
@@ -32,9 +33,35 @@ import PhotoAlbum from 'react-photo-album'
 
 export default function Gallery() {
   // const [showSearch, setShowSearch] = useState(false)
+  const [selectionMode, setSelectionMode] = useState(false)
+  const [selectedImages, setSelectedImages] = useState<string[]>([])
+
 
   const { currentPage, groupImages, sortBy } = useStore(GalleryStore)
   const { fetchImages, images, initLoad, totalImages } = useFetchImages()
+
+  const handleImageSelect = (image_id: string) => {
+    setSelectedImages(prev =>
+      prev.includes(image_id)
+        ? prev.filter(id => id !== image_id)
+        : [...prev, image_id]
+    )
+  }
+
+  // const handleImageKeypress = (
+  //   e: React.KeyboardEvent,
+  //   artbot_id: string,
+  //   image_id?: string
+  // ) => {
+  //   if (e.key === 'Enter' || e.key === ' ') {
+  //     e.preventDefault()
+  //     if (selectionMode && image_id) {
+  //       handleImageSelect(image_id)
+  //     } else {
+  //       handleImageOpen(artbot_id, image_id)
+  //     }
+  //   }
+  // }
 
   const handleImageOpen = useCallback(
     (artbot_id: string, image_id?: string) => {
@@ -139,7 +166,7 @@ export default function Gallery() {
             <MenuItem>Favorited</MenuItem>
             <MenuItem>Unfavorited</MenuItem>
           </Menu> */}
-            <Button onClick={() => {}}>
+            <Button onClick={() => { }}>
               <span className="row gap-1">
                 <IconSettings stroke={1.5} size={20} />
                 <span className="hidden sm:row">
@@ -150,11 +177,14 @@ export default function Gallery() {
             </Button>
           </div>
           <div>
-            <Button onClick={() => {}}>
+            <Button onClick={() => {
+              setSelectedImages([])
+              setSelectionMode(!selectionMode)
+            }}>
               <span className="row gap-1">
                 <IconCircleCheck stroke={1.5} size={20} />
                 <span className="hidden sm:row">
-                  Select
+                  {selectionMode ? 'Cancel' : 'Select'}
                   <IconChevronRight />
                 </span>
               </span>
@@ -162,6 +192,11 @@ export default function Gallery() {
           </div>
         </div>
       </Section>
+      {selectionMode && (
+        < div className="w-full font-mono text-xs mb-2">
+          Selected images: {selectedImages.length}
+        </div>
+      )}
       <div className="w-full font-mono text-xs mb-2">
         Page {currentPage + 1} of {Math.ceil(totalImages / 20)} ({totalImages}{' '}
         {groupImages ? 'image requests' : 'total images'})
@@ -178,11 +213,15 @@ export default function Gallery() {
 
             return (
               <div
-                className="cursor-pointer m-[2px]"
+                className="cursor-pointer m-[2px] relative"
                 key={photo.artbot_id}
                 tabIndex={0}
                 onClick={() => {
-                  handleImageOpen(photo.artbot_id, photo.image_id)
+                  if (selectionMode && photo.image_id) {
+                    handleImageSelect(photo.image_id)
+                  } else {
+                    handleImageOpen(photo.artbot_id, photo.image_id)
+                  }
                 }}
                 onKeyDown={(e) =>
                   handleImageKeypress(e, photo.artbot_id, photo.image_id)
@@ -196,6 +235,16 @@ export default function Gallery() {
                   width={photo.width}
                 />
                 <GalleryImageCardOverlay imageCount={photo.image_count} />
+                {selectionMode && photo.image_id && (
+                  <div className={`absolute top-2 left-2 w-6 h-6 rounded-full border-2 ${selectedImages.includes(photo.image_id)
+                    ? 'bg-blue-500 border-blue-500'
+                    : 'border-white'
+                    }`}>
+                    {selectedImages.includes(photo.image_id) && (
+                      <IconCheck className="text-white" size={20} />
+                    )}
+                  </div>
+                )}
               </div>
             )
           }}
