@@ -19,7 +19,7 @@ import DeleteConfirmation from '../Modal_DeleteConfirmation'
 import { useImageView } from './ImageViewProvider'
 import useFavorite from '@/app/_hooks/useFavorite'
 import useRerollImage from '@/app/_hooks/useRerollImage'
-import { deleteImageFromDexie } from '@/app/_db/jobTransactions'
+import { deleteImageFromDexie, deleteJobFromDexie } from '@/app/_db/jobTransactions'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Section from '../Section'
 import DropdownMenu from '../DropdownMenu'
@@ -40,6 +40,7 @@ import Image from '../Image'
 import { sleep } from '@/app/_utils/sleep'
 
 function ImageViewActions({
+  currentImageId,
   onDelete
 }: {
   currentImageId: string
@@ -51,13 +52,14 @@ function ImageViewActions({
   const [isFullscreen, setIsFullscreen] = useState(false)
   const {
     artbot_id,
-    currentImageId,
     imageBlobBuffer,
     imageId,
     imageData,
     getNextImage,
-    getPrevImage
+    getPrevImage,
+    singleImage
   } = useImageView()
+  const { imageFiles } = imageData
 
   const [rerollImage] = useRerollImage()
   const [isFavorite, toggleFavorite] = useFavorite(artbot_id, imageId as string)
@@ -88,20 +90,35 @@ function ImageViewActions({
     }
   }, [])
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(async ({ deleteAll = false } = {} as { deleteAll?: boolean }) => {
     NiceModal.show('delete', {
       children: (
         <DeleteConfirmation
+          deleteButtonTitle={deleteAll ? `Delete ${imageFiles.length} images` : 'Delete this image'}
+          title={deleteAll ? 'Delete *all* images?' : 'Delete this image?'}
+          message={
+            <>
+              <p>
+                Are you sure you want to delete {deleteAll ? `*ALL* images in this batch? (${imageFiles.length} images)` : 'this image?'}
+              </p>
+              <p>This cannot be undone.</p>
+            </>
+          }
           onDelete={async () => {
-            await deleteImageFromDexie(currentImageId as string)
-            await onDelete()
+            if (!deleteAll) {
+              await deleteImageFromDexie(currentImageId as string || imageId as string)
+              await onDelete()
+            } else {
+              await deleteJobFromDexie(artbot_id)
+              await onDelete()
+            }
 
             NiceModal.remove('modal')
           }}
         />
       )
     })
-  }, [currentImageId, onDelete])
+  }, [currentImageId, imageFiles, imageId])
 
   const downloadImage = useCallback(
     async (image: Blob) => {
@@ -188,14 +205,14 @@ function ImageViewActions({
       </FullScreen>
       <Section>
         <div className="row w-full justify-between max-w-[388px]">
-          <Button onClick={() => {}} style={{ height: '38px', width: '38px' }}>
+          <Button onClick={() => { }} style={{ height: '38px', width: '38px' }}>
             <IconDotsCircleHorizontal stroke={1} />
           </Button>
           <DropdownMenu
             menuButton={
               <Button
                 as="div"
-                onClick={() => {}}
+                onClick={() => { }}
                 style={{ height: '38px', width: '38px' }}
               >
                 <IconCopy stroke={1} />
@@ -257,7 +274,7 @@ function ImageViewActions({
             menuButton={
               <Button
                 as="div"
-                onClick={() => {}}
+                onClick={() => { }}
                 style={{ height: '38px', width: '38px' }}
               >
                 <IconShare stroke={1} />
@@ -331,14 +348,44 @@ function ImageViewActions({
               <IconHeart stroke={1} />
             )}
           </Button>
-          <Button
-            onClick={handleDelete}
-            title="Delete image"
-            theme="danger"
-            style={{ height: '38px', width: '38px' }}
-          >
-            <IconTrash stroke={1} />
-          </Button>
+          {(singleImage || imageFiles.length === 1) && (
+            <Button
+              onClick={handleDelete}
+              title="Delete image"
+              theme="danger"
+              style={{ height: '38px', width: '38px' }}
+            >
+              <IconTrash stroke={1} />
+            </Button>
+          )}
+          {(!singleImage && imageFiles.length > 1) && (
+            <DropdownMenu
+              menuButton={
+                <Button
+                  as="div"
+                  title="Delete image"
+                  theme="danger"
+                  onClick={() => handleDelete}
+                  style={{ height: '38px', width: '38px' }}
+                >
+                  <IconTrash stroke={1} />
+                </Button>
+              }
+            >
+              <MenuItem
+                onClick={() => {
+                  handleDelete({ deleteAll: false })
+                }}
+              >Delete this image</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleDelete({ deleteAll: true })
+                }}
+              >
+                Delete ALL images in batch
+              </MenuItem>
+            </DropdownMenu>
+          )}
         </div>
       </Section>
     </>

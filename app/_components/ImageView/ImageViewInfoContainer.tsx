@@ -39,10 +39,10 @@ export default function ImageViewInfoContainer({
           {!showPromptPreset
             ? imageRequest?.prompt
             : formatStylePresetPrompt({
-                positive: imageRequest?.prompt,
-                negative: imageRequest?.negative,
-                stylePresetPrompt: imageRequest.preset[0].settings.prompt
-              })}
+              positive: imageRequest?.prompt,
+              negative: imageRequest?.negative,
+              stylePresetPrompt: imageRequest.preset[0].settings.prompt
+            })}
         </div>
       </div>
       {imageRequest?.preset && imageRequest.preset.length > 0 && (
