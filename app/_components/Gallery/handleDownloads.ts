@@ -9,6 +9,112 @@ interface File {
   lastModified: Date
 }
 
+interface ImageData {
+  filename: string;
+  prompt: string;
+  created: string;
+}
+
+const generateHtmlContent = (imageDataArray: ImageData[]) => {
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArtBot Image Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .image-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            display: block;
+        }
+        .image-info {
+            padding: 15px;
+        }
+        .prompt {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .created-date {
+            font-size: 14px;
+            color: #666;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .image-info {
+                padding: 10px;
+            }
+            .prompt {
+                font-size: 14px;
+            }
+            .created-date {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="imageContainer"></div>
+
+    <script>
+        const imageData = ${JSON.stringify(imageDataArray)};
+
+        function displayImages() {
+            const container = document.getElementById('imageContainer');
+            imageData.forEach(image => {
+                const imageElement = document.createElement('div');
+                imageElement.className = 'image-container';
+                imageElement.innerHTML = \`
+                    <div class="image-wrapper">
+                        <img src="\${image.filename}" alt="\${image.prompt}">
+                    </div>
+                    <div class="image-info">
+                        <div class="prompt">\${image.prompt}</div>
+                        <div class="created-date">Created: \${image.created}</div>
+                    </div>
+                \`;
+                container.appendChild(imageElement);
+            });
+        }
+
+        displayImages();
+    </script>
+</body>
+</html>
+  `;
+
+  return htmlContent;
+};
+
 export const handleDownloadSelectedImages = async (selectedImages: string[]) => {
   if (selectedImages.length === 0) {
     alert('No images selected');
@@ -24,6 +130,7 @@ export const handleDownloadSelectedImages = async (selectedImages: string[]) => 
 
     const fileNameCounts: { [key: string]: number } = {};
     const files: File[] = [];
+    const imageDataArray: ImageData[] = [];
 
     for (const imageFile of imageFiles) {
       if (imageFile.imageBlobBuffer) {
@@ -72,10 +179,14 @@ export const handleDownloadSelectedImages = async (selectedImages: string[]) => 
         delete raw.apiParams.workers
         delete raw.apiParams.worker_blacklist
 
+        const createdDate = jobDetails?.created_timestamp
+          ? new Date(jobDetails.created_timestamp).toLocaleString()
+          : '';
+
         // Add JSON file
         const jsonContent = JSON.stringify({
           filename: imageName,
-          created: jobDetails?.created_timestamp ? new Date(jobDetails?.created_timestamp).toLocaleString() : '',
+          created: createdDate,
           ...raw.apiParams
         }, null, 2); // null and 2 for pretty formatting
 
@@ -84,6 +195,13 @@ export const handleDownloadSelectedImages = async (selectedImages: string[]) => 
           input: new Blob([jsonContent], { type: 'application/json' }),
           lastModified: new Date()
         });
+
+        // Add image data for HTML generation
+        imageDataArray.push({
+          filename: imageName,
+          prompt: imageRequest?.prompt || 'No prompt available',
+          created: createdDate
+        });
       }
     }
 
@@ -91,6 +209,16 @@ export const handleDownloadSelectedImages = async (selectedImages: string[]) => 
       alert('No valid images found for download');
       return;
     }
+
+    // Generate HTML content
+    const htmlContent = generateHtmlContent(imageDataArray);
+
+    // Add HTML file to the files array
+    files.push({
+      name: 'index.html',
+      input: new Blob([htmlContent], { type: 'text/html' }),
+      lastModified: new Date()
+    });
 
     // Generate the zip file
     const blob = await downloadZip(files as unknown as File[]).blob();
