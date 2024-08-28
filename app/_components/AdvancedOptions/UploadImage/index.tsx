@@ -178,6 +178,7 @@ export default function UploadImage() {
         anchor="upload"
         title="Upload image"
       >
+        <div className='text-sm text-white mb-2'>Upload a source image for use with ControlNet or img2img features.</div>
         {fileRejections?.length > 0 && (
           <div className="mb-2 text-red-500 text-lg font-bold">
             Please upload a single valid image file!

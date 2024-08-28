@@ -47,15 +47,18 @@ export default function AddLora() {
     [input, setInput]
   )
 
+  let title = `LoRAs`
+  if (input.loras.length > 0) {
+    title += ` (${input.loras.length} / ${AppConstants.MAX_LORAS})`
+  }
+
   return (
-    <Section anchor="add-lora">
-      <div className="row justify-between">
-        <h2 className="row font-bold text-white">
-          LoRAs{' '}
-          <span className="text-xs font-normal">
-            ({input.loras.length} / {AppConstants.MAX_LORAS})
-          </span>
-        </h2>
+    <Section
+      anchor="add-lora"
+      accordion
+      title={title}
+    >
+      <div className="row justify-end mb-2">
         <div className="row gap-1">
           <Button
             onClick={() => {
