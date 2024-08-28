@@ -135,6 +135,7 @@ const handleImpossibleJob = async (
   await updatePendingImage(jobId, {
     horde_id: hordeId,
     init_wait_time: jobDetails.wait_time,
+    status: JobStatus.Requested,
     jobErrorMessage:
       'There are currently no GPU workers that can complete this request. Continue waiting or try changing settings.',
     wait_time: jobDetails.wait_time,

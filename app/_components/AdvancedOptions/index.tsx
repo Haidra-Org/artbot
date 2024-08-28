@@ -21,7 +21,9 @@ import HiresFix from './HiresFix'
 
 export default function AdvancedOptions() {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-4 mt-2">
+      <UploadImage />
+      <ImageProcessing />
       <Section anchor="style-preset">
         <StylePresetSelect />
       </Section>
@@ -55,8 +57,6 @@ export default function AdvancedOptions() {
       </Section>
       <AdditionalOptions />
       <HordeSettings />
-      <ImageProcessing />
-      <UploadImage />
     </div>
   )
 }

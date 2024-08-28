@@ -51,7 +51,11 @@ export default function ImageProcessing() {
   }
 
   return (
-    <Section title="Image processing" anchor="image-processing">
+    <Section
+      accordion
+      anchor="image-processing"
+      title="Image processing"
+    >
       <OptionLabel
         title={
           <span className="row font-bold text-sm text-white gap-1">
