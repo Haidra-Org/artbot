@@ -48,12 +48,8 @@ export const downloadImages = async ({
 }): Promise<{ success: boolean }> => {
   const queueSystem = getQueueSystem(jobDetails.artbot_id)
   try {
-    console.log(`Enqueueing download task for jobId: ${jobDetails.artbot_id}`)
     return await queueSystem.enqueue(
       async () => {
-        console.log(
-          `Processing download task for jobId: ${jobDetails.artbot_id}`
-        )
         const response = await imageStatus(jobDetails.horde_id)
         if (!isValidResponse(response) || !response.generations) {
           console.log(`Invalid response for jobId: ${jobDetails.artbot_id}`)
@@ -88,9 +84,6 @@ export const downloadImages = async ({
           api_response: response
         })
 
-        console.log(
-          `Download task completed for jobId: ${jobDetails.artbot_id}`
-        )
         return { success: true }
       },
       jobDetails.artbot_id // Use artbot_id as the unique taskId
@@ -142,11 +135,6 @@ const processImageGenerations = async (
 
   let images_completed = jobDetails.images_completed || 0
   let images_failed = jobDetails.images_failed || 0
-  console.log(`process jobDetails`, {
-    id: jobId,
-    images_completed: jobDetails.images_completed,
-    images_failed: jobDetails.images_failed
-  })
 
   const downloadImagesPromise: Promise<
     DownloadSuccessResponse | DownloadErrorResponse | null

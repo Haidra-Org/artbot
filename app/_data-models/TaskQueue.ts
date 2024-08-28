@@ -71,9 +71,6 @@ export class TaskQueue<T> {
     if (nextTask) {
       this.currentTaskId = nextTask.id
       nextTask.task().finally(() => {
-        console.log(
-          `[${this.name}] Scheduling next task. Queue length: ${this.queue.length}`
-        )
         setTimeout(() => {
           this.isProcessing = false
           this.processQueue()

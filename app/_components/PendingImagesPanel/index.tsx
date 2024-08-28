@@ -33,6 +33,7 @@ interface PendingImagesPanelProps {
 
 interface PhotoData {
   artbot_id: string
+  image_id: string
   key: string
   src: string
   hordeStatus: JobStatus
@@ -72,7 +73,7 @@ export default function PendingImagesPanel({
     )
 
     // Iterate through the pendingImages array
-    const imagesArray = pendingImages.map((pendingImage) => {
+    const imagesArray = pendingImages.map((pendingImage, idx) => {
       const completedImage = completedJobsById[pendingImage.artbot_id]
       if (completedImage) {
         return {
@@ -90,7 +91,7 @@ export default function PendingImagesPanel({
       } else {
         return {
           artbot_id: pendingImage.artbot_id,
-          image_id: 'completedImage.image_id',
+          image_id: 'completedImage.image_id_' + idx,
           key: `image-${pendingImage.artbot_id}`,
           src: '', // PhotoAlbum library requires this but we're not using it.
           image_count: pendingImage.images_requested || 1,
@@ -233,13 +234,15 @@ export default function PendingImagesPanel({
               renderPhotoProps || {}
             const { alt, ...restImageProps } = imageProps || {}
 
+
+
             // @ts-expect-error Deleting this due to using custom image component.
             delete restImageProps.src
 
             if (photo.hordeStatus !== JobStatus.Done) {
               return (
                 <div
-                  key={photo.artbot_id}
+                  key={photo.image_id}
                   onClick={() => {
                     NiceModal.show('modal', {
                       children: (
@@ -272,7 +275,7 @@ export default function PendingImagesPanel({
             } else {
               return (
                 <div
-                  key={photo.artbot_id}
+                  key={photo.image_id}
                   onClick={() => {
                     // TODO: Better way to handle / triage error states.)
                     if (photo.error) {

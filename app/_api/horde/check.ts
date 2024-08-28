@@ -90,7 +90,6 @@ export default async function checkImage(
           `/api/v2/generate/check/${jobId}`
         )
       }
-      console.log(`Check task completed for jobId: ${jobId}`)
       return result
     },
     jobId // Use jobId as the unique taskId
