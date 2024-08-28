@@ -297,14 +297,14 @@ export default function Gallery() {
           layout="masonry"
           spacing={0}
           photos={images}
-          renderPhoto={(renderPhotoProps) => {
+          renderPhoto={(renderPhotoProps: any) => {
             const { photo, imageProps } = renderPhotoProps || {}
             const { alt } = imageProps || {}
 
             return (
               <div
                 className="cursor-pointer m-[2px] relative"
-                key={photo.artbot_id}
+                key={photo.image_id}
                 tabIndex={0}
                 onClick={() => {
                   if (selectionMode && photo.image_id) {
