@@ -118,7 +118,7 @@ function ImageViewActions({
         />
       )
     })
-  }, [currentImageId, imageFiles, imageId])
+  }, [currentImageId, imageFiles, imageId, onDelete, artbot_id])
 
   const downloadImage = useCallback(
     async (image: Blob) => {

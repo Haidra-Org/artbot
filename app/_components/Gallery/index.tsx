@@ -297,7 +297,7 @@ export default function Gallery() {
           layout="masonry"
           spacing={0}
           photos={images}
-          renderPhoto={(renderPhotoProps: any) => {
+          renderPhoto={(renderPhotoProps) => {
             const { photo, imageProps } = renderPhotoProps || {}
             const { alt } = imageProps || {}
 
