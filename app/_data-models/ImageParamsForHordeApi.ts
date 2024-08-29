@@ -140,8 +140,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         tiling,
         karras,
         hires_fix: hires,
-        clip_skip: clipskip,
-        n: numImages
+        clip_skip: Number(clipskip),
+        n: Number(numImages)
       },
       allow_downgrade,
       nsfw: allowNsfw, // Use workers that allow NSFW images
@@ -158,7 +158,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
 
     if (hires) {
       this.apiParams.params.hires_fix_denoising_strength =
-        hires_fix_denoising_strength as number
+        Number(hires_fix_denoising_strength)
     }
 
     if (facefixer_strength) {
@@ -166,7 +166,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         post_processing.includes('GFPGAN') ||
         post_processing.includes('CodeFormers')
       ) {
-        this.apiParams.params.facefixer_strength = facefixer_strength
+        this.apiParams.params.facefixer_strength = Number(facefixer_strength)
       }
     }
 
@@ -478,20 +478,20 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     promptInput.negative = negative.trim() || ''
 
     // Map params
-    promptInput.cfg_scale = apiParams.params.cfg_scale
+    promptInput.cfg_scale = Number(apiParams.params.cfg_scale)
     promptInput.seed = apiParams.params.seed || ''
     promptInput.sampler = apiParams.params.sampler_name || 'k_dpmpp_sde'
-    promptInput.height = apiParams.params.height
-    promptInput.width = apiParams.params.width
+    promptInput.height = Number(apiParams.params.height)
+    promptInput.width = Number(apiParams.params.width)
     promptInput.post_processing = apiParams.params.post_processing
-    promptInput.steps = apiParams.params.steps
+    promptInput.steps = Number(apiParams.params.steps)
     promptInput.tiling = apiParams.params.tiling
     promptInput.karras = apiParams.params.karras
     promptInput.hires = apiParams.params.hires_fix
-    promptInput.hires_fix_denoising_strength = apiParams.params
-      .hires_fix_denoising_strength as number
-    promptInput.clipskip = apiParams.params.clip_skip
-    promptInput.numImages = apiParams.params.n
+    promptInput.hires_fix_denoising_strength = Number(apiParams.params
+      .hires_fix_denoising_strength)
+    promptInput.clipskip = Number(apiParams.params.clip_skip)
+    promptInput.numImages = Number(apiParams.params.n)
 
     // Map loras
     if (apiParams.params.loras) {
@@ -504,8 +504,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
             versionId: lora.name,
             isArtbotManualEntry: true,
             name: lora.name,
-            strength: lora.model,
-            clip: lora.clip
+            strength: Number(lora.model),
+            clip: Number(lora.clip)
           })
       )
     }
@@ -519,7 +519,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       promptInput.source_processing =
         apiParams.source_processing as SourceProcessing
       if (apiParams.params.denoising_strength) {
-        promptInput.denoising_strength = apiParams.params.denoising_strength
+        promptInput.denoising_strength = Number(apiParams.params.denoising_strength)
       }
     }
 
@@ -533,7 +533,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
 
     // Map facefixer strength
     if (apiParams.params.facefixer_strength) {
-      promptInput.facefixer_strength = apiParams.params.facefixer_strength
+      promptInput.facefixer_strength = Number(apiParams.params.facefixer_strength)
     }
 
     // Map transparent
