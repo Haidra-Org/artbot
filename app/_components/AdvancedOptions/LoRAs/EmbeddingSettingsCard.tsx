@@ -53,7 +53,7 @@ function updateSaveLoraProperty({
 
 export default function EmbeddingSettingsCard({ ti }: { ti: SavedEmbedding }) {
   const { input, setInput } = useInput()
-  const [strength, setStrength] = useState<string>(ti.strength.toString())
+  const [strength, setStrength] = useState<string>(ti?.strength?.toString() || '0')
 
   const tiIndex = input.tis.findIndex((l) => String(l.id) === String(ti.id))
 

@@ -167,7 +167,6 @@ export default function UploadImage() {
     [handleUpload]
   )
 
-  // const { input, setInput } = useInput()
   const { fileRejections, getRootProps, getInputProps, isDragActive } =
     useDropzone({ accept: { 'image/*': [] }, maxFiles: 1, onDrop })
 
