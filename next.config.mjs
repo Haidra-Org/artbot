@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 import withSerwistInit from "@serwist/next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const withSerwist = withSerwistInit({
   cacheOnNavigation: true,
@@ -25,4 +26,8 @@ const nextConfig = {
   output: 'standalone'
 }
 
-export default withSerwist(nextConfig);
+const analyzeBundleConfig = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default analyzeBundleConfig(withSerwist(nextConfig));

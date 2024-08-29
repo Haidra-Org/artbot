@@ -31,6 +31,7 @@
   "dependencies": {
     "@ebay/nice-modal-react": "1.2.13",
     "@headlessui/react": "2.1.2",
+    "@next/bundle-analyzer": "14.2.7",
     "@serwist/next": "9.0.6",
     "@szhsin/react-accordion": "1.2.5",
     "@szhsin/react-menu": "4.2.2",
