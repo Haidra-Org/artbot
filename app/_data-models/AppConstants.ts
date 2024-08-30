@@ -27,4 +27,9 @@ export class AppConstants {
   static MAX_LORA_SIZE_MB = 220
 
   static MAX_LORAS = 5
+
+  /**
+   * Speed of the typewriter effect in milliseconds
+   */
+  static TYPING_SPEED_MS = 25;
 }
