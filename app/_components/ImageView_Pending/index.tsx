@@ -24,6 +24,7 @@ import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
 import PendingImageViewStatus from './ImageView_PendingStatus'
 import { updatePendingImage } from '@/app/_controllers/pendingJobs/updatePendingImage'
+import { getImagesForArtbotJobFromDexie } from '@/app/_db/ImageFiles'
 
 interface PendingImageViewProps {
   artbot_id: string
@@ -58,6 +59,29 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
       console.error('Unable to delete pending job:', err)
     }
   }, [jobDetails])
+
+  const handleDeleteOrRemoveJob = async () => {
+    const artbot_id = imageDetails?.artbot_id as string
+    const images = await getImagesForArtbotJobFromDexie(artbot_id) || []
+
+    // If partial job is still processing, mark as done and delete from app state
+    if (serverHasJob && images.length > 0) {
+      handleCancelPendingJob()
+      await updatePendingImage(artbot_id, {
+        status: JobStatus.Done
+      })
+      NiceModal.remove('modal')
+      return
+    }
+
+    if (serverHasJob && images.length === 0) {
+      handleCancelPendingJob()
+    }
+
+    deletePendingImageFromAppState(artbot_id)
+    await deleteJobFromDexie(artbot_id)
+    NiceModal.remove('modal')
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -153,16 +177,7 @@ export default function PendingImageView({ artbot_id }: PendingImageViewProps) {
         </Button>
         <Button
           theme="danger"
-          onClick={async () => {
-            if (serverHasJob) {
-              handleCancelPendingJob()
-            }
-
-            const artbot_id = imageDetails?.artbot_id as string
-            deletePendingImageFromAppState(artbot_id)
-            await deleteJobFromDexie(artbot_id)
-            NiceModal.remove('modal')
-          }}
+          onClick={handleDeleteOrRemoveJob}
         >
           <IconTrash />{' '}
           {serverHasJob ? <span>Cancel?</span> : <span>Delete?</span>}
