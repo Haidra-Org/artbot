@@ -12,6 +12,7 @@ import checkImage, {
 } from '@/app/_api/horde/check'
 import { downloadImages } from './downloadPendingImages'
 import { updatePendingImage } from './updatePendingImage'
+import { getImagesForArtbotJobFromDexie } from '@/app/_db/ImageFiles'
 
 // Constants
 const MAX_REQUESTS_PER_SECOND = 2
@@ -101,14 +102,40 @@ const processResults = async (
   }
 }
 
+const handleNotFound = async (job: ArtBotHordeJob): Promise<void> => {
+  const images = await getImagesForArtbotJobFromDexie(job.artbot_id)
+  if (images.length === 0) {
+    await updatePendingImage(job.artbot_id, {
+      status: JobStatus.Error,
+      jobErrorMessage: 'Job has expired or couldn\'t be found.',
+      errors: [
+        {
+          type: 'notfound',
+          message: 'Job with request id not found.'
+        }
+      ]
+    })
+  } else if (images.length > 0) {
+    await updatePendingImage(job.artbot_id, {
+      status: JobStatus.Done
+    })
+  }
+}
+
 const handleFulfilledResult = async (
   response: StatusSuccessResponse | CheckErrorResponse,
   job: ArtBotHordeJob
 ): Promise<void> => {
+  if (isNotFound(response)) {
+    await handleNotFound(job)
+    return
+  }
+
   if (isTooManyRequests(response)) {
     handleTooManyRequests()
     return
   }
+
   if (!isSuccessResponse(response)) {
     await handleErrorResponse(job, response)
   } else if (isJobFinished(response)) {
@@ -117,6 +144,9 @@ const handleFulfilledResult = async (
     await handleOngoingJob(job, response)
   }
 }
+
+const isNotFound = (response: StatusSuccessResponse | CheckErrorResponse): boolean =>
+  'statusCode' in response && response.statusCode === 404
 
 const isTooManyRequests = (
   response: StatusSuccessResponse | CheckErrorResponse
