@@ -5,6 +5,7 @@ import { IconArrowsShuffle, IconLock, IconLockOpen } from '@tabler/icons-react'
 import Button from '../Button'
 import PromptInput from '@/app/_data-models/PromptInput'
 import useImageSize from '@/app/_hooks/useImageSize'
+import NiceModal from '@ebay/nice-modal-react'
 
 export default function CustomImageOrientation({
   input,
@@ -22,7 +23,7 @@ export default function CustomImageOrientation({
     input.width,
     input.height
   )
-  const [lockRatio, setLockRatio] = useState(true)
+  const [lockRatio, setLockRatio] = useState(false)
 
   const handleSetDimensions = (w: number, h: number) => {
     setHeight(h)
@@ -118,7 +119,12 @@ export default function CustomImageOrientation({
       </div>
       <div className="row w-full gap-2 justify-end">
         <div
+          onClick={() => {
+            handleSetDimensions(width, height)
+            setLockRatio(!lockRatio)
+          }}
           style={{
+            cursor: 'pointer',
             position: 'relative',
             width: '20px',
             height: '22px',
@@ -235,6 +241,16 @@ export default function CustomImageOrientation({
           <span className="row">
             <IconArrowsShuffle /> Swap
           </span>
+        </Button>
+        <Button
+          onClick={() => {
+            NiceModal.remove('modal')
+          }}
+          style={{
+            minWidth: '60px'
+          }}
+        >
+          OK
         </Button>
       </div>
     </div>

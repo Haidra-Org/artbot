@@ -1,6 +1,7 @@
-import PromptInput from './PromptInput'
+import PromptInput, { DEFAULT_TURBO_LORA } from './PromptInput'
 import { JobType } from '@/app/_types/ArtbotTypes'
 import { SourceProcessing } from '@/app/_types/HordeTypes'
+import { SavedLora } from './Civitai'
 
 describe('PromptInput', () => {
   it('should initialize with default values', () => {
@@ -30,7 +31,7 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.preset).toEqual([])
     expect(defaultPromptInput.prompt).toBe('')
     expect(defaultPromptInput.return_control_map).toBe(false)
-    expect(defaultPromptInput.sampler).toBe('k_dpmpp_sde')
+    expect(defaultPromptInput.sampler).toBe('euler_a')
     expect(defaultPromptInput.seed).toBe('')
     expect(defaultPromptInput.source_processing).toBe(SourceProcessing.Prompt)
     expect(defaultPromptInput.steps).toBe(8)
@@ -76,5 +77,41 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.extra_texts).toEqual([
       { text: 'example', reference: 'ref' }
     ])
+  })
+
+  it('should correctly identify a default prompt', () => {
+    const defaultPromptInput = new PromptInput({})
+    expect(PromptInput.isDefaultPromptInput(defaultPromptInput)).toBe(true)
+
+    const nonDefaultPromptInput = new PromptInput({
+      models: ['Different Model'],
+      steps: 10,
+      cfg_scale: 3
+    })
+    expect(PromptInput.isDefaultPromptInput(nonDefaultPromptInput)).toBe(false)
+  })
+
+  it('should correctly set non-turbo default prompt input', () => {
+    const input = new PromptInput({
+      loras: [DEFAULT_TURBO_LORA, { id: 'other', versionId: 'other' } as SavedLora]
+    })
+    const result = PromptInput.setNonTurboDefaultPromptInput(input)
+
+    expect(result.steps).toBe(24)
+    expect(result.cfg_scale).toBe(6)
+    expect(result.loras).toHaveLength(1)
+    expect(result.loras[0].versionId).not.toBe('247778')
+  })
+
+  it('should correctly set turbo default prompt input', () => {
+    const input = new PromptInput({
+      loras: [{ id: 'other', versionId: 'other' } as SavedLora]
+    })
+    const result = PromptInput.setTurboDefaultPromptInput(input)
+
+    expect(result.steps).toBe(8)
+    expect(result.cfg_scale).toBe(2)
+    expect(result.loras).toHaveLength(2)
+    expect(result.loras[0]).toEqual(DEFAULT_TURBO_LORA)
   })
 })

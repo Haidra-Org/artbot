@@ -55,11 +55,8 @@ export async function getData() {
 }
 
 export default async function ModelSelect() {
-  // const data = await getData()
   return (
     <ModelSelectComponent
-    // hasError={data.success === false}
-    // models={data.models}
     />
   )
 }

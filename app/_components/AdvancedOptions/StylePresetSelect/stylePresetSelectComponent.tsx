@@ -14,7 +14,7 @@ import {
   StylePreviewConfigurations
 } from '@/app/_types/HordeTypes'
 import { useCallback } from 'react'
-import PromptInput from '@/app/_data-models/PromptInput'
+import PromptInput, { DEFAULT_TURBO_LORA } from '@/app/_data-models/PromptInput'
 import { SavedLora } from '@/app/_data-models/Civitai'
 import { useStore } from 'statery'
 import { ModelStore } from '@/app/_stores/ModelStore'
@@ -55,17 +55,21 @@ export default function StylePresetSelectComponent({
 
         if (key === 'loras' && typeof presetSettings.loras !== 'undefined') {
           updateInput.loras = []
-
           presetSettings.loras.forEach((lora) => {
-            const updateLora = new SavedLora({
-              id: lora.name,
-              versionId: lora.is_version ? Number(lora.name) : false,
-              versionName: lora.name,
-              isArtbotManualEntry: true,
-              name: lora.name,
-              strength: lora.model || 1,
-              clip: lora.clip_skip || 1
-            })
+            let updateLora: SavedLora
+            if (lora.name == '247778') {
+              updateLora = DEFAULT_TURBO_LORA
+            } else {
+              updateLora = new SavedLora({
+                id: lora.name,
+                versionId: lora.is_version ? Number(lora.name) : false,
+                versionName: lora.name,
+                isArtbotManualEntry: true,
+                name: lora.name,
+                strength: lora.model || 1,
+                clip: lora.clip_skip || 1
+              })
+            }
 
             // @ts-expect-error updateInput.loras is defined right above this.
             updateInput.loras.push({ ...updateLora })
@@ -138,7 +142,7 @@ export default function StylePresetSelectComponent({
               modalClassName: 'w-full md:min-w-[640px] max-w-[648px]'
             })
           }}
-          onChange={() => {}}
+          onChange={() => { }}
           options={options}
           value={options[0]}
         />

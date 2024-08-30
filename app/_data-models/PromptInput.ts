@@ -6,6 +6,17 @@ import {
 } from '@/app/_types/HordeTypes'
 import { SavedEmbedding, SavedLora } from './Civitai'
 
+export const DEFAULT_TURBO_LORA = new SavedLora({
+  id: '247778',
+  civitAiType: 'LORA',
+  versionId: '247778',
+  versionName: '',
+  isArtbotManualEntry: true,
+  name: 'SDXL | LCM TurboMix LoRA (SDE sampler)',
+  strength: 1,
+  clip: 1
+})
+
 class PromptInput {
   // ArtBot ID for mainting relationships in IndexedDb
   artbot_id: string = ''
@@ -44,16 +55,7 @@ class PromptInput {
   jobType: JobType = JobType.Text2Img
   karras: boolean = true
   loras: SavedLora[] = [
-    new SavedLora({
-      id: '247778',
-      civitAiType: 'LORA',
-      versionId: '247778',
-      versionName: '',
-      isArtbotManualEntry: true,
-      name: 'SDXL | LCM TurboMix LoRA (SDE sampler)',
-      strength: 1,
-      clip: 1
-    })
+    DEFAULT_TURBO_LORA
   ]
   models: Array<string> = ['AlbedoBase XL (SDXL)']
   negative: string = ''
@@ -62,7 +64,7 @@ class PromptInput {
   post_processing: Array<string> = []
   prompt: string = ''
   return_control_map: boolean = false
-  sampler: string = 'k_dpmpp_sde'
+  sampler: string = 'euler_a'
   seed: string = ''
   source_processing?: SourceProcessing = SourceProcessing.Prompt
   steps: number = 8
@@ -76,6 +78,60 @@ class PromptInput {
 
   constructor(params: Partial<PromptInput> = {}) {
     Object.assign(this, params)
+  }
+
+  /**
+   * Checks if the prompt input is a default prompt. I've hardcoded some default values here
+   * but this should be okay as any changes above will cause the below test to fail at built time.
+   * @param input - The prompt input to check.
+   * @returns True if the prompt input is a default prompt, false otherwise.
+   */
+  static isDefaultPromptInput(input: PromptInput): boolean {
+    const hasTurboLora = input.loras.filter(lora => lora.versionId === '247778').length > 0
+    const hasDefaultStepsAndCfgScale = input.models[0] === 'AlbedoBase XL (SDXL)' && Number(input.steps) === 8 && Number(input.cfg_scale) === 2
+    const hasDefaultModelAndLora = input.models[0] === 'AlbedoBase XL (SDXL)' && hasTurboLora
+
+    return hasDefaultStepsAndCfgScale || hasDefaultModelAndLora
+  }
+
+  /**
+   * Sets the prompt input to a non-turbo default prompt. This occurs when a user
+   * selects a non-SDXL turbo model, so we need to adjust steps and cfg_scale to
+   * the non-turbo defaults.
+   * @param input - The prompt input to set to a non-turbo default prompt.
+   * @returns The prompt input set to a non-turbo default prompt.
+   */
+  static setNonTurboDefaultPromptInput(input: PromptInput): PromptInput {
+    // Remove the LCM TurboMix LoRA if present
+    input.loras = input.loras.filter(lora => lora.versionId != '247778');
+
+    return new PromptInput({
+      ...input,
+      steps: 24,
+      cfg_scale: 6
+    })
+  }
+
+  /**
+   * Sets the prompt input to a turbo default prompt. This occurs when a user
+   * selects a SDXL turbo model, so we need to adjust steps, cfg_scale, and
+   * add the LCM TurboMix LoRA to the loras array.
+   * @param input - The prompt input to set to a turbo default prompt.
+   * @returns The prompt input set to a turbo default prompt.
+   */
+  static setTurboDefaultPromptInput(input: PromptInput): PromptInput {
+    // Check if the LCM TurboMix LoRA is not present in the input.loras array
+    if (!input.loras.some(lora => lora.versionId == '247778')) {
+      // If not present, add it to the beginning of the array
+      input.loras.unshift(DEFAULT_TURBO_LORA);
+    }
+
+
+    return new PromptInput({
+      ...input,
+      steps: 8,
+      cfg_scale: 2
+    })
   }
 }
 

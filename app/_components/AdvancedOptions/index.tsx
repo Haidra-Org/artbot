@@ -13,11 +13,11 @@ import ModelSelect from './ModelSelect'
 import SamplerSelect from './SamplerSelect'
 import Seed from './Seed'
 import Steps from './Steps'
-import UploadImage from './UploadImage'
 import Upscalers from './Upscalers'
 import StylePresetSelect from './StylePresetSelect'
 import AddWorkflow from './AddWorkflow'
 import HiresFix from './HiresFix'
+import UploadImage from './UploadImage'
 
 export default function AdvancedOptions() {
   return (

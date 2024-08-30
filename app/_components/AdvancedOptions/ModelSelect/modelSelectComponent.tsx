@@ -8,7 +8,8 @@ import { IconListDetails, IconWand } from '@tabler/icons-react'
 import ModelModalWrapper from './modalWrapper'
 import { useStore } from 'statery'
 import { ModelStore } from '@/app/_stores/ModelStore'
-import SelectCombo, { SelectOption } from '../../ComboBox'
+import SelectCombo from '../../ComboBox'
+import PromptInput from '@/app/_data-models/PromptInput'
 
 export default function ModelSelect() {
   const { availableModels, modelDetails } = useStore(ModelStore)
@@ -30,7 +31,8 @@ export default function ModelSelect() {
     >
       <div className="w-full row">
         <SelectCombo
-          onChange={(option: SelectOption) => {
+          // @ts-expect-error - value will always be string here
+          onChange={(option: { value: string }) => {
             if (!option || !option.value) return
 
             const modelInfo = {
@@ -38,10 +40,30 @@ export default function ModelSelect() {
               version: modelDetails[option.value as string]?.version ?? ''
             }
 
-            setInput({
-              models: [option.value as string],
-              modelDetails: modelInfo
-            })
+            // PonyXL models require a CLIP setting of at least 2
+            const isPonyModel = option.value.toLowerCase().indexOf('pony') >= 0
+
+            if (PromptInput.isDefaultPromptInput(input) && option.value !== 'AlbedoBase XL (SDXL)') {
+              setInput(PromptInput.setNonTurboDefaultPromptInput({
+                ...input, models: [option.value as string],
+                clipskip: isPonyModel && input.clipskip < 2 ? 2 : input.clipskip
+              }))
+            } else if (input.models[0] !== 'AlbedoBase XL (SDXL)' && option.value === 'AlbedoBase XL (SDXL)') {
+              setInput(PromptInput.setTurboDefaultPromptInput({ ...input, models: [option.value as string] }))
+            } else {
+              setInput({
+                models: [option.value as string],
+                modelDetails: modelInfo
+              })
+            }
+
+            if (option.value.toLowerCase().indexOf('pony') >= 0 && input.clipskip < 2) {
+              setInput({
+                models: [option.value as string],
+                modelDetails: modelInfo,
+                clipskip: 2
+              })
+            }
           }}
           options={availableModels.map((model) => ({
             value: model.name,
@@ -60,7 +82,7 @@ export default function ModelSelect() {
 
             const randomModel =
               availableModels[
-                Math.floor(Math.random() * availableModels.length)
+              Math.floor(Math.random() * availableModels.length)
               ]
 
             setInput({ models: [randomModel.name] })
