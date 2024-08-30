@@ -74,7 +74,7 @@ export default function HiresFix() {
               }}
               onChange={(num) => {
                 setInput({
-                  hires_fix_denoising_strength: num as unknown as number
+                  hires_fix_denoising_strength: Number(num) as unknown as number
                 })
               }}
               onMinusClick={() => {

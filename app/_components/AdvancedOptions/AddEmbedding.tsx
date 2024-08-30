@@ -39,10 +39,18 @@ export default function AddEmbedding() {
     [input, setInput]
   )
 
+  let title = `Embeddings`
+  if (input.tis.length > 0) {
+    title += ` (${input.tis.length})`
+  }
+
   return (
-    <Section anchor="add-embedding">
-      <div className="row justify-between">
-        <h2 className="row font-bold text-white">Embeddings</h2>
+    <Section
+      accordion
+      anchor="add-embedding"
+      title={title}
+    >
+      <div className="row justify-end mb-2">
         <div className="row gap-1">
           <Button
             onClick={() => {

@@ -40,17 +40,24 @@ export interface ImagesForGallery extends ArtBotHordeJob {
 export type ImageEnhancementModulesModifier = 'lora' | 'ti'
 
 export interface ImageEnhancementModulesTable {
-  model_id: string // Format: civitai_lora_[modelId] e.g., "civitai_lora_12345"
+  model_id: string // Indexed. Format: civitai_lora_[modelId] e.g., "civitai_lora_12345"
   timestamp: number
   modifier: ImageEnhancementModulesModifier
   type: 'favorite' | 'recent'
   model: Embedding
 }
 
-export type ImageErrors = 'csam' | 'notfound' | 'nsfw' | 'other'
+export type ImageErrors =
+  | 'csam'
+  | 'default'
+  | 'notfound'
+  | 'nsfw'
+  | 'specific'
+  | 'other'
 
 export interface ImageError {
   type: ImageErrors
+  field?: string
   message: string
 }
 

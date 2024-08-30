@@ -167,16 +167,38 @@ export default function UploadImage() {
     [handleUpload]
   )
 
-  // const { input, setInput } = useInput()
   const { fileRejections, getRootProps, getInputProps, isDragActive } =
     useDropzone({ accept: { 'image/*': [] }, maxFiles: 1, onDrop })
 
   return (
     <>
+      <Section
+        accordion={true}
+        anchor="upload"
+        title="Upload image"
+      >
+        <div className='text-sm text-white mb-2'>Upload a source image for use with ControlNet or img2img features.</div>
+        {fileRejections?.length > 0 && (
+          <div className="mb-2 text-red-500 text-lg font-bold">
+            Please upload a single valid image file!
+          </div>
+        )}
+        <div className={styles.Dropzone} {...getRootProps()}>
+          <input {...getInputProps()} />
+          <IconPhotoPlus style={{ display: 'block' }} />
+          {isDragActive ? (
+            `drop image here`
+          ) : (
+            <div>drag image or click to upload</div>
+          )}
+        </div>
+      </Section>
       {sourceImages.length > 0 && (
         <Section
-          title={`Uploaded images (${sourceImages.length} / 5)`}
+          accordion
+          initiallyExpanded
           anchor="uploaded-images"
+          title={`Uploaded images (${sourceImages.length} / 5)`}
         >
           {sourceImages.map((image, idx) => (
             <div key={`uploaded-image-${image.image_id}`}>
@@ -261,22 +283,6 @@ export default function UploadImage() {
           ))}
         </Section>
       )}
-      <Section title="Upload image">
-        {fileRejections?.length > 0 && (
-          <div className="mb-2 text-red-500 text-lg font-bold">
-            Please upload a single valid image file!
-          </div>
-        )}
-        <div className={styles.Dropzone} {...getRootProps()}>
-          <input {...getInputProps()} />
-          <IconPhotoPlus style={{ display: 'block' }} />
-          {isDragActive ? (
-            `drop image here`
-          ) : (
-            <div>drag image or click to upload</div>
-          )}
-        </div>
-      </Section>
     </>
   )
 }

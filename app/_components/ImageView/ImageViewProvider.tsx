@@ -28,6 +28,7 @@ interface DefaultContext {
   setCurrentImageId: (image_id: string) => void
   getPrevImage: () => void
   getNextImage: () => void
+  singleImage: boolean
 }
 
 const defaultContext: DefaultContext = {
@@ -40,9 +41,10 @@ const defaultContext: DefaultContext = {
     imageRequest: {} as ImageRequest
   },
   imageId: '' as string,
-  setCurrentImageId: () => {},
-  getPrevImage: () => {},
-  getNextImage: () => {}
+  setCurrentImageId: () => { },
+  getPrevImage: () => { },
+  getNextImage: () => { },
+  singleImage: false
 }
 
 const ImageViewContext = createContext(defaultContext)
@@ -83,7 +85,7 @@ export const ImageViewProvider = ({
         )
       }
 
-      if (!imageId) {
+      if (!imageId && 'image_id' in data.imageFiles[0]) {
         imageId = data.imageFiles[0].image_id
         setImageId(data.imageFiles[0].image_id)
       }
@@ -135,7 +137,8 @@ export const ImageViewProvider = ({
         imageId,
         setCurrentImageId,
         getPrevImage,
-        getNextImage
+        getNextImage,
+        singleImage
       }}
     >
       {children}

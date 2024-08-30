@@ -9,8 +9,8 @@ import { useInput } from '@/app/_providers/PromptInputProvider'
 import LoraSettingsCard from './LoraSettingsCard'
 import { Suspense, useCallback } from 'react'
 import { SavedEmbedding, SavedLora } from '@/app/_data-models/Civitai'
-
-const MAX_LORAS = 5
+import { AppConstants } from '@/app/_data-models/AppConstants'
+import { toastController } from '@/app/_controllers/toastController'
 
 export default function AddLora() {
   const { input, setInput } = useInput()
@@ -27,7 +27,13 @@ export default function AddLora() {
         return
       }
 
-      if (input.loras.length >= MAX_LORAS) return
+      if (input.loras.length >= AppConstants.MAX_LORAS) {
+        toastController({
+          message: `Can't add more than ${AppConstants.MAX_LORAS} LoRAs.`,
+          type: 'error'
+        })
+        return
+      }
 
       const found =
         input.loras.filter(
@@ -41,18 +47,20 @@ export default function AddLora() {
     [input, setInput]
   )
 
+  let title = `LoRAs`
+  if (input.loras.length > 0) {
+    title += ` (${input.loras.length} / ${AppConstants.MAX_LORAS})`
+  }
+
   return (
-    <Section anchor="add-lora">
-      <div className="row justify-between">
-        <h2 className="row font-bold text-white">
-          LoRAs{' '}
-          <span className="text-xs font-normal">
-            ({input.loras.length} / {MAX_LORAS})
-          </span>
-        </h2>
+    <Section
+      anchor="add-lora"
+      accordion
+      title={title}
+    >
+      <div className="row justify-end mb-2">
         <div className="row gap-1">
           <Button
-            disabled={input.loras.length >= MAX_LORAS}
             onClick={() => {
               NiceModal.show('modal', {
                 children: (

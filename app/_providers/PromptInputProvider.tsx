@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
+  useRef,
   useReducer,
   useState
 } from 'react'
@@ -68,44 +68,60 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
   const { inputUpdated } = useStore(CreateImageStore)
   const [pageLoaded, setPageLoaded] = useState(false)
   const [kudos, setKudos] = useState(0)
+  const [sourceImages, setSourceImages] = useState<ImageFileInterface[]>([])
 
-  const fetchUpdatedKudos = useCallback(async (input: PromptInput) => {
-    try {
-      if (!input.prompt.trim() && !input.negative.trim()) return
+  const kudosTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-      const { apiParams } = await ImageParamsForHordeApi.build(input)
-      apiParams.dry_run = true
-
-      const apikey =
-        AppSettings.apikey()?.trim() || AppConstants.AI_HORDE_ANON_KEY
-      const response = await fetch(
-        `https://aihorde.net/api/v2/generate/async`,
-        {
-          body: JSON.stringify(apiParams),
-          cache: 'no-store',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Client-Agent': clientHeader(),
-            apikey: apikey
-          }
-        }
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        setKudos(data.kudos)
-      } else {
-        console.error('Failed to fetch kudos:', response.statusText)
+  const fetchUpdatedKudos = useCallback(
+    async (input: PromptInput) => {
+      if (kudosTimeoutRef.current) {
+        clearTimeout(kudosTimeoutRef.current)
       }
-    } catch (error) {
-      console.error('Error fetching kudos:', error)
-    }
-  }, [])
 
-  const debouncedFetchUpdatedKudos = useMemo(() => {
-    return debounce(fetchUpdatedKudos, 500)
-  }, [fetchUpdatedKudos])
+      kudosTimeoutRef.current = setTimeout(async () => {
+        try {
+          const { apiParams } = await ImageParamsForHordeApi.build(input)
+          apiParams.dry_run = true
+
+          if (!input.prompt.trim() && !input.negative.trim() && kudos > 0) {
+            return
+          } else if (
+            !input.prompt.trim() &&
+            !input.negative.trim() &&
+            kudos === 0
+          ) {
+            apiParams.prompt = '_'
+          }
+
+          const apikey =
+            AppSettings.apikey()?.trim() || AppConstants.AI_HORDE_ANON_KEY
+          const response = await fetch(
+            `https://aihorde.net/api/v2/generate/async`,
+            {
+              body: JSON.stringify(apiParams),
+              cache: 'no-store',
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Client-Agent': clientHeader(),
+                apikey: apikey
+              }
+            }
+          )
+
+          if (response.ok) {
+            const data = await response.json()
+            setKudos(data.kudos)
+          } else {
+            console.error('Failed to fetch kudos:', response.statusText)
+          }
+        } catch (error) {
+          console.error('Error fetching kudos:', error)
+        }
+      }, 1050)
+    },
+    [kudos]
+  )
 
   const inputReducer: InputReducer = (
     state: PromptInput,
@@ -117,24 +133,13 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
     const jsonString = JSON.stringify(updatedInputState)
     debouncedUpdate(jsonString)
 
-    // Only call kudos API if there are significant changes
-    // TODO: Handle weighted prompts or prompt matrix
-    // Other things like model, etc
-    if (
-      !(
-        Object.keys(newState).length === 1 &&
-        (newState.prompt || newState.negative)
-      )
-    ) {
-      // Call kudos API
-      debouncedFetchUpdatedKudos(updatedInputState)
-    }
+    // Call kudos API
+    fetchUpdatedKudos(updatedInputState)
 
     return updatedInputState
   }
 
   const [input, setInput] = useReducer(inputReducer, new PromptInput())
-  const [sourceImages, setSourceImages] = useState<ImageFileInterface[]>([])
 
   useEffect(() => {
     const retrievedString = sessionStorage.getItem('userInput')

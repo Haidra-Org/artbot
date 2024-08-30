@@ -44,9 +44,8 @@ const AccordionItem = ({
     header={({ state: { isEnter } }) => (
       <>
         <IconChevronDown
-          className={`transition-transform duration-200 ease-out text-white ${
-            isEnter && 'rotate-180'
-          }`}
+          className={`transition-transform duration-200 ease-out text-white ${isEnter && 'rotate-180'
+            }`}
         />
         {header}
       </>
@@ -98,7 +97,7 @@ export default function PromptInputForm() {
       return false
     }
 
-    if (t.tags.length > 0) {
+    if (t?.tags?.length > 0) {
       hasTrainedWords = true
     }
   })

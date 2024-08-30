@@ -2,28 +2,129 @@ import { Embedding } from '../_data-models/Civitai'
 import { ImageEnhancementModulesModifier } from '../_types/ArtbotTypes'
 import { db } from './dexie'
 
-export const getFavoriteEnhancements = async (
-  modifier: ImageEnhancementModulesModifier
+export const filterEnhancements = async (
+  modifier: ImageEnhancementModulesModifier,
+  type: 'favorite' | 'recent',
+  filterTerm: string,
+  page: number = 1,
+  itemsPerPage: number = 12
 ) => {
+  const offset = (page - 1) * itemsPerPage
+
+  const filtered = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, type])
+    .filter(
+      (item) =>
+        item.model.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+        item.model.description?.toLowerCase().includes(filterTerm.toLowerCase())
+    )
+    .offset(offset)
+    .limit(itemsPerPage)
+    .toArray()
+
+  const totalCount = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, type])
+    .filter(
+      (item) =>
+        item.model.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+        item.model.description?.toLowerCase().includes(filterTerm.toLowerCase())
+    )
+    .count()
+
+  return {
+    items: filtered,
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / itemsPerPage)
+  }
+}
+
+export const exportImageEnhancementModules = async () => {
+  try {
+    // Fetch all records from the imageEnhancementModules table
+    const allModules = await db.imageEnhancementModules.toArray()
+
+    // Convert the data to a JSON string
+    const jsonData = JSON.stringify(allModules, null, 2)
+
+    // Create a Blob with the JSON data
+    const blob = new Blob([jsonData], { type: 'application/json' })
+
+    // Create a download link
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'imageEnhancementModules.json'
+
+    // Append the link to the body, click it, and remove it
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    // Revoke the URL to free up memory
+    URL.revokeObjectURL(url)
+
+    console.log('Image Enhancement Modules exported successfully')
+  } catch (error) {
+    console.error('Error exporting Image Enhancement Modules:', error)
+  }
+}
+
+export const getFavoriteEnhancements = async (
+  modifier: ImageEnhancementModulesModifier,
+  page: number = 1,
+  itemsPerPage: number = 12
+) => {
+  const offset = (page - 1) * itemsPerPage
+
   const favorites = await db.imageEnhancementModules
     .where('[modifier+type]')
     .equals([modifier, 'favorite'])
+    .offset(offset)
+    .limit(itemsPerPage)
     .toArray()
 
-  return favorites || []
+  const totalCount = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, 'favorite'])
+    .count()
+
+  return {
+    items: favorites || [],
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / itemsPerPage)
+  }
 }
 
 export const getRecentlyUsedEnhancements = async (
-  modifier: ImageEnhancementModulesModifier
+  modifier: ImageEnhancementModulesModifier,
+  page: number = 1,
+  itemsPerPage: number = 12
 ) => {
+  const offset = (page - 1) * itemsPerPage
+
   const recent = await db.imageEnhancementModules
     .where('[modifier+type]')
     .equals([modifier, 'recent'])
+    .reverse()
+    .offset(offset)
+    .limit(itemsPerPage)
     .toArray()
 
-  recent.reverse()
+  const totalCount = await db.imageEnhancementModules
+    .where('[modifier+type]')
+    .equals([modifier, 'recent'])
+    .count()
 
-  return recent || []
+  return {
+    items: recent,
+    totalCount,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / itemsPerPage)
+  }
 }
 
 export const getFavoriteImageEnhancementModule = async (

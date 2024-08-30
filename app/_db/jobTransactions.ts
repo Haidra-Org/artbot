@@ -70,26 +70,28 @@ export const addPendingJobToDexie = async (
 }
 
 export const deleteImageFromDexie = async (image_id: string) => {
-  let artbot_id
-  const image = await getImageFileFromDexie(image_id)
+  return db.transaction('rw', [db.imageFiles, db.favorites, db.hordeJobs, db.imageRequests, db.promptsJobMap], async () => {
+    let artbot_id
+    const image = await getImageFileFromDexie(image_id)
 
-  if (image && 'artbot_id' in image) {
-    artbot_id = image.artbot_id
-    const images = await await db.imageFiles.where({ artbot_id }).toArray()
+    if (image && 'artbot_id' in image) {
+      artbot_id = image.artbot_id
+      const images = await db.imageFiles.where({ artbot_id }).toArray()
 
-    if (images && images.length === 1 && images[0].image_id === image_id) {
-      await deleteJobFromDexie(artbot_id)
-      return { deletedJob: true, success: true }
+      if (!images || images.length === 0 || (images && images.length === 1 && images[0].image_id === image_id)) {
+        await deleteJobFromDexie(artbot_id)
+        return { deletedJob: true, success: true }
+      }
     }
-  }
 
-  await db.favorites.where({ image_id }).delete()
-  await db.imageFiles.where({ image_id }).delete()
+    await db.favorites.where({ image_id }).delete()
+    await db.imageFiles.where({ image_id }).delete()
 
-  return {
-    deletedImage: true,
-    success: true
-  }
+    return {
+      deletedImage: true,
+      success: true
+    }
+  })
 }
 
 export const deleteJobFromDexie = async (artbot_id: string) => {
@@ -97,12 +99,13 @@ export const deleteJobFromDexie = async (artbot_id: string) => {
 
   await db.transaction(
     'rw',
-    [db.favorites, db.hordeJobs, db.imageFiles, db.imageRequests],
+    [db.favorites, db.hordeJobs, db.imageFiles, db.imageRequests, db.promptsJobMap],
     async () => {
       await db.favorites.where({ artbot_id }).delete()
       await db.hordeJobs.where({ artbot_id }).delete()
       await db.imageFiles.where({ artbot_id }).delete()
       await db.imageRequests.where({ artbot_id }).delete()
+      await db.promptsJobMap.where({ artbot_id }).delete()
     }
   )
 }

@@ -34,13 +34,13 @@ export default function LoraSearch({
   const {
     currentPage,
     debouncedSearchRequest,
-    // hasError,
     pendingSearch,
     searchResults,
     goToNextPage,
     goToPreviousPage,
     hasNextPage,
-    hasPreviousPage
+    hasPreviousPage,
+    setLocalFilterTermAndResetPage
   } = useCivitAi({
     searchType,
     type: civitAiType
@@ -52,15 +52,15 @@ export default function LoraSearch({
   const [searchInput, setSearchInput] = useState('')
   const [showFilter, setShowFilter] = useState(false)
 
-  // // Memoize the debounced function so it doesn't get recreated on every render
-  // const debouncedSearchRequest = useMemo(() => {
-  //   return debounce(fetchCivitAiResults, 750)
-  // }, [fetchCivitAiResults])
-
-  useEffect(() => {
-    if (inputVersionId || !searchInput.trim()) return
-    debouncedSearchRequest(searchInput)
-  }, [debouncedSearchRequest, inputVersionId, searchInput])
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim()
+    setSearchInput(e.target.value)
+    if (searchType === 'favorite' || searchType === 'recent') {
+      setLocalFilterTermAndResetPage(value.trim())
+    } else if (value) {
+      debouncedSearchRequest(value.trim())
+    }
+  }
 
   useEffect(() => {
     if (inputRef.current) {
@@ -70,25 +70,51 @@ export default function LoraSearch({
     }
   }, [])
 
-  const transformedData = searchResults.map((embedding: Embedding) => {
-    // TODO: Should probably find image with lowest NSFW rating.
-    // Extracting the first model version and its first image
-    const firstModelVersion = embedding.modelVersions[0] || {}
-    const firstImage = firstModelVersion.images[0] || {}
+  const transformedData = searchResults.map(
+    (item: Embedding | SavedEmbedding | SavedLora) => {
+      let photoData
 
-    const photoData = {
-      key: String(embedding.id), // Ensuring the key is a string
-      name: embedding.name,
-      baseModel: firstModelVersion.baseModel,
-      nsfwLevel: firstImage.nsfwLevel,
-      src: firstImage.url,
-      width: firstImage.width,
-      height: firstImage.height,
-      details: embedding
+      if ('modelVersions' in item) {
+        // This is a CivitAI Embedding
+        const embedding = item as Embedding
+        const firstModelVersion = embedding.modelVersions[0] || {}
+        const firstImage = firstModelVersion.images?.[0] || {}
+
+        photoData = {
+          key: String(embedding.id),
+          name: embedding.name,
+          baseModel: firstModelVersion.baseModel,
+          nsfwLevel: firstImage.nsfwLevel,
+          src: firstImage.url,
+          width: firstImage.width,
+          height: firstImage.height,
+          details: embedding
+        }
+      } else if ('model' in item) {
+        // @ts-expect-error TODO: Fix this
+        const embedding = item.model as Embedding
+        const firstModelVersion = embedding.modelVersions[0] || {}
+        const firstImage = firstModelVersion.images?.[0] || {}
+
+        photoData = {
+          key: String(embedding.id),
+          name: embedding.name,
+          baseModel: firstModelVersion.baseModel,
+          nsfwLevel: firstImage.nsfwLevel,
+          src: firstImage.url,
+          width: firstImage.width,
+          height: firstImage.height,
+          details: embedding
+        }
+      }
+
+      return photoData
     }
+  )
 
-    return photoData
-  })
+  const filteredData = transformedData.filter(
+    (item): item is NonNullable<typeof item> => item !== undefined
+  )
 
   const subject = civitAiType === 'LORA' ? 'LoRA' : 'Embedding'
 
@@ -131,13 +157,7 @@ export default function LoraSearch({
         <input
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder={placeholder}
-          onChange={(e) => {
-            if (e.target.value.trim()) {
-              debouncedSearchRequest(e.target.value.trim())
-            }
-
-            setSearchInput(e.target.value)
-          }}
+          onChange={handleInputChange}
           ref={inputRef}
           value={searchInput}
         />
@@ -186,8 +206,9 @@ export default function LoraSearch({
       {showFilter && !inputVersionId && (
         <LoraFilter
           onSelectionChange={() => {
-            if (!searchInput.trim()) return
-            debouncedSearchRequest(searchInput)
+            if (searchInput.trim()) {
+              debouncedSearchRequest(searchInput.trim())
+            }
           }}
         />
       )}
@@ -209,7 +230,7 @@ export default function LoraSearch({
       )}
       <div>
         <MasonryLayout containerRef={modalRef}>
-          {transformedData.map((image) => (
+          {filteredData.map((image) => (
             <div
               key={`${image.key}`}
               style={{ width: '100%', marginBottom: '20px' }}
@@ -228,21 +249,26 @@ export default function LoraSearch({
           <div
             className={clsx(
               'cursor-pointer',
-              hasPreviousPage && 'primary-color'
+              hasPreviousPage ? 'primary-color' : 'text-gray-400'
             )}
             onClick={() => {
-              if (!hasPreviousPage) return
-              goToPreviousPage()
+              if (hasPreviousPage) {
+                goToPreviousPage()
+              }
             }}
           >
             <IconChevronLeft />
           </div>
           <div>{currentPage}</div>
           <div
-            className={clsx('cursor-pointer', hasNextPage && 'primary-color')}
+            className={clsx(
+              'cursor-pointer',
+              hasNextPage ? 'primary-color' : 'text-gray-400'
+            )}
             onClick={() => {
-              if (!hasNextPage) return
-              goToNextPage()
+              if (hasNextPage) {
+                goToNextPage()
+              }
             }}
           >
             <IconChevronRight />

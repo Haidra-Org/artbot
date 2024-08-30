@@ -1,9 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { DebouncedFunction, debounce } from '../_utils/debounce'
-import {
-  getFavoriteEnhancements,
-  getRecentlyUsedEnhancements
-} from '../_db/imageEnhancementModules'
+import { filterEnhancements } from '../_db/imageEnhancementModules'
 import LORASJson from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
 import EmbeddingsJson from '../_components/AdvancedOptions/LoRAs/_Embeddings.json'
 import { Embedding } from '../_data-models/Civitai'
@@ -12,6 +9,26 @@ import { CivitAiEnhancementType } from '../_types/ArtbotTypes'
 
 export type SearchType = 'search' | 'favorite' | 'recent'
 
+// Utility functions
+const getDefaultResults = (type: CivitAiEnhancementType): Embedding[] => {
+  const defaultResults = type === 'LORA' ? LORASJson : EmbeddingsJson
+  return defaultResults.items as unknown as Embedding[]
+}
+
+const createAbortController = (): AbortController => {
+  return new AbortController()
+}
+
+const handleSearchError = (error: unknown): string => {
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    console.log('Request was aborted')
+    return ''
+  } else {
+    console.error('Error fetching CivitAI results:', error)
+    return 'An error occurred while fetching data.'
+  }
+}
+
 export default function useCivitAi({
   searchType = 'search',
   type = 'LORA'
@@ -19,12 +36,17 @@ export default function useCivitAi({
   searchType?: SearchType
   type: CivitAiEnhancementType
 }) {
+  const [paginationState, setPaginationState] = useState({
+    currentPage: 1,
+    nextPageUrl: null as string | null,
+    previousPages: [] as string[]
+  })
+  const [localFilterTerm, setLocalFilterTerm] = useState('')
   const [pendingSearch, setPendingSearch] = useState(false)
-  const [searchResults, setSearchResults] = useState<Embedding[]>([])
+  const [searchResults, setSearchResults] = useState<Embedding[]>(() =>
+    getDefaultResults(type)
+  )
   const [hasError, setHasError] = useState<string | boolean>(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [nextPageUrl, setNextPageUrl] = useState<string | null>(null)
-  const [previousPages, setPreviousPages] = useState<string[]>([])
   const [currentSearchTerm, setCurrentSearchTerm] = useState<
     string | undefined
   >(undefined)
@@ -34,39 +56,65 @@ export default function useCivitAi({
     typeof fetchCivitAiResults
   > | null>(null)
 
-  const fetchRecentOrFavoriteLoras = useCallback(
-    async (searchType: 'favorite' | 'recent') => {
-      const enhancementType = type === 'LORA' ? 'lora' : 'ti'
-      try {
-        const results =
-          searchType === 'favorite'
-            ? await getFavoriteEnhancements(enhancementType)
-            : await getRecentlyUsedEnhancements(enhancementType)
-        const models = results.map((f) => f.model)
-        setSearchResults(models as unknown as Embedding[])
-      } catch (error) {
-        console.error('Error fetching recent or favorite LORAs:', error)
-        setHasError('Unable to load recent or favorite enhancements.')
+  const updatePaginationState = useCallback(
+    (
+      currentPage: number,
+      nextPageUrl: string | null,
+      previousPages: string[]
+    ) => {
+      return {
+        currentPage,
+        nextPageUrl,
+        previousPages
       }
     },
-    [type]
+    []
+  )
+
+  const filterLocalResults = useCallback(
+    async (input: string, page: number = 1) => {
+      if (searchType === 'favorite' || searchType === 'recent') {
+        const filtered = await filterEnhancements(
+          type === 'LORA' ? 'lora' : 'ti',
+          searchType,
+          input,
+          page
+        )
+        setSearchResults(filtered.items as unknown as Embedding[])
+        setPaginationState((prev) =>
+          updatePaginationState(
+            page,
+            filtered.currentPage < filtered.totalPages ? 'next' : null,
+            page > 1 ? [...prev.previousPages, `page=${page - 1}`] : []
+          )
+        )
+      }
+    },
+    [searchType, type, updatePaginationState]
+  )
+
+  const setLocalFilterTermAndResetPage = useCallback(
+    (term: string) => {
+      setLocalFilterTerm(term)
+      setPaginationState(() => updatePaginationState(1, null, []))
+    },
+    [updatePaginationState]
   )
 
   const fetchCivitAiResults = useCallback(
     async (input?: string, url?: string) => {
-      setPendingSearch(true)
       setHasError(false)
 
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }
 
-      abortControllerRef.current = new AbortController()
+      abortControllerRef.current = createAbortController()
 
       try {
         const result = await getCivitaiSearchResults({
           input,
-          page: currentPage,
+          page: paginationState.currentPage,
           type,
           signal: abortControllerRef.current.signal,
           url
@@ -78,25 +126,24 @@ export default function useCivitAi({
           )
         } else {
           setSearchResults(result.items)
-          setNextPageUrl(result.metadata.nextPage || null)
+          setPaginationState((prev) =>
+            updatePaginationState(
+              prev.currentPage,
+              result.metadata.nextPage || null,
+              prev.previousPages
+            )
+          )
           if (!url) {
             setCurrentSearchTerm(input)
-            setPreviousPages([])
-            setCurrentPage(1)
+            setPaginationState(() => updatePaginationState(1, null, []))
           }
         }
       } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          console.log('Request was aborted')
-        } else {
-          setHasError('An error occurred while fetching data.')
-          console.error('Error fetching CivitAI results:', error)
-        }
-      } finally {
-        setPendingSearch(false)
+        const errorMessage = handleSearchError(error)
+        if (errorMessage) setHasError(errorMessage)
       }
     },
-    [currentPage, type]
+    [paginationState.currentPage, type, updatePaginationState]
   )
 
   useEffect(() => {
@@ -116,36 +163,67 @@ export default function useCivitAi({
   }, [])
 
   const goToNextPage = useCallback(() => {
-    if (nextPageUrl) {
-      setPreviousPages((prev) => [
-        ...prev,
-        `page=${currentPage}&input=${currentSearchTerm}`
-      ])
-      fetchCivitAiResults(undefined, nextPageUrl)
-      setCurrentPage((prev) => prev + 1)
+    if (paginationState.nextPageUrl) {
+      setPaginationState((prev) =>
+        updatePaginationState(prev.currentPage + 1, prev.nextPageUrl, [
+          ...prev.previousPages,
+          `page=${prev.currentPage}`
+        ])
+      )
     }
-  }, [nextPageUrl, fetchCivitAiResults, currentPage, currentSearchTerm])
+  }, [paginationState.nextPageUrl, updatePaginationState])
 
   const goToPreviousPage = useCallback(() => {
-    if (previousPages.length > 0) {
-      const prevPage = previousPages[previousPages.length - 1]
-      setPreviousPages((prev) => prev.slice(0, -1))
-      const [page, input] = prevPage.split('&input=')
-      setCurrentPage(parseInt(page.split('=')[1]))
-      fetchCivitAiResults(input)
+    if (paginationState.previousPages.length > 0) {
+      const prevPage =
+        paginationState.previousPages[paginationState.previousPages.length - 1]
+      setPaginationState((prev) =>
+        updatePaginationState(
+          parseInt(prevPage.split('=')[1]),
+          prev.nextPageUrl,
+          prev.previousPages.slice(0, -1)
+        )
+      )
     }
-  }, [previousPages, fetchCivitAiResults])
+  }, [paginationState.previousPages, updatePaginationState])
 
   useEffect(() => {
-    if (searchType === 'favorite') {
-      fetchRecentOrFavoriteLoras('favorite')
-    } else if (searchType === 'recent') {
-      fetchRecentOrFavoriteLoras('recent')
-    } else if (searchType === 'search') {
-      const defaultResults = type === 'LORA' ? LORASJson : EmbeddingsJson
-      setSearchResults(defaultResults.items as unknown as Embedding[])
+    const fetchData = async () => {
+      setPendingSearch(true)
+      try {
+        if (searchType === 'favorite' || searchType === 'recent') {
+          await filterLocalResults(localFilterTerm, paginationState.currentPage)
+        } else if (paginationState.nextPageUrl) {
+          await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
+        } else if (currentSearchTerm) {
+          await fetchCivitAiResults(currentSearchTerm)
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setHasError('An error occurred while fetching data.')
+      } finally {
+        setPendingSearch(false)
+      }
     }
-  }, [fetchRecentOrFavoriteLoras, searchType, type])
+
+    fetchData()
+  }, [
+    searchType,
+    localFilterTerm,
+    currentSearchTerm,
+    paginationState.currentPage,
+    paginationState.nextPageUrl,
+    filterLocalResults,
+    fetchCivitAiResults
+  ])
+
+  useEffect(() => {
+    if (searchType === 'favorite' || searchType === 'recent') {
+      setPaginationState(() => updatePaginationState(1, null, []))
+    } else if (searchType === 'search') {
+      setSearchResults(getDefaultResults(type))
+    }
+  }, [searchType, type, updatePaginationState])
 
   useEffect(() => {
     return () => {
@@ -159,17 +237,16 @@ export default function useCivitAi({
   }, [])
 
   return {
-    currentPage,
+    currentPage: paginationState.currentPage,
     debouncedSearchRequest,
     fetchCivitAiResults,
     hasError,
     pendingSearch,
     searchResults,
-    setCurrentPage,
-    setPendingSearch,
     goToNextPage,
     goToPreviousPage,
-    hasNextPage: !!nextPageUrl,
-    hasPreviousPage: previousPages.length > 0
+    hasNextPage: !!paginationState.nextPageUrl,
+    hasPreviousPage: paginationState.previousPages.length > 0,
+    setLocalFilterTermAndResetPage
   }
 }

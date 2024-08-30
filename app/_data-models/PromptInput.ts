@@ -10,6 +10,21 @@ class PromptInput {
   // ArtBot ID for mainting relationships in IndexedDb
   artbot_id: string = ''
 
+  // ArtBot specific fields
+  imageOrientation: ImageOrientations = 'square'
+  modelDetails: {
+    baseline: string
+    version: string
+  } = {
+      baseline: '',
+      version: ''
+    }
+  notes: string = ''
+  preset: Array<{
+    name: string
+    settings: StylePresetConfig
+  }> = []
+
   // Fields used for AI Horde image requests
   cfg_scale: number = 2
   clipskip: number = 1
@@ -23,9 +38,8 @@ class PromptInput {
   facefixer_strength: number = 0.75
   height: number = 1024
   hires: boolean = false
-  hires_fix_denoising_strength: number = 0.75
+  hires_fix_denoising_strength: number = 0.65
   image_is_control: boolean = false
-  imageOrientation: ImageOrientations = 'square'
   imageType: string = ''
   jobType: JobType = JobType.Text2Img
   karras: boolean = true
@@ -42,21 +56,10 @@ class PromptInput {
     })
   ]
   models: Array<string> = ['AlbedoBase XL (SDXL)']
-  modelDetails: {
-    baseline: string
-    version: string
-  } = {
-    baseline: '',
-    version: ''
-  }
   negative: string = ''
   numImages: number = 1
   parentJobId: string = ''
   post_processing: Array<string> = []
-  preset: Array<{
-    name: string
-    settings: StylePresetConfig
-  }> = []
   prompt: string = ''
   return_control_map: boolean = false
   sampler: string = 'k_dpmpp_sde'
