@@ -73,12 +73,12 @@ export default function RootLayout({
           <div
             className="flex flex-col flex-1"
             style={{
-              padding: '42px 8px 8px 8px',
+              padding: '42px 0 0 0',
               paddingBottom: 'var(--footer-padding)'
             }}
           >
             <HeaderNav />
-            <main className="flex flex-col gap-2 w-full flex-1 sm:p-1">
+            <main className="flex flex-col gap-2 w-full flex-1" style={{ padding: '8px' }}>
               <ContentWrapper>
                 <BetaBanner />
                 {children}
