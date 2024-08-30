@@ -41,6 +41,24 @@ const imageArray = [
     title:
       'San Francisco Downtown, sunset, flat design poster, minimalist, modern, 4k, epic composition, flat vector art illustration, stunning realism, long shot, unreal engine 4d',
     model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/penguin_surfing.png',
+    title:
+      'Cartoon animation style a cool penguin wearing sunglasses, surfing on a wave. The penguin has a playful expression, standing confidently on a surfboard, with one flipper raised in a thumbs-up gesture. The wave is a vibrant blue with white frothy details, curling dynamically around the penguin. The background includes a sunny sky with a few fluffy clouds. The overall style is bright, colorful, and cheerful, typical of classic Disney animation.',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/mech_brain.png',
+    title:
+      'Plans for a mechanical brain, drawn in the style of Leonardo Da Vinci',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: '/front-page/artbot_poster.png',
+    title:
+      'Movie poster that says "ARTBOT!" in the style of a 1980s comedy',
+    model: 'Stable Cascade'
   }
 ]
 

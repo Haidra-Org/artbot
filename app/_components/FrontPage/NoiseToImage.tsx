@@ -1,6 +1,11 @@
 'use client'
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import Typewriter from './Typewriter'
+import { AppConstants } from '@/app/_data-models/AppConstants'
+
+const FADE_DURATION_MS = 1500;
+const IMAGE_DISPLAY_DURATION_MS = 5000;
 
 interface ImageItem {
   url: string
@@ -13,99 +18,54 @@ interface CarouselProps {
   height?: number
 }
 
-const AdvancedImageCarousel: React.FC<CarouselProps> = ({
+const NoiseToImage: React.FC<CarouselProps> = ({
   images,
   width = 768,
   height = 512
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [title, setTitle] = useState('')
   const [showImage, setShowImage] = useState(false)
-  const typingRef = useRef(false) // Track typing state
-  const erasingRef = useRef(false) // Track erasing state
-  const [showCursor, setShowCursor] = useState(true)
+  const [isTyping, setIsTyping] = useState(true)
 
-  const typeTitle = useCallback((text: string, index: number = 0) => {
-    if (!typingRef.current) return
-    if (index < text.length) {
-      setTitle(text.substring(0, index + 1))
-      setTimeout(() => typeTitle(text, index + 1), 75)
-    } else {
-      typingRef.current = false
-      setTimeout(() => setShowImage(true), 150) // Delay before showing the image
-    }
+  const handleTypewriterComplete = useCallback(() => {
+    setIsTyping(false)
+    setTimeout(() => setShowImage(true), AppConstants.TYPING_SPEED_MS * 2)
   }, [])
 
-  const eraseTitle = useCallback(() => {
-    if (!erasingRef.current) return
-    const eraseNextChar = () => {
-      setTitle((prev) => {
-        if (prev.length > 0) {
-          setTimeout(eraseNextChar, 50)
-          return prev.slice(0, -1)
-        } else {
-          erasingRef.current = false
-          setTimeout(() => {
-            const nextIndex =
-              currentIndex + 1 >= images.length ? 0 : currentIndex + 1
-            setCurrentIndex(nextIndex)
-          }, 1500) // Delay before moving to the next element
-          return ''
-        }
-      })
-    }
-    eraseNextChar()
+  const moveToNextImage = useCallback(() => {
+    setTimeout(() => {
+      setShowImage(false)
+      setTimeout(() => {
+        const nextIndex = (currentIndex + 1) % images.length
+        setCurrentIndex(nextIndex)
+        setIsTyping(true)
+      }, FADE_DURATION_MS)
+    }, AppConstants.TYPING_SPEED_MS * images[currentIndex].title.length / 2)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, images.length])
 
   useEffect(() => {
-    if (!typingRef.current && showImage) {
-      const imageTimer = setTimeout(() => {
-        setShowImage(false)
-        erasingRef.current = true
-        setTimeout(eraseTitle, 1000) // Delay before erasing the title
-      }, 4000) // Duration image is shown
+    if (!isTyping && showImage) {
+      const imageTimer = setTimeout(moveToNextImage, IMAGE_DISPLAY_DURATION_MS)
       return () => clearTimeout(imageTimer)
     }
-  }, [showImage, eraseTitle])
-
-  useEffect(() => {
-    if (!erasingRef.current && !typingRef.current && !showImage) {
-      typingRef.current = true
-      typeTitle(images[currentIndex].title)
-    }
-  }, [currentIndex, images, showImage, typeTitle])
-
-  // Start the cycle immediately
-  useEffect(() => {
-    typingRef.current = true
-    typeTitle(images[0].title)
-  }, [images, typeTitle])
-
-  // Cursor blink effect
-  useEffect(() => {
-    const cursorBlink = setInterval(() => {
-      setShowCursor((prev) => !prev)
-    }, 500)
-    return () => clearInterval(cursorBlink)
-  }, [])
+  }, [isTyping, showImage, moveToNextImage])
 
   return (
     <div className="flex flex-col items-center w-full">
-      <div
-        className="p-2 mb-4 font-mono w-full bg-slate-600 text-white max-w-[768px]"
-        style={{ textAlign: 'left' }}
-      >
-        {'> '}
-        {title}
-        <span style={{ opacity: showCursor ? 1 : 0 }}>|</span>
-      </div>
+      <Typewriter
+        text={images[currentIndex].title}
+        onComplete={handleTypewriterComplete}
+      />
       <div className="relative" style={{ width, height }}>
         <div
           className="absolute inset-0 bg-noise"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+            backgroundImage: `url('/random_noise.jpg')`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: 'auto',
             opacity: showImage ? 0 : 1,
-            transition: 'opacity 2s ease-in-out'
+            transition: `opacity ${FADE_DURATION_MS}ms ease-in-out`
           }}
         />
         <img
@@ -114,7 +74,7 @@ const AdvancedImageCarousel: React.FC<CarouselProps> = ({
           className="absolute inset-0 w-full h-full object-cover"
           style={{
             opacity: showImage ? 1 : 0,
-            transition: 'opacity 2s ease-in-out'
+            transition: `opacity ${FADE_DURATION_MS}ms ease-in-out`
           }}
         />
       </div>
@@ -122,4 +82,4 @@ const AdvancedImageCarousel: React.FC<CarouselProps> = ({
   )
 }
 
-export default AdvancedImageCarousel
+export default NoiseToImage
