@@ -68,7 +68,7 @@ export class ArtBotHordeJob implements HordeJobResponse {
     this.wait_time = params.wait_time || null
     this.queue_position = params.queue_position || null
     this.kudos = params.kudos || 0
-    this.is_possible = params.is_possible || false
+    this.is_possible = params.is_possible || true
     this.generations = params.generations
   }
 

@@ -109,7 +109,7 @@ const processSuccessfulResponse = async (jobId: string, hordeId: string) => {
   await sleep(INITIAL_WAIT_TIME)
   const jobDetails = await checkImage(hordeId)
 
-  if ('is_possible' in jobDetails && !jobDetails.is_possible) {
+  if ('is_possible' in jobDetails && jobDetails.is_possible === false) {
     await handleImpossibleJob(
       jobId,
       hordeId,
@@ -135,7 +135,8 @@ const handleImpossibleJob = async (
   await updatePendingImage(jobId, {
     horde_id: hordeId,
     init_wait_time: jobDetails.wait_time,
-    status: JobStatus.Requested,
+    is_possible: false,
+    status: JobStatus.Queued, // Need to mark as queued so we can still check if job starts processing (e.g., GPU comes online).
     jobErrorMessage:
       'There are currently no GPU workers that can complete this request. Continue waiting or try changing settings.',
     wait_time: jobDetails.wait_time,
@@ -157,6 +158,7 @@ const updateJobStatus = async (
   await updatePendingImage(jobId, {
     horde_id: hordeId,
     init_wait_time: jobDetails.wait_time,
+    is_possible: jobDetails.is_possible,
     status,
     wait_time: jobDetails.wait_time,
     api_response: { ...jobDetails }

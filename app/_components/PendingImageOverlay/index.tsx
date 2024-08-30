@@ -173,8 +173,8 @@ function PendingImageOverlay({
             style={{ marginBottom: '12px' }}
           >
             {pendingJob.wait_time !== null &&
-            pendingJob.wait_time > 0 &&
-            pendingJob.init_wait_time !== 0 ? (
+              pendingJob.wait_time > 0 &&
+              pendingJob.init_wait_time !== 0 ? (
               <div className="col gap-0">
                 <div>{serverWorkingMessage}</div>
                 <div>
@@ -185,8 +185,8 @@ function PendingImageOverlay({
               <span></span>
             )}
             {pendingJob.init_wait_time &&
-            pendingJob.wait_time === 0 &&
-            pendingJob.wait_time < pendingJob.init_wait_time ? (
+              pendingJob.wait_time === 0 &&
+              pendingJob.wait_time < pendingJob.init_wait_time ? (
               <span>Finishing up... {imagesProcessingMsg}</span>
             ) : (
               <span></span>
@@ -250,7 +250,13 @@ function PendingImageOverlay({
           />
         </div>
       )}
-      {status !== JobStatus.Done && pendingJob.images_completed >= 0 && (
+      {status !== JobStatus.Done && pendingJob.is_possible === false && (
+        <div className={styles.ImagesCompleted}>
+          <IconAlertTriangle color="rgb(234 179 8)" size={20} stroke={1} />
+          <div>No GPUs</div>
+        </div>
+      )}
+      {status !== JobStatus.Done && pendingJob.images_completed >= 0 && pendingJob.is_possible === true && (
         <div className={styles.ImagesCompleted}>
           <IconPhotoCheck stroke={1} size={20} />
           {pendingJob.images_completed} / {pendingJob.images_requested}
