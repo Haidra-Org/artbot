@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Typewriter from './Typewriter'
 import { AppConstants } from '@/app/_data-models/AppConstants'
+import { appBasepath } from '@/app/_utils/browserUtils';
 
 const FADE_DURATION_MS = 1500;
 const IMAGE_DISPLAY_DURATION_MS = 5000;
@@ -61,7 +62,7 @@ const NoiseToImage: React.FC<CarouselProps> = ({
         <div
           className="absolute inset-0 bg-noise"
           style={{
-            backgroundImage: `url('/random_noise.jpg')`,
+            backgroundImage: `url(${appBasepath()}/random_noise.jpg)`,
             backgroundRepeat: 'repeat',
             backgroundSize: 'auto',
             opacity: showImage ? 0 : 1,

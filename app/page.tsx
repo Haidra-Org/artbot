@@ -1,61 +1,62 @@
 import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react'
 import Link from 'next/link'
 import NoiseToImage from './_components/FrontPage/NoiseToImage'
+import { appBasepath } from './_utils/browserUtils'
 
 const imageArray = [
   {
-    url: '/front-page/himalays.png',
+    url: `${appBasepath()}/front-page/himalays.png`,
     title: 'Himalayan mountains, flat design, vibrant colors, Moebius',
     model: 'Deliberate'
   },
   {
-    url: '/front-page/astronaut.png',
+    url: `${appBasepath()}/front-page/astronaut.png`,
     title: 'An astronaut resting on Mars in a beach chair.',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/chalet.png',
+    url: `${appBasepath()}/front-page/chalet.png`,
     title:
       'Mountain chalet covered in snow, foggy, sunrise, sharp details, sharp focus, elegant, highly detailed, illustration, by Jordan Grimmer and Greg Rutkowski',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/raven.png',
+    url: `${appBasepath()}/front-page/raven.png`,
     title:
       'Graffiti-style picture of a Raven, alcohol markers and aerosol paint',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/brisket.jpg',
+    url: `${appBasepath()}/front-page/brisket.jpg`,
     title:
       'macro photograph of a brisket on a table with beer, in a blurred restaurant with depth of field, bokeh, soft diffused light, professional food photography',
     model: 'stable diffusion'
   },
   {
-    url: '/front-page/chipmunk.png',
+    url: `${appBasepath()}/front-page/chipmunk.png`,
     title: 'Beautiful portrait oil painting of an aristocrat chipmunk',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/sf.png',
+    url: `${appBasepath()}/front-page/sf.png`,
     title:
       'San Francisco Downtown, sunset, flat design poster, minimalist, modern, 4k, epic composition, flat vector art illustration, stunning realism, long shot, unreal engine 4d',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/penguin_surfing.png',
+    url: `${appBasepath()}/front-page/penguin_surfing.png`,
     title:
       'Cartoon animation style a cool penguin wearing sunglasses, surfing on a wave. The penguin has a playful expression, standing confidently on a surfboard, with one flipper raised in a thumbs-up gesture. The wave is a vibrant blue with white frothy details, curling dynamically around the penguin. The background includes a sunny sky with a few fluffy clouds. The overall style is bright, colorful, and cheerful, typical of classic Disney animation.',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/mech_brain.png',
+    url: `${appBasepath()}/front-page/mech_brain.png`,
     title:
       'Plans for a mechanical brain, drawn in the style of Leonardo Da Vinci',
     model: 'AlbedoBase XL (SDXL)'
   },
   {
-    url: '/front-page/artbot_poster.png',
+    url: `${appBasepath()}/front-page/artbot_poster.png`,
     title:
       'Movie poster that says "ARTBOT!" in the style of a 1980s comedy',
     model: 'Stable Cascade'
