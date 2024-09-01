@@ -1,6 +1,7 @@
 import { ImageOrientations, JobType, Workflow } from '@/app/_types/ArtbotTypes'
 import {
   ControlTypes,
+  SamplerOption,
   SourceProcessing,
   StylePresetConfig
 } from '@/app/_types/HordeTypes'
@@ -64,7 +65,7 @@ class PromptInput {
   post_processing: Array<string> = []
   prompt: string = ''
   return_control_map: boolean = false
-  sampler: string = 'euler_a'
+  sampler: SamplerOption = 'k_euler_a'
   seed: string = ''
   source_processing?: SourceProcessing = SourceProcessing.Prompt
   steps: number = 8

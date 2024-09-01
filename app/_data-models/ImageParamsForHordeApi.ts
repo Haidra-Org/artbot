@@ -3,6 +3,7 @@ import {
   ControlTypes,
   HordeTi,
   Lora,
+  SamplerOption,
   SourceProcessing
 } from '../_types/HordeTypes'
 import { castTiInject } from '../_utils/hordeUtils'
@@ -26,7 +27,7 @@ interface HordeApiParamsBuilderInterface {
 }
 
 export interface ImageParams {
-  sampler_name?: string // Optional due to ControlNet
+  sampler_name?: SamplerOption // Optional due to ControlNet
   cfg_scale: number
   height: number
   width: number

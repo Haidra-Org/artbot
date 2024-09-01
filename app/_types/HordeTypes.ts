@@ -239,6 +239,21 @@ export interface LoraConfig {
   is_version: boolean
 }
 
+export type SamplerOption =
+  | 'DDIM'
+  | 'k_dpm_2_a'
+  | 'k_dpm_2'
+  | 'k_dpm_adaptive'
+  | 'k_dpm_fast'
+  | 'k_dpmpp_2m'
+  | 'k_dpmpp_2s_a'
+  | 'k_dpmpp_sde'
+  | 'k_euler_a'
+  | 'k_euler'
+  | 'k_heun'
+  | 'k_lms'
+  | 'lcm'
+
 export interface SharedApiKey {
   id: string
   kudos: number

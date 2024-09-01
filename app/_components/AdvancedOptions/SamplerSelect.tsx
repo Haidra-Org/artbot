@@ -3,21 +3,7 @@
 import { useInput } from '@/app/_providers/PromptInputProvider'
 import Select, { SelectOption } from '../Select'
 import OptionLabel from './OptionLabel'
-
-export type SamplerOption =
-  | 'DDIM'
-  | 'k_dpm_2_a'
-  | 'k_dpm_2'
-  | 'k_dpm_adaptive'
-  | 'k_dpm_fast'
-  | 'k_dpmpp_2m'
-  | 'k_dpmpp_2s_a'
-  | 'k_dpmpp_sde'
-  | 'k_euler_a'
-  | 'k_euler'
-  | 'k_heun'
-  | 'k_lms'
-  | 'lcm'
+import { SamplerOption } from '@/app/_types/HordeTypes'
 
 const samplers: Array<{ value: SamplerOption; label: SamplerOption }> = [
   { value: 'DDIM', label: 'DDIM' },
@@ -47,7 +33,7 @@ export default function SamplerSelect() {
       <div className="w-full">
         <Select
           onChange={(option: SelectOption) => {
-            setInput({ sampler: option.value as string })
+            setInput({ sampler: option.value as SamplerOption })
           }}
           options={samplers.map((sampler) => ({
             value: sampler.value,

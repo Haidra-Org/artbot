@@ -30,40 +30,40 @@ describe('ImageParamsForHordeApi', () => {
       height: 512,
       width: 512,
       steps: 30,
-      sampler: 'k_euler_ancestral',
+      sampler: 'k_euler_a',
       seed: '123456',
       models: ['stable_diffusion']
     })
 
-    // Mock AppSettings.get
-    ;(AppSettings.get as jest.Mock).mockImplementation(
-      (key: AppSettingsKey) => {
-        const settings: AppSettingsParams = {
-          allowedWorkers: [],
-          allowNsfwImages: false,
-          apiKey: 'test-api-key',
-          autoDowngrade: false,
-          blockedWorkers: [],
-          civitAiBaseModelFilter: [],
-          negativePanelOpen: false,
-          runInBackground: false,
-          saveInputOnCreate: false,
-          sharedKey: '',
-          slow_workers: true,
-          useAllowedWorkers: false,
-          useBeta: false,
-          useBlockedWorkers: false,
-          useReplacementFilter: true,
-          useTrusted: true
-        }
+      // Mock AppSettings.get
+      ; (AppSettings.get as jest.Mock).mockImplementation(
+        (key: AppSettingsKey) => {
+          const settings: AppSettingsParams = {
+            allowedWorkers: [],
+            allowNsfwImages: false,
+            apiKey: 'test-api-key',
+            autoDowngrade: false,
+            blockedWorkers: [],
+            civitAiBaseModelFilter: [],
+            negativePanelOpen: false,
+            runInBackground: false,
+            saveInputOnCreate: false,
+            sharedKey: '',
+            slow_workers: true,
+            useAllowedWorkers: false,
+            useBeta: false,
+            useBlockedWorkers: false,
+            useReplacementFilter: true,
+            useTrusted: true
+          }
 
-        if (key in settings) {
-          return settings[key]
-        }
+          if (key in settings) {
+            return settings[key]
+          }
 
-        throw new Error(`Unexpected key: ${key}`)
-      }
-    )
+          throw new Error(`Unexpected key: ${key}`)
+        }
+      )
   })
 
   test('setBaseParams should set correct base parameters', () => {
@@ -77,7 +77,7 @@ describe('ImageParamsForHordeApi', () => {
         height: 512,
         width: 512,
         steps: 30,
-        sampler_name: 'k_euler_ancestral',
+        sampler_name: 'k_euler_a',
         seed: '123456'
       },
       nsfw: false,
@@ -141,12 +141,12 @@ describe('ImageParamsForHordeApi', () => {
 
   test('setSourceProcessing should set correct source processing parameters', async () => {
     // Mock the getImagesForArtbotJobFromDexie function
-    ;(dbModule.getImagesForArtbotJobFromDexie as jest.Mock).mockResolvedValue([
+    ; (dbModule.getImagesForArtbotJobFromDexie as jest.Mock).mockResolvedValue([
       { imageBlobBuffer: new ArrayBuffer(8) }
     ])
 
-    // Mock blobToBase64
-    ;(imageUtils.blobToBase64 as jest.Mock).mockResolvedValue('base64string')
+      // Mock blobToBase64
+      ; (imageUtils.blobToBase64 as jest.Mock).mockResolvedValue('base64string')
 
     promptInput.source_processing = SourceProcessing.Img2Img
     promptInput.denoising_strength = 0.6
@@ -178,7 +178,7 @@ describe('ImageParamsForHordeApi', () => {
         height: 512,
         width: 512,
         steps: 30,
-        sampler_name: 'k_euler_ancestral',
+        sampler_name: 'k_euler_a',
         seed: '123456',
         n: 1,
         post_processing: [],
@@ -205,7 +205,7 @@ describe('ImageParamsForHordeApi', () => {
     expect(result.height).toBe(512)
     expect(result.width).toBe(512)
     expect(result.steps).toBe(30)
-    expect(result.sampler).toBe('k_euler_ancestral')
+    expect(result.sampler).toBe('k_euler_a')
     expect(result.seed).toBe('123456')
     expect(result.models).toEqual(['stable_diffusion'])
   })
