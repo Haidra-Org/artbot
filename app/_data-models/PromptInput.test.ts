@@ -31,7 +31,7 @@ describe('PromptInput', () => {
     expect(defaultPromptInput.preset).toEqual([])
     expect(defaultPromptInput.prompt).toBe('')
     expect(defaultPromptInput.return_control_map).toBe(false)
-    expect(defaultPromptInput.sampler).toBe('euler_a')
+    expect(defaultPromptInput.sampler).toBe('k_euler_a')
     expect(defaultPromptInput.seed).toBe('')
     expect(defaultPromptInput.source_processing).toBe(SourceProcessing.Prompt)
     expect(defaultPromptInput.steps).toBe(8)
