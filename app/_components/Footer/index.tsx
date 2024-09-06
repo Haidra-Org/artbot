@@ -14,7 +14,6 @@ import {
   IconRobot
 } from '@tabler/icons-react'
 import Linker from '../Linker'
-import { AppStore } from '@/app/_stores/AppStore'
 import BuildId from './buildId'
 import AnimatedEmoji from './AnimatedEmoji'
 
