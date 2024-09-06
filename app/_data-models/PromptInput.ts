@@ -7,13 +7,24 @@ import {
 } from '@/app/_types/HordeTypes'
 import { SavedEmbedding, SavedLora } from './Civitai'
 
-export const DEFAULT_TURBO_LORA = new SavedLora({
+export const DEFAULT_TURBO_SDE_LORA = new SavedLora({
   id: '247778',
   civitAiType: 'LORA',
   versionId: '247778',
   versionName: '',
   isArtbotManualEntry: true,
   name: 'SDXL | LCM TurboMix LoRA (SDE sampler)',
+  strength: 1,
+  clip: 1
+})
+
+export const DEFAULT_TURBO_EULER_LORA = new SavedLora({
+  id: '246747',
+  civitAiType: 'LORA',
+  versionId: '246747',
+  versionName: '',
+  isArtbotManualEntry: true,
+  name: 'SDXL | TurboMix LoRA (Euler sampler)',
   strength: 1,
   clip: 1
 })
@@ -56,7 +67,7 @@ class PromptInput {
   jobType: JobType = JobType.Text2Img
   karras: boolean = true
   loras: SavedLora[] = [
-    DEFAULT_TURBO_LORA
+    DEFAULT_TURBO_EULER_LORA
   ]
   models: Array<string> = ['AlbedoBase XL (SDXL)']
   negative: string = ''
@@ -88,9 +99,10 @@ class PromptInput {
    * @returns True if the prompt input is a default prompt, false otherwise.
    */
   static isDefaultPromptInput(input: PromptInput): boolean {
-    const hasTurboLora = input.loras.filter(lora => lora.versionId === '247778').length > 0
+    const hasTurboLora = input.loras.filter(lora => lora.versionId === DEFAULT_TURBO_EULER_LORA.versionId).length > 0
+    const hasDefaultSampler = input.sampler === 'k_euler_a'
     const hasDefaultStepsAndCfgScale = input.models[0] === 'AlbedoBase XL (SDXL)' && Number(input.steps) === 8 && Number(input.cfg_scale) === 2
-    const hasDefaultModelAndLora = input.models[0] === 'AlbedoBase XL (SDXL)' && hasTurboLora
+    const hasDefaultModelAndLora = input.models[0] === 'AlbedoBase XL (SDXL)' && hasTurboLora && hasDefaultSampler
 
     return hasDefaultStepsAndCfgScale || hasDefaultModelAndLora
   }
@@ -104,7 +116,7 @@ class PromptInput {
    */
   static setNonTurboDefaultPromptInput(input: PromptInput): PromptInput {
     // Remove the LCM TurboMix LoRA if present
-    input.loras = input.loras.filter(lora => lora.versionId != '247778');
+    input.loras = input.loras.filter(lora => lora.versionId != DEFAULT_TURBO_EULER_LORA.versionId);
 
     return new PromptInput({
       ...input,
@@ -116,16 +128,18 @@ class PromptInput {
   /**
    * Sets the prompt input to a turbo default prompt. This occurs when a user
    * selects a SDXL turbo model, so we need to adjust steps, cfg_scale, and
-   * add the LCM TurboMix LoRA to the loras array.
+   * add the TurboMix LoRA to the loras array.
    * @param input - The prompt input to set to a turbo default prompt.
    * @returns The prompt input set to a turbo default prompt.
    */
   static setTurboDefaultPromptInput(input: PromptInput): PromptInput {
-    // Check if the LCM TurboMix LoRA is not present in the input.loras array
-    if (!input.loras.some(lora => lora.versionId == '247778')) {
+    // Check if the TurboMix LoRA is not present in the input.loras array
+    if (!input.loras.some(lora => lora.versionId == DEFAULT_TURBO_EULER_LORA.versionId)) {
       // If not present, add it to the beginning of the array
-      input.loras.unshift(DEFAULT_TURBO_LORA);
+      input.loras.unshift(DEFAULT_TURBO_EULER_LORA);
     }
+
+
 
 
     return new PromptInput({

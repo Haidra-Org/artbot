@@ -1,4 +1,4 @@
-import PromptInput, { DEFAULT_TURBO_LORA } from './PromptInput'
+import PromptInput, { DEFAULT_TURBO_EULER_LORA } from './PromptInput'
 import { JobType } from '@/app/_types/ArtbotTypes'
 import { SourceProcessing } from '@/app/_types/HordeTypes'
 import { SavedLora } from './Civitai'
@@ -93,7 +93,7 @@ describe('PromptInput', () => {
 
   it('should correctly set non-turbo default prompt input', () => {
     const input = new PromptInput({
-      loras: [DEFAULT_TURBO_LORA, { id: 'other', versionId: 'other' } as SavedLora]
+      loras: [DEFAULT_TURBO_EULER_LORA, { id: 'other', versionId: 'other' } as SavedLora]
     })
     const result = PromptInput.setNonTurboDefaultPromptInput(input)
 
@@ -112,6 +112,6 @@ describe('PromptInput', () => {
     expect(result.steps).toBe(8)
     expect(result.cfg_scale).toBe(2)
     expect(result.loras).toHaveLength(2)
-    expect(result.loras[0]).toEqual(DEFAULT_TURBO_LORA)
+    expect(result.loras[0]).toEqual(DEFAULT_TURBO_EULER_LORA)
   })
 })
