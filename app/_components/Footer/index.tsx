@@ -13,6 +13,8 @@ import {
   IconRobot
 } from '@tabler/icons-react'
 import Linker from '../Linker'
+import { AppStore } from '@/app/_stores/AppStore'
+import BuildId from './buildId'
 
 export default function Footer() {
   const pathname = usePathname()
@@ -275,6 +277,7 @@ export default function Footer() {
           in California.
         </div>
       </div>
+      <BuildId />
     </div>
   )
 }

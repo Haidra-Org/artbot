@@ -74,7 +74,6 @@ export default function RootLayout({
             className="flex flex-col flex-1"
             style={{
               padding: '42px 0 0 0',
-              paddingBottom: 'var(--footer-padding)'
             }}
           >
             <HeaderNav />
