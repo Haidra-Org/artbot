@@ -8,6 +8,7 @@ import {
   IconCamera,
   IconExternalLink,
   IconInfoCircle,
+  IconMessage,
   IconPhoto,
   IconQuestionMark,
   IconRobot
@@ -15,6 +16,7 @@ import {
 import Linker from '../Linker'
 import { AppStore } from '@/app/_stores/AppStore'
 import BuildId from './buildId'
+import AnimatedEmoji from './AnimatedEmoji'
 
 export default function Footer() {
   const pathname = usePathname()
@@ -166,10 +168,10 @@ export default function Footer() {
           </div>
         </div>
         <div className={styles.Section}>
-          {/* <div className={styles.SectionTitle}>
+          <div className={styles.SectionTitle}>
             <IconMessage stroke={1} />
             Contact
-          </div> */}
+          </div>
           <div>
             <Link
               href="https://discord.com/channels/781145214752129095/1107628882783391744"
@@ -266,9 +268,9 @@ export default function Footer() {
       </div>
       <div className={styles.AboutWrapper} id="ArtBot_MadeWithLove">
         <div>
-          ArtBot is created with ❤️ , ☕️ and ☀️ by{' '}
+          ArtBot is created with <AnimatedEmoji /> by{' '}
           <Linker
-            href="https://mastodon.world/@davely"
+            href="https://www.threads.net/@dave.ly"
             target="_blank"
             rel="noopener noreferrer"
           >
