@@ -7,6 +7,7 @@ import { useStore } from 'statery'
 import { ModelStore } from '../_stores/ModelStore'
 import { Workflow } from '../_types/ArtbotTypes'
 import { AppConstants } from '../_data-models/AppConstants'
+import { DEFAULT_TURBO_EULER_LORA, DEFAULT_TURBO_SDE_LORA } from '../_data-models/PromptInput'
 
 export interface PromptError {
   message: string
@@ -97,6 +98,28 @@ export default function usePromptInputValidation(): [PromptError[], boolean] {
         })
       }
     })
+
+    // Check if using TurboMix LoRA with correct sampler
+    if (
+      input.loras.filter(lora => lora.versionId === DEFAULT_TURBO_EULER_LORA.versionId).length > 0 &&
+      input.sampler !== 'k_euler_a'
+    ) {
+      updateErrors.push({
+        message: 'TurboMix Euler LoRA requires "k_euler_a" sampler',
+        type: 'warning'
+      })
+    }
+
+    // Check if using TurboMix LoRA with correct sampler
+    if (
+      input.loras.filter(lora => lora.versionId === DEFAULT_TURBO_SDE_LORA.versionId).length > 0 &&
+      input.sampler !== 'k_dpmpp_sde'
+    ) {
+      updateErrors.push({
+        message: 'TurboMix LCM SDE LoRA requires "k_dpmpp_sde" sampler',
+        type: 'warning'
+      })
+    }
 
     // Remix is only availble with Stable Cascade 1.0
     if (

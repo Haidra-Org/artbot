@@ -14,7 +14,7 @@ import {
   StylePreviewConfigurations
 } from '@/app/_types/HordeTypes'
 import { useCallback } from 'react'
-import PromptInput, { DEFAULT_TURBO_LORA } from '@/app/_data-models/PromptInput'
+import PromptInput, { DEFAULT_TURBO_EULER_LORA } from '@/app/_data-models/PromptInput'
 import { SavedLora } from '@/app/_data-models/Civitai'
 import { useStore } from 'statery'
 import { ModelStore } from '@/app/_stores/ModelStore'
@@ -57,8 +57,8 @@ export default function StylePresetSelectComponent({
           updateInput.loras = []
           presetSettings.loras.forEach((lora) => {
             let updateLora: SavedLora
-            if (lora.name == '247778') {
-              updateLora = DEFAULT_TURBO_LORA
+            if (lora.name == DEFAULT_TURBO_EULER_LORA.versionId) {
+              updateLora = DEFAULT_TURBO_EULER_LORA
             } else {
               updateLora = new SavedLora({
                 id: lora.name,
