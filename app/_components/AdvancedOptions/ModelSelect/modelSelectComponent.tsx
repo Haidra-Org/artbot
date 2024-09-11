@@ -9,7 +9,6 @@ import ModelModalWrapper from './modalWrapper';
 import { useStore } from 'statery';
 import { ModelStore } from '@/app/_stores/ModelStore';
 import SelectCombo from '../../ComboBox';
-import PromptInput from '@/app/_data-models/PromptInput';
 
 export default function ModelSelect() {
   const { availableModels, modelDetails } = useStore(ModelStore);
