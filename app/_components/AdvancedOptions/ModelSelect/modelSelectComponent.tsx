@@ -21,6 +21,40 @@ export default function ModelSelect() {
     return model?.count ? ` (${model.count})` : ''
   }
 
+  const handleModelChange = (option: { value: string }) => {
+    if (!option || !option.value) return
+
+    const newModel = option.value as string
+    const modelInfo = {
+      baseline: modelDetails[newModel]?.baseline ?? '',
+      version: modelDetails[newModel]?.version ?? ''
+    }
+
+    const isPonyModel = newModel.toLowerCase().indexOf('pony') >= 0
+    const isAlbedoBaseXL = newModel === 'AlbedoBase XL (SDXL)'
+
+    let newInput: Partial<typeof input> = {
+      models: [newModel],
+      modelDetails: modelInfo
+    }
+
+    if (PromptInput.isDefaultPromptInput(input) && !isAlbedoBaseXL) {
+      newInput = PromptInput.setNonTurboDefaultPromptInput({
+        ...input,
+        ...newInput,
+        clipskip: isPonyModel && input.clipskip < 2 ? 2 : input.clipskip
+      })
+    } else if (input.models[0] !== 'AlbedoBase XL (SDXL)' && isAlbedoBaseXL) {
+      newInput = PromptInput.setTurboDefaultPromptInput({ ...input, ...newInput })
+    }
+
+    if (isPonyModel && input.clipskip < 2) {
+      newInput.clipskip = 2
+    }
+
+    setInput(newInput)
+  }
+
   return (
     <OptionLabel
       title={
@@ -32,39 +66,7 @@ export default function ModelSelect() {
       <div className="w-full row">
         <SelectCombo
           // @ts-expect-error - value will always be string here
-          onChange={(option: { value: string }) => {
-            if (!option || !option.value) return
-
-            const modelInfo = {
-              baseline: modelDetails[option.value as string]?.baseline ?? '',
-              version: modelDetails[option.value as string]?.version ?? ''
-            }
-
-            // PonyXL models require a CLIP setting of at least 2
-            const isPonyModel = option.value.toLowerCase().indexOf('pony') >= 0
-
-            if (PromptInput.isDefaultPromptInput(input) && option.value !== 'AlbedoBase XL (SDXL)') {
-              setInput(PromptInput.setNonTurboDefaultPromptInput({
-                ...input, models: [option.value as string],
-                clipskip: isPonyModel && input.clipskip < 2 ? 2 : input.clipskip
-              }))
-            } else if (input.models[0] !== 'AlbedoBase XL (SDXL)' && option.value === 'AlbedoBase XL (SDXL)') {
-              setInput(PromptInput.setTurboDefaultPromptInput({ ...input, models: [option.value as string] }))
-            } else {
-              setInput({
-                models: [option.value as string],
-                modelDetails: modelInfo
-              })
-            }
-
-            if (option.value.toLowerCase().indexOf('pony') >= 0 && input.clipskip < 2) {
-              setInput({
-                models: [option.value as string],
-                modelDetails: modelInfo,
-                clipskip: 2
-              })
-            }
-          }}
+          onChange={(option: { value: string }) => handleModelChange(option)}
           options={availableModels.map((model) => ({
             value: model.name,
             label: model.name + findModelCountByName(model.name)
