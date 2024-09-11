@@ -31,25 +31,25 @@ export default function ModelSelect() {
     };
 
     const isPonyModel = newModel.toLowerCase().indexOf('pony') >= 0;
-    const isAlbedoBaseXL = newModel === 'AlbedoBase XL (SDXL)';
+    // const isAlbedoBaseXL = newModel === 'AlbedoBase XL (SDXL)';
 
-    let newInput: Partial<typeof input> = {
+    const newInput: Partial<typeof input> = {
       models: [newModel],
       modelDetails: modelInfo
     };
 
-    if (PromptInput.isDefaultPromptInput(input) && !isAlbedoBaseXL) {
-      newInput = PromptInput.setNonTurboDefaultPromptInput({
-        ...input,
-        ...newInput,
-        clipskip: isPonyModel && input.clipskip < 2 ? 2 : input.clipskip
-      });
-    } else if (input.models[0] !== 'AlbedoBase XL (SDXL)' && isAlbedoBaseXL) {
-      newInput = PromptInput.setTurboDefaultPromptInput({
-        ...input,
-        ...newInput
-      });
-    }
+    // if (PromptInput.isDefaultPromptInput(input) && !isAlbedoBaseXL) {
+    //   newInput = PromptInput.setNonTurboDefaultPromptInput({
+    //     ...input,
+    //     ...newInput,
+    //     clipskip: isPonyModel && input.clipskip < 2 ? 2 : input.clipskip
+    //   });
+    // } else if (input.models[0] !== 'AlbedoBase XL (SDXL)' && isAlbedoBaseXL) {
+    //   newInput = PromptInput.setTurboDefaultPromptInput({
+    //     ...input,
+    //     ...newInput
+    //   });
+    // }
 
     if (isPonyModel && input.clipskip < 2) {
       newInput.clipskip = 2;

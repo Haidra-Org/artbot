@@ -108,6 +108,8 @@ describe('ModelSelect', () => {
         modelDetails: { baseline: 'base3', version: 'v3' }
       })
     );
-    expect(PromptInput.setTurboDefaultPromptInput).toHaveBeenCalled();
+
+    // Temporarily change this to 0 for now as we've disabled updating default inputs.
+    expect(PromptInput.setTurboDefaultPromptInput).toHaveBeenCalledTimes(0);
   });
 });
