@@ -18,6 +18,12 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: Install dependencies
+      run: npm install
+    - name: Build Next.js app
+      run: npm run build
+      env:
+        ARTBOT_STATUS_API: ${{ secrets.ARTBOT_STATUS_API }}
     - name: Run playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
