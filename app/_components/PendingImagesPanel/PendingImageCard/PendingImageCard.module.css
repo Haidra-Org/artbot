@@ -1,0 +1,77 @@
+/* PendingImageCard.module.css */
+
+.card {
+  border: 1px solid #ccc;
+  padding: 16px;
+  width: 500px;
+  margin: 16px auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cardTop {
+  display: flex;
+}
+
+.cardImage {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.placeholderImage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: monospace;
+  background-color: black;
+  background-size: auto;
+  background-repeat: repeat;
+  box-shadow: inset 0px 0px 70px -3px rgba(0, 0, 0, 0.8);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  gap: 2px;
+  justify-content: flex-start;
+  margin-left: 16px;
+}
+
+.cardContent p {
+  margin: 4px 0;
+}
+
+.cardProgress {
+  margin-top: 16px;
+}
+
+.progressBar {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 8px;
+  width: 100%;
+}
+
+.progressBarFill {
+  background-color: #3b82f6;
+  /* Blue color */
+  height: 100%;
+  width: 0;
+  transition: width 0.5s ease-in-out;
+}
+
+.progressText {
+  font-size: 12px;
+  text-align: right;
+  margin: 8px 0 0;
+  /* font-weight: bold; */
+}
