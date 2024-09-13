@@ -228,21 +228,36 @@ export default function PendingImagesPanel({
       >
         <PendingImageCard
           model="model"
-          steps={1}
+          steps={24}
           sampler="sampler"
-          progress={1}
+          progress={0}
+          imagesCompleted={0}
+          imagesRequested={10}
+          status="Requested"
+          timestamp={new Date()}
+          onClose={() => {}}
         />
         <PendingImageCard
           model="model"
-          steps={1}
+          steps={24}
           sampler="sampler"
-          progress={1}
+          progress={0}
+          imagesCompleted={0}
+          imagesRequested={10}
+          status="Requested"
+          timestamp={new Date()}
+          onClose={() => {}}
         />
         <PendingImageCard
           model="model"
-          steps={1}
+          steps={24}
           sampler="sampler"
-          progress={1}
+          progress={0}
+          imagesCompleted={0}
+          imagesRequested={10}
+          status="Requested"
+          timestamp={new Date()}
+          onClose={() => {}}
         />
         {/* <PhotoAlbum
           layout="masonry"
