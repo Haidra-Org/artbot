@@ -6,7 +6,7 @@
     "build": "node generateBuildId.js && next build",
     "dev": "next dev",
     "lint": "next lint",
-    "postbuild": "cp -R public .next/standalone && cp -R .next/static .next/standalone/.next && cp ecosystem.config.js .next/standalone",
+    "postbuild": "cp -R public .next/standalone && cp -R .next/static .next/standalone/.next && cp ecosystem.config.js .next/standalone && cp .env .next/standalone",
     "prepare": "husky",
     "prettier": "prettier --write \"app/**/*.{js,jsx,ts,tsx}\"",
     "prod:serve": "pm2 stop artbot && pm2 delete artbot && pm2 start ecosystem.config.js --env production --only artbot && pm2 save",
@@ -43,6 +43,7 @@
     "clsx": "2.1.1",
     "dexie": "4.0.8",
     "dirty-json": "0.9.2",
+    "dotenv": "16.4.5",
     "embla-carousel-react": "8.2.0",
     "file-saver": "2.0.5",
     "gray-matter": "4.0.3",
@@ -70,6 +71,8 @@
     "statery": "0.7.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.0.1",
     "@types/clone-deep": "4.0.4",
     "@types/file-saver": "2.0.7",
     "@types/jest": "29.5.12",
@@ -83,6 +86,7 @@
     "eslint-config-next": "14.2.7",
     "eslint-config-prettier": "9.1.0",
     "husky": "9.1.5",
+    "identity-obj-proxy": "3.0.0",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
     "lint-staged": "15.2.9",

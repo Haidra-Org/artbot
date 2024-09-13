@@ -18,6 +18,8 @@ jobs:
         fetch-depth: 0
     - name: Run playbook
       uses: dawidd6/action-ansible-playbook@v2
+      env:
+        ARTBOT_STATUS_API: ${{ secrets.ARTBOT_STATUS_API }}
       with:
         # Required, playbook filepath
         playbook: ansible/artbot_update.yml
