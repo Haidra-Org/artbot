@@ -11,8 +11,6 @@ jobs:
   build-n-deploy:
     name: Artbot new release
     runs-on: ubuntu-latest
-    env:
-      ARTBOT_STATUS_API: ${{ secrets.ARTBOT_STATUS_API }}
     steps:
     - name: "✔️ Checkout"
       uses: actions/checkout@v3
@@ -22,7 +20,7 @@ jobs:
       uses: dawidd6/action-ansible-playbook@v2
       with:
         # Required, playbook filepath
-        playbook: ansible/artbot_update.yml
+        playbook: ansible/artbot_update.yml -e artbot_status_api="${{ secrets.ARTBOT_STATUS_API }}"
         # Optional, directory where playbooks live
         directory: ./
         # Optional, SSH private key
