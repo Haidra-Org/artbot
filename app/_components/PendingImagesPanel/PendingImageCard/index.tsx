@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './PendingImageCard.module.css';
 import { appBasepath } from '@/app/_utils/browserUtils';
 import Section from '../../Section';
-import { IconX } from '@tabler/icons-react'; // Import the Tabler Icon
+import { IconPhotoDown, IconX } from '@tabler/icons-react'; // Import the Tabler Icon
 
 interface CardProps {
   model: string;
@@ -30,12 +30,9 @@ const PendingImageCard: React.FC<CardProps> = ({
   const formattedTimestamp = timestamp.toLocaleString();
 
   return (
-    <Section className={styles.card}>
+    <Section>
       {/* Header with Close Button and Image Count */}
       <div className={styles.cardHeader}>
-        <div className={styles.statusText}>
-          <strong>Status:</strong> {status}
-        </div>
         <button className={styles.closeButton} onClick={onClose}>
           <IconX size={18} />
         </button>
@@ -50,14 +47,23 @@ const PendingImageCard: React.FC<CardProps> = ({
           ></div>
         </div>
         <div className={styles.cardContent}>
-          <div>
-            <strong>Model:</strong> {model}
+          <div className={styles.cardImageDetails}>
+            <div>
+              <strong>Model:</strong> {model}
+            </div>
+            <div>
+              <strong>Sampler:</strong> {sampler}
+            </div>
+            <div>
+              <strong>Steps:</strong> {steps}
+            </div>
           </div>
-          <div>
-            <strong>Sampler:</strong> {sampler}
-          </div>
-          <div>
-            <strong>Steps:</strong> {steps}
+
+          <div className={styles.cardImageDetails}>
+            <div className={styles.statusText}>
+              <strong>Status:</strong> {status}
+            </div>
+            <div className={styles.timestampText}>{formattedTimestamp}</div>
           </div>
         </div>
       </div>
@@ -65,13 +71,8 @@ const PendingImageCard: React.FC<CardProps> = ({
       {/* Status and Timestamp */}
       <div className={styles.cardStatus}>
         <div className={styles.imagesCount}>
+          <IconPhotoDown size={20} stroke={1.5} />
           {imagesCompleted} / {imagesRequested}
-        </div>
-        <div className={styles.timestampText}>
-          {status === 'Done' || status === 'Error'
-            ? 'Completed: '
-            : 'Requested: '}
-          {formattedTimestamp}
         </div>
       </div>
 

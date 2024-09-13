@@ -1,22 +1,17 @@
 /* PendingImageCard.module.css */
 
-.card {
-  position: relative;
-  border: 1px solid #ccc;
-  padding: 16px;
-  width: 500px;
-  margin: 16px auto;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
 .cardHeader {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 8px;
 }
 
 .imagesCount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-direction: row;
   font-size: 14px;
   font-weight: bold;
 }
@@ -65,9 +60,16 @@
   display: flex;
   flex-direction: column;
   font-size: 14px;
+  justify-content: space-between;
+  margin-left: 16px;
+}
+
+.cardImageDetails {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
   gap: 2px;
   justify-content: flex-start;
-  margin-left: 16px;
 }
 
 .cardStatus {
@@ -78,12 +80,11 @@
 }
 
 .statusText {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .timestampText {
-  font-style: italic;
-  color: #666;
+  font-size: 12px;
 }
 
 .cardProgress {
