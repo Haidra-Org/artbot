@@ -6,7 +6,7 @@
     "build": "node generateBuildId.js && next build",
     "dev": "next dev",
     "lint": "next lint",
-    "postbuild": "cp -R public .next/standalone && cp -R .next/static .next/standalone/.next && cp ecosystem.config.js .next/standalone",
+    "postbuild": "cp -R public .next/standalone && cp -R .next/static .next/standalone/.next && cp ecosystem.config.js .next/standalone && cp .env .next/standalone",
     "prepare": "husky",
     "prettier": "prettier --write \"app/**/*.{js,jsx,ts,tsx}\"",
     "prod:serve": "pm2 stop artbot && pm2 delete artbot && pm2 start ecosystem.config.js --env production --only artbot && pm2 save",
