@@ -1,46 +1,47 @@
 /* eslint-disable @next/next/no-img-element */
-'use client'
+'use client';
 
-import PhotoAlbum from 'react-photo-album'
-import { useStore } from 'statery'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import NiceModal from '@ebay/nice-modal-react'
+import PhotoAlbum from 'react-photo-album';
+import { useStore } from 'statery';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import NiceModal from '@ebay/nice-modal-react';
 import {
   IconPhotoBolt,
   IconSortAscending,
   IconSortDescending
-} from '@tabler/icons-react'
+} from '@tabler/icons-react';
 
-import { fetchCompletedJobsByArtbotIdsFromDexie } from '../../_db/hordeJobs'
-import { JobStatus } from '../../_types/ArtbotTypes'
-import { PendingImagesStore } from '../../_stores/PendingImagesStore'
-import ImageThumbnail from '../ImageThumbnail'
-import PendingImageOverlay from '../PendingImageOverlay'
-import ImageView from '../ImageView'
-import Section from '../Section'
-import Button from '../Button'
-import PendingImageView from '../ImageView_Pending'
-import PendingImagePanelStats from '../PendingImagePanelStats'
-import FilterButton from './PendingImagesPanel_FilterButton'
-import ClearButton from './PendingImagesPanel_ClearButton'
-import { appBasepath } from '@/app/_utils/browserUtils'
+import { fetchCompletedJobsByArtbotIdsFromDexie } from '../../_db/hordeJobs';
+import { JobStatus } from '../../_types/ArtbotTypes';
+import { PendingImagesStore } from '../../_stores/PendingImagesStore';
+import ImageThumbnail from '../ImageThumbnail';
+import PendingImageOverlay from '../PendingImageOverlay';
+import ImageView from '../ImageView';
+import Section from '../Section';
+import Button from '../Button';
+import PendingImageView from '../ImageView_Pending';
+import PendingImagePanelStats from '../PendingImagePanelStats';
+import FilterButton from './PendingImagesPanel_FilterButton';
+import ClearButton from './PendingImagesPanel_ClearButton';
+import { appBasepath } from '@/app/_utils/browserUtils';
+import PendingImageCard from './PendingImageCard';
 
 interface PendingImagesPanelProps {
-  scrollContainer?: boolean
-  showBorder?: boolean
-  showTitle?: boolean
+  scrollContainer?: boolean;
+  showBorder?: boolean;
+  showTitle?: boolean;
 }
 
 interface PhotoData {
-  artbot_id: string
-  image_id: string
-  key: string
-  src: string
-  hordeStatus: JobStatus
-  image_count: number
-  error: boolean
-  width: number
-  height: number
+  artbot_id: string;
+  image_id: string;
+  key: string;
+  src: string;
+  hordeStatus: JobStatus;
+  image_count: number;
+  error: boolean;
+  width: number;
+  height: number;
 }
 
 export default function PendingImagesPanel({
@@ -48,33 +49,33 @@ export default function PendingImagesPanel({
   showBorder = true,
   showTitle = true
 }: PendingImagesPanelProps) {
-  const topDivRef = useRef(null)
-  const scrollableDivRef = useRef(null)
-  const [topOffset, setTopOffset] = useState(178)
-  const [minHeight, setMinHeight] = useState('100vh')
+  const topDivRef = useRef(null);
+  const scrollableDivRef = useRef(null);
+  const [topOffset, setTopOffset] = useState(178);
+  const [minHeight, setMinHeight] = useState('100vh');
 
-  const { pendingImages } = useStore(PendingImagesStore)
-  const [images, setImages] = useState<PhotoData[]>([])
-  const [filter, setFilter] = useState('all')
-  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc')
+  const { pendingImages } = useStore(PendingImagesStore);
+  const [images, setImages] = useState<PhotoData[]>([]);
+  const [filter, setFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'asc' | 'desc'>('desc');
 
   const fetchImages = useCallback(async () => {
     // Fetch the completed jobs data
-    const artbotIds = pendingImages.map((image) => image.artbot_id)
-    const data = await fetchCompletedJobsByArtbotIdsFromDexie(artbotIds)
+    const artbotIds = pendingImages.map((image) => image.artbot_id);
+    const data = await fetchCompletedJobsByArtbotIdsFromDexie(artbotIds);
 
     // Create a lookup object for completed jobs by artbot_id
     const completedJobsById = data.reduce(
       (acc, image) => {
-        acc[image.artbot_id] = image
-        return acc
+        acc[image.artbot_id] = image;
+        return acc;
       },
       {} as Record<string, (typeof data)[0]>
-    )
+    );
 
     // Iterate through the pendingImages array
     const imagesArray = pendingImages.map((pendingImage, idx) => {
-      const completedImage = completedJobsById[pendingImage.artbot_id]
+      const completedImage = completedJobsById[pendingImage.artbot_id];
       if (completedImage) {
         return {
           artbot_id: completedImage.artbot_id,
@@ -87,7 +88,7 @@ export default function PendingImagesPanel({
           hordeStatus: completedImage.status,
           width: completedImage.width,
           height: completedImage.height
-        }
+        };
       } else {
         return {
           artbot_id: pendingImage.artbot_id,
@@ -99,81 +100,81 @@ export default function PendingImagesPanel({
           hordeStatus: pendingImage.status,
           width: pendingImage.width,
           height: pendingImage.height
-        }
+        };
       }
-    }) as PhotoData[]
+    }) as PhotoData[];
 
     if (sortBy === 'asc') {
-      imagesArray.reverse()
+      imagesArray.reverse();
     }
 
     // Update the state with the resulting array
-    setImages(imagesArray)
-  }, [pendingImages, sortBy])
+    setImages(imagesArray);
+  }, [pendingImages, sortBy]);
 
   useEffect(() => {
-    fetchImages()
-  }, [fetchImages, pendingImages])
+    fetchImages();
+  }, [fetchImages, pendingImages]);
 
   useEffect(() => {
     setImages((prevImages) => {
-      const sortedImages = [...prevImages]
+      const sortedImages = [...prevImages];
       if (sortBy === 'asc') {
-        sortedImages.reverse()
+        sortedImages.reverse();
       }
-      return sortedImages
-    })
-  }, [sortBy])
+      return sortedImages;
+    });
+  }, [sortBy]);
 
   useEffect(() => {
     const updateMinHeight = () => {
       if (typeof window !== 'undefined') {
-        setMinHeight(`${window.innerHeight - 92}px`)
+        setMinHeight(`${window.innerHeight - 92}px`);
       }
-    }
+    };
 
-    updateMinHeight()
+    updateMinHeight();
 
-    window.addEventListener('resize', updateMinHeight)
+    window.addEventListener('resize', updateMinHeight);
 
-    return () => window.removeEventListener('resize', updateMinHeight)
-  }, [])
+    return () => window.removeEventListener('resize', updateMinHeight);
+  }, []);
 
   const updateTopOffset = () => {
     if (topDivRef.current) {
       // @ts-expect-error Au contraire, it does!
-      const topDivHeight = topDivRef.current.offsetHeight
-      setTopOffset(topDivHeight + 8) // Adding a margin if needed
+      const topDivHeight = topDivRef.current.offsetHeight;
+      setTopOffset(topDivHeight + 8); // Adding a margin if needed
     }
-  }
+  };
 
   useEffect(() => {
-    updateTopOffset()
-    window.addEventListener('resize', updateTopOffset)
+    updateTopOffset();
+    window.addEventListener('resize', updateTopOffset);
     return () => {
-      window.removeEventListener('resize', updateTopOffset)
-    }
-  }, [])
+      window.removeEventListener('resize', updateTopOffset);
+    };
+  }, []);
 
   const filteredImages = images.filter((image) => {
-    const { hordeStatus } = image
+    const { hordeStatus } = image;
     if (filter === 'all') {
-      return true
+      return true;
     } else if (filter === 'done') {
-      return hordeStatus === JobStatus.Done
+      return hordeStatus === JobStatus.Done;
     } else if (filter === 'processing') {
-      return hordeStatus === JobStatus.Processing
+      return hordeStatus === JobStatus.Processing;
     } else if (filter === 'error') {
-      return hordeStatus === JobStatus.Error
+      return hordeStatus === JobStatus.Error;
     } else if (filter === 'pending') {
       return (
         hordeStatus === JobStatus.Requested ||
         hordeStatus === JobStatus.Waiting ||
         hordeStatus === JobStatus.Queued
-      )
+      );
     }
-    return false
-  })
+    return false;
+  });
 
   return (
     <div
@@ -195,7 +196,7 @@ export default function PendingImagesPanel({
           <ClearButton />
           <Button
             onClick={() => {
-              setSortBy(sortBy === 'asc' ? 'desc' : 'asc')
+              setSortBy(sortBy === 'asc' ? 'desc' : 'asc');
             }}
             style={{ height: '38px', width: '38px' }}
           >
@@ -225,7 +226,25 @@ export default function PendingImagesPanel({
         ref={scrollableDivRef}
         style={{ top: `${topOffset + 152}px` }}
       >
-        <PhotoAlbum
+        <PendingImageCard
+          model="model"
+          steps={1}
+          sampler="sampler"
+          progress={1}
+        />
+        <PendingImageCard
+          model="model"
+          steps={1}
+          sampler="sampler"
+          progress={1}
+        />
+        <PendingImageCard
+          model="model"
+          steps={1}
+          sampler="sampler"
+          progress={1}
+        />
+        {/* <PhotoAlbum
           layout="masonry"
           spacing={4}
           photos={filteredImages}
@@ -327,8 +346,8 @@ export default function PendingImagesPanel({
             if (containerWidth <= 1600) return 4
             return 5
           }}
-        />
+        /> */}
       </div>
     </div>
-  )
+  );
 }
