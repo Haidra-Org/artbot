@@ -1,33 +1,53 @@
 import React from 'react';
 import styles from './PendingImageCard.module.css';
-import tileImage from '../../../public/tile.png';
 import { appBasepath } from '@/app/_utils/browserUtils';
 import Section from '../../Section';
+import { IconX } from '@tabler/icons-react'; // Import the Tabler Icon
 
 interface CardProps {
   model: string;
   steps: number;
   sampler: string;
   progress: number; // Progress value between 0 and 100
+  imagesCompleted: number;
+  imagesRequested: number;
+  status: 'Waiting' | 'Requested' | 'Processing' | 'Done' | 'Error';
+  timestamp: Date;
+  onClose: () => void; // Function to handle the close action
 }
 
 const PendingImageCard: React.FC<CardProps> = ({
   model,
   steps,
   sampler,
-  progress
+  progress,
+  imagesCompleted,
+  imagesRequested,
+  status,
+  timestamp,
+  onClose
 }) => {
+  const formattedTimestamp = timestamp.toLocaleString();
+
   return (
-    <Section>
+    <Section className={styles.card}>
+      {/* Header with Close Button and Image Count */}
+      <div className={styles.cardHeader}>
+        <div className={styles.statusText}>
+          <strong>Status:</strong> {status}
+        </div>
+        <button className={styles.closeButton} onClick={onClose}>
+          <IconX size={18} />
+        </button>
+      </div>
+
       <div className={styles.cardTop}>
         <div className={styles.cardImage}>
           {/* Placeholder Image Div */}
           <div
             className={styles.placeholderImage}
             style={{ backgroundImage: `url(${appBasepath()}/tile.png)` }}
-          >
-            {/* Optional content inside the placeholder */}
-          </div>
+          ></div>
         </div>
         <div className={styles.cardContent}>
           <div>
@@ -41,6 +61,21 @@ const PendingImageCard: React.FC<CardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Status and Timestamp */}
+      <div className={styles.cardStatus}>
+        <div className={styles.imagesCount}>
+          {imagesCompleted} / {imagesRequested}
+        </div>
+        <div className={styles.timestampText}>
+          {status === 'Done' || status === 'Error'
+            ? 'Completed: '
+            : 'Requested: '}
+          {formattedTimestamp}
+        </div>
+      </div>
+
+      {/* Progress Bar */}
       <div className={styles.cardProgress}>
         <div className={styles.progressBar}>
           <div
