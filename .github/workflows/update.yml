@@ -11,6 +11,8 @@ jobs:
   build-n-deploy:
     name: Artbot new release
     runs-on: ubuntu-latest
+    env:
+      ARTBOT_STATUS_API: ${{ secrets.ARTBOT_STATUS_API }}
     steps:
     - name: "✔️ Checkout"
       uses: actions/checkout@v3
@@ -18,8 +20,6 @@ jobs:
         fetch-depth: 0
     - name: Run playbook
       uses: dawidd6/action-ansible-playbook@v2
-      env:
-        ARTBOT_STATUS_API: ${{ secrets.ARTBOT_STATUS_API }}
       with:
         # Required, playbook filepath
         playbook: ansible/artbot_update.yml
