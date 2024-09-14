@@ -233,7 +233,7 @@ export default function PendingImagesPanel({
           progress={0}
           imagesCompleted={0}
           imagesRequested={10}
-          status="Requested"
+          status={JobStatus.Requested}
           timestamp={new Date()}
           onClose={() => {}}
         />
@@ -244,7 +244,8 @@ export default function PendingImagesPanel({
           progress={0}
           imagesCompleted={0}
           imagesRequested={10}
-          status="Requested"
+          status={JobStatus.Waiting}
+          eta={278}
           timestamp={new Date()}
           onClose={() => {}}
         />
@@ -255,7 +256,19 @@ export default function PendingImagesPanel({
           progress={0}
           imagesCompleted={0}
           imagesRequested={10}
-          status="Requested"
+          status={JobStatus.Queued}
+          eta={57}
+          timestamp={new Date()}
+          onClose={() => {}}
+        />
+        <PendingImageCard
+          model="model"
+          steps={24}
+          sampler="sampler"
+          progress={0}
+          imagesCompleted={0}
+          imagesRequested={10}
+          status={JobStatus.Error}
           timestamp={new Date()}
           onClose={() => {}}
         />
