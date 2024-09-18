@@ -8,7 +8,7 @@ import {
   IconPhotoExclamation,
   IconX
 } from '@tabler/icons-react'; // Import the Tabler Icon
-import PendingImageOverlayV2 from '../PendingImageOverlayV2';
+import PendingImageOverlay from '../PendingImageOverlay';
 import { formatPendingPercentage } from '@/app/_utils/numberUtils';
 import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob';
 import { useImageRequestDetails } from '@/app/_hooks/useImageRequestDetails';
@@ -168,7 +168,7 @@ const PendingImageCard: React.FC<CardProps> = ({ pendingImage }) => {
               }
             }}
           >
-            <PendingImageOverlayV2 status={jobDetails.status} />
+            <PendingImageOverlay status={jobDetails.status} />
             <div
               className={styles.placeholderImage}
               style={{

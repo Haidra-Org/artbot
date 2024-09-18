@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconAlertTriangle, IconPhotoUp } from '@tabler/icons-react';
 
-import styles from './PendingImageOverlayV2.module.css';
+import styles from './PendingImageOverlay.module.css';
 import { JobStatus } from '@/app/_types/ArtbotTypes';
 import ParticleAnimation from '../../ParticleAnimation';
 
@@ -9,7 +9,7 @@ interface PendingImageOverlayProps {
   status: JobStatus;
 }
 
-const PendingImageOverlayV2: React.FC<PendingImageOverlayProps> = ({
+const PendingImageOverlay: React.FC<PendingImageOverlayProps> = ({
   status
 }) => {
   return (
@@ -42,4 +42,4 @@ const PendingImageOverlayV2: React.FC<PendingImageOverlayProps> = ({
   );
 };
 
-export default React.memo(PendingImageOverlayV2);
+export default React.memo(PendingImageOverlay);
