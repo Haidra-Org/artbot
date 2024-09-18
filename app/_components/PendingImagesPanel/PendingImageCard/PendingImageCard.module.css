@@ -33,6 +33,7 @@
 }
 
 .cardImage {
+  cursor: pointer;
   position: relative;
   width: 120px;
   height: 120px;
@@ -54,7 +55,7 @@
 .cardContent {
   display: flex;
   flex-direction: column;
-  font-size: 14px;
+  font-size: 12px;
   justify-content: space-between;
   margin-left: 16px;
 }
@@ -62,7 +63,7 @@
 .cardImageDetails {
   display: flex;
   flex-direction: column;
-  font-size: 14px;
+  font-size: 12px;
   gap: 2px;
   justify-content: flex-start;
 }
@@ -95,7 +96,7 @@
 }
 
 .progressBarFill {
-  background-color: #3b82f6;
+  background-color: #1d4d74;
   height: 100%;
   width: 0;
   transition: width 0.5s ease-in-out;
