@@ -1,20 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
-'use client'
+'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { checkImageExistsInDexie } from '../_db/ImageFiles'
-import { bufferToBlob } from '../_utils/imageUtils'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { checkImageExistsInDexie } from '../_db/ImageFiles';
+import { bufferToBlob } from '../_utils/imageUtils';
 
 const defaultImage =
-  'data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw=='
+  'data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw==';
 
 interface ImageThumbnailV2Props {
-  alt: string
-  artbot_id?: string
-  image_id?: string
-  height: number
-  width: number
-  onAspectRatioCalculated?: (aspectRatio: number) => void
+  alt: string;
+  artbot_id?: string;
+  image_id?: string;
+  height: number;
+  width: number;
+  onAspectRatioCalculated?: (aspectRatio: number) => void;
+  square?: boolean; // Add this new prop
 }
 
 const ImageThumbnailV2 = React.memo(
@@ -24,10 +25,11 @@ const ImageThumbnailV2 = React.memo(
     image_id,
     height,
     width,
-    onAspectRatioCalculated
+    onAspectRatioCalculated,
+    square = false // Add default value
   }: ImageThumbnailV2Props) => {
-    const [imageUrl, setImageUrl] = useState(defaultImage)
-    const imgRef = useRef<HTMLImageElement>(null)
+    const [imageUrl, setImageUrl] = useState(defaultImage);
+    const imgRef = useRef<HTMLImageElement>(null);
 
     const calculateAspectRatio = useCallback(() => {
       if (
@@ -36,19 +38,19 @@ const ImageThumbnailV2 = React.memo(
         imgRef.current.naturalHeight
       ) {
         const aspectRatio =
-          imgRef.current.naturalWidth / imgRef.current.naturalHeight
-        onAspectRatioCalculated?.(aspectRatio)
+          imgRef.current.naturalWidth / imgRef.current.naturalHeight;
+        onAspectRatioCalculated?.(aspectRatio);
       }
-    }, [onAspectRatioCalculated])
+    }, [onAspectRatioCalculated]);
 
     useEffect(() => {
-      let isMounted = true
+      let isMounted = true;
 
       const fetchImage = async () => {
-        let dexieImage
+        let dexieImage;
 
         if (image_id) {
-          dexieImage = await checkImageExistsInDexie({ image_id })
+          dexieImage = await checkImageExistsInDexie({ image_id });
         }
 
         if (
@@ -58,63 +60,64 @@ const ImageThumbnailV2 = React.memo(
           dexieImage.imageBlobBuffer &&
           isMounted
         ) {
-          const blob = bufferToBlob(dexieImage.imageBlobBuffer)
-          const url = URL.createObjectURL(blob)
-          setImageUrl(url)
+          const blob = bufferToBlob(dexieImage.imageBlobBuffer);
+          const url = URL.createObjectURL(blob);
+          setImageUrl(url);
         }
-      }
+      };
 
-      fetchImage()
+      fetchImage();
 
       return () => {
-        isMounted = false
+        isMounted = false;
 
         if (imageUrl !== defaultImage) {
-          URL.revokeObjectURL(imageUrl)
+          URL.revokeObjectURL(imageUrl);
         }
-      }
+      };
       // imageUrl in this dep array causes issue with URL.createObjectURL re-rendering thousands of times.
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [artbot_id, image_id])
+    }, [artbot_id, image_id]);
 
     useEffect(() => {
       if (imgRef.current) {
         if (imgRef.current.complete) {
-          calculateAspectRatio()
+          calculateAspectRatio();
         } else {
-          imgRef.current.addEventListener('load', calculateAspectRatio)
+          imgRef.current.addEventListener('load', calculateAspectRatio);
         }
       }
 
       return () => {
         // TODO: FIXME.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        imgRef.current?.removeEventListener('load', calculateAspectRatio)
-      }
-    }, [calculateAspectRatio])
+        imgRef.current?.removeEventListener('load', calculateAspectRatio);
+      };
+    }, [calculateAspectRatio]);
 
     return (
       <img
         ref={imgRef}
-        className="object-cover w-full h-full"
+        className={`object-cover w-full h-full ${square ? 'aspect-square' : ''}`}
         alt={alt}
         src={imageUrl}
         width={width}
         height={height}
         style={{
           maxHeight: `${height}px`,
-          maxWidth: `${width}px`
+          maxWidth: `${width}px`,
+          objectFit: square ? 'cover' : 'contain'
         }}
       />
-    )
+    );
   },
   (prevProps, nextProps) => {
     return (
       prevProps.artbot_id === nextProps.artbot_id &&
       prevProps.image_id === nextProps.image_id
-    )
+    );
   }
-)
+);
 
-ImageThumbnailV2.displayName = 'ImageThumbnailV2'
-export default ImageThumbnailV2
+ImageThumbnailV2.displayName = 'ImageThumbnailV2';
+export default ImageThumbnailV2;

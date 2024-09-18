@@ -1,10 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import PhotoAlbum from 'react-photo-album';
 import { useStore } from 'statery';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import NiceModal from '@ebay/nice-modal-react';
 import {
   IconPhotoBolt,
   IconSortAscending,
@@ -14,16 +12,11 @@ import {
 import { fetchCompletedJobsByArtbotIdsFromDexie } from '../../_db/hordeJobs';
 import { JobStatus } from '../../_types/ArtbotTypes';
 import { PendingImagesStore } from '../../_stores/PendingImagesStore';
-import ImageThumbnail from '../ImageThumbnail';
-import PendingImageOverlay from '../PendingImageOverlay';
-import ImageView from '../ImageView';
 import Section from '../Section';
 import Button from '../Button';
-import PendingImageView from '../ImageView_Pending';
 import PendingImagePanelStats from '../PendingImagePanelStats';
 import FilterButton from './PendingImagesPanel_FilterButton';
 import ClearButton from './PendingImagesPanel_ClearButton';
-import { appBasepath } from '@/app/_utils/browserUtils';
 import PendingImageCard from './PendingImageCard';
 
 interface PendingImagesPanelProps {
@@ -156,25 +149,31 @@ export default function PendingImagesPanel({
     };
   }, []);
 
-  const filteredImages = images.filter((image) => {
-    const { hordeStatus } = image;
-    if (filter === 'all') {
-      return true;
-    } else if (filter === 'done') {
-      return hordeStatus === JobStatus.Done;
-    } else if (filter === 'processing') {
-      return hordeStatus === JobStatus.Processing;
-    } else if (filter === 'error') {
-      return hordeStatus === JobStatus.Error;
-    } else if (filter === 'pending') {
-      return (
-        hordeStatus === JobStatus.Requested ||
-        hordeStatus === JobStatus.Waiting ||
-        hordeStatus === JobStatus.Queued
+  const filteredImages = images
+    .filter((image) => {
+      const { hordeStatus } = image;
+      if (filter === 'all') {
+        return true;
+      } else if (filter === 'done') {
+        return hordeStatus === JobStatus.Done;
+      } else if (filter === 'processing') {
+        return hordeStatus === JobStatus.Processing;
+      } else if (filter === 'error') {
+        return hordeStatus === JobStatus.Error;
+      } else if (filter === 'pending') {
+        return (
+          hordeStatus === JobStatus.Requested ||
+          hordeStatus === JobStatus.Waiting ||
+          hordeStatus === JobStatus.Queued
+        );
+      }
+      return false;
+    })
+    .map((image) => {
+      return pendingImages.find(
+        (pendingImage) => pendingImage.artbot_id === image.artbot_id
       );
-    }
-    return false;
-  });
+    });
 
   return (
     <div
@@ -226,155 +225,16 @@ export default function PendingImagesPanel({
         ref={scrollableDivRef}
         style={{ top: `${topOffset + 152}px` }}
       >
-        <PendingImageCard
-          model="model"
-          steps={24}
-          sampler="sampler"
-          progress={0}
-          imagesCompleted={0}
-          imagesRequested={10}
-          status={JobStatus.Requested}
-          timestamp={new Date()}
-          onClose={() => {}}
-        />
-        <PendingImageCard
-          model="model"
-          steps={24}
-          sampler="sampler"
-          progress={0}
-          imagesCompleted={0}
-          imagesRequested={10}
-          status={JobStatus.Waiting}
-          eta={278}
-          timestamp={new Date()}
-          onClose={() => {}}
-        />
-        <PendingImageCard
-          model="model"
-          steps={24}
-          sampler="sampler"
-          progress={0}
-          imagesCompleted={0}
-          imagesRequested={10}
-          status={JobStatus.Queued}
-          eta={57}
-          timestamp={new Date()}
-          onClose={() => {}}
-        />
-        <PendingImageCard
-          model="model"
-          steps={24}
-          sampler="sampler"
-          progress={0}
-          imagesCompleted={0}
-          imagesRequested={10}
-          status={JobStatus.Error}
-          timestamp={new Date()}
-          onClose={() => {}}
-        />
-        {/* <PhotoAlbum
-          layout="masonry"
-          spacing={4}
-          photos={filteredImages}
-          renderPhoto={(renderPhotoProps) => {
-            const { layout, layoutOptions, photo, imageProps } =
-              renderPhotoProps || {}
-            const { alt, ...restImageProps } = imageProps || {}
+        {filteredImages.map((pendingImage) => {
+          if (!pendingImage) return null;
 
-
-
-            // @ts-expect-error Deleting this due to using custom image component.
-            delete restImageProps.src
-
-            if (photo.hordeStatus !== JobStatus.Done) {
-              return (
-                <div
-                  key={photo.image_id}
-                  onClick={() => {
-                    NiceModal.show('modal', {
-                      children: (
-                        <PendingImageView artbot_id={photo.artbot_id} />
-                      ),
-                      modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
-                    })
-                  }}
-                  style={{
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    height: layout.height,
-                    justifyContent: 'center',
-                    marginBottom: layoutOptions.spacing,
-                    position: 'relative',
-                    width: layout.width,
-                    backgroundImage: `url(${appBasepath()}/tile.png)`,
-                    backgroundSize: 'auto',
-                    backgroundRepeat: 'repeat',
-                    boxShadow: 'inset 0px 0px 70px -3px rgba(0,0,0,0.8)'
-                  }}
-                >
-                  <PendingImageOverlay
-                    artbot_id={photo.artbot_id}
-                    status={photo.hordeStatus}
-                  />
-                </div>
-              )
-            } else {
-              return (
-                <div
-                  key={photo.image_id}
-                  onClick={() => {
-                    // TODO: Better way to handle / triage error states.)
-                    if (photo.error) {
-                      NiceModal.show('modal', {
-                        children: (
-                          <PendingImageView artbot_id={photo.artbot_id} />
-                        ),
-                        modalClassName: 'w-full md:min-w-[640px] max-w-[768px]'
-                      })
-                    } else {
-                      NiceModal.show('modal', {
-                        children: (
-                          <ImageView
-                            artbot_id={photo.artbot_id}
-                            showPendingPanel={true}
-                          />
-                        )
-                      })
-                    }
-                  }}
-                  style={{
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    height: layout.height,
-                    justifyContent: 'center',
-                    marginBottom: layoutOptions.spacing,
-                    position: 'relative',
-                    width: layout.width
-                  }}
-                >
-                  <ImageThumbnail alt={alt} artbot_id={photo.artbot_id} />
-                  <PendingImageOverlay
-                    artbot_id={photo.artbot_id}
-                    status={photo.hordeStatus}
-                  />
-                </div>
-              )
-            }
-          }}
-          targetRowHeight={256}
-          rowConstraints={{
-            singleRowMaxHeight: 256
-          }}
-          columns={(containerWidth) => {
-            if (containerWidth <= 512) return 1
-            if (containerWidth <= 800) return 2
-            if (containerWidth <= 1200) return 3
-            if (containerWidth <= 1600) return 4
-            return 5
-          }}
-        /> */}
+          return (
+            <PendingImageCard
+              key={pendingImage.artbot_id}
+              pendingImage={pendingImage}
+            />
+          );
+        })}
       </div>
     </div>
   );
