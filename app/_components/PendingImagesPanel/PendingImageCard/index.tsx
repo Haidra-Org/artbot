@@ -177,8 +177,9 @@ const PendingImageCard: React.FC<CardProps> = ({ pendingImage }) => {
             >
               {jobDetails.status === JobStatus.Done && (
                 <ImageThumbnail
-                  artbot_id={pendingImage.artbot_id}
                   alt="Pending Image"
+                  artbot_id={pendingImage.artbot_id}
+                  className="rounded-[4px]"
                   square={true}
                 />
               )}

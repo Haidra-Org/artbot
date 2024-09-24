@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { checkImageExistsInDexie } from '../_db/ImageFiles';
 import { bufferToBlob } from '../_utils/imageUtils';
 import { ImageBlobBuffer } from '../_data-models/ImageFile_Dexie';
+import clsx from 'clsx';
 
 const defaultImage =
   'data:image/gif;base64,R0lGODdhAQABAJEAAAAAAB8fH////wAAACH5BAkAAAMALAAAAAABAAEAAAICTAEAOw==';
@@ -12,6 +13,7 @@ const defaultImage =
 interface ImageThumbnailProps {
   alt: string;
   artbot_id?: string;
+  className?: string;
   image_id?: string;
   square?: boolean;
 }
@@ -19,6 +21,7 @@ interface ImageThumbnailProps {
 const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
   alt,
   artbot_id,
+  className,
   image_id,
   square = false
 }) => {
@@ -63,7 +66,11 @@ const ImageThumbnail: React.FC<ImageThumbnailProps> = ({
     <img
       alt={alt}
       src={imageUrl}
-      className={`w-full h-full ${square ? 'object-scale-down' : 'object-contain'}`}
+      className={clsx(
+        'w-full h-full',
+        square ? 'object-scale-down' : 'object-contain',
+        className
+      )}
       style={{ aspectRatio: square ? '1 / 1' : 'auto' }}
     />
   );
