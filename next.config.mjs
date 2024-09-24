@@ -12,7 +12,21 @@ const withSerwist = withSerwistInit({
 
 const BASE_PATH = process.env.BASE_PATH || ''; // Should be '' or '/artbot'
 const DEXIE_DB = process.env.DEXIE_DB || 'ArtBot_beta_v2';
-const HORDE_API_HOST = process.env.HORDE_API_HOST || 'https://aihorde.net';
+let HORDE_API_HOST = process.env.HORDE_API_HOST || 'https://aihorde.net';
+
+/**
+ * Enable mock Horde API for testing API responses in local dev environment
+ */
+
+// const HORDE_MOCK_API_HOST = '';
+const HORDE_MOCK_API_HOST = 'http://localhost:3001';
+
+if (process.env.NODE_ENV === 'development') {
+  if (HORDE_MOCK_API_HOST) {
+    console.log('\n\nMOCK_API: using mock Horde API -', HORDE_MOCK_API_HOST);
+    HORDE_API_HOST = HORDE_MOCK_API_HOST;
+  }
+}
 
 const nextConfig = {
   basePath: BASE_PATH,
