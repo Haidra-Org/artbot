@@ -15,6 +15,8 @@ export const useApplyPreset = (
   const handleSelectPreset = useCallback(
     (option: string, presetSettings: StylePresetConfig) => {
       const updateInput: Partial<PromptInput> = {};
+      updateInput.loras = [];
+      updateInput.tis = [];
 
       Object.keys(presetSettings).forEach((key) => {
         if (key === 'prompt') return;
@@ -38,7 +40,6 @@ export const useApplyPreset = (
         }
 
         if (key === 'loras' && typeof presetSettings.loras !== 'undefined') {
-          updateInput.loras = [];
           presetSettings.loras.forEach((lora) => {
             let updateLora: SavedLora;
             if (lora.name === DEFAULT_TURBO_EULER_LORA.versionId) {
