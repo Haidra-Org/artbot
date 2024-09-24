@@ -49,6 +49,7 @@
   background-color: black;
   background-size: auto;
   background-repeat: repeat;
+  border-radius: 4px;
   box-shadow: inset 0px 0px 70px -3px rgba(0, 0, 0, 0.8);
 }
 
