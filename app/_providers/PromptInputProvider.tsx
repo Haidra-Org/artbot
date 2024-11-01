@@ -21,6 +21,10 @@ import { ImageParamsForHordeApi } from '../_data-models/ImageParamsForHordeApi';
 import { AppSettings } from '../_data-models/AppSettings';
 import { clientHeader } from '../_data-models/ClientHeader';
 import { AppConstants } from '../_data-models/AppConstants';
+import {
+  getUserInputFromDexie,
+  saveUserInputToDexie
+} from '../_db/appSettings';
 
 type PromptInputContextType = {
   input: PromptInput;
@@ -133,6 +137,9 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
     const jsonString = JSON.stringify(updatedInputState);
     debouncedUpdate(jsonString);
 
+    // Save to IndexedDB
+    saveUserInputToDexie(updatedInputState).catch(console.error);
+
     // Call kudos API
     fetchUpdatedKudos(updatedInputState);
 
@@ -142,10 +149,29 @@ export const PromptInputProvider: React.FC<PromptProviderProps> = ({
   const [input, setInput] = useReducer(inputReducer, new PromptInput());
 
   useEffect(() => {
+    const loadInitialState = async () => {
+      // First try to get from IndexedDB
+      const savedInput =
+        (await getUserInputFromDexie()) as unknown as PromptInput;
+
+      if (savedInput) {
+        setInput(savedInput);
+      } else {
+        // Fall back to session storage if no IndexedDB data
+        const retrievedString = sessionStorage.getItem('userInput');
+        if (retrievedString) {
+          const retrievedObject = JSON.parse(retrievedString);
+          setInput(retrievedObject);
+        }
+      }
+    };
+
     const retrievedString = sessionStorage.getItem('userInput');
     if (retrievedString) {
       const retrievedObject = JSON.parse(retrievedString);
       setInput(retrievedObject);
+    } else {
+      loadInitialState();
     }
   }, [inputUpdated]);
 
