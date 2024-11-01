@@ -1,50 +1,50 @@
-import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob'
-import { Embedding } from '../_data-models/Civitai'
-import PromptInput from '../_data-models/PromptInput'
+import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob';
+import { Embedding } from '../_data-models/Civitai';
+import PromptInput from '../_data-models/PromptInput';
 
-type AppSettingsTableKeys = 'favoriteModels' | 'imageSize'
+export type AppSettingsTableKeys = 'favoriteModels' | 'imageSize' | 'userInput';
 
 export type AppSettingsTable = {
-  id?: number
-  key: AppSettingsTableKeys
-  value: string[] | string | number | boolean
-}
+  id?: number;
+  key: AppSettingsTableKeys;
+  value: string[] | string | number | boolean | object;
+};
 
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
-export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW'
+export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW';
 
-export type CivitAiEnhancementType = 'LORA' | 'LoCon' | 'TextualInversion'
+export type CivitAiEnhancementType = 'LORA' | 'LoCon' | 'TextualInversion';
 
 export interface CivitAiSearchParams {
-  input?: string
-  page?: number
-  limit?: number
-  type: CivitAiEnhancementType
-  signal?: AbortSignal
-  url?: string
+  input?: string;
+  page?: number;
+  limit?: number;
+  type: CivitAiEnhancementType;
+  signal?: AbortSignal;
+  url?: string;
 }
 
 export interface FavoriteImage {
-  artbot_id: string
-  image_id: string
-  favorited: boolean
+  artbot_id: string;
+  image_id: string;
+  favorited: boolean;
 }
 
 export interface ImagesForGallery extends ArtBotHordeJob {
-  image_id: string
-  width: number
-  height: number
-  image_count: number
+  image_id: string;
+  width: number;
+  height: number;
+  image_count: number;
 }
 
-export type ImageEnhancementModulesModifier = 'lora' | 'ti'
+export type ImageEnhancementModulesModifier = 'lora' | 'ti';
 
 export interface ImageEnhancementModulesTable {
-  model_id: string // Indexed. Format: civitai_lora_[modelId] e.g., "civitai_lora_12345"
-  timestamp: number
-  modifier: ImageEnhancementModulesModifier
-  type: 'favorite' | 'recent'
-  model: Embedding
+  model_id: string; // Indexed. Format: civitai_lora_[modelId] e.g., "civitai_lora_12345"
+  timestamp: number;
+  modifier: ImageEnhancementModulesModifier;
+  type: 'favorite' | 'recent';
+  model: Embedding;
 }
 
 export type ImageErrors =
@@ -53,17 +53,17 @@ export type ImageErrors =
   | 'notfound'
   | 'nsfw'
   | 'specific'
-  | 'other'
+  | 'other';
 
 export interface ImageError {
-  type: ImageErrors
-  field?: string
-  message: string
+  type: ImageErrors;
+  field?: string;
+  message: string;
 }
 
 export interface ImageMetaData {
-  Comment?: string
-  Software?: string
+  Comment?: string;
+  Software?: string;
 }
 
 export type ImageOrientations =
@@ -73,10 +73,10 @@ export type ImageOrientations =
   | 'phone_bg_9x21'
   | 'ultrawide_21x9'
   | 'square'
-  | 'custom'
+  | 'custom';
 
 export interface ImageRequest extends PromptInput {
-  artbot_id: string
+  artbot_id: string;
 }
 
 export enum JobStatus {
@@ -99,34 +99,34 @@ export enum JobType {
 }
 
 export interface PromptsHistory {
-  id?: number
-  artbot_id: string
-  hash_id: string
-  timestamp: number
-  favorited: number // true === 1, false === 0
-  promptType: 'prompt' | 'negative' // indexed
-  prompt: string
-  promptWords: string[] // indexed
+  id?: number;
+  artbot_id: string;
+  hash_id: string;
+  timestamp: number;
+  favorited: number; // true === 1, false === 0
+  promptType: 'prompt' | 'negative'; // indexed
+  prompt: string;
+  promptWords: string[]; // indexed
 }
 
 export interface PromptsJobMap {
-  artbot_id: string
-  prompt_id: number
+  artbot_id: string;
+  prompt_id: number;
 }
 
 /**
  * Worker added to user's list of allowed or blocked workers
  */
 export interface SelectedUserWorker {
-  label: string
-  timestamp: string
-  value: string
+  label: string;
+  timestamp: string;
+  value: string;
 }
 
 export interface Workflow {
-  type: 'qr_code' | ''
-  position: WorkflowPosition
-  text: string
+  type: 'qr_code' | '';
+  position: WorkflowPosition;
+  text: string;
 }
 
 export type WorkflowPosition =
@@ -134,4 +134,4 @@ export type WorkflowPosition =
   | 'top left'
   | 'top right'
   | 'bottom left'
-  | 'bottom right'
+  | 'bottom right';
