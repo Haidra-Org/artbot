@@ -6,30 +6,13 @@ import { UserStore } from '../_stores/UserStore';
 import { clientHeader } from '../_data-models/ClientHeader';
 import { AppSettings } from '../_data-models/AppSettings';
 import { sleep } from '../_utils/sleep';
+import { ManageWorker } from '../_data-models/ManageWorker';
 
 export default function useMyWorkerDetails() {
   const store = useStore(UserStore) || {};
   const { userDetails = {} as HordeUser } = store;
   const { worker_ids = [] } = userDetails;
   const [workersDetails, setWorkersDetails] = useState<WorkerDetails[]>([]);
-
-  const getWorkerState = (worker: WorkerDetails) => {
-    if (worker.online && !worker.maintenance_mode) {
-      return 'active';
-    }
-
-    if (worker.online && worker.maintenance_mode) {
-      return 'paused';
-    }
-
-    if (worker.loading) {
-      return 'loading';
-    }
-
-    if (!worker.online) {
-      return 'offline';
-    }
-  };
 
   const fetchWorkerDetails = async (workerId: string) => {
     try {
@@ -95,7 +78,7 @@ export default function useMyWorkerDetails() {
       return;
     }
 
-    const workerState = getWorkerState(worker);
+    const workerState = ManageWorker.getWorkerState(worker);
 
     if (workerState === 'loading') {
       return;
@@ -146,6 +129,7 @@ export default function useMyWorkerDetails() {
   return {
     fetchAllWorkersDetails,
     handleWorkerChange,
-    workersDetails
+    workersDetails,
+    worker_ids
   };
 }

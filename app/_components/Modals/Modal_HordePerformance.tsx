@@ -1,42 +1,51 @@
-import { HordePerformance } from '@/app/_types/HordeTypes'
-import { useEffect, useState } from 'react'
+import useMyWorkerDetails from '@/app/_hooks/useMyWorkerDetails';
+import { HordePerformance } from '@/app/_types/HordeTypes';
+import { useEffect, useState } from 'react';
+import MyWorkerSummary from '../MyWorkerSummary';
 
-const CACHE_DURATION = 60000 // 1 minute in milliseconds
-let cachedData: HordePerformance | null = null
-let cacheTimestamp: number | null = null
+const CACHE_DURATION = 60000;
+let cachedData: HordePerformance | null = null;
+let cacheTimestamp: number | null = null;
 
 export default function HordePerformanceModal() {
-  const [loading, setLoading] = useState(true)
-  const [perfState, setPerfState] = useState<HordePerformance | null>(null)
+  const [loading, setLoading] = useState(true);
+  const [perfState, setPerfState] = useState<HordePerformance | null>(null);
+
+  const { fetchAllWorkersDetails, workersDetails, worker_ids } =
+    useMyWorkerDetails();
 
   useEffect(() => {
     async function fetchPerformance() {
       const isCacheValid =
-        cacheTimestamp && Date.now() - cacheTimestamp < CACHE_DURATION
+        cacheTimestamp && Date.now() - cacheTimestamp < CACHE_DURATION;
 
       if (cachedData && isCacheValid) {
-        setPerfState(cachedData)
-        setLoading(false)
-        return
+        setPerfState(cachedData);
+        setLoading(false);
+        return;
       }
 
       try {
         const response = await fetch(
           'https://aihorde.net/api/v2/status/performance'
-        )
-        const data = await response.json()
-        setPerfState(data)
-        cachedData = data
-        cacheTimestamp = Date.now()
+        );
+        const data = await response.json();
+        setPerfState(data);
+        cachedData = data;
+        cacheTimestamp = Date.now();
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
 
-      setLoading(false)
+      setLoading(false);
     }
 
-    fetchPerformance()
-  }, [])
+    fetchPerformance();
+  }, []);
+
+  useEffect(() => {
+    fetchAllWorkersDetails();
+  }, []);
 
   if (loading) {
     return (
@@ -44,7 +53,7 @@ export default function HordePerformanceModal() {
         <h2 className="row font-bold">Horde Performance</h2>
         <div>Loading...</div>
       </div>
-    )
+    );
   }
 
   if (!perfState) {
@@ -53,19 +62,19 @@ export default function HordePerformanceModal() {
         <h2 className="row font-bold">Horde Performance</h2>
         <div>Error loading Horde performance data. Try again later.</div>
       </div>
-    )
+    );
   }
 
-  let stepsPerRequest: number = 0
-  let requestsPerMinute: number = 0
-  let minutesToClear: number = 0
+  let stepsPerRequest: number = 0;
+  let requestsPerMinute: number = 0;
+  let minutesToClear: number = 0;
 
   if (perfState.queued_requests) {
     stepsPerRequest =
-      perfState.queued_megapixelsteps / perfState.queued_requests
-    requestsPerMinute = perfState.past_minute_megapixelsteps / stepsPerRequest
+      perfState.queued_megapixelsteps / perfState.queued_requests;
+    requestsPerMinute = perfState.past_minute_megapixelsteps / stepsPerRequest;
     minutesToClear =
-      perfState.queued_megapixelsteps / perfState.past_minute_megapixelsteps
+      perfState.queued_megapixelsteps / perfState.past_minute_megapixelsteps;
   }
 
   return (
@@ -135,6 +144,26 @@ export default function HordePerformanceModal() {
           </div>
         </div>
       )}
+      <div className="divider before:bg-input-color after:bg-input-color">
+        Your Workers
+      </div>
+      {(!workersDetails ||
+        (workersDetails?.length === 0 && worker_ids?.length === 0)) && (
+        <div>You have no active GPU workers.</div>
+      )}
+      {workersDetails?.length === 0 && worker_ids && worker_ids?.length > 0 && (
+        <div className="my-2">
+          <span className="loading loading-spinner loading-sm"></span>
+          Loading worker details...
+        </div>
+      )}
+      {worker_ids && worker_ids?.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {workersDetails.map((worker) => {
+            return <MyWorkerSummary key={worker.id} worker={worker} />;
+          })}
+        </div>
+      )}
     </div>
-  )
+  );
 }
