@@ -39,6 +39,14 @@ export default function generateImage(
 ): Promise<GenerateSuccessResponse | GenerateErrorResponse> {
   const taskId = `generate_${taskCounter++}`;
 
+  // If AppConstants.AI_HORDE_PROD_URL starts with http://localhost, display a big warning on the console.
+  if (AppConstants.AI_HORDE_PROD_URL.startsWith('http://localhost')) {
+    console.warn(
+      '%c⚠️ WARNING: AI_HORDE_PROD_URL is set to localhost! ⚠️',
+      'background: #ff0000; color: white; font-size: 24px; font-weight: bold; padding: 4px;'
+    );
+  }
+
   return imageGenerationQueue.enqueue(async () => {
     let statusCode = 0; // Initialize statusCode with a default value
     try {

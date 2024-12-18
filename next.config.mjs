@@ -18,12 +18,15 @@ let HORDE_API_HOST = process.env.HORDE_API_HOST || 'https://aihorde.net';
  * Enable mock Horde API for testing API responses in local dev environment
  */
 
-// const HORDE_MOCK_API_HOST = '';
-const HORDE_MOCK_API_HOST = 'http://localhost:3001';
+const HORDE_MOCK_API_HOST = '';
+// const HORDE_MOCK_API_HOST = 'http://localhost:3001';
 
 if (process.env.NODE_ENV === 'development') {
   if (HORDE_MOCK_API_HOST) {
-    console.log('\n\nMOCK_API: using mock Horde API -', HORDE_MOCK_API_HOST);
+    console.log(
+      '\n\n⚠⚠⚠ MOCK_API: using mock Horde API -',
+      HORDE_MOCK_API_HOST
+    );
     HORDE_API_HOST = HORDE_MOCK_API_HOST;
   }
 }
