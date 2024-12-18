@@ -8,6 +8,15 @@ import { AppSettings } from '../_data-models/AppSettings';
 import { sleep } from '../_utils/sleep';
 import { ManageWorker } from '../_data-models/ManageWorker';
 
+interface CacheEntry {
+  data: WorkerDetails;
+  timestamp: number;
+}
+
+// Cache object outside the hook to persist across renders
+const workerCache: Record<string, CacheEntry> = {};
+const CACHE_TIMEOUT = 30000;
+
 export default function useMyWorkerDetails() {
   const store = useStore(UserStore) || {};
   const { userDetails = {} as HordeUser } = store;
@@ -16,6 +25,13 @@ export default function useMyWorkerDetails() {
 
   const fetchWorkerDetails = async (workerId: string) => {
     try {
+      const cachedData = workerCache[workerId];
+      const now = Date.now();
+
+      if (cachedData && now - cachedData.timestamp < CACHE_TIMEOUT) {
+        return cachedData.data;
+      }
+
       const res = await fetch(
         `${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${workerId}`,
         {
@@ -29,6 +45,11 @@ export default function useMyWorkerDetails() {
           notFound: true
         };
       }
+
+      workerCache[workerId] = {
+        data: workerDetails,
+        timestamp: now
+      };
 
       return workerDetails;
     } catch (err) {
