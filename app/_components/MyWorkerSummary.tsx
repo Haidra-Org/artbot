@@ -9,12 +9,14 @@ import { ManageWorker } from '../_data-models/ManageWorker';
 import useMyWorkerDetails from '../_hooks/useMyWorkerDetails';
 import { WorkerDetails } from '../_types/HordeTypes';
 import Button from './Button';
+import NiceModal from '@ebay/nice-modal-react';
+import WorkerDetailsCard from './WorkerDetailsCard';
 
 export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
   const { id } = worker;
   const workerState = ManageWorker.getWorkerState(worker);
   const workerBadgeColor = ManageWorker.getBadgeColor(worker);
-  const { handleWorkerChange } = useMyWorkerDetails();
+  const { fetchAllWorkersDetails, handleWorkerChange } = useMyWorkerDetails();
 
   const kph = worker.uptime
     ? Math.floor(worker.kudos_rewards / (worker.uptime / 3600))
@@ -43,29 +45,29 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
             {!worker.loading && workerState === 'offline' && <IconPlayerPlay />}
           </Button>
           <Button
-          // className="btn btn-sm btn-square btn-primary cursor-pointer"
-          // size="square-small"
-          // onClick={() => {
-          //   NiceModal.show('workerDetails-modal', {
-          //     buttons: (
-          //       <div className="flex flex-row justify-end gap-4">
-          //         <button
-          //           className="btn"
-          //           onClick={() => {
-          //             NiceModal.remove('workerDetails-modal');
-          //             fetchAllWorkersDetails();
-          //           }}
-          //         >
-          //           OK
-          //         </button>
-          //       </div>
-          //     ),
-          //     content: <WorkerDetailsCard edit id={worker.id} />,
-          //     handleClose: fetchAllWorkersDetails,
-          //     maxWidth: 'max-w-[480px]',
-          //     title: 'Worker Details'
-          //   });
-          // }}
+            className="btn btn-sm btn-square btn-primary cursor-pointer"
+            // size="square-small"
+            onClick={() => {
+              NiceModal.show('workerDetails', {
+                buttons: (
+                  <div className="flex flex-row justify-end gap-4">
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        NiceModal.remove('workerDetails');
+                        fetchAllWorkersDetails();
+                      }}
+                    >
+                      OK
+                    </button>
+                  </div>
+                ),
+                content: <WorkerDetailsCard edit id={worker.id} />,
+                handleClose: fetchAllWorkersDetails,
+                maxWidth: 'max-w-[480px]',
+                title: 'Worker Details'
+              });
+            }}
           >
             <IconPencil stroke={1.5} />
           </Button>

@@ -6,23 +6,15 @@ import {
   IconSquareRoundedX,
   IconTrash
 } from '@tabler/icons-react';
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { WorkerDetails as HordeWorkerDetails } from '../_types/HordeTypes';
-import { AppConstants } from '../_data-models/AppConstants';
-import { AppSettings } from '../_data-models/AppSettings';
-import { clientHeader } from '../_data-models/ClientHeader';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { formatSeconds } from '../_utils/numberUtils';
 import Linker from './Linker';
 import Input from './Input';
-import Select from './Select';
+import Select, { SelectOption } from './Select';
 import { toastController } from '../_controllers/toastController';
+import { useWorkerDetails } from '../_hooks/useWorkerDetails';
 
-interface TeamLabel {
-  label: string;
-  value: string;
-}
-
-export default function WorkerDetails({
+export default function WorkerDetailsCard({
   edit = false,
   id
 }: {
@@ -31,68 +23,24 @@ export default function WorkerDetails({
   id: string;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [teams, setTeams] = useState<Array<TeamLabel>>([]);
-  const [notFound, setNotFound] = useState(false);
-  const [worker, setWorker] = useState<HordeWorkerDetails>();
-  const [workerInfo, setWorkerInfo] = useState('');
-  const [workerName, setWorkerName] = useState('');
-  const [workerTeam, setWorkerTeam] = useState<Array<string | null>>([
-    null,
-    'None'
-  ]);
   const [editMode, setEditMode] = useState<string | boolean>(false);
 
-  const fetchTeams = async () => {
-    const res = await fetch(`${AppConstants.AI_HORDE_PROD_URL}/api/v2/teams`, {
-      cache: 'no-store'
-    });
-    const details = await res.json();
-
-    if (Array.isArray(details)) {
-      const formatTeams: TeamLabel[] = details.map((team) => {
-        return {
-          label: team.name,
-          value: team.id
-        };
-      });
-
-      formatTeams.sort((a: TeamLabel, b: TeamLabel) => {
-        // Sort by online status first (true values first)
-        if (a.label < b.label) {
-          return -1;
-        }
-        if (a.label > b.label) {
-          return 1;
-        }
-      });
-
-      formatTeams.unshift({
-        label: 'None',
-        value: null
-      });
-
-      setTeams(formatTeams);
-    }
-  };
-
-  const fetchWorkerDetails = async (workerId: string) => {
-    const res = await fetch(
-      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${workerId}`,
-      {
-        cache: 'no-store'
-      }
-    );
-    const details = await res.json();
-
-    if (res.status === 404) {
-      setNotFound(true);
-    }
-
-    setWorker(details);
-    setWorkerInfo(details.info);
-    setWorkerName(details.name);
-    setWorkerTeam([details.team.id, details.team.name]);
-  };
+  const {
+    teams,
+    notFound,
+    worker,
+    workerInfo,
+    workerName,
+    workerTeam,
+    fetchTeams,
+    fetchWorkerDetails,
+    deleteWorker,
+    updateWorkerDescription,
+    setWorkerInfo,
+    setWorkerName,
+    setWorkerTeam,
+    getBadgeColor
+  } = useWorkerDetails(id);
 
   useEffect(() => {
     fetchWorkerDetails(id);
@@ -100,84 +48,7 @@ export default function WorkerDetails({
     if (edit) {
       fetchTeams();
     }
-  }, [edit, id]);
-
-  const deleteWorker = async () => {
-    await fetch(`${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${id}`, {
-      headers: {
-        apikey: AppSettings.get('apiKey'),
-        'Content-Type': 'application/json',
-        'Client-Agent': clientHeader()
-      },
-      method: 'DELETE'
-    });
-  };
-
-  const updateWorkerDescription = async () => {
-    await fetch(`${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${id}`, {
-      body: JSON.stringify({
-        info: workerInfo,
-        name: workerName,
-        team: workerTeam[0]
-      }),
-      headers: {
-        apikey: AppSettings.get('apiKey'),
-        'Content-Type': 'application/json',
-        'Client-Agent': clientHeader()
-      },
-      method: 'PUT'
-    });
-  };
-
-  const sortedModels =
-    worker?.models?.sort((a: string = '', b: string = '') => {
-      if (a.toLowerCase() < b.toLowerCase()) {
-        return -1;
-      }
-      if (a.toLowerCase() > b.toLowerCase()) {
-        return 1;
-      }
-      return 0;
-    }) ?? [];
-
-  const getWorkerState = (worker: HordeWorkerDetails) => {
-    if (worker.online && !worker.maintenance_mode) {
-      return 'active';
-    }
-
-    if (worker.online && worker.maintenance_mode) {
-      return 'paused';
-    }
-
-    if (worker.loading) {
-      return 'loading';
-    }
-
-    if (!worker.online) {
-      return 'offline';
-    }
-  };
-
-  const getBadgeColor = useCallback(() => {
-    if (!worker) return;
-
-    const workerState = getWorkerState(worker);
-    let workerBadgeColor = 'red';
-
-    if (workerState === 'active') {
-      workerBadgeColor = 'green';
-    }
-
-    if (workerState === 'paused') {
-      workerBadgeColor = 'orange';
-    }
-
-    if (workerState === 'loading') {
-      workerBadgeColor = 'gray';
-    }
-
-    return workerBadgeColor;
-  }, [worker]);
+  }, [edit, id, fetchWorkerDetails, fetchTeams]);
 
   if (notFound) {
     return <div>No worker found...</div>;
@@ -188,10 +59,14 @@ export default function WorkerDetails({
   }
 
   const workerBadgeColor = getBadgeColor();
-
   const kph = worker.uptime
     ? Math.floor(worker.kudos_rewards / (worker.uptime / 3600))
     : false;
+
+  const sortedModels =
+    worker.models?.sort((a = '', b = '') =>
+      a.toLowerCase().localeCompare(b.toLowerCase())
+    ) ?? [];
 
   return (
     <div ref={containerRef}>
@@ -482,22 +357,22 @@ export default function WorkerDetails({
                 <div className="flex flex-col gap-2 p-2">
                   <Select
                     options={teams}
-                    isSearchable={false}
-                    menuPortalTarget={containerRef.current}
-                    onChange={(obj: any) => {
-                      setWorkerTeam([obj.value, obj.label]);
+                    onChange={(option: SelectOption) => {
+                      setWorkerTeam([option.value.toString(), option.label]);
                     }}
-                    style={{ zIndex: 99 }}
                     value={{
-                      value: (workerTeam[0] as string | boolean) || null,
-                      label: (workerTeam[1] as string) || 'None'
+                      value: workerTeam[0] || '',
+                      label: workerTeam[1] || 'None'
                     }}
                   />
                   <div className="flex flex-row gap-2">
                     <button
                       className="btn btn-secondary btn-sm btn-outline"
                       onClick={() => {
-                        setWorkerTeam([worker.team.id, worker.team.name]);
+                        setWorkerTeam([
+                          worker.team.id || undefined,
+                          worker.team.name || undefined
+                        ]);
                         setEditMode(false);
                       }}
                     >
