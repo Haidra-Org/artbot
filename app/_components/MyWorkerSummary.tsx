@@ -62,7 +62,7 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
                     </button>
                   </div>
                 ),
-                content: <WorkerDetailsCard edit id={worker.id} />,
+                children: <WorkerDetailsCard edit worker={worker} />,
                 handleClose: fetchAllWorkersDetails,
                 maxWidth: 'max-w-[480px]',
                 title: 'Worker Details'
