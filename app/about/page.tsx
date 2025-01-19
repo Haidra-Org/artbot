@@ -40,7 +40,7 @@ export default function AboutPage() {
           ArtBot was initially built as a way to experiment with various
           client-side technology, such as IndexedDB and LocalStorage APIs. These
           APIs allow you to securely and privately store the AI generated images
-          you*apos;ve created with the cluster within your own browser. The UI
+          you&apos;ve created with the cluster within your own browser. The UI
           components are built using NextJS. The source code is available on{' '}
           <Linker href="https://github.com/Haidra-Org/artbot">Github</Linker>.
         </div>
