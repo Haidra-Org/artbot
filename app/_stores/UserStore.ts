@@ -28,8 +28,6 @@ export const updateUseSharedKey = (key: string) => {
 };
 
 export const updateUser = (user: HordeUser) => {
-  console.log(`userDetails??`, user);
-
   UserStore.set(() => ({ userDetails: user }));
 };
 

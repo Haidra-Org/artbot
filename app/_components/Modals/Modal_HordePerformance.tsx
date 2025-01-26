@@ -45,6 +45,8 @@ export default function HordePerformanceModal() {
 
   useEffect(() => {
     fetchAllWorkersDetails();
+    // Don't want to fetch workers details on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

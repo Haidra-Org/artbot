@@ -1,6 +1,6 @@
 import {
+  IconInfoCircle,
   IconMinusVertical,
-  IconPencil,
   IconPlayerPause,
   IconPlayerPlay,
   IconPoint
@@ -23,7 +23,7 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
     : false;
 
   return (
-    <div className="bg-neutral-500 rounded-lg text-white font-mono font-semibold p-2">
+    <div className="bg-zinc-400 dark:bg-zinc-700 rounded-lg text-white font-mono font-semibold p-2">
       <div className="flex flex-row gap-2 items-center mb-2">
         <div className="flex flex-row gap-2">
           <Button
@@ -35,7 +35,6 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
 
               handleWorkerChange({ workerId: id });
             }}
-            // size="square-small"
           >
             {worker.loading && (
               <span className="loading loading-spinner loading-sm"></span>
@@ -46,7 +45,6 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
           </Button>
           <Button
             className="btn btn-sm btn-square btn-primary cursor-pointer"
-            // size="square-small"
             onClick={() => {
               NiceModal.show('workerDetails', {
                 buttons: (
@@ -69,7 +67,7 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
               });
             }}
           >
-            <IconPencil stroke={1.5} />
+            <IconInfoCircle stroke={1.5} />
           </Button>
         </div>
         <div className="flex flex-row gap-0" title={workerState}>

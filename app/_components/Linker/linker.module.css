@@ -8,3 +8,11 @@
 .Linker:hover {
   color: var(--link-active);
 }
+
+.Linker.inverted {
+  color: var(--link-active);
+}
+
+.Linker.inverted:hover {
+  color: var(--link-text);
+}

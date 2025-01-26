@@ -7,7 +7,7 @@ import {
   IconSquareRoundedX,
   IconTrash
 } from '@tabler/icons-react';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { formatSeconds } from '../_utils/numberUtils';
 import Linker from './Linker';
 import Input from './Input';
