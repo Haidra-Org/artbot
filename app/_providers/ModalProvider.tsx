@@ -16,6 +16,7 @@ NiceModal.register('embeddingDetails', Modal); // Appears on top of LoRA search 
 NiceModal.register('hordePerfModal', Modal);
 NiceModal.register('modal', Modal);
 NiceModal.register('workerDetails', Modal);
+NiceModal.register('modifyWorker', Modal); // Appears on top of workerDetails modal, modifies things like name, description, etc.
 
 export default function ModalProvider({ children }: { children: ReactNode }) {
   return <NiceModal.Provider>{children}</NiceModal.Provider>;

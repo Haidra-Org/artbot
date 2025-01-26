@@ -2,12 +2,17 @@ import useMyWorkerDetails from '@/app/_hooks/useMyWorkerDetails';
 import { HordePerformance } from '@/app/_types/HordeTypes';
 import { useEffect, useState } from 'react';
 import MyWorkerSummary from '../MyWorkerSummary';
+import { IconDevicesCog } from '@tabler/icons-react';
+import Button from '../Button';
+import { useRouter } from 'next/navigation';
+import NiceModal from '@ebay/nice-modal-react';
 
 const CACHE_DURATION = 60000;
 let cachedData: HordePerformance | null = null;
 let cacheTimestamp: number | null = null;
 
 export default function HordePerformanceModal() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [perfState, setPerfState] = useState<HordePerformance | null>(null);
 
@@ -146,8 +151,22 @@ export default function HordePerformanceModal() {
           </div>
         </div>
       )}
-      <div className="divider before:bg-input-color after:bg-input-color">
+      <div className="divider before:bg-input-color after:bg-input-color w-full flex flex-row items-center justify-between">
         Your Workers
+        <Button
+          onClick={() => {
+            router.push('/settings/workers');
+            NiceModal.remove('hordePerfModal');
+          }}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '8px',
+            height: '32px'
+          }}
+        >
+          <IconDevicesCog /> Manage
+        </Button>
       </div>
       {(!workersDetails ||
         (workersDetails?.length === 0 && worker_ids?.length === 0)) && (

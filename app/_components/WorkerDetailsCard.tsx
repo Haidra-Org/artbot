@@ -297,7 +297,13 @@ export default function WorkerDetailsCard({
               {sortedModels.map((model: string) => {
                 return (
                   <li key={`${model}`}>
-                    <Linker href={`/info/models#${model}`}>{model}</Linker>
+                    <Linker
+                      href={`/info/models#${model}`}
+                      inverted
+                      onClick={() => NiceModal.remove('workerDetails')}
+                    >
+                      {model}
+                    </Linker>
                   </li>
                 );
               })}

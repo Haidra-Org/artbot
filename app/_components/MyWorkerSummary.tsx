@@ -62,8 +62,11 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
                 ),
                 children: <WorkerDetailsCard edit worker={worker} />,
                 handleClose: fetchAllWorkersDetails,
-                maxWidth: 'max-w-[480px]',
-                title: 'Worker Details'
+                title: 'Worker Details',
+                modalStyle: {
+                  maxWidth: '1024px',
+                  width: 'calc(100% - 32px)'
+                }
               });
             }}
           >
