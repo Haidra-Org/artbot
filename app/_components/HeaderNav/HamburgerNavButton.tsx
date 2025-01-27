@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-'use client'
-import useLockedBody from '@/app/_hooks/useLockedBody'
-import { appBasepath } from '@/app/_utils/browserUtils'
+'use client';
+import useLockedBody from '@/app/_hooks/useLockedBody';
+import { appBasepath } from '@/app/_utils/browserUtils';
 import {
   IconCamera,
   IconHelp,
@@ -14,42 +14,42 @@ import {
   IconQuestionMark,
   IconSettings,
   IconX
-} from '@tabler/icons-react'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+} from '@tabler/icons-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function HamburgerNavButton() {
-  const [, setLocked] = useLockedBody(false)
-  const [open, setOpen] = useState(false)
+  const [, setLocked] = useLockedBody(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setOpen(false)
-        setLocked(false)
+        setOpen(false);
+        setLocked(false);
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [setLocked])
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [setLocked]);
 
   const handleOpenMenu = () => {
-    setLocked(true)
-    setOpen(true)
-  }
+    setLocked(true);
+    setOpen(true);
+  };
 
   const handleCloseMenu = () => {
-    setLocked(false)
-    setOpen(false)
-  }
+    setLocked(false);
+    setOpen(false);
+  };
 
-  const MenuOptionCss = `row font-bold text-md tracking-wide cursor-pointer hover:primary-color`
-  const MenuSubOptionsCss = `col pl-4 w-full mb-2`
-  const MenuSubOptionCss = `row text-sm cursor-pointer hover:primary-color`
+  const MenuOptionCss = `row font-bold text-md tracking-wide cursor-pointer hover:primary-color`;
+  const MenuSubOptionsCss = `col pl-4 w-full mb-2`;
+  const MenuSubOptionCss = `row text-sm cursor-pointer hover:primary-color`;
 
   return (
     <div className="inline-flex relative items-center">
@@ -211,7 +211,7 @@ export default function HamburgerNavButton() {
               </Link>
               <Link
                 className={MenuSubOptionCss}
-                href="/settings?panel=workers"
+                href="/settings/workers"
                 onClick={handleCloseMenu}
                 tabIndex={open ? 0 : -1}
               >
@@ -279,5 +279,5 @@ export default function HamburgerNavButton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
