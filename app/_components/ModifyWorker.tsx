@@ -4,7 +4,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import { IconTrash } from '@tabler/icons-react';
 import Input from './Input';
-import Select from './Select';
+// import Select from './Select';
 import { WorkerDetails } from '../_types/HordeTypes';
 import Button from './Button';
 import DeleteConfirmation from './Modal_DeleteConfirmation';
