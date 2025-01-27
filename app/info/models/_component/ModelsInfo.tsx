@@ -156,8 +156,6 @@ export default function ModelsInfo({
     sortByTitle = 'image requests';
   }
 
-  console.log(sortedFilteredModels);
-
   return (
     <div className="col">
       <div className="col w-full gap-4">

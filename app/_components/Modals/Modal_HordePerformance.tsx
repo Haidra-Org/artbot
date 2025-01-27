@@ -16,8 +16,7 @@ export default function HordePerformanceModal() {
   const [loading, setLoading] = useState(true);
   const [perfState, setPerfState] = useState<HordePerformance | null>(null);
 
-  const { fetchAllWorkersDetails, workersDetails, worker_ids } =
-    useMyWorkerDetails();
+  const { workersDetails, worker_ids } = useMyWorkerDetails();
 
   useEffect(() => {
     async function fetchPerformance() {
@@ -46,12 +45,6 @@ export default function HordePerformanceModal() {
     }
 
     fetchPerformance();
-  }, []);
-
-  useEffect(() => {
-    fetchAllWorkersDetails();
-    // Don't want to fetch workers details on every render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

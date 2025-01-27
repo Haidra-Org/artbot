@@ -13,16 +13,24 @@ import Button from './Button';
 import NiceModal from '@ebay/nice-modal-react';
 import WorkerDetailsCard from './WorkerDetailsCard';
 import ModifyWorker from './ModifyWorker';
+import { useEffect, useState } from 'react';
 
 export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
   const { id } = worker;
-  const workerState = ManageWorker.getWorkerState(worker);
-  const workerBadgeColor = ManageWorker.getBadgeColor(worker);
   const { fetchAllWorkersDetails, handleWorkerChange } = useMyWorkerDetails();
+  const [workerState, setWorkerState] = useState('paused');
+  const [workerBadgeColor, setWorkerBadgeColor] = useState(
+    ManageWorker.getBadgeColor(worker)
+  );
 
   const kph = worker.uptime
     ? Math.floor(worker.kudos_rewards / (worker.uptime / 3600))
     : false;
+
+  useEffect(() => {
+    const initWorkerState = ManageWorker.getWorkerState(worker) || 'paused';
+    setWorkerState(initWorkerState);
+  }, [worker]);
 
   return (
     <div className="bg-zinc-400 dark:bg-zinc-700 rounded-lg text-white font-mono font-semibold p-2">
@@ -35,7 +43,17 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
                 return;
               }
 
+              // Send API request to change worker state
               handleWorkerChange({ workerId: id });
+
+              // Optimistic updates
+              if (workerState === 'active') {
+                setWorkerState('paused');
+                setWorkerBadgeColor('orange');
+              } else {
+                setWorkerState('active');
+                setWorkerBadgeColor('green');
+              }
             }}
           >
             {worker.loading && (

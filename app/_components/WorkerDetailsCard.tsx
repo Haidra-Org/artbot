@@ -75,13 +75,10 @@ export default function WorkerDetailsCard({
     updateWorkerDescription,
     setWorkerInfo,
     setWorkerName,
-    setWorkerTeam,
-    getBadgeColor
+    setWorkerTeam
   } = useWorkerDetails(worker?.id);
 
   const workerName = worker?.name;
-
-  console.log(`edit??`, edit);
 
   // useEffect(() => {
   //   if (edit) {
@@ -97,7 +94,6 @@ export default function WorkerDetailsCard({
     return <div>Loading...</div>;
   }
 
-  const workerBadgeColor = getBadgeColor();
   const kph = worker?.uptime
     ? Math.floor(worker?.kudos_rewards / (worker?.uptime / 3600))
     : false;
@@ -107,10 +103,15 @@ export default function WorkerDetailsCard({
       a.toLowerCase().localeCompare(b.toLowerCase())
     ) ?? [];
 
+  let badgeColor = 'gray';
+
+  if (worker?.online && !worker?.maintenance_mode) badgeColor = 'green';
+  if (worker?.online && worker?.maintenance_mode) badgeColor = 'orange';
+
   return (
     <div ref={containerRef}>
       <div className="flex flex-row gap-2">
-        <IconPoint stroke="white" fill={workerBadgeColor} />
+        <IconPoint stroke="white" fill={badgeColor} />
         {workerName}
       </div>
       <div

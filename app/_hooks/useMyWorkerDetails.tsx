@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppConstants } from '../_data-models/AppConstants';
 import { HordeUser, WorkerDetails } from '../_types/HordeTypes';
 import { useStore } from 'statery';
@@ -95,6 +95,7 @@ export default function useMyWorkerDetails() {
   const handleWorkerChange = async ({ workerId }: { workerId: string }) => {
     const worker = workersDetails.find((worker) => worker.id === workerId);
 
+    console.log(`worker`, worker);
     if (!worker) {
       return;
     }
@@ -112,7 +113,7 @@ export default function useMyWorkerDetails() {
       )
     );
 
-    let tempNewState;
+    let tempNewState: 'active' | 'paused' | 'offline' = 'active';
     if (workerState === 'active') {
       tempNewState = 'paused';
     }
@@ -125,27 +126,52 @@ export default function useMyWorkerDetails() {
       tempNewState = 'active';
     }
 
-    await fetch(
-      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${workerId}`,
-      {
-        body: JSON.stringify({
-          maintenance: tempNewState === 'paused' ? true : false,
-          name: worker.name,
-          team: worker.team?.id ?? ''
-        }),
-        headers: {
-          apikey: AppSettings.get('apiKey'),
-          'Content-Type': 'application/json',
-          'Client-Agent': clientHeader()
-        },
-        method: 'PUT'
-      }
-    );
+    try {
+      const response = await fetch(
+        `${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${workerId}`,
+        {
+          body: JSON.stringify({
+            maintenance: tempNewState === 'paused' ? true : false,
+            name: worker.name,
+            team: worker.team?.id ?? ''
+          }),
+          headers: {
+            apikey: AppSettings.get('apiKey'),
+            'Content-Type': 'application/json',
+            'Client-Agent': clientHeader()
+          },
+          method: 'PUT'
+        }
+      );
 
-    // Not sure I like this artificial delay
-    await sleep(10000);
-    await fetchAllWorkersDetails();
+      // Horde server returns a 500 response for this for some reason.
+      if (response.ok || response.status === 500) {
+        setWorkersDetails((prevDetails) =>
+          prevDetails.map((worker: WorkerDetails) =>
+            worker.id === workerId
+              ? {
+                  ...worker,
+                  loading: false,
+                  maintenance_mode: tempNewState !== 'active' ? true : false
+                }
+              : worker
+          )
+        );
+
+        // Not sure I like this artificial delay
+        await sleep(6000);
+        await fetchAllWorkersDetails();
+      }
+    } catch (error) {
+      console.error('Failed to update worker state:', error);
+    }
   };
+
+  useEffect(() => {
+    fetchAllWorkersDetails();
+    // Don't want to fetch workers details on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     fetchAllWorkersDetails,
