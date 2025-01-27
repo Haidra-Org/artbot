@@ -1,6 +1,7 @@
 import {
   IconInfoCircle,
   IconMinusVertical,
+  IconPencil,
   IconPlayerPause,
   IconPlayerPlay,
   IconPoint
@@ -11,6 +12,7 @@ import { WorkerDetails } from '../_types/HordeTypes';
 import Button from './Button';
 import NiceModal from '@ebay/nice-modal-react';
 import WorkerDetailsCard from './WorkerDetailsCard';
+import ModifyWorker from './ModifyWorker';
 
 export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
   const { id } = worker;
@@ -71,6 +73,42 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
             }}
           >
             <IconInfoCircle stroke={1.5} />
+          </Button>
+          <Button
+            className="btn btn-sm btn-square btn-primary cursor-pointer"
+            onClick={() => {
+              NiceModal.show('modifyWorker', {
+                buttons: (
+                  <div className="flex flex-row justify-end gap-4">
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        NiceModal.remove('modifyWorker');
+                        fetchAllWorkersDetails();
+                      }}
+                    >
+                      OK
+                    </button>
+                  </div>
+                ),
+                children: (
+                  <ModifyWorker
+                    onDelete={() => Promise.resolve()}
+                    onUpdate={() => fetchAllWorkersDetails()}
+                    teams={[]}
+                    worker={worker}
+                  />
+                ),
+                handleClose: fetchAllWorkersDetails,
+                title: 'Modify Worker',
+                modalStyle: {
+                  maxWidth: '1024px',
+                  width: 'calc(100% - 32px)'
+                }
+              });
+            }}
+          >
+            <IconPencil stroke={1.5} />
           </Button>
         </div>
         <div className="flex flex-row gap-0" title={workerState}>
