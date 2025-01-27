@@ -37,7 +37,7 @@ export default function ModifyWorker({
   };
 
   const updateWorker = async () => {
-    let payload: { info: string; name: string; team?: string } = {
+    const payload: { info: string; name: string; team?: string } = {
       info: workerInfo,
       name: workerName,
       team: ''
