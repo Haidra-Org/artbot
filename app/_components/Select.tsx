@@ -1,20 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Listbox,
   ListboxButton,
   ListboxOption,
   ListboxOptions
-} from '@headlessui/react'
-import { IconChevronDown } from '@tabler/icons-react'
-import { useClickAway } from 'react-use'
+} from '@headlessui/react';
+import { IconChevronDown } from '@tabler/icons-react';
+import { useClickAway } from 'react-use';
 
 function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
 export interface SelectOption {
-  label: string
-  value: string | number | boolean
+  label: string;
+  value: string | number | boolean;
 }
 
 export default function Select({
@@ -25,45 +25,45 @@ export default function Select({
   options,
   value
 }: {
-  disabled?: boolean
-  hideDropdown?: boolean
-  onChange: (option: SelectOption) => void
-  onClick?: (e: React.MouseEvent) => void
-  options: SelectOption[]
-  value: SelectOption
+  disabled?: boolean;
+  hideDropdown?: boolean;
+  onChange: (option: SelectOption) => void;
+  onClick?: (e: React.MouseEvent) => void;
+  options: SelectOption[];
+  value: SelectOption;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const ref = useRef(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
 
   useClickAway(ref, () => {
-    setIsOpen(false)
-  })
+    setIsOpen(false);
+  });
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [])
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
   const handleSelection = (option: SelectOption) => {
-    onChange(option)
-    setIsOpen(false)
-  }
+    onChange(option);
+    setIsOpen(false);
+  };
 
   return (
     <div
       className="relative w-full"
       onClick={(value) => {
-        if (disabled) return
-        onClick(value)
+        if (disabled) return;
+        onClick(value);
       }}
       ref={ref}
     >
@@ -71,10 +71,10 @@ export default function Select({
         <ListboxButton
           className="relative cursor-default bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           onClick={() => {
-            if (disabled) return
+            if (disabled) return;
 
             if (!hideDropdown) {
-              setIsOpen(!isOpen)
+              setIsOpen(!isOpen);
             }
           }}
         >
@@ -104,12 +104,12 @@ export default function Select({
                 }
                 value={option}
                 onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
+                  e.preventDefault();
+                  e.stopPropagation();
 
-                  onChange(option)
+                  onChange(option);
                   // setSelected(option)
-                  setIsOpen(false)
+                  setIsOpen(false);
                 }}
               >
                 <div className="flex items-center">
@@ -130,5 +130,5 @@ export default function Select({
         )}
       </Listbox>
     </div>
-  )
+  );
 }

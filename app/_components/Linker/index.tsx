@@ -1,17 +1,19 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { CSSProperties } from 'react'
-import styles from './linker.module.css'
+import Link from 'next/link';
+import { CSSProperties } from 'react';
+import clsx from 'clsx';
+import styles from './linker.module.css';
 
 interface LinkerProps {
-  children?: React.ReactNode
-  disableLinkClick?: boolean
-  inline?: boolean
-  onClick?: () => void
-  href: string
-  rel?: string
-  target?: string
+  children?: React.ReactNode;
+  disableLinkClick?: boolean;
+  inline?: boolean;
+  onClick?: () => void;
+  href: string;
+  rel?: string;
+  target?: string;
+  inverted?: boolean;
 }
 
 const Linker = (props: LinkerProps) => {
@@ -20,39 +22,40 @@ const Linker = (props: LinkerProps) => {
     disableLinkClick = false,
     inline,
     onClick = () => {},
+    inverted = false,
     ...rest
-  } = props
+  } = props;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     // Handle scenario where we want to have a link available for middle click / open new tab,
     // but we want the normal left click event to do something else.
     if (disableLinkClick) {
-      e.preventDefault()
-      e.stopPropagation()
+      e.preventDefault();
+      e.stopPropagation();
     }
 
-    onClick()
-  }
+    onClick();
+  };
 
-  const style: CSSProperties = {}
+  const style: CSSProperties = {};
 
   if (inline) {
-    style.display = 'inline-block'
+    style.display = 'inline-block';
   }
 
-  let target = ''
+  let target = '';
 
   if (
     props.href &&
     props.href.indexOf('https://') === 0 &&
     props.href.indexOf('https://tinybots.net') !== 0
   ) {
-    target = '_blank'
+    target = '_blank';
   }
 
   return (
     <Link
-      className={styles.Linker}
+      className={clsx(styles.Linker, inverted && styles.inverted)}
       target={target}
       {...rest}
       onClick={handleClick}
@@ -63,7 +66,7 @@ const Linker = (props: LinkerProps) => {
     >
       {children}
     </Link>
-  )
-}
+  );
+};
 
-export default Linker
+export default Linker;

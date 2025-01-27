@@ -1,8 +1,8 @@
-'use client'
-import Link from 'next/link'
-import styles from './footer.module.css'
-import { usePathname } from 'next/navigation'
-import clsx from 'clsx'
+'use client';
+import Link from 'next/link';
+import styles from './footer.module.css';
+import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
 import {
   IconBuildingCommunity,
   IconCamera,
@@ -11,16 +11,17 @@ import {
   IconMessage,
   IconPhoto,
   IconQuestionMark,
-  IconRobot
-} from '@tabler/icons-react'
-import Linker from '../Linker'
-import BuildId from './buildId'
-import AnimatedEmoji from './AnimatedEmoji'
+  IconRobot,
+  IconTool
+} from '@tabler/icons-react';
+import Linker from '../Linker';
+import BuildId from './buildId';
+import AnimatedEmoji from './AnimatedEmoji';
 
 export default function Footer() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
-  const isHomePage = pathname === '/'
+  const isHomePage = pathname === '/';
 
   return (
     <div className={clsx(styles.Footer, isHomePage && styles.NoPadding)}>
@@ -100,6 +101,17 @@ export default function Footer() {
               Worker details
             </Link>
           </div> */}
+        </div>
+        <div className={styles.Section}>
+          <div className={styles.SectionTitle}>
+            <IconTool stroke={1} />
+            Utilities
+          </div>
+          <div>
+            <Link className={styles.LinkWrapper} href="/settings/workers">
+              Manage workers
+            </Link>
+          </div>
         </div>
         {/* <div className={styles.Section}>
           <div className={styles.SectionTitle}>
@@ -280,5 +292,5 @@ export default function Footer() {
       </div>
       <BuildId />
     </div>
-  )
+  );
 }

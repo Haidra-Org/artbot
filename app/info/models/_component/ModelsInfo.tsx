@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-'use client'
+'use client';
 import {
   IconArrowBarLeft,
   IconCube,
@@ -10,25 +10,28 @@ import {
   IconHeartFilled,
   IconPhotoSearch,
   IconSortDescending
-} from '@tabler/icons-react'
-import Link from 'next/link'
+} from '@tabler/icons-react';
+import Link from 'next/link';
 
-import Button from '@/app/_components/Button'
-import Section from '@/app/_components/Section'
-import { AvailableImageModel, ImageModelDetails } from '@/app/_types/HordeTypes'
-import { formatSeconds } from '@/app/_utils/numberUtils'
-import { useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
-import clsx from 'clsx'
+import Button from '@/app/_components/Button';
+import Section from '@/app/_components/Section';
+import {
+  AvailableImageModel,
+  ImageModelDetails
+} from '@/app/_types/HordeTypes';
+import { formatSeconds } from '@/app/_utils/numberUtils';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import {
   addFavoriteModelToDexie,
   getFavoriteModelsFromDexie,
   removeFavoriteModelFromDexie
-} from '@/app/_db/appSettings'
-import { MenuHeader, MenuItem } from '@szhsin/react-menu'
-import DropdownMenu from '@/app/_components/DropdownMenu'
-import { toastController } from '@/app/_controllers/toastController'
-import NiceModal from '@ebay/nice-modal-react'
+} from '@/app/_db/appSettings';
+import { MenuHeader, MenuItem } from '@szhsin/react-menu';
+import DropdownMenu from '@/app/_components/DropdownMenu';
+import { toastController } from '@/app/_controllers/toastController';
+import NiceModal from '@ebay/nice-modal-react';
 
 export default function ModelsInfo({
   isModal = false,
@@ -36,119 +39,122 @@ export default function ModelsInfo({
   modelDetails,
   onUseModel
 }: {
-  isModal?: boolean
-  modelsAvailable: AvailableImageModel[]
-  modelDetails: { [key: string]: ImageModelDetails }
-  onUseModel?: (model: string) => void
+  isModal?: boolean;
+  modelsAvailable: AvailableImageModel[];
+  modelDetails: { [key: string]: ImageModelDetails };
+  onUseModel?: (model: string) => void;
 }) {
-  const router = useRouter()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [sortBy, setSortBy] = useState<'count' | 'jobs' | 'name'>('count')
-  const [showFavorites, setShowFavorites] = useState(false)
-  const [favoriteModels, setFavoriteModels] = useState<string[]>([])
-  const [searchInput, setSearchInput] = useState('')
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [sortBy, setSortBy] = useState<'count' | 'jobs' | 'name'>('count');
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [favoriteModels, setFavoriteModels] = useState<string[]>([]);
+  const [searchInput, setSearchInput] = useState('');
 
   const availableModelsMap = modelsAvailable.reduce(
     (acc, item) => {
-      acc[item.name] = item
-      return acc
+      acc[item.name] = item;
+      return acc;
     },
     {} as { [key: string]: AvailableImageModel }
-  )
+  );
 
   const toggleFavoriteModel = async (model: string) => {
     if (favoriteModels.includes(model)) {
-      const updatedModels = favoriteModels.filter((m) => m !== model)
-      setFavoriteModels(updatedModels)
-      await removeFavoriteModelFromDexie(model)
+      const updatedModels = favoriteModels.filter((m) => m !== model);
+      setFavoriteModels(updatedModels);
+      await removeFavoriteModelFromDexie(model);
     } else {
-      setFavoriteModels([...favoriteModels, model])
-      addFavoriteModelToDexie(model)
+      setFavoriteModels([...favoriteModels, model]);
+      addFavoriteModelToDexie(model);
       toastController({
         message: `Added ${model} to favorites`,
         type: 'success'
-      })
+      });
     }
-  }
+  };
 
   useEffect(() => {
     async function getFavoriteModels() {
-      const models = await getFavoriteModelsFromDexie()
-      setFavoriteModels(models)
+      const models = await getFavoriteModelsFromDexie();
+      setFavoriteModels(models);
     }
 
-    getFavoriteModels()
-  }, [])
+    getFavoriteModels();
+  }, []);
 
   useEffect(() => {
     if (inputRef.current) {
       setTimeout(() => {
-        inputRef.current!.focus()
-      }, 400)
+        inputRef.current!.focus();
+      }, 400);
     }
-  }, [])
+  }, []);
 
   const getQueueTime = (s: number) => {
     if (s === 0) {
-      return 'N/A'
+      return 'N/A';
     }
 
     if (s === 10000) {
-      return 'N/A'
+      return 'N/A';
     }
 
-    return `~ ${formatSeconds(s)}`
-  }
+    return `~ ${formatSeconds(s)}`;
+  };
 
   const filteredModels = Object.keys(modelDetails).reduce(
     (acc, key) => {
-      const nsfw = modelDetails[key].nsfw
-      const sdxl = modelDetails[key].baseline === 'stable_diffusion_xl'
-      const userInput = searchInput.toLocaleLowerCase()
+      const nsfw = modelDetails[key].nsfw;
+      const sdxl = modelDetails[key].baseline === 'stable_diffusion_xl';
+      const userInput = searchInput.toLocaleLowerCase();
 
       // Check if showFavorites is true and key is not in favoriteModels, if so skip this model
       if (showFavorites && !favoriteModels.includes(key)) {
-        return acc
+        return acc;
       }
 
       if (userInput === 'sdxl' && sdxl) {
-        acc[key] = modelDetails[key]
+        acc[key] = modelDetails[key];
       } else if (userInput === 'nsfw' && nsfw) {
-        acc[key] = modelDetails[key]
+        acc[key] = modelDetails[key];
       } else if (
         key.toLocaleLowerCase().includes(userInput) ||
         modelDetails[key].style.includes(userInput)
       ) {
-        acc[key] = modelDetails[key]
+        acc[key] = modelDetails[key];
       }
 
-      return acc
+      return acc;
     },
     {} as { [key: string]: ImageModelDetails }
-  )
+  );
 
   // Convert the filteredModels object to an array of [key, value] pairs
-  const filteredModelsArray = Object.entries(filteredModels)
+  const filteredModelsArray = Object.entries(filteredModels);
 
   // Sort the array based on availableModelsMap[key].count
   filteredModelsArray.sort((a, b) => {
-    const countA = availableModelsMap[a[0]][sortBy] as number
-    const countB = availableModelsMap[b[0]][sortBy] as number
-    return countB - countA // Sort in descending order
-  })
+    const modelA = availableModelsMap[a[0]];
+    const modelB = availableModelsMap[b[0]];
+
+    // Default to 0 if model or property is undefined
+    const countA = (modelA?.[sortBy] ?? 0) as number;
+    const countB = (modelB?.[sortBy] ?? 0) as number;
+
+    return countB - countA; // Sort in descending order
+  });
 
   // Convert the sorted array back into an object
-  const sortedFilteredModels = Object.fromEntries(filteredModelsArray)
+  const sortedFilteredModels = Object.fromEntries(filteredModelsArray);
 
-  let sortByTitle = 'workers'
+  let sortByTitle = 'workers';
 
   if (sortBy === 'name') {
-    sortByTitle = 'model name'
+    sortByTitle = 'model name';
   } else if (sortBy === 'jobs') {
-    sortByTitle = 'image requests'
+    sortByTitle = 'image requests';
   }
-
-  console.log(sortedFilteredModels)
 
   return (
     <div className="col">
@@ -157,7 +163,7 @@ export default function ModelsInfo({
           <div className="row w-full">
             <Button
               onClick={() => {
-                setShowFavorites(!showFavorites)
+                setShowFavorites(!showFavorites);
               }}
             >
               {showFavorites ? <IconHeartFilled /> : <IconHeart />}
@@ -166,7 +172,7 @@ export default function ModelsInfo({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder={'Search for image model'}
               onChange={(e) => {
-                setSearchInput(e.target.value)
+                setSearchInput(e.target.value);
               }}
               ref={inputRef}
               value={searchInput}
@@ -174,7 +180,7 @@ export default function ModelsInfo({
             <Button
               theme="danger"
               onClick={() => {
-                setSearchInput('')
+                setSearchInput('');
               }}
             >
               <IconArrowBarLeft />
@@ -308,34 +314,34 @@ export default function ModelsInfo({
                       <strong>AI Horde Availability</strong>
                       <div className="mt-2">
                         <strong>GPU workers:</strong>{' '}
-                        {availableModelsMap[key].count}
+                        {availableModelsMap[key]?.count ?? 'N/A'}
                       </div>
                       <div>
                         <strong>Queued jobs:</strong>{' '}
-                        {availableModelsMap[key].jobs}
+                        {availableModelsMap[key]?.jobs ?? 'N/A'}
                       </div>
                       <div className="mt-2">
                         <strong>Queued work:</strong>{' '}
-                        {availableModelsMap[key].queued.toLocaleString()}{' '}
+                        {availableModelsMap[key]?.queued?.toLocaleString()}{' '}
                         megapixel-steps
                       </div>
                       <div>
                         <strong>Performance:</strong>{' '}
-                        {availableModelsMap[key].performance.toLocaleString()}{' '}
+                        {availableModelsMap[key]?.performance?.toLocaleString()}{' '}
                         megapixel-steps / minute
                       </div>
 
                       <div className="mt-2">
                         <strong>Wait time:</strong>{' '}
-                        {getQueueTime(availableModelsMap[key].eta)}
+                        {getQueueTime(availableModelsMap[key]?.eta ?? 0)}
                       </div>
                     </div>
                   </div>
                   <div className="row justify-end">
                     <Button
                       onClick={() => {
-                        router.push(`/images?model=${key}`)
-                        NiceModal.remove('modal')
+                        router.push(`/images?model=${key}`);
+                        NiceModal.remove('modal');
                       }}
                     >
                       <div className="row gap-2">
@@ -346,11 +352,11 @@ export default function ModelsInfo({
                     <Button
                       onClick={() => {
                         if (!onUseModel) {
-                          router.push(`/create?model=${key}`)
+                          router.push(`/create?model=${key}`);
                         }
 
                         if (onUseModel) {
-                          onUseModel(key)
+                          onUseModel(key);
                         }
                       }}
                     >
@@ -367,5 +373,5 @@ export default function ModelsInfo({
         ))}
       </div>
     </div>
-  )
+  );
 }
