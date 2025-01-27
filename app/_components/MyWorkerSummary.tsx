@@ -111,8 +111,9 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
                 ),
                 children: (
                   <ModifyWorker
-                    onDelete={() => Promise.resolve()}
-                    onUpdate={() => fetchAllWorkersDetails()}
+                    onAfterUpdate={() => {
+                      fetchAllWorkersDetails();
+                    }}
                     teams={[]}
                     worker={worker}
                   />

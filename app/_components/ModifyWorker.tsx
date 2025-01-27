@@ -1,254 +1,220 @@
 'use client';
 
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import { IconTrash } from '@tabler/icons-react';
-import Section from './Section';
 import Input from './Input';
 import Select from './Select';
 import { WorkerDetails } from '../_types/HordeTypes';
-
-interface SelectOption {
-  value: string | number;
-  label: string;
-}
+import Button from './Button';
+import DeleteConfirmation from './Modal_DeleteConfirmation';
+import { clientHeader } from '../_data-models/ClientHeader';
+import { AppSettings } from '../_data-models/AppSettings';
+import { AppConstants } from '../_data-models/AppConstants';
+import { fetchTeams } from '../_data-models/HordeTeams';
+import { SelectOption } from './ComboBox';
 
 export default function ModifyWorker({
   worker,
-  teams,
-  onUpdate,
-  onDelete
+  onAfterUpdate
 }: {
   worker: WorkerDetails;
   teams: SelectOption[];
-  onUpdate: (updates: Partial<WorkerDetails>) => Promise<void>;
-  onDelete: () => Promise<void>;
+  onAfterUpdate: () => void;
 }) {
-  const [editMode, setEditMode] = useState<
-    'name' | 'description' | 'team' | false
-  >(false);
   const [workerName, setWorkerName] = useState(worker?.name || '');
   const [workerInfo, setWorkerInfo] = useState(worker?.info || '');
-  // const [workerTeam, setWorkerTeam] = useState<
-  //   [string | undefined, string | undefined]
-  // >([worker?.team?.id, worker?.team?.name]);
+  const [workerTeam, setWorkerTeam] = useState<{ name: string; id: string }>({
+    name: worker?.team?.name || 'None',
+    id: worker?.team?.id || ''
+  });
+  const [hasChanges, setHasChanges] = useState(false);
+  const [hordeTeams, setHordeTeams] = useState<SelectOption[]>([]);
 
-  const updateWorkerDescription = async () => {
-    await onUpdate({
+  const initHordeTeams = async () => {
+    const teams = await fetchTeams();
+    setHordeTeams(teams);
+  };
+
+  const updateWorker = async () => {
+    let payload: { info: string; name: string; team?: string } = {
+      info: workerInfo,
       name: workerName,
-      info: workerInfo
-      // team: workerTeam[0]
-      //   ? { id: workerTeam[0], name: workerTeam[1] || '' }
-      //   : undefined
-    });
+      team: ''
+    };
+
+    if (workerTeam.id) {
+      payload.team = workerTeam.id;
+    }
+
+    try {
+      await fetch(
+        `${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${worker.id}`,
+        {
+          body: JSON.stringify(payload),
+
+          headers: {
+            apikey: AppSettings.get('apiKey'),
+            'Content-Type': 'application/json',
+            'Client-Agent': clientHeader()
+          },
+          method: 'PUT'
+        }
+      );
+    } catch (error) {
+      console.error('Error updating worker:', error);
+    }
+
+    NiceModal.remove('modifyWorker');
+    onAfterUpdate();
   };
 
-  const deleteWorker = async () => {
-    await onDelete();
+  const handleDelete = async () => {
+    await fetch(
+      `${AppConstants.AI_HORDE_PROD_URL}/api/v2/workers/${worker?.id}`,
+      {
+        headers: {
+          apikey: AppSettings.get('apiKey'),
+          'Content-Type': 'application/json',
+          'Client-Agent': clientHeader()
+        },
+        method: 'DELETE'
+      }
+    );
   };
+
+  const handleInputChange = (field: 'name' | 'info', value: string) => {
+    if (field === 'name') {
+      setWorkerName(value);
+    } else {
+      setWorkerInfo(value);
+    }
+    setHasChanges(true);
+  };
+
+  useEffect(() => {
+    initHordeTeams();
+  }, []);
 
   return (
     <div className="mt-2 pb-2">
-      <h2 className="row font-bold">Modify Worker</h2>
-      <div className="collapse-content mt-2 p-0 w-full flex flex-col gap-2 items-start">
-        {/* Name edit section */}
-        <button
-          className="btn btn-error btn-sm btn-link px-0"
-          onClick={() => setEditMode('name')}
-        >
-          Rename worker?
-        </button>
-        {editMode === 'name' && (
-          <div className="flex flex-col gap-2 p-2">
-            <Input
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setWorkerName(e?.target?.value)
-              }
-              value={workerName}
-            />
-            <div className="flex flex-row gap-2">
-              <button
-                className="btn btn-secondary btn-sm btn-outline"
-                onClick={() => {
-                  setWorkerName(worker?.name || '');
-                  setEditMode(false);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={async () => {
-                  if (workerName.trim() === '') {
-                    setWorkerName(worker?.name || '');
-                  }
-                  await updateWorkerDescription();
-                  setEditMode(false);
-                }}
-              >
-                Update name
-              </button>
-            </div>
-          </div>
-        )}
+      <h2 className="row font-bold mb-4">Modify Worker</h2>
+      <div className="flex flex-col gap-4 w-full">
+        {/* Name input */}
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Worker Name</span>
+          </label>
+          <Input
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleInputChange('name', e.target.value)
+            }
+            value={workerName}
+            placeholder="Enter worker name"
+          />
+        </div>
 
-        {/* Description edit section */}
-        <button
-          className="btn btn-error btn-sm btn-link px-0"
-          onClick={() => setEditMode('description')}
-        >
-          Update description?
-        </button>
-        {editMode === 'description' && (
-          <div className="flex flex-col gap-2 p-2">
-            <Input
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setWorkerInfo(e?.target?.value)
-              }
-              value={workerInfo}
-            />
-            <div className="flex flex-row gap-2">
-              <button
-                className="btn btn-secondary btn-sm btn-outline"
-                onClick={() => {
-                  setWorkerInfo(worker?.info || '');
-                  setEditMode(false);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={async () => {
-                  await updateWorkerDescription();
-                  setEditMode(false);
-                }}
-              >
-                Update description
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Description textarea */}
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Description</span>
+          </label>
+          <textarea
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2"
+            value={workerInfo}
+            onChange={(e) => handleInputChange('info', e.target.value)}
+            placeholder="Enter worker description"
+          />
+        </div>
 
-        {/* Team edit section */}
-        <button
-          className="btn btn-error btn-sm btn-link px-0"
-          onClick={() => setEditMode('team')}
-        >
-          Update team?
-        </button>
-        {editMode === 'team' && (
-          <div className="flex flex-col gap-2 p-2">
-            <Select
-              options={teams}
-              onChange={() => {}}
-              // onChange={(option: SelectOption) => {
-              //   setWorkerTeam([option.value.toString(), option.label]);
-              // }}
-              value={{
-                // value: workerTeam[0] || '',
-                // label: workerTeam[1] || 'None'
-                value: '',
-                label: 'None'
+        {/* <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Team</span>
+          </label>
+          <Select
+            options={hordeTeams}
+            onChange={(obj) => {
+              setHasChanges(true);
+              setWorkerTeam({
+                name: obj.label,
+                id: obj.value as string
+              });
+            }}
+            value={{
+              value: workerTeam.id,
+              label: workerTeam.name
+            }}
+          />
+        </div> */}
+
+        <div className="text-sm text-gray-500">
+          Please note, it can take up to 5 minutes before the changes are
+          reflected in the worker list.
+        </div>
+
+        <div className="flex flex-row justify-between mt-4">
+          <Button
+            className="btn btn-error btn-outline gap-2"
+            theme="danger"
+            onClick={async () => {
+              NiceModal.show('delete', {
+                children: (
+                  <div
+                    className="col gap-4"
+                    style={{ maxWidth: '400px', width: '100%' }}
+                  >
+                    <DeleteConfirmation
+                      deleteButtonTitle="Delete"
+                      title="Delete worker?"
+                      message={
+                        <>
+                          <p className="text-sm">
+                            Are you sure you want to delete{' '}
+                            <strong>{worker?.name}</strong>? This action will
+                            delete the worker and all statistics associated with
+                            it. It will not affect the amount of kudos generated
+                            by this worker for your account.
+                            <br />
+                            <strong className="block pt-2">
+                              This action cannot be undone.
+                            </strong>
+                          </p>
+                        </>
+                      }
+                      onDelete={async () => {
+                        await handleDelete();
+                        await onAfterUpdate();
+                        NiceModal.remove('delete');
+                        NiceModal.remove('modifyWorker');
+                      }}
+                    />
+                  </div>
+                )
+              });
+            }}
+          >
+            <IconTrash />
+            Delete Worker
+          </Button>
+
+          <div className="flex flex-row gap-2">
+            <Button
+              className="btn btn-primary"
+              onClick={() => {
+                NiceModal.remove('modifyWorker');
               }}
-            />
-            <div className="flex flex-row gap-2">
-              <button
-                className="btn btn-secondary btn-sm btn-outline"
-                onClick={() => {
-                  // setWorkerTeam([worker?.team?.id, worker?.team?.name]);
-                  setEditMode(false);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={async () => {
-                  await updateWorkerDescription();
-                  setEditMode(false);
-                }}
-              >
-                Update team
-              </button>
-            </div>
+            >
+              Cancel
+            </Button>
+            <Button
+              className="btn btn-primary"
+              onClick={updateWorker}
+              disabled={!hasChanges}
+            >
+              Save Changes
+            </Button>
           </div>
-        )}
-
-        {/* Delete worker button */}
-        <button
-          className="btn btn-error btn-sm btn-link px-0 text-error"
-          onClick={() => {
-            NiceModal.show('confirmation-modal', {
-              buttons: (
-                <div className="flex flex-row justify-end gap-2">
-                  <button
-                    className="btn btn-secondary btn-outline"
-                    onClick={() => {
-                      NiceModal.remove('confirmation-modal');
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="btn btn-error"
-                    onClick={async () => {
-                      await deleteWorker();
-                      NiceModal.remove('confirmation-modal');
-                      NiceModal.remove('workerDetails-modal');
-                    }}
-                  >
-                    DELETE
-                  </button>
-                </div>
-              ),
-              content: (
-                <div>
-                  <div className="flex flex-row gap-2 items-center justify-start">
-                    <div className="flex h-8 w-8 justify-center items-center rounded-full bg-red-100">
-                      <svg
-                        className="h-6 w-6 text-red-600"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 10.5v3.75m-9.303 3.376C1.83 19.126 2.914 21 4.645 21h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 4.88c-.866-1.501-3.032-1.501-3.898 0L2.697 17.626zM12 17.25h.007v.008H12v-.008z"
-                        />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium" id="modal-title">
-                      Delete this worker?
-                    </h3>
-                  </div>
-                  <div className="mt-2">
-                    <p className="text-sm">
-                      Are you sure you want to delete{' '}
-                      <strong>{worker?.name}</strong>? This action will delete
-                      the worker and all statistics associated with it. It will
-                      not affect the amount of kudos generated by this worker
-                      for your account.
-                      <br />
-                      <strong className="block pt-2">
-                        This action cannot be undone.
-                      </strong>
-                    </p>
-                  </div>
-                </div>
-              ),
-              maxWidth: 'max-w-[480px]',
-              title: 'Confirm delete worker'
-            });
-          }}
-        >
-          <IconTrash />
-          Delete worker?
-        </button>
+        </div>
       </div>
     </div>
   );

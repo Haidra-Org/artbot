@@ -16,6 +16,10 @@ export default function WorkersPage() {
   return (
     <div className="col gap-2">
       <PageTitle>Manage Workers</PageTitle>
+      <div>
+        Please note, it can take up to 5 minutes before the changes are
+        reflected in the worker list.
+      </div>
       <div className="col gap-2">
         {(!workersDetails ||
           (workersDetails?.length === 0 && worker_ids?.length === 0)) && (

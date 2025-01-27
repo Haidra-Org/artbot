@@ -95,7 +95,6 @@ export default function useMyWorkerDetails() {
   const handleWorkerChange = async ({ workerId }: { workerId: string }) => {
     const worker = workersDetails.find((worker) => worker.id === workerId);
 
-    console.log(`worker`, worker);
     if (!worker) {
       return;
     }
