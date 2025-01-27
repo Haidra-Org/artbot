@@ -48,7 +48,8 @@ export default function ModifyWorker({
   };
 
   return (
-    <Section className="mt-2 pb-2">
+    <div className="mt-2 pb-2">
+      <h2 className="row font-bold">Modify Worker</h2>
       <div className="collapse-content mt-2 p-0 w-full flex flex-col gap-2 items-start">
         {/* Name edit section */}
         <button
@@ -249,6 +250,6 @@ export default function ModifyWorker({
           Delete worker?
         </button>
       </div>
-    </Section>
+    </div>
   );
 }
