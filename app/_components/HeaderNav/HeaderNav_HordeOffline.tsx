@@ -1,5 +1,4 @@
 import NiceModal from '@ebay/nice-modal-react';
-import UserKudosModal from '../Modal_UserKudos';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useStore } from 'statery';
 import { AppStore } from '@/app/_stores/AppStore';
