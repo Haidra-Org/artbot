@@ -1,11 +1,11 @@
-import { HordeUser } from '../_types/HordeTypes'
-import { UserStore, updateUser } from './UserStore'
+import { HordeUser, WorkerMessage } from '../_types/HordeTypes';
+import { UserStore, updateHordeMessages, updateUser } from './UserStore';
 
 describe('UserStore', () => {
   it('should initialize with default values', () => {
-    const userStore = UserStore.state
-    expect(userStore.userDetails).toEqual({} as HordeUser)
-  })
+    const userStore = UserStore.state;
+    expect(userStore.userDetails).toEqual({} as HordeUser);
+  });
 
   it('should update userDetails when updateUser is called', () => {
     const newUser: HordeUser = {
@@ -63,10 +63,39 @@ describe('UserStore', () => {
           interrogation: 5
         }
       }
-    }
+    };
 
-    updateUser(newUser)
-    const userStore = UserStore.state
-    expect(userStore.userDetails).toEqual(newUser)
-  })
-})
+    updateUser(newUser);
+    const userStore = UserStore.state;
+    expect(userStore.userDetails).toEqual(newUser);
+  });
+
+  it('should initialize with empty horde messages array', () => {
+    const userStore = UserStore.state;
+    expect(userStore.hordeMessages).toEqual([]);
+  });
+
+  it('should append new messages when updateHordeMessages is called', () => {
+    const initialMessage: WorkerMessage = {
+      expiry: '2025-01-29T08:53:55.000Z',
+      id: '123',
+      message: 'Initial message',
+      origin: 'Test Origin',
+      user_id: '1'
+    };
+
+    const newMessage: WorkerMessage = {
+      expiry: '2025-01-30T08:53:55.000Z',
+      id: '456',
+      message: 'New message',
+      origin: 'Test Origin 2',
+      user_id: '1'
+    };
+
+    updateHordeMessages([initialMessage]);
+    expect(UserStore.state.hordeMessages).toEqual([initialMessage]);
+
+    updateHordeMessages([newMessage]);
+    expect(UserStore.state.hordeMessages).toEqual([initialMessage, newMessage]);
+  });
+});

@@ -29,6 +29,7 @@ import { initJobController } from '@/app/_controllers/pendingJobs';
 import { toastController } from '@/app/_controllers/toastController';
 import { updateUseSharedKey } from '@/app/_stores/UserStore';
 import hordeHeartbeat from '@/app/_api/horde/heartbeat';
+import { getWorkerMessages } from '@/app/_api/horde/messages';
 
 export default function AppInitComponent({
   modelsAvailable,
@@ -73,6 +74,10 @@ export default function AppInitComponent({
     setHordeOnlineStatus(hordeOnline);
   };
 
+  const initHordeMessages = async () => {
+    await getWorkerMessages();
+  };
+
   const getUserInfoOnLoad = async () => {
     const apikey = AppSettings.apikey();
 
@@ -88,8 +93,6 @@ export default function AppInitComponent({
   }, [modelDetails, modelsAvailable]);
 
   useEffectOnce(() => {
-    console.log(`ArtBot v2.0.0_beta is online: ${new Date().toLocaleString()}`);
-
     initDexie();
     getUserInfoOnLoad();
     loadPendingImagesFromDexie();
@@ -101,9 +104,13 @@ export default function AppInitComponent({
     initHordeHeartbeat();
     const intervalHordeHeartbeat = setInterval(initHordeHeartbeat, 15 * 1000);
 
+    initHordeMessages();
+    const intervalHordeMessages = setInterval(initHordeMessages, 60 * 1000);
+
     return () => {
       clearInterval(intervalHeartbeat);
       clearInterval(intervalHordeHeartbeat);
+      clearInterval(intervalHordeMessages);
     };
   });
 
