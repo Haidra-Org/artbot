@@ -127,8 +127,11 @@ export default function Home() {
         </div>
         <div className="text-[20px] w-full text-center">
           It&apos;s free to use, no registration required.{' '}
-          <Link className="row gap-1 primary-color inline-flex" href="/create">
-            Get started! <IconCircleArrowRight size={20} />
+          <Link
+            className="row gap-1 primary-color font-bold inline-flex"
+            href="/create"
+          >
+            Get started! <IconCircleArrowRight size={24} stroke={2} />
           </Link>
         </div>
 
