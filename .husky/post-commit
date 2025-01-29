@@ -1,4 +1,18 @@
 #!/bin/sh
 
+# If this is a recursive call, exit
+if [ -n "$HUSKY_SKIP_BUILDID" ]; then
+  exit 0
+fi
+
 echo "Post-commit hook is running!"
-npm run postcommit
+
+# Set the environment variable before running the commands
+export HUSKY_SKIP_BUILDID=1
+
+node generateBuildId.js
+git add buildId.json
+git commit --amend --no-edit --no-verify
+
+# Unset the variable (though not strictly necessary as the script is ending)
+unset HUSKY_SKIP_BUILDID
