@@ -3,9 +3,13 @@ import NiceModal from '@ebay/nice-modal-react';
 import { IconMail } from '@tabler/icons-react';
 import { useStore } from 'statery';
 import Button from '../Button';
-import { updateReadMessagesIdsInDexie } from '@/app/_db/appSettings';
+import {
+  getReadMessagesIdsFromDexie,
+  updateReadMessagesIdsInDexie
+} from '@/app/_db/appSettings';
+import { useEffect, useState } from 'react';
 
-const HordeMessagesModal = () => {
+const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
   const { hordeMessages } = useStore(UserStore);
 
   return (
@@ -41,10 +45,7 @@ const HordeMessagesModal = () => {
             <div className="w-full row justify-end">
               <Button
                 onClick={async () => {
-                  const messagesIds = hordeMessages.map((msg) => msg.id);
-                  await updateReadMessagesIdsInDexie(messagesIds);
-
-                  NiceModal.hide('modal');
+                  await handleClose();
                 }}
               >
                 Close
@@ -58,24 +59,48 @@ const HordeMessagesModal = () => {
 };
 
 export default function HeaderNav_Messages() {
+  const [readMessages, setReadMessages] = useState<string[]>([]);
   const { hordeMessages } = useStore(UserStore);
+
+  const getReadMessages = async () => {
+    const ids = await getReadMessagesIdsFromDexie();
+    setReadMessages(ids || []);
+  };
+
+  useEffect(() => {
+    getReadMessages();
+  }, []);
 
   if (hordeMessages.length === 0) {
     return null;
   }
 
-  console.log(hordeMessages);
+  const hasUnreadMessages = hordeMessages.some(
+    (msg) => !readMessages.includes(msg.id)
+  );
+
+  const handleModalClose = async () => {
+    const messagesIds = hordeMessages.map((msg) => msg.id);
+    await updateReadMessagesIdsInDexie(messagesIds);
+    await getReadMessages();
+
+    NiceModal.hide('modal');
+  };
 
   return (
     <button
-      className="row text-xs py-[4px] px-[6px] rounded-md text-black dark:text-white"
+      className="row text-xs py-[4px] px-[6px] rounded-md text-black dark:text-white relative"
       onClick={() => {
         NiceModal.show('modal', {
-          children: <HordeMessagesModal />
+          children: <HordeMessagesModal handleClose={handleModalClose} />,
+          onClose: handleModalClose
         });
       }}
     >
-      <IconMail stroke={1} size={24} />
+      <IconMail stroke={1} size={22} />
+      {hasUnreadMessages && (
+        <div className="absolute top-[5px] right-[5px] w-2 h-2 bg-red-500 rounded-full" />
+      )}
     </button>
   );
 }

@@ -81,7 +81,7 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
                   </div>
                 ),
                 children: <WorkerDetailsCard edit worker={worker} />,
-                handleClose: fetchAllWorkersDetails,
+                onClose: fetchAllWorkersDetails,
                 title: 'Worker Details',
                 modalStyle: {
                   maxWidth: '1024px',
@@ -118,7 +118,7 @@ export default function MyWorkerSummary({ worker }: { worker: WorkerDetails }) {
                     worker={worker}
                   />
                 ),
-                handleClose: fetchAllWorkersDetails,
+                onClose: fetchAllWorkersDetails,
                 title: 'Modify Worker',
                 modalStyle: {
                   maxWidth: '1024px',

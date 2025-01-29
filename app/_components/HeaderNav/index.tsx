@@ -57,7 +57,7 @@ export default function HeaderNav() {
             Settings
           </Link>
         </div>
-        <div className="row gap-4">
+        <div className="row gap-1">
           <UserKudos />
           <HeaderNavPendingJobs />
           <HeaderNavUserWarning />
