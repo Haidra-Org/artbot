@@ -35,7 +35,13 @@ export const updateUser = (user: HordeUser) => {
 
 export const updateHordeMessages = (messages: WorkerMessage[]) => {
   UserStore.set((state) => ({
-    hordeMessages: [...state.hordeMessages, ...messages]
+    hordeMessages: [
+      ...state.hordeMessages,
+      ...messages.filter(
+        (message) =>
+          !state.hordeMessages.some((existing) => existing.id === message.id)
+      )
+    ]
   }));
 };
 

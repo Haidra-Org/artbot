@@ -112,6 +112,11 @@ export default function Footer() {
               Manage workers
             </Link>
           </div>
+          <div>
+            <Link className={styles.LinkWrapper} href="/user/messages">
+              Messages
+            </Link>
+          </div>
         </div>
         {/* <div className={styles.Section}>
           <div className={styles.SectionTitle}>

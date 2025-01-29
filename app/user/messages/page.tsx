@@ -33,16 +33,25 @@ export default function UserMessagesPage() {
   };
 
   useEffect(() => {
-    getReadMessages();
+    const apikey = AppSettings.apikey();
+    if (apikey) {
+      getReadMessages();
+    }
   }, []);
+
+  const apikey = AppSettings.apikey();
+  const validApiKey = apikey && apikey.trim();
 
   return (
     <div>
       <PageTitle>Messages</PageTitle>
       <div className="pt-4 col gap-4">
         {loading && <div>Loading...</div>}
-        {!loading && <div>No messages.</div>}
-        {!loading && worker_count && hordeMessages.length > 0 && (
+        {!loading && !validApiKey && <div>No messages.</div>}
+        {!loading && hordeMessages.length === 0 && validApiKey && (
+          <div>No messages.</div>
+        )}
+        {!loading && hordeMessages.length > 0 && (
           <div className="col gap-4">
             <div className="col gap-2">
               {hordeMessages.map((msg, index) => {

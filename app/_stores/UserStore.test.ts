@@ -98,4 +98,34 @@ describe('UserStore', () => {
     updateHordeMessages([newMessage]);
     expect(UserStore.state.hordeMessages).toEqual([initialMessage, newMessage]);
   });
+
+  it('should not add duplicate messages when updateHordeMessages is called', () => {
+    // Reset the store state
+    UserStore.set(() => ({ hordeMessages: [] }));
+
+    const message1: WorkerMessage = {
+      expiry: '2025-01-29T08:53:55.000Z',
+      id: '123',
+      message: 'Test message',
+      origin: 'Test Origin',
+      user_id: '1'
+    };
+
+    const message2: WorkerMessage = {
+      expiry: '2025-01-29T08:53:55.000Z',
+      id: '123', // Same ID as message1
+      message: 'Updated message', // Different message content
+      origin: 'Test Origin',
+      user_id: '1'
+    };
+
+    // Add the first message
+    updateHordeMessages([message1]);
+    expect(UserStore.state.hordeMessages).toEqual([message1]);
+
+    // Try to add a message with the same ID
+    updateHordeMessages([message2]);
+    expect(UserStore.state.hordeMessages).toEqual([message1]); // Should still only contain the first message
+    expect(UserStore.state.hordeMessages.length).toBe(1); // Length should still be 1
+  });
 });
