@@ -79,7 +79,10 @@ export default function RootLayout({
             <HeaderNav />
             <main
               className="flex flex-col gap-2 w-full flex-1"
-              style={{ padding: '8px' }}
+              style={{
+                minHeight: '320px',
+                padding: '8px'
+              }}
             >
               <ContentWrapper>
                 <NotificationsManager />

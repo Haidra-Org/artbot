@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from 'react';
 
-const emojis = ['🎨', '😀', '🖌️', '🖍️', '☀️', '🍻', '❤️', '🎉', '🦄', '🤖', '💻', '😬', '🤪', '✨'];
+const emojis = [
+  '🎨',
+  '😀',
+  '🖌️',
+  '🖍️',
+  '☀️',
+  '🍻',
+  '❤️',
+  '🎉',
+  '🦄',
+  '🤖',
+  '💻',
+  '😬',
+  '🤪',
+  '✨',
+  '🚀',
+  '🥴'
+];
 
 export default function AnimatedEmoji() {
   const [currentEmoji, setCurrentEmoji] = useState(emojis[0]);
@@ -8,7 +25,7 @@ export default function AnimatedEmoji() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
-    }, 3000);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, []);
