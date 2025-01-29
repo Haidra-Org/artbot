@@ -2,6 +2,7 @@ import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react';
 import Link from 'next/link';
 import NoiseToImage from '../_components/FrontPage/NoiseToImage';
 import { appBasepath } from '../_utils/browserUtils';
+import ImageCount from './_components/ImageCount';
 
 const imageArray = [
   {
@@ -121,7 +122,8 @@ export default function Home() {
             </div>
           </span>
           , a distributed open source network of GPUs running{' '}
-          <span className="font-bold text-nowrap">Stable Diffusion</span>.
+          <span className="font-bold text-nowrap">Stable Diffusion</span>.{' '}
+          <ImageCount />
         </div>
         <div className="text-[20px] w-full text-center">
           It&apos;s free to use, no registration required.{' '}
@@ -129,6 +131,7 @@ export default function Home() {
             Get started! <IconCircleArrowRight size={20} />
           </Link>
         </div>
+
         <NoiseToImage images={imageArray} />
       </div>
     </div>
