@@ -4,7 +4,7 @@
   "description": "A front-end GUI for interacting with AI Horde's distributed cluster of Stable Diffusion workers",
   "scripts": {
     "build": "next build",
-    "postcommit": "node generateBuildId.js && git add buildId.json && git commit --amend --no-edit --no-verify",
+    "postcommit": "node generateBuildId.js && git add buildId.json && git commit -m '[auto] Update buildId' --no-verify",
     "dev": "next dev",
     "lint": "next lint",
     "postbuild": "cp -R public .next/standalone && cp -R .next/static .next/standalone/.next && cp ecosystem.config.js .next/standalone",
