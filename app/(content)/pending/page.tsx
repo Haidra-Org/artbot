@@ -1,5 +1,5 @@
-import PageTitle from '../_components/PageTitle'
-import PendingImagesPanel from '../_components/PendingImagesPanel'
+import PageTitle from '../../_components/PageTitle';
+import PendingImagesPanel from '../../_components/PendingImagesPanel';
 
 export default function PendingPage() {
   return (
@@ -11,5 +11,5 @@ export default function PendingPage() {
         showTitle={false}
       />
     </div>
-  )
+  );
 }

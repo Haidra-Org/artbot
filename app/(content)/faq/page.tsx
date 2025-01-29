@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
-import PageTitle from '../_components/PageTitle'
-import { FaqApiKey, FaqKudos } from './_component/FAQ_Kudos'
+import { Metadata } from 'next';
+import PageTitle from '../../_components/PageTitle';
+import { FaqApiKey, FaqKudos } from './_component/FAQ_Kudos';
 
 export const metadata: Metadata = {
   title: 'FAQ | ArtBot for Stable Diffusion'
-}
+};
 
 export default function FAQPage() {
   return (
@@ -31,5 +31,5 @@ export default function FAQPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
