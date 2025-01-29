@@ -1,4 +1,4 @@
-import PageTitle from '../_components/PageTitle';
+import PageTitle from '@/app/_components/PageTitle';
 
 export default async function UserProfilePage() {
   return (

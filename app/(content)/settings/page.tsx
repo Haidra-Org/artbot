@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
-import PageTitle from '../_components/PageTitle';
+import PageTitle from '../../_components/PageTitle';
 import Apikey from './_component/Apikey';
 import WorkerList from './_component/WorkerList';
 import SharedKeys from './_component/SharedKeys';
-import SectionTitle from '../_components/SectionTitle';
-import Section from '../_components/Section';
-import Linker from '../_components/Linker';
+import SectionTitle from '../../_components/SectionTitle';
+import Section from '../../_components/Section';
+import Linker from '../../_components/Linker';
 
 export const metadata: Metadata = {
   title: 'Settings | ArtBot for Stable Diffusion'

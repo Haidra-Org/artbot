@@ -1,7 +1,7 @@
 import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react';
 import Link from 'next/link';
-import NoiseToImage from './_components/FrontPage/NoiseToImage';
-import { appBasepath } from './_utils/browserUtils';
+import NoiseToImage from '../_components/FrontPage/NoiseToImage';
+import { appBasepath } from '../_utils/browserUtils';
 
 const imageArray = [
   {

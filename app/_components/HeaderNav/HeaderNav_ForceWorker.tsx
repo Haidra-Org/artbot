@@ -1,7 +1,7 @@
 'use client';
 
 import { UserStore } from '@/app/_stores/UserStore';
-import ForceWorkerModal from '@/app/create/_component/ForceWorkerModal';
+import ForceWorkerModal from '@/app/(content)/create/_component/ForceWorkerModal';
 import NiceModal from '@ebay/nice-modal-react';
 import { IconAlertTriangleFilled } from '@tabler/icons-react';
 import { useStore } from 'statery';

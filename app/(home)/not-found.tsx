@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import PageTitle from './_components/PageTitle'
-import { appBasepath } from './_utils/browserUtils'
+import PageTitle from '../_components/PageTitle';
+import { appBasepath } from '../_utils/browserUtils';
 
 export default function NotFoundPage() {
   return (
@@ -20,5 +20,5 @@ export default function NotFoundPage() {
       </div>
       <div>Oh, no! This is unfortunate. It appears there is nothing here.</div>
     </div>
-  )
+  );
 }

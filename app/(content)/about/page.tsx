@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
 /* eslint-disable @next/next/no-img-element */
-import Linker from '../_components/Linker'
-import PageTitle from '../_components/PageTitle'
-import { appBasepath } from '../_utils/browserUtils'
+import Linker from '../../_components/Linker';
+import PageTitle from '../../_components/PageTitle';
+import { appBasepath } from '../../_utils/browserUtils';
 
 export default function AboutPage() {
   return (
@@ -46,5 +46,5 @@ export default function AboutPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

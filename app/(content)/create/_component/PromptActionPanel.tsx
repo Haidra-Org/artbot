@@ -1,12 +1,13 @@
-'use client'
+'use client';
 
-import Button from '@/app/_components/Button'
-import DeleteConfirmation from '@/app/_components/Modal_DeleteConfirmation'
-import PromptWarning from '@/app/_components/PromptWarning'
-import PromptInput from '@/app/_data-models/PromptInput'
-import { deleteImageFileByArtbotIdTx } from '@/app/_db/ImageFiles'
-import { useInput } from '@/app/_providers/PromptInputProvider'
-import NiceModal from '@ebay/nice-modal-react'
+import { useStore } from 'statery';
+import Button from '@/app/_components/Button';
+import DeleteConfirmation from '@/app/_components/Modal_DeleteConfirmation';
+import PromptWarning from '@/app/_components/PromptWarning';
+import PromptInput from '@/app/_data-models/PromptInput';
+import { deleteImageFileByArtbotIdTx } from '@/app/_db/ImageFiles';
+import { useInput } from '@/app/_providers/PromptInputProvider';
+import NiceModal from '@ebay/nice-modal-react';
 import {
   IconDevicesPc,
   IconHourglass,
@@ -14,32 +15,31 @@ import {
   IconLock,
   IconSquarePlus,
   IconTrash
-} from '@tabler/icons-react'
-import { useRouter } from 'next/navigation'
-import useCreateImageRequest from '../_hook/useCreateImageRequest'
-import clsx from 'clsx'
-import { AppConstants } from '@/app/_data-models/AppConstants'
-import ForceWorkerModal from './ForceWorkerModal'
-import { useStore } from 'statery'
-import { UserStore } from '@/app/_stores/UserStore'
+} from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import useCreateImageRequest from '../_hook/useCreateImageRequest';
+import clsx from 'clsx';
+import { AppConstants } from '@/app/_data-models/AppConstants';
+import ForceWorkerModal from '@/app/(content)/create/_component/ForceWorkerModal';
+import { UserStore } from '@/app/_stores/UserStore';
 
 export default function PromptActionPanel({
   height = 36,
   isSticky = false
 }: {
-  height?: number
-  isSticky?: boolean
+  height?: number;
+  isSticky?: boolean;
 }) {
-  const { forceSelectedWorker } = useStore(UserStore)
-  const { kudos, setInput, setSourceImages } = useInput()
+  const { forceSelectedWorker } = useStore(UserStore);
+  const { kudos, setInput, setSourceImages } = useInput();
   const {
     emptyInput,
     errors,
     handleCreateClick,
     hasCriticalError,
     requestPending
-  } = useCreateImageRequest()
-  const router = useRouter()
+  } = useCreateImageRequest();
+  const router = useRouter();
 
   return (
     <div className={clsx('row w-full', !isSticky && 'justify-between')}>
@@ -66,22 +66,22 @@ export default function PromptActionPanel({
                     </>
                   }
                   onDelete={async () => {
-                    setInput({ ...new PromptInput() })
+                    setInput({ ...new PromptInput() });
                     await deleteImageFileByArtbotIdTx(
                       AppConstants.IMAGE_UPLOAD_TEMP_ID
-                    )
-                    setSourceImages([])
-                    window.scrollTo(0, 0)
+                    );
+                    setSourceImages([]);
+                    window.scrollTo(0, 0);
 
                     // Strip hash off URL if it exists.
-                    router.push('/create')
+                    router.push('/create');
 
                     // For now, just close modal on delete
-                    NiceModal.remove('modal')
+                    NiceModal.remove('modal');
                   }}
                 />
               )
-            })
+            });
           }}
           style={{
             height: `${height}px`,
@@ -127,7 +127,7 @@ export default function PromptActionPanel({
             onClick={() => {
               NiceModal.show('modal', {
                 children: <PromptWarning errors={errors} />
-              })
+              });
             }}
             style={{
               height: `${height}px`
@@ -144,7 +144,7 @@ export default function PromptActionPanel({
             NiceModal.show('modal', {
               children: <ForceWorkerModal />,
               modalClassName: 'max-w-[640px]'
-            })
+            });
           }}
           style={{
             backgroundColor: forceSelectedWorker
@@ -163,5 +163,5 @@ export default function PromptActionPanel({
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,16 +1,15 @@
 import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
 
-import HeaderNav from './_components/HeaderNav';
-import './globals.css';
-import ModalProvider from './_providers/ModalProvider';
-import ContentWrapper from './_components/ContentWrapper';
-import MobileFooter from './_components/MobileFooter';
-import AppInit from './_components/AppInit';
-import { appBasepath } from './_utils/browserUtils';
-import Footer from './_components/Footer';
-import BetaBanner from './_components/NotificationBanners/BetaWarningBanner';
-import NotificationsManager from './_components/NotificationBanners/NotificationsManager';
+import '../globals.css';
+import { appBasepath } from '../_utils/browserUtils';
+import ModalProvider from '../_providers/ModalProvider';
+import AppInit from '../_components/AppInit';
+import HeaderNav from '../_components/HeaderNav';
+import ContentWrapper from '../_components/ContentWrapper';
+import NotificationsManager from '../_components/NotificationBanners/NotificationsManager';
+import Footer from '../_components/Footer';
+import MobileFooter from '../_components/MobileFooter';
 
 const APP_NAME = 'ArtBot';
 const APP_DEFAULT_TITLE = 'ArtBot for Stable Diffusion';
@@ -67,7 +66,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href={`${appBasepath()}/manifest.json`}></link>
       </head>
-      <body className="flex flex-col justify-center min-h-screen" id="__app">
+      <body className="flex flex-col justify-center" id="__app">
         <ModalProvider>
           <Toaster />
           <AppInit />

@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
-import PageTitle from '../_components/PageTitle';
-import { PromptInputProvider } from '../_providers/PromptInputProvider';
+import PageTitle from '../../_components/PageTitle';
+import { PromptInputProvider } from '../../_providers/PromptInputProvider';
 import PromptInputForm from './_component/PromptInputForm';
 import PromptActionPanel from './_component/PromptActionPanel';
-import PendingImagesPanel from '../_components/PendingImagesPanel';
-import AdvancedOptions from '../_components/AdvancedOptions';
+import PendingImagesPanel from '../../_components/PendingImagesPanel';
+import AdvancedOptions from '../../_components/AdvancedOptions';
 import PromptStickyCreate from './_component/PromptStickyCreate';
 import { Suspense } from 'react';
 import CustomQueryParamsHandler from './_component/CustomQueryParamsHandler';
