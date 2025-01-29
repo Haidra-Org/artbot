@@ -11,6 +11,7 @@ const IMAGE_DISPLAY_DURATION_MS = 5000;
 interface ImageItem {
   url: string;
   title: string;
+  model: string;
 }
 
 interface CarouselProps {
@@ -87,6 +88,16 @@ const NoiseToImage: React.FC<CarouselProps> = ({
             transition: `opacity ${FADE_DURATION_MS}ms ease-in-out`
           }}
         />
+        <div
+          className="absolute bottom-2 right-2 text-sm italic text-white px-2 py-1 rounded"
+          style={{
+            opacity: showImage ? 1 : 0,
+            transition: `opacity ${FADE_DURATION_MS}ms ease-in-out`,
+            backgroundColor: 'rgba(0, 0, 0, 0.4)'
+          }}
+        >
+          {images[currentIndex].model}
+        </div>
       </div>
     </div>
   );
