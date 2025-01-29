@@ -8,9 +8,19 @@ import {
   updateReadMessagesIdsInDexie
 } from '@/app/_db/appSettings';
 import { useEffect, useState } from 'react';
+import HeaderNav_IconWrapper from './_HeaderNav_IconWrapper';
 
 const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
   const { hordeMessages } = useStore(UserStore);
+  const [readMessages, setReadMessages] = useState<string[]>([]);
+
+  useEffect(() => {
+    const getReadMessages = async () => {
+      const ids = await getReadMessagesIdsFromDexie();
+      setReadMessages(ids || []);
+    };
+    getReadMessages();
+  }, []);
 
   return (
     <div
@@ -25,6 +35,7 @@ const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
           </div>
           <div className="col gap-2">
             {hordeMessages.map((msg) => {
+              const isUnread = !readMessages.includes(msg.id);
               return (
                 <div
                   key={msg.id}
@@ -34,7 +45,12 @@ const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
                     marginBottom: '2px'
                   }}
                 >
-                  <div className="font-bold text-sm">{msg.origin}</div>
+                  <div className="font-bold text-sm flex items-center gap-2">
+                    {isUnread && (
+                      <div className="w-2 h-2 bg-red-500 rounded-full" />
+                    )}
+                    {msg.origin}
+                  </div>
                   <div className="text-xs text-secondary pb-2">
                     {new Date(msg.expiry).toLocaleString()}
                   </div>
@@ -88,8 +104,7 @@ export default function HeaderNav_Messages() {
   };
 
   return (
-    <button
-      className="row text-xs py-[4px] px-[6px] rounded-md text-black dark:text-white relative"
+    <HeaderNav_IconWrapper
       onClick={() => {
         NiceModal.show('modal', {
           children: <HordeMessagesModal handleClose={handleModalClose} />,
@@ -101,6 +116,6 @@ export default function HeaderNav_Messages() {
       {hasUnreadMessages && (
         <div className="absolute top-[5px] right-[5px] w-2 h-2 bg-red-500 rounded-full" />
       )}
-    </button>
+    </HeaderNav_IconWrapper>
   );
 }

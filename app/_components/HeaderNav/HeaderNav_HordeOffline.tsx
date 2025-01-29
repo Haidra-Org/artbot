@@ -2,6 +2,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { useStore } from 'statery';
 import { AppStore } from '@/app/_stores/AppStore';
+import HeaderNav_IconWrapper from './_HeaderNav_IconWrapper';
 
 const HordeOfflineModal = () => {
   return (
@@ -37,8 +38,7 @@ export default function HeaderNav_HordeOffline() {
   }
 
   return (
-    <button
-      className="row text-xs py-[4px] px-[6px] rounded-md"
+    <HeaderNav_IconWrapper
       onClick={() => {
         NiceModal.show('modal', {
           children: <HordeOfflineModal />
@@ -46,6 +46,6 @@ export default function HeaderNav_HordeOffline() {
       }}
     >
       <IconAlertTriangle color="red" stroke={1.5} size={24} />
-    </button>
+    </HeaderNav_IconWrapper>
   );
 }

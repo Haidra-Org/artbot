@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { AppStore } from '@/app/_stores/AppStore'
-import { UserStore } from '@/app/_stores/UserStore'
-import ForceWorkerModal from '@/app/create/_component/ForceWorkerModal'
-import NiceModal from '@ebay/nice-modal-react'
-import { IconAlertTriangleFilled, IconWifiOff } from '@tabler/icons-react'
-import { useStore } from 'statery'
+import { AppStore } from '@/app/_stores/AppStore';
+import { UserStore } from '@/app/_stores/UserStore';
+import ForceWorkerModal from '@/app/create/_component/ForceWorkerModal';
+import NiceModal from '@ebay/nice-modal-react';
+import { IconAlertTriangleFilled, IconWifiOff } from '@tabler/icons-react';
+import { useStore } from 'statery';
 
 export default function HeaderNavUserWarning() {
-  const { online } = useStore(AppStore)
-  const { forceSelectedWorker } = useStore(UserStore)
+  const { online } = useStore(AppStore);
+  const { forceSelectedWorker } = useStore(UserStore);
 
-  if (!forceSelectedWorker && online) return null
+  if (!forceSelectedWorker && online) return null;
 
   return (
     <div className="row gap-2">
@@ -23,7 +23,7 @@ export default function HeaderNavUserWarning() {
               NiceModal.show('modal', {
                 children: <ForceWorkerModal />,
                 modalClassName: 'max-w-[640px]'
-              })
+              });
             }
           }}
         >
@@ -43,7 +43,7 @@ export default function HeaderNavUserWarning() {
                 </div>
               ),
               modalClassName: 'max-w-[640px]'
-            })
+            });
           }}
           title="ArtBot server is currently offline."
         >
@@ -51,5 +51,5 @@ export default function HeaderNavUserWarning() {
         </div>
       )}
     </div>
-  )
+  );
 }
