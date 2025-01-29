@@ -1,1 +1,5 @@
- 
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Post-commit hook is running!"
+npm run postcommit
