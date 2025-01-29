@@ -5,6 +5,36 @@ import { appBasepath } from '../_utils/browserUtils';
 
 const imageArray = [
   {
+    url: `${appBasepath()}/front-page/wasteland-poster.png`,
+    title:
+      'A post-apocalyptic wasteland with an amusement park in ruins in the style of vintage poster, featuring distressed textures, muted colors, and bold typography, reminiscent of mid-century advertisements or travel posters. The poster says "WELCOME!!!"',
+    model: 'Flux.1-Schnell fp8 (Compact)'
+  },
+  {
+    url: `${appBasepath()}/front-page/steampunk-pc.png`,
+    title:
+      'Schematics for a steampunk  computer from the Victorian Age, showcasing long lost technology. ink and watercolor on parchment',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: `${appBasepath()}/front-page/super-penguin.png`,
+    title:
+      'A penguin dressed like a superhero, wearing a red cape and flying through the air. Cartoon comic illustration in the style of roy lichtenstein and steve ditko, centered on a white background',
+    model: 'AlbedoBase XL (SDXL)'
+  },
+  {
+    url: `${appBasepath()}/front-page/industrial-lines.png`,
+    title:
+      'Industrial urban scene featuring stark, geometric buildings lining a narrow, reflective canal. Power lines stretch overhead, enhancing the sense of depth in this minimalist black and white illustration.',
+    model: 'Flux.1-Schnell fp8 (Compact)'
+  },
+  {
+    url: `${appBasepath()}/front-page/refined-penguin.png`,
+    title:
+      'A refined watercolor portrait of a distinguished penguin in a tailored suit and aviator sunglasses, looking heroic. Vibrant colors, artistic brushstrokes',
+    model: 'Flux.1-Schnell fp8 (Compact)'
+  },
+  {
     url: `${appBasepath()}/front-page/himalays.png`,
     title: 'Himalayan mountains, flat design, vibrant colors, Moebius',
     model: 'Deliberate'
