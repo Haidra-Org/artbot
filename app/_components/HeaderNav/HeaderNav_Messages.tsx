@@ -87,8 +87,6 @@ export default function HeaderNav_Messages() {
   const { hordeMessages, userDetails = {} as HordeUser } = useStore(UserStore);
   const { worker_count } = userDetails;
 
-  console.log(`user`);
-
   const getReadMessages = async () => {
     const ids = await getReadMessagesIdsFromDexie();
     setReadMessages(ids || []);
