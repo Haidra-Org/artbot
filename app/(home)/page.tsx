@@ -2,7 +2,7 @@ import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react';
 import Link from 'next/link';
 import NoiseToImage from '../_components/FrontPage/NoiseToImage';
 import { appBasepath } from '../_utils/browserUtils';
-import ImageCount from './_components/ImageCount';
+import TotalImagesGenerated from '../_components/TotalImagesGenerated/TotalImagesGenerated';
 
 const imageArray = [
   {
@@ -123,7 +123,7 @@ export default function Home() {
           </span>
           , a distributed open source network of GPUs running{' '}
           <span className="font-bold text-nowrap">Stable Diffusion</span>.{' '}
-          <ImageCount />
+          <TotalImagesGenerated />
         </div>
         <div className="text-[20px] w-full text-center">
           It&apos;s free to use, no registration required.{' '}

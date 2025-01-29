@@ -1,13 +1,12 @@
-'use client';
-
 /* eslint-disable @next/next/no-img-element */
+import TotalImagesGenerated from '@/app/_components/TotalImagesGenerated/TotalImagesGenerated';
 import Linker from '../../_components/Linker';
 import PageTitle from '../../_components/PageTitle';
 import { appBasepath } from '../../_utils/browserUtils';
 
 export default function AboutPage() {
   return (
-    <div className="col gap-x-20">
+    <div className="col gap-x-20 max-w-[1000px]">
       <PageTitle>About ArtBot</PageTitle>
       <div className="max-w-[1000px]">
         <img
@@ -21,11 +20,11 @@ export default function AboutPage() {
           }}
         />
       </div>
-      <div className="col gap-2">
+      <div className="flex flex-col p-2 gap-8 text-[20px]">
         <div>
           ArtBot is a front-end web client designed for interacting with the{' '}
           <Linker href="https://aihorde.net">AI Horde</Linker> distributed
-          cluster.
+          cluster. <TotalImagesGenerated />
         </div>
         <div>
           The AI Horde is an open source platform that utilizes idle GPU power
