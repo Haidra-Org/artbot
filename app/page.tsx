@@ -1,7 +1,7 @@
-import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react'
-import Link from 'next/link'
-import NoiseToImage from './_components/FrontPage/NoiseToImage'
-import { appBasepath } from './_utils/browserUtils'
+import { IconCircleArrowRight, IconExternalLink } from '@tabler/icons-react';
+import Link from 'next/link';
+import NoiseToImage from './_components/FrontPage/NoiseToImage';
+import { appBasepath } from './_utils/browserUtils';
 
 const imageArray = [
   {
@@ -57,18 +57,17 @@ const imageArray = [
   },
   {
     url: `${appBasepath()}/front-page/artbot_poster.png`,
-    title:
-      'Movie poster that says "ARTBOT!" in the style of a 1980s comedy',
+    title: 'Movie poster that says "ARTBOT!" in the style of a 1980s comedy',
     model: 'Stable Cascade'
   }
-]
+];
 
 export default function Home() {
   // Randomize imageArray order:
-  imageArray.sort(() => Math.random() - 0.5)
+  imageArray.sort(() => Math.random() - 0.5);
 
   return (
-    <div className="flex flex-col p-16 gap-8 items-center text-center">
+    <div className="flex flex-col p-2 md:p-16 gap-8 items-center text-center">
       <h1 className="leading-[64px] text-[64px] md:text-[128px] md:leading-[128px]">
         Welcome to <span className="primary-color font-bold">ArtBot!</span>
       </h1>
@@ -103,5 +102,5 @@ export default function Home() {
         <NoiseToImage images={imageArray} />
       </div>
     </div>
-  )
+  );
 }
