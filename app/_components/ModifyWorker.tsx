@@ -40,7 +40,7 @@ export default function ModifyWorker({
     const payload: { info: string; name: string; team?: string } = {
       info: workerInfo,
       name: workerName,
-      team: ''
+      team: 'none'
     };
 
     if (workerTeam.id) {

@@ -118,3 +118,38 @@ export const getUserInputFromDexie = async () => {
 
   return null;
 };
+
+export const getReadMessagesIdsFromDexie = async () => {
+  const readIds = await db.appSettings
+    .where({ key: 'readMessagesIds' })
+    .first();
+  return readIds?.value as string[];
+};
+
+export const updateReadMessagesIdsInDexie = async (ids: string[]) => {
+  const readIds = await db.appSettings
+    .where({ key: 'readMessagesIds' })
+    .first();
+  const existingValues = (readIds?.value as string[]) || [];
+
+  // Filter out ids that are already in existingValues
+  const newIds = ids.filter((id) => !existingValues.includes(id));
+
+  // Filter out existingValues that are not in ids
+  // e.g., ids that are no longer present in the Horde Message payload
+  const validExistingIds = existingValues.filter((id) => ids.includes(id));
+
+  // Combine filtered existing ids with new ids
+  const updatedIds = [...validExistingIds, ...newIds];
+
+  if (readIds?.id) {
+    await db.appSettings.update(readIds.id, {
+      value: updatedIds
+    });
+  } else {
+    await db.appSettings.add({
+      key: 'readMessagesIds',
+      value: updatedIds
+    });
+  }
+};
