@@ -1,5 +1,9 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
+
+# Skip if this is an amend commit
+if [ -n "$(git rev-list -n1 --format=%B HEAD | grep -i 'amend')" ]; then
+  exit 0
+fi
 
 echo "Post-commit hook is running!"
 npm run postcommit
