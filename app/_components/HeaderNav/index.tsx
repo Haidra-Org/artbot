@@ -4,7 +4,6 @@ import Link from 'next/link';
 import HamburgerNavButton from './HamburgerNavButton';
 import UserKudos from './HeaderNav_UserKudos';
 import HeaderNavPendingJobs from './HeaderNav_PendingJobs';
-import HeaderNavUserWarning from './HeaderNav_ForceWorker';
 import { appBasepath } from '@/app/_utils/browserUtils';
 import HeaderNavHordePerformance from './HeaderNav_HordePerformance';
 import HeaderNav_HordeOffline from './HeaderNav_HordeOffline';
