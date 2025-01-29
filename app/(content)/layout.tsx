@@ -66,7 +66,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href={`${appBasepath()}/manifest.json`}></link>
       </head>
-      <body className="flex flex-col justify-center" id="__app">
+      <body className="flex flex-col min-h-screen" id="__app">
         <ModalProvider>
           <Toaster />
           <AppInit />
