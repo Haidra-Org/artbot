@@ -4,11 +4,13 @@ import Link from 'next/link';
 import HamburgerNavButton from './HamburgerNavButton';
 import UserKudos from './HeaderNav_UserKudos';
 import HeaderNavPendingJobs from './HeaderNav_PendingJobs';
-import HeaderNavUserWarning from './HeaderNav_UserWarning';
+import HeaderNavUserWarning from './HeaderNav_ForceWorker';
 import { appBasepath } from '@/app/_utils/browserUtils';
 import HeaderNavHordePerformance from './HeaderNav_HordePerformance';
 import HeaderNav_HordeOffline from './HeaderNav_HordeOffline';
 import HeaderNav_Messages from './HeaderNav_Messages';
+import HeaderNavArtBotOffline from './HeaderNav_ArtBotOffline';
+import HeaderNavForceWorker from './HeaderNav_ForceWorker';
 
 export default function HeaderNav() {
   const LinkStyles =
@@ -57,13 +59,14 @@ export default function HeaderNav() {
             Settings
           </Link>
         </div>
-        <div className="row gap-1">
+        <div className="row gap-[2px]">
           <UserKudos />
+          <HeaderNavForceWorker />
           <HeaderNavPendingJobs />
-          <HeaderNavUserWarning />
           <HeaderNavHordePerformance />
           <HeaderNav_Messages />
           <HeaderNav_HordeOffline />
+          <HeaderNavArtBotOffline />
         </div>
       </div>
     </header>

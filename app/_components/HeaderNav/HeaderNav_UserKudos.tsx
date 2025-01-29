@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { IconCoins } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
-import { ThreeDots } from 'react-loader-spinner'
-import { useStore } from 'statery'
+import { IconCoins } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
+import { ThreeDots } from 'react-loader-spinner';
+import { useStore } from 'statery';
 
 // import UserKudosModal from '@/app/_components/modals/UserKudosModal'
-import { AppSettings } from '@/app/_data-models/AppSettings'
-import { formatKudos } from '@/app/_utils/numberUtils'
-import NiceModal from '@ebay/nice-modal-react'
+import { AppSettings } from '@/app/_data-models/AppSettings';
+import { formatKudos } from '@/app/_utils/numberUtils';
+import NiceModal from '@ebay/nice-modal-react';
 
-import { UserStore } from '../../_stores/UserStore'
-import UserKudosModal from '../Modal_UserKudos'
-import { AppConstants } from '../../_data-models/AppConstants'
+import { UserStore } from '../../_stores/UserStore';
+import UserKudosModal from '../Modal_UserKudos';
+import { AppConstants } from '../../_data-models/AppConstants';
 
 export default function UserKudos() {
-  const { sharedKey, userDetails } = useStore(UserStore)
-  const { kudos } = userDetails
+  const { sharedKey, userDetails } = useStore(UserStore);
+  const { kudos } = userDetails;
 
   // Prevent hydration warnings
-  const [clientApiKey, setClientApiKey] = useState<string | null>(null)
-  const [isClient, setIsClient] = useState(false)
+  const [clientApiKey, setClientApiKey] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   // Prevent hydration warnings
   useEffect(() => {
-    const apikey = AppSettings.apikey()
+    const apikey = AppSettings.apikey();
 
     if (!apikey || !apikey.trim() || apikey === AppConstants.AI_HORDE_ANON_KEY)
-      return
-    setClientApiKey(apikey)
-    setIsClient(true)
-  }, [userDetails])
+      return;
+    setClientApiKey(apikey);
+    setIsClient(true);
+  }, [userDetails]);
 
   if (
     !isClient ||
@@ -38,7 +38,7 @@ export default function UserKudos() {
     (!clientApiKey && !userDetails.username) ||
     (!userDetails.username && !sharedKey)
   ) {
-    return null
+    return null;
   }
 
   return (
@@ -47,8 +47,9 @@ export default function UserKudos() {
       onClick={() => {
         NiceModal.show('modal', {
           children: <UserKudosModal />
-        })
+        });
       }}
+      title="User kudos"
     >
       <IconCoins stroke={1} size={20} />
       {clientApiKey && !userDetails.username ? (
@@ -68,5 +69,5 @@ export default function UserKudos() {
         <span>{formatKudos(kudos)}</span>
       )}
     </button>
-  )
+  );
 }

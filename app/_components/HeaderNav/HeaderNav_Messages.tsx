@@ -118,6 +118,7 @@ export default function HeaderNav_Messages() {
           onClose: handleModalClose
         });
       }}
+      title="AI Horde messages"
     >
       <IconMail stroke={1} size={22} />
       {hasUnreadMessages && (

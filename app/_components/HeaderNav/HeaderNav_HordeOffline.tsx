@@ -44,6 +44,7 @@ export default function HeaderNav_HordeOffline() {
           children: <HordeOfflineModal />
         });
       }}
+      title="AI Horde is offline"
     >
       <IconAlertTriangle color="red" stroke={1.5} size={24} />
     </HeaderNav_IconWrapper>

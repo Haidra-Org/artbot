@@ -11,6 +11,7 @@ export default function HeaderNavHordePerformance() {
           children: <HordePerformanceModal />
         });
       }}
+      title="AI Horde performance"
     >
       <IconDeviceDesktopAnalytics stroke={1} size={22} />
     </HeaderNav_IconWrapper>
