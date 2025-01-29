@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from 'react';
 import HeaderNav_IconWrapper from './_HeaderNav_IconWrapper';
 import { HordeUser } from '@/app/_types/HordeTypes';
+import { AppSettings } from '@/app/_data-models/AppSettings';
 
 const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
   const { hordeMessages } = useStore(UserStore);
@@ -87,18 +88,19 @@ export default function HeaderNav_Messages() {
   const { hordeMessages, userDetails = {} as HordeUser } = useStore(UserStore);
   const { worker_count } = userDetails;
 
-  console.log(`user`);
-
   const getReadMessages = async () => {
     const ids = await getReadMessagesIdsFromDexie();
     setReadMessages(ids || []);
   };
 
   useEffect(() => {
-    getReadMessages();
+    const apikey = AppSettings.apikey();
+    if (apikey) {
+      getReadMessages();
+    }
   }, []);
 
-  if (hordeMessages.length === 0 || !worker_count) {
+  if (hordeMessages.length === 0) {
     return null;
   }
 

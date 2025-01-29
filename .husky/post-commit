@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "Post-commit hook is running!"
+npm run postcommit

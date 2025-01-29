@@ -7,6 +7,7 @@ import {
   IconBuildingCommunity,
   IconCamera,
   IconExternalLink,
+  IconHearts,
   IconInfoCircle,
   IconMessage,
   IconPhoto,
@@ -112,6 +113,11 @@ export default function Footer() {
               Manage workers
             </Link>
           </div>
+          <div>
+            <Link className={styles.LinkWrapper} href="/user/messages">
+              Messages
+            </Link>
+          </div>
         </div>
         {/* <div className={styles.Section}>
           <div className={styles.SectionTitle}>
@@ -159,6 +165,15 @@ export default function Footer() {
           >
             <div className="row gap-2">
               AI Horde <IconExternalLink size={18} stroke={1} />
+            </div>
+          </Link>
+          <Link
+            href="https://discord.gg/3DxrhksKzn"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className="row gap-2">
+              Discord <IconExternalLink size={18} stroke={1} />
             </div>
           </Link>
           {/* <div>
@@ -220,6 +235,61 @@ export default function Footer() {
           {/* <div>
             <Link className={styles.LinkWrapper} href="/contact">
               Send message
+            </Link>
+          </div> */}
+        </div>
+        <div className={styles.Section}>
+          <div className={styles.SectionTitle}>
+            <IconHearts stroke={1} />
+            Friends
+          </div>
+          <div>
+            <Link
+              href="https://www.aiscribbles.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="row gap-2">
+                AI Scribbles <IconExternalLink size={18} stroke={1} />
+              </div>
+            </Link>
+          </div>
+          <div>
+            <Link
+              href="https://github.com/amiantos/aislingeach"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="row gap-2">
+                Aislingeach (iOS) <IconExternalLink size={18} stroke={1} />
+              </div>
+            </Link>
+          </div>
+          <div>
+            <Link
+              href="https://horde-ng.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="row gap-2">
+                HordeNG <IconExternalLink size={18} stroke={1} />
+              </div>
+            </Link>
+          </div>
+          <div>
+            <Link
+              href="https://dbzer0.itch.io/lucid-creations"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="row gap-2">
+                Lucid Creations <IconExternalLink size={18} stroke={1} />
+              </div>
+            </Link>
+          </div>
+          {/* <div>
+            <Link className={styles.LinkWrapper} href="/showcase">
+              Image showcase
             </Link>
           </div> */}
         </div>
