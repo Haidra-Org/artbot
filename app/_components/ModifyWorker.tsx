@@ -4,7 +4,6 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import { IconTrash } from '@tabler/icons-react';
 import Input from './Input';
-// import Select from './Select';
 import { WorkerDetails } from '../_types/HordeTypes';
 import Button from './Button';
 import DeleteConfirmation from './Modal_DeleteConfirmation';
@@ -13,6 +12,7 @@ import { AppSettings } from '../_data-models/AppSettings';
 import { AppConstants } from '../_data-models/AppConstants';
 import { fetchTeams } from '../_data-models/HordeTeams';
 import { SelectOption } from './ComboBox';
+import Select from './Select';
 
 export default function ModifyWorker({
   worker,
@@ -100,7 +100,6 @@ export default function ModifyWorker({
     <div className="mt-2 pb-2">
       <h2 className="row font-bold mb-4">Modify Worker</h2>
       <div className="flex flex-col gap-4 w-full">
-        {/* Name input */}
         <div className="form-control w-full">
           <label className="label">
             <span className="label-text">Worker Name</span>
@@ -114,7 +113,6 @@ export default function ModifyWorker({
           />
         </div>
 
-        {/* Description textarea */}
         <div className="form-control w-full">
           <label className="label">
             <span className="label-text">Description</span>
@@ -127,7 +125,7 @@ export default function ModifyWorker({
           />
         </div>
 
-        {/* <div className="form-control w-full">
+        <div className="form-control w-full">
           <label className="label">
             <span className="label-text">Team</span>
           </label>
@@ -145,7 +143,7 @@ export default function ModifyWorker({
               label: workerTeam.name
             }}
           />
-        </div> */}
+        </div>
 
         <div className="text-sm text-gray-500">
           Please note, it can take up to 5 minutes before the changes are

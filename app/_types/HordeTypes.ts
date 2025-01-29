@@ -320,3 +320,11 @@ export interface WorkerDetails {
   trusted: boolean;
   uptime: number;
 }
+
+export interface WorkerMessage {
+  expiry: string;
+  id: string;
+  message: string;
+  origin: string;
+  user_id: string;
+}

@@ -1,16 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
-'use client'
-import Link from 'next/link'
-import HamburgerNavButton from './HamburgerNavButton'
-import UserKudos from './HeaderNav_UserKudos'
-import HeaderNavPendingJobs from './HeaderNav_PendingJobs'
-import HeaderNavUserWarning from './HeaderNav_UserWarning'
-import { appBasepath } from '@/app/_utils/browserUtils'
-import HeaderNavHordePerformance from './HeaderNav_HordePerformance'
+'use client';
+import Link from 'next/link';
+import HamburgerNavButton from './HamburgerNavButton';
+import UserKudos from './HeaderNav_UserKudos';
+import HeaderNavPendingJobs from './HeaderNav_PendingJobs';
+import { appBasepath } from '@/app/_utils/browserUtils';
+import HeaderNavHordePerformance from './HeaderNav_HordePerformance';
+import HeaderNav_HordeOffline from './HeaderNav_HordeOffline';
+import HeaderNav_Messages from './HeaderNav_Messages';
+import HeaderNavArtBotOffline from './HeaderNav_ArtBotOffline';
+import HeaderNavForceWorker from './HeaderNav_ForceWorker';
 
 export default function HeaderNav() {
   const LinkStyles =
-    'normal-case px-[12px] font-bold text-black dark:text-white text-xs hover:primary-color'
+    'normal-case px-[12px] font-bold text-black dark:text-white text-xs hover:primary-color';
 
   return (
     <header
@@ -55,13 +58,16 @@ export default function HeaderNav() {
             Settings
           </Link>
         </div>
-        <div className="row gap-4">
-          <HeaderNavPendingJobs />
-          <HeaderNavUserWarning />
-          <HeaderNavHordePerformance />
+        <div className="row gap-[2px]">
           <UserKudos />
+          <HeaderNavForceWorker />
+          <HeaderNavPendingJobs />
+          <HeaderNavHordePerformance />
+          <HeaderNav_Messages />
+          <HeaderNav_HordeOffline />
+          <HeaderNavArtBotOffline />
         </div>
       </div>
     </header>
-  )
+  );
 }

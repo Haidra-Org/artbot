@@ -197,7 +197,7 @@ export default function Footer() {
           </div>
           <div>
             <Link
-              href="https://github.com/daveschumaker/artbot-for-stable-diffusion/issues"
+              href="https://github.com/Haidra-Org/artbot/issues"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -245,7 +245,7 @@ export default function Footer() {
           </div> */}
           <div>
             <Link
-              href="https://github.com/daveschumaker/artbot-for-stable-diffusion"
+              href="https://github.com/Haidra-Org/artbot"
               target="_blank"
               rel="noopener noreferrer"
             >

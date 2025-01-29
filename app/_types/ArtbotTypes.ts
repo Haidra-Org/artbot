@@ -2,7 +2,11 @@ import { ArtBotHordeJob } from '../_data-models/ArtBotHordeJob';
 import { Embedding } from '../_data-models/Civitai';
 import PromptInput from '../_data-models/PromptInput';
 
-export type AppSettingsTableKeys = 'favoriteModels' | 'imageSize' | 'userInput';
+export type AppSettingsTableKeys =
+  | 'favoriteModels'
+  | 'imageSize'
+  | 'readMessagesIds'
+  | 'userInput';
 
 export type AppSettingsTable = {
   id?: number;

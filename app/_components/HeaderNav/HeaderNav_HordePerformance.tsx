@@ -1,18 +1,19 @@
 import NiceModal from '@ebay/nice-modal-react';
 import { IconDeviceDesktopAnalytics } from '@tabler/icons-react';
 import HordePerformanceModal from '../Modals/Modal_HordePerformance';
+import HeaderNav_IconWrapper from './_HeaderNav_IconWrapper';
 
 export default function HeaderNavHordePerformance() {
   return (
-    <button
-      className="row text-xs text-black dark:text-white"
+    <HeaderNav_IconWrapper
       onClick={() => {
         NiceModal.show('hordePerfModal', {
           children: <HordePerformanceModal />
         });
       }}
+      title="AI Horde performance"
     >
       <IconDeviceDesktopAnalytics stroke={1} size={22} />
-    </button>
+    </HeaderNav_IconWrapper>
   );
 }

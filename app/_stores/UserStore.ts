@@ -1,10 +1,11 @@
 import { makeStore } from 'statery';
-import { HordeUser } from '../_types/HordeTypes';
+import { HordeUser, WorkerMessage } from '../_types/HordeTypes';
 
 interface UserStoreInterface {
   forceAllowedWorkers: boolean;
   forceBlockedWorkers: boolean;
   forceSelectedWorker: boolean;
+  hordeMessages: WorkerMessage[];
   userDetails: HordeUser;
   sharedKey: string;
 }
@@ -13,6 +14,7 @@ export const UserStore = makeStore<UserStoreInterface>({
   forceAllowedWorkers: false,
   forceBlockedWorkers: false,
   forceSelectedWorker: false,
+  hordeMessages: [],
   userDetails: {} as HordeUser,
   sharedKey: ''
 });
@@ -29,6 +31,12 @@ export const updateUseSharedKey = (key: string) => {
 
 export const updateUser = (user: HordeUser) => {
   UserStore.set(() => ({ userDetails: user }));
+};
+
+export const updateHordeMessages = (messages: WorkerMessage[]) => {
+  UserStore.set((state) => ({
+    hordeMessages: [...state.hordeMessages, ...messages]
+  }));
 };
 
 export const updateWorkerUsagePreference = ({

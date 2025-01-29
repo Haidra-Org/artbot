@@ -20,13 +20,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   AppStore,
   setAppBuildId,
-  setAppOnlineStatus
+  setAppOnlineStatus,
+  setHordeOnlineStatus
 } from '@/app/_stores/AppStore';
 import { appBasepath } from '@/app/_utils/browserUtils';
 import { loadPendingImagesFromDexie } from '@/app/_controllers/pendingJobs/loadPendingImages';
 import { initJobController } from '@/app/_controllers/pendingJobs';
 import { toastController } from '@/app/_controllers/toastController';
 import { updateUseSharedKey } from '@/app/_stores/UserStore';
+import hordeHeartbeat from '@/app/_api/horde/heartbeat';
+import { getWorkerMessages } from '@/app/_api/horde/messages';
 
 export default function AppInitComponent({
   modelsAvailable,
@@ -41,7 +44,7 @@ export default function AppInitComponent({
 
   const [handleLogin] = useHordeApiKey();
 
-  const initHeartbeat = async () => {
+  const initArtbotHeartbeat = async () => {
     try {
       const res = await fetch(`${appBasepath()}/api/heartbeat`);
       const { success, buildId } = (await res.json()) || {};
@@ -66,6 +69,15 @@ export default function AppInitComponent({
     }
   };
 
+  const initHordeHeartbeat = async () => {
+    const hordeOnline = await hordeHeartbeat();
+    setHordeOnlineStatus(hordeOnline);
+  };
+
+  const initHordeMessages = async () => {
+    await getWorkerMessages();
+  };
+
   const getUserInfoOnLoad = async () => {
     const apikey = AppSettings.apikey();
 
@@ -81,18 +93,24 @@ export default function AppInitComponent({
   }, [modelDetails, modelsAvailable]);
 
   useEffectOnce(() => {
-    console.log(`ArtBot v2.0.0_beta is online: ${new Date().toLocaleString()}`);
-
     initDexie();
     getUserInfoOnLoad();
     loadPendingImagesFromDexie();
     initJobController();
 
-    initHeartbeat();
-    const intervalHeartbeat = setInterval(initHeartbeat, 15 * 1000);
+    initArtbotHeartbeat();
+    const intervalHeartbeat = setInterval(initArtbotHeartbeat, 15 * 1000);
+
+    initHordeHeartbeat();
+    const intervalHordeHeartbeat = setInterval(initHordeHeartbeat, 15 * 1000);
+
+    initHordeMessages();
+    const intervalHordeMessages = setInterval(initHordeMessages, 60 * 1000);
 
     return () => {
       clearInterval(intervalHeartbeat);
+      clearInterval(intervalHordeHeartbeat);
+      clearInterval(intervalHordeMessages);
     };
   });
 
