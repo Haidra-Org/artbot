@@ -1,6 +1,6 @@
 import { UserStore } from '@/app/_stores/UserStore';
 import NiceModal from '@ebay/nice-modal-react';
-import { IconMail } from '@tabler/icons-react';
+import { IconMail, IconMailCheck } from '@tabler/icons-react';
 import { useStore } from 'statery';
 import Button from '../Button';
 import {
@@ -34,15 +34,20 @@ const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
             Messages
           </div>
           <div className="col gap-2">
-            {hordeMessages.map((msg) => {
+            {hordeMessages.map((msg, index) => {
               const isUnread = !readMessages.includes(msg.id);
+              const isLastMessage = index === hordeMessages.length - 1;
               return (
                 <div
                   key={msg.id}
                   style={{
-                    borderBottom: '1px solid gray',
-                    paddingBottom: '6px',
-                    marginBottom: '2px'
+                    ...(isLastMessage
+                      ? {}
+                      : {
+                          borderBottom: '1px solid gray',
+                          paddingBottom: '6px',
+                          marginBottom: '2px'
+                        })
                   }}
                 >
                   <div className="font-bold text-sm flex items-center gap-2">
@@ -64,7 +69,9 @@ const HordeMessagesModal = ({ handleClose }: { handleClose: () => void }) => {
                   await handleClose();
                 }}
               >
-                Close
+                <div className="row items-center gap-2">
+                  <IconMailCheck stroke={1} size={24} /> Close
+                </div>
               </Button>
             </div>
           </div>
