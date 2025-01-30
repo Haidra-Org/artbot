@@ -11,7 +11,9 @@ export default function TotalImagesGeneratedLive({
 
   const fetchImageCount = async () => {
     try {
-      const response = await fetch('/api/status/counter/images');
+      const response = await fetch('/api/status/counter/images', {
+        cache: 'no-store'
+      });
       const data = await response.json();
       if (data.totalCount) setImageCount(data.totalCount);
     } catch (error) {
