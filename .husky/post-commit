@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# If in a rebase, skip this hook
+if [ -d "$(git rev-parse --git-path rebase-merge)" ] || [ -d "$(git rev-parse --git-path rebase-apply)" ]; then
+  echo "Rebase in progress — skipping post-commit hook."
+  exit 0
+fi
+
 # If this is a recursive call, exit
 if [ -n "$HUSKY_SKIP_BUILDID" ]; then
   exit 0
