@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { checkImageExistsInDexie } from '../_db/ImageFiles';
 import { bufferToBlob } from '../_utils/imageUtils';
 

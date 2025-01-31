@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       })
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    }).catch((err) => {
+    }).catch((_err) => {
       // Do nothing
     });
   }
