@@ -1,13 +1,12 @@
-'use client'
+'use client';
 
-import { useInput } from '@/app/_providers/PromptInputProvider'
-import React from 'react'
-import OptionLabel from './OptionLabel'
-import Button from '../Button'
-import { IconArrowBarLeft, IconDice5 } from '@tabler/icons-react'
+import { useInput } from '@/app/_providers/PromptInputProvider';
+import OptionLabel from './OptionLabel';
+import Button from '../Button';
+import { IconArrowBarLeft, IconDice5 } from '@tabler/icons-react';
 
 export default function Seed() {
-  const { input, setInput } = useInput()
+  const { input, setInput } = useInput();
 
   return (
     <OptionLabel
@@ -28,8 +27,8 @@ export default function Seed() {
             onClick={() => {
               const value = Math.abs(
                 (Math.random() * 2 ** 32) | 0
-              ) as unknown as string
-              setInput({ seed: value })
+              ) as unknown as string;
+              setInput({ seed: value });
             }}
           >
             <IconDice5 />
@@ -39,7 +38,7 @@ export default function Seed() {
             theme="danger"
             title="Clear seed"
             onClick={() => {
-              setInput({ seed: '' })
+              setInput({ seed: '' });
             }}
           >
             <IconArrowBarLeft />
@@ -47,5 +46,5 @@ export default function Seed() {
         </div>
       </div>
     </OptionLabel>
-  )
+  );
 }

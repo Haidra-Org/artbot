@@ -1,65 +1,65 @@
-'use client'
+'use client';
 
-import React from 'react'
 import {
   IconAlertTriangle,
   IconLibraryPhoto,
   IconPhotoCheck,
   IconPhotoUp,
   IconX
-} from '@tabler/icons-react'
-import { JobStatus } from '../../_types/ArtbotTypes'
-import { usePendingJob } from '../../_hooks/usePendingJob'
-import { deletePendingImageFromAppState } from '../../_stores/PendingImagesStore'
-import { deleteJobFromDexie } from '../../_db/jobTransactions'
-import ParticleAnimation from '../ParticleAnimation'
-import styles from './pendingImageOverlay.module.css'
-import { formatPendingPercentage } from '@/app/_utils/numberUtils'
-import { appBasepath } from '@/app/_utils/browserUtils'
+} from '@tabler/icons-react';
+import { JobStatus } from '../../_types/ArtbotTypes';
+import { usePendingJob } from '../../_hooks/usePendingJob';
+import { deletePendingImageFromAppState } from '../../_stores/PendingImagesStore';
+import { deleteJobFromDexie } from '../../_db/jobTransactions';
+import ParticleAnimation from '../ParticleAnimation';
+import styles from './pendingImageOverlay.module.css';
+import { formatPendingPercentage } from '@/app/_utils/numberUtils';
+import { appBasepath } from '@/app/_utils/browserUtils';
+import React from 'react';
 
 function PendingImageOverlay({
   artbot_id,
   status
 }: {
-  artbot_id: string
-  status: JobStatus
+  artbot_id: string;
+  status: JobStatus;
 }) {
-  const [pendingJob] = usePendingJob(artbot_id)
+  const [pendingJob] = usePendingJob(artbot_id);
 
   const serverHasJob =
-    status === JobStatus.Queued || status === JobStatus.Processing
+    status === JobStatus.Queued || status === JobStatus.Processing;
 
   const imageError =
     status === JobStatus.Error ||
     (status === JobStatus.Done &&
       !isNaN(pendingJob?.images_completed) &&
-      pendingJob?.images_completed === 0)
+      pendingJob?.images_completed === 0);
 
   const pctComplete = formatPendingPercentage({
     init: pendingJob?.init_wait_time as number,
     remaining: pendingJob?.wait_time as number
-  })
+  });
 
-  let serverWorkingMessage = 'Waiting...'
+  let serverWorkingMessage = 'Waiting...';
 
   if (status === JobStatus.Requested) {
-    serverWorkingMessage = `Requested...`
+    serverWorkingMessage = `Requested...`;
   }
 
   if (status === JobStatus.Queued) {
-    serverWorkingMessage = `Queued... ${pendingJob.queue_position ? `(Position #${pendingJob.queue_position})` : ''}`
+    serverWorkingMessage = `Queued... ${pendingJob.queue_position ? `(Position #${pendingJob.queue_position})` : ''}`;
   }
 
-  let imagesProcessingMsg = ''
+  let imagesProcessingMsg = '';
 
   if (pendingJob.processing === 1) {
-    imagesProcessingMsg = '(1 image)'
+    imagesProcessingMsg = '(1 image)';
   } else if (pendingJob.processing > 1) {
-    imagesProcessingMsg = `(${pendingJob.processing} images)`
+    imagesProcessingMsg = `(${pendingJob.processing} images)`;
   }
 
   if (status === JobStatus.Processing) {
-    serverWorkingMessage = `Processing... ${imagesProcessingMsg}`
+    serverWorkingMessage = `Processing... ${imagesProcessingMsg}`;
   }
 
   return (
@@ -67,13 +67,13 @@ function PendingImageOverlay({
       <div
         className={styles.CloseIcon}
         onClick={async (e) => {
-          e.preventDefault()
-          e.stopPropagation()
+          e.preventDefault();
+          e.stopPropagation();
 
-          deletePendingImageFromAppState(artbot_id)
+          deletePendingImageFromAppState(artbot_id);
 
           if (pendingJob?.status !== JobStatus.Done) {
-            await deleteJobFromDexie(artbot_id)
+            await deleteJobFromDexie(artbot_id);
           }
         }}
         title="Remove pending job from queue"
@@ -173,8 +173,8 @@ function PendingImageOverlay({
             style={{ marginBottom: '12px' }}
           >
             {pendingJob.wait_time !== null &&
-              pendingJob.wait_time > 0 &&
-              pendingJob.init_wait_time !== 0 ? (
+            pendingJob.wait_time > 0 &&
+            pendingJob.init_wait_time !== 0 ? (
               <div className="col gap-0">
                 <div>{serverWorkingMessage}</div>
                 <div>
@@ -185,8 +185,8 @@ function PendingImageOverlay({
               <span></span>
             )}
             {pendingJob.init_wait_time &&
-              pendingJob.wait_time === 0 &&
-              pendingJob.wait_time < pendingJob.init_wait_time ? (
+            pendingJob.wait_time === 0 &&
+            pendingJob.wait_time < pendingJob.init_wait_time ? (
               <span>Finishing up... {imagesProcessingMsg}</span>
             ) : (
               <span></span>
@@ -256,12 +256,14 @@ function PendingImageOverlay({
           <div>No GPUs</div>
         </div>
       )}
-      {status !== JobStatus.Done && pendingJob.images_completed >= 0 && pendingJob.is_possible === true && (
-        <div className={styles.ImagesCompleted}>
-          <IconPhotoCheck stroke={1} size={20} />
-          {pendingJob.images_completed} / {pendingJob.images_requested}
-        </div>
-      )}
+      {status !== JobStatus.Done &&
+        pendingJob.images_completed >= 0 &&
+        pendingJob.is_possible === true && (
+          <div className={styles.ImagesCompleted}>
+            <IconPhotoCheck stroke={1} size={20} />
+            {pendingJob.images_completed} / {pendingJob.images_requested}
+          </div>
+        )}
       {status === JobStatus.Done && pendingJob.images_completed > 1 && (
         <div className={styles.ImageCount}>
           <IconLibraryPhoto stroke={1.5} />
@@ -269,7 +271,7 @@ function PendingImageOverlay({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default React.memo(PendingImageOverlay, (prevProps, nextProps) => {
@@ -279,5 +281,5 @@ export default React.memo(PendingImageOverlay, (prevProps, nextProps) => {
   return (
     prevProps.artbot_id === nextProps.artbot_id &&
     prevProps.status === nextProps.status
-  )
-})
+  );
+});

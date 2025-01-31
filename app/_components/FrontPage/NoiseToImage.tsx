@@ -1,6 +1,6 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Typewriter from './Typewriter';
 import { AppConstants } from '@/app/_data-models/AppConstants';
 import { appBasepath } from '@/app/_utils/browserUtils';

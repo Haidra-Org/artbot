@@ -1,23 +1,23 @@
-import React, { useId } from 'react'
-import clsx from 'clsx'
-import styles from './switch.module.css'
+import { useId } from 'react';
+import clsx from 'clsx';
+import styles from './switch.module.css';
 
 interface SwitchProps {
-  checked: boolean
-  disabled?: boolean
-  onChange(): void
+  checked: boolean;
+  disabled?: boolean;
+  onChange(): void;
 }
 
 const Switch = ({ checked, disabled, onChange = () => {} }: SwitchProps) => {
-  const id = useId()
+  const id = useId();
 
   return (
     <>
       <input
         checked={checked}
         onChange={() => {
-          if (disabled) return
-          onChange()
+          if (disabled) return;
+          onChange();
         }}
         className={styles['react-switch-checkbox']}
         id={id}
@@ -39,7 +39,7 @@ const Switch = ({ checked, disabled, onChange = () => {} }: SwitchProps) => {
         />
       </label>
     </>
-  )
-}
+  );
+};
 
-export default Switch
+export default Switch;

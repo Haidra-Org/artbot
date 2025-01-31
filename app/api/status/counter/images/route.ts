@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 const statusApi = process.env.ARTBOT_STATUS_API;
 
 export async function GET() {

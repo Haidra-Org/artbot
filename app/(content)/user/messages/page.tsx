@@ -1,11 +1,9 @@
 'use client';
 
 import PageTitle from '@/app/_components/PageTitle';
-import { AppConstants } from '@/app/_data-models/AppConstants';
 import { AppSettings } from '@/app/_data-models/AppSettings';
 import { getReadMessagesIdsFromDexie } from '@/app/_db/appSettings';
 import { UserStore } from '@/app/_stores/UserStore';
-import { HordeUser } from '@/app/_types/HordeTypes';
 import { useEffect, useState } from 'react';
 import { useStore } from 'statery';
 
@@ -21,8 +19,7 @@ import { useStore } from 'statery';
 // }
 
 export default function UserMessagesPage() {
-  const { hordeMessages, userDetails = {} as HordeUser } = useStore(UserStore);
-  const { worker_count } = userDetails;
+  const { hordeMessages } = useStore(UserStore);
   const [loading, setLoading] = useState(true);
   const [readMessages, setReadMessages] = useState<string[]>([]);
 

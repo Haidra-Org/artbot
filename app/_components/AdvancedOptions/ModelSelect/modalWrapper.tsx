@@ -1,6 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { ModelStore } from '@/app/_stores/ModelStore';
 import ModelsInfo from '@/app/(content)/info/models/_component/ModelsInfo';
-import React, { useEffect, useRef } from 'react';
 import { useStore } from 'statery';
 
 interface Props {

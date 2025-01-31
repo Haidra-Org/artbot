@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
-import ReactDOM from 'react-dom'
-import styles from './fullscreen.module.css'
+import { useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import styles from './fullscreen.module.css';
 
 interface FullScreenModalProps {
-  onClick?: () => void
-  onClose: () => void
-  children: React.ReactNode
+  onClick?: () => void;
+  onClose: () => void;
+  children: React.ReactNode;
 }
 
 const FullScreenModal: React.FC<FullScreenModalProps> = ({
@@ -16,27 +16,27 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        event.preventDefault()
-        event.stopPropagation()
-        onClose()
+        event.preventDefault();
+        event.stopPropagation();
+        onClose();
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscape, { capture: true })
+    document.addEventListener('keydown', handleEscape, { capture: true });
 
     return () => {
-      document.removeEventListener('keydown', handleEscape, { capture: true })
-    }
-  }, [onClose])
+      document.removeEventListener('keydown', handleEscape, { capture: true });
+    };
+  }, [onClose]);
 
   return ReactDOM.createPortal(
     <div className={styles['fullscreen-modal-overlay']} onClick={onClose}>
       <div
         className={styles['fullscreen-modal-content']}
         onClick={(e) => {
-          e.stopPropagation()
-          onClick()
-          onClose()
+          e.stopPropagation();
+          onClick();
+          onClose();
         }}
       >
         <button className={styles['fullscreen-modal-close']} onClick={onClose}>
@@ -46,7 +46,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
       </div>
     </div>,
     document.body
-  )
-}
+  );
+};
 
-export default FullScreenModal
+export default FullScreenModal;

@@ -6,7 +6,7 @@ import {
   IconSquareRoundedCheck,
   IconSquareRoundedX
 } from '@tabler/icons-react';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { formatSeconds } from '../_utils/numberUtils';
 import Linker from './Linker';
 import { toastController } from '../_controllers/toastController';
@@ -53,7 +53,6 @@ const AccordionItem = ({
 );
 
 export default function WorkerDetailsCard({
-  edit,
   worker = {} as WorkerDetails
 }: {
   edit?: boolean;
@@ -61,19 +60,8 @@ export default function WorkerDetailsCard({
   worker: WorkerDetails;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [editMode, setEditMode] = useState<string | boolean>(false);
 
-  const {
-    teams,
-    notFound,
-    workerInfo,
-    workerTeam,
-    deleteWorker,
-    updateWorkerDescription,
-    setWorkerInfo,
-    setWorkerName,
-    setWorkerTeam
-  } = useWorkerDetails(worker?.id);
+  const { notFound, workerInfo, workerTeam } = useWorkerDetails(worker?.id);
 
   const workerName = worker?.name;
 

@@ -2,4 +2,5 @@
 cd "$(git rev-parse --show-toplevel)"
 
 npx lint-staged
+npx eslint . --ext .ts,.tsx
 npm test

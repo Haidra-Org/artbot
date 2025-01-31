@@ -1,8 +1,7 @@
-'use client'
-import Link from 'next/link'
-import React from 'react'
+'use client';
+import Link from 'next/link';
 // import { IconLink } from '@tabler/icons-react'
-import Linker from '@/app/_components/Linker'
+import Linker from '@/app/_components/Linker';
 
 // const showToast = () => {
 //   showSuccessToast({ message: 'FAQ URL copied!' })
@@ -13,16 +12,16 @@ const MonoFont = ({ children }: { children: React.ReactNode }) => {
     <div className="mt-2 font-mono py-[4px] px-[4px] bg-[#878787] text-sm">
       {children}
     </div>
-  )
-}
+  );
+};
 
 const Question = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-row justify-start items-start gap-[8px] mb-[8px] text-[20px] font-[700]">
       {children}
     </div>
-  )
-}
+  );
+};
 
 export const FaqKudos = () => {
   return (
@@ -87,8 +86,8 @@ export const FaqKudos = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqSyntax = () => {
   return (
@@ -139,8 +138,8 @@ export const FaqSyntax = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqEstimatedTime = () => {
   return (
@@ -167,8 +166,8 @@ export const FaqEstimatedTime = () => {
         if a valid registered user creates an image request.
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqApiKey = () => {
   return (
@@ -210,8 +209,8 @@ export const FaqApiKey = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqRunWorker = () => {
   return (
@@ -272,8 +271,8 @@ export const FaqRunWorker = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqMissingRequests = () => {
   return (
@@ -298,8 +297,8 @@ export const FaqMissingRequests = () => {
         older than 20 minutes, it may disappear.
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqBlackImage = () => {
   return (
@@ -328,8 +327,8 @@ export const FaqBlackImage = () => {
         .
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const FaqStorageExceeded = () => {
   return (
@@ -400,5 +399,5 @@ export const FaqStorageExceeded = () => {
         </p>
       </div>
     </div>
-  )
-}
+  );
+};

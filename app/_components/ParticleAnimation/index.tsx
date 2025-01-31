@@ -2,8 +2,7 @@
 // Rather than importing whole library, just using component from here:
 // https://uiball.com/ldrs/
 
-import React from 'react'
-import styles from './particleAnimation.module.css'
+import styles from './particleAnimation.module.css';
 
 export default function ParticleAnimation() {
   return (
@@ -23,5 +22,5 @@ export default function ParticleAnimation() {
       <div className={styles.particle}></div>
       <div className={styles.particle}></div>
     </div>
-  )
+  );
 }

@@ -1,17 +1,16 @@
-'use client'
-import React from 'react'
-import { IconMinus, IconPlus } from '@tabler/icons-react'
-import Button from '../Button'
+'use client';
+import { IconMinus, IconPlus } from '@tabler/icons-react';
+import Button from '../Button';
 
 interface NumberInputProps {
-  disabled?: boolean
-  min?: number
-  max?: number
-  value?: number
-  onBlur?: () => void
-  onChange: (value: string) => void
-  onMinusClick: () => void
-  onPlusClick: () => void
+  disabled?: boolean;
+  min?: number;
+  max?: number;
+  value?: number;
+  onBlur?: () => void;
+  onChange: (value: string) => void;
+  onMinusClick: () => void;
+  onPlusClick: () => void;
 }
 
 const NumberInput: React.FC<NumberInputProps> = ({
@@ -26,30 +25,30 @@ const NumberInput: React.FC<NumberInputProps> = ({
 }) => {
   const handleMinusClick = () => {
     if (Number(value) <= min || disabled) {
-      return
+      return;
     }
 
-    onMinusClick()
-  }
+    onMinusClick();
+  };
 
   const handlePlusClick = () => {
     if (Number(value) >= max || disabled) {
-      return
+      return;
     }
 
-    onPlusClick()
-  }
+    onPlusClick();
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    e = e || window.event
+    e = e || window.event;
 
     if (disabled) {
-      return
+      return;
     }
 
     if (e.code === 'ArrowUp' || e.code === 'Equal' || e.code === 'NumpadAdd') {
-      e.preventDefault()
-      handlePlusClick()
+      e.preventDefault();
+      handlePlusClick();
     }
 
     if (
@@ -57,10 +56,10 @@ const NumberInput: React.FC<NumberInputProps> = ({
       e.code === 'Minus' ||
       e.code === 'NumpadSubtract'
     ) {
-      e.preventDefault()
-      handleMinusClick()
+      e.preventDefault();
+      handleMinusClick();
     }
-  }
+  };
 
   return (
     <div className="row gap-0 items-start">
@@ -78,7 +77,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
           className="!rounded-l-none !rounded-r-none !border !border-gray-300 dark:!border-gray-600"
           onClick={() => {
             // e.preventDefault()
-            handleMinusClick()
+            handleMinusClick();
           }}
         >
           <IconMinus />
@@ -87,14 +86,14 @@ const NumberInput: React.FC<NumberInputProps> = ({
           className="!rounded-l-none !border !border-l-0 !border-gray-300 dark:!border-gray-600"
           onClick={() => {
             // e.preventDefault()
-            handlePlusClick()
+            handlePlusClick();
           }}
         >
           <IconPlus />
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NumberInput
+export default NumberInput;

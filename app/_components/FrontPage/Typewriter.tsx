@@ -1,5 +1,5 @@
 import { AppConstants } from '@/app/_data-models/AppConstants';
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface TypewriterProps {
   text: string;

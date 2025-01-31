@@ -1,29 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect, useState } from 'react'
-import Image from '../Image'
-import { ImageBlobBuffer } from '@/app/_data-models/ImageFile_Dexie'
+import { useEffect, useState } from 'react';
+import Image from '../Image';
+import { ImageBlobBuffer } from '@/app/_data-models/ImageFile_Dexie';
 
 interface CarouselImageProps {
-  imageBlobBuffer: ImageBlobBuffer
-  maxHeight?: number
-  maxWidth?: number
+  imageBlobBuffer: ImageBlobBuffer;
+  maxHeight?: number;
+  maxWidth?: number;
 }
 
 const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlobBuffer }) => {
-  const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight)
+  const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
 
   useEffect(() => {
     const handleResize = () => {
-      setWindowHeight(window.innerHeight)
-    }
+      setWindowHeight(window.innerHeight);
+    };
 
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
-  if (!imageBlobBuffer) return null
+  if (!imageBlobBuffer) return null;
 
   return (
     <Image
@@ -37,7 +37,7 @@ const CarouselImage: React.FC<CarouselImageProps> = ({ imageBlobBuffer }) => {
         objectFit: 'contain'
       }}
     />
-  )
-}
+  );
+};
 
-export default CarouselImage
+export default CarouselImage;

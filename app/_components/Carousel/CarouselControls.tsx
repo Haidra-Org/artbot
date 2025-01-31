@@ -1,16 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect } from 'react'
-import { PrevButton, NextButton } from './CarouselArrowButtons'
-import styles from './carousel.module.css'
+import { useEffect } from 'react';
+import { PrevButton, NextButton } from './CarouselArrowButtons';
+import styles from './carousel.module.css';
 
 type CarouselControlsProps = {
-  selectedIndex: number
-  scrollSnaps: number[]
-  prevBtnDisabled: boolean
-  nextBtnDisabled: boolean
-  onPrevButtonClick: () => void
-  onNextButtonClick: () => void
-}
+  selectedIndex: number;
+  scrollSnaps: number[];
+  prevBtnDisabled: boolean;
+  nextBtnDisabled: boolean;
+  onPrevButtonClick: () => void;
+  onNextButtonClick: () => void;
+};
 
 const CarouselControls: React.FC<CarouselControlsProps> = ({
   selectedIndex,
@@ -23,21 +23,21 @@ const CarouselControls: React.FC<CarouselControlsProps> = ({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        event.preventDefault()
+        event.preventDefault();
         if (event.key === 'ArrowLeft') {
-          onPrevButtonClick()
+          onPrevButtonClick();
         } else if (event.key === 'ArrowRight') {
-          onNextButtonClick()
+          onNextButtonClick();
         }
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onNextButtonClick, onPrevButtonClick])
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onNextButtonClick, onPrevButtonClick]);
 
   return (
     <div className={styles.embla__controls}>
@@ -52,7 +52,7 @@ const CarouselControls: React.FC<CarouselControlsProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CarouselControls
+export default CarouselControls;

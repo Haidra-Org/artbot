@@ -4,18 +4,18 @@ import {
   IconCheck,
   IconPhotoCog,
   IconWand
-} from '@tabler/icons-react'
-import React, { useState } from 'react'
-import Button from '../Button'
-import NiceModal from '@ebay/nice-modal-react'
+} from '@tabler/icons-react';
+import { useState } from 'react';
+import Button from '../Button';
+import NiceModal from '@ebay/nice-modal-react';
 import {
   CategoryPreset,
   StylePresetConfigurations,
   StylePreviewConfigurations
-} from '@/app/_types/HordeTypes'
-import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver'
-import DropdownMenu from '../DropdownMenu'
-import { MenuHeader, MenuItem } from '@szhsin/react-menu'
+} from '@/app/_types/HordeTypes';
+import useIntersectionObserver from '@/app/_hooks/useIntersectionObserver';
+import DropdownMenu from '../DropdownMenu';
+import { MenuHeader, MenuItem } from '@szhsin/react-menu';
 
 // Component to manage individual image loading and error handling
 const ImageWithFallback = ({
@@ -24,18 +24,18 @@ const ImageWithFallback = ({
   fallbackColor,
   style
 }: {
-  src: string
-  alt: string
-  fallbackColor: string
-  style?: React.CSSProperties
+  src: string;
+  alt: string;
+  fallbackColor: string;
+  style?: React.CSSProperties;
 }) => {
   const { ref, isIntersecting, stopObserving } =
     useIntersectionObserver<HTMLDivElement>({
       rootMargin: '0px 0px 500px 0px', // Load when 500px below the viewport
       threshold: 0.5 // Adjust threshold as needed
-    })
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageError, setImageError] = useState(false)
+    });
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   return (
     <div
@@ -66,12 +66,12 @@ const ImageWithFallback = ({
           src={src}
           alt={alt}
           onLoad={() => {
-            setImageLoaded(true)
-            stopObserving()
+            setImageLoaded(true);
+            stopObserving();
           }}
           onError={() => {
-            setImageError(true)
-            stopObserving()
+            setImageError(true);
+            stopObserving();
           }}
           style={{
             display: imageLoaded ? 'block' : 'none', // Hide image until loaded
@@ -82,30 +82,30 @@ const ImageWithFallback = ({
         />
       )}
     </div>
-  )
-}
+  );
+};
 
 const StylePresetModal = ({
   categories,
   previews,
   handleOnClick = () => {}
 }: {
-  categories: CategoryPreset
-  presets: StylePresetConfigurations
-  previews: StylePreviewConfigurations
-  handleOnClick?: (preset: string) => void
+  categories: CategoryPreset;
+  presets: StylePresetConfigurations;
+  previews: StylePreviewConfigurations;
+  handleOnClick?: (preset: string) => void;
 }) => {
-  const [searchInput, setSearchInput] = useState('')
-  const [subject, setSubject] = useState('person')
+  const [searchInput, setSearchInput] = useState('');
+  const [subject, setSubject] = useState('person');
 
   // Filter function to filter the categories based on the search input
   const filterCategories = (
     categories: CategoryPreset, // Correct type for categories
     searchInput: string
   ): CategoryPreset => {
-    if (!searchInput) return categories // If no search input, return original categories
+    if (!searchInput) return categories; // If no search input, return original categories
 
-    const lowerCaseSearchInput = searchInput.toLowerCase()
+    const lowerCaseSearchInput = searchInput.toLowerCase();
 
     // Use reduce to filter the categories
     return Object.keys(categories).reduce<CategoryPreset>(
@@ -113,21 +113,21 @@ const StylePresetModal = ({
         // Filter each category's array for matching strings
         const matchedItems = categories[categoryKey].filter((item) =>
           item.toLowerCase().includes(lowerCaseSearchInput)
-        )
+        );
 
         // If the category has any matched items, add it to the filtered result
         if (matchedItems.length > 0) {
-          filtered[categoryKey] = matchedItems
+          filtered[categoryKey] = matchedItems;
         }
 
-        return filtered
+        return filtered;
       },
       {} as CategoryPreset
-    ) // Initialize reduce with an empty CategoryPreset object
-  }
+    ); // Initialize reduce with an empty CategoryPreset object
+  };
 
   // Get the filtered categories based on the search input
-  const filteredCategories = filterCategories(categories, searchInput)
+  const filteredCategories = filterCategories(categories, searchInput);
 
   return (
     <div className="col w-full h-full">
@@ -137,14 +137,14 @@ const StylePresetModal = ({
           className="bg-gray-50 border border-gray-300 text-gray-900 text-[16px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Filter presets"
           onChange={(e) => {
-            setSearchInput(e.target.value)
+            setSearchInput(e.target.value);
           }}
           value={searchInput}
         />
         <Button
           theme="danger"
           onClick={() => {
-            setSearchInput('')
+            setSearchInput('');
           }}
         >
           <IconArrowBarLeft />
@@ -164,7 +164,7 @@ const StylePresetModal = ({
           <MenuHeader>View examples</MenuHeader>
           <MenuItem
             onClick={() => {
-              setSubject('person')
+              setSubject('person');
             }}
           >
             <div className="w-[20px] pr-1">
@@ -174,7 +174,7 @@ const StylePresetModal = ({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              setSubject('place')
+              setSubject('place');
             }}
           >
             <div className="w-[20px] pr-1">
@@ -184,7 +184,7 @@ const StylePresetModal = ({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              setSubject('thing')
+              setSubject('thing');
             }}
           >
             <div className="w-[20px] pr-1">
@@ -199,25 +199,25 @@ const StylePresetModal = ({
           !filteredCategories[category] ||
           filteredCategories[category].length === 0
         )
-          return null
+          return null;
         return (
           <div key={category} className="w-full col mb-6">
             <h3 className="font-[700] text-[18px] row gap-2">
               {category}
               <button
                 onClick={() => {
-                  const filterStyles = filteredCategories[category]
+                  const filterStyles = filteredCategories[category];
                   const randomStyle =
                     filterStyles[
                       Math.floor(Math.random() * filterStyles.length)
-                    ]
+                    ];
 
                   if (!randomStyle) {
-                    return
+                    return;
                   }
 
-                  handleOnClick(randomStyle)
-                  NiceModal.remove('modal')
+                  handleOnClick(randomStyle);
+                  NiceModal.remove('modal');
                 }}
                 title="Select random style"
               >
@@ -227,7 +227,7 @@ const StylePresetModal = ({
             <div className="row w-full gap-2 flex-wrap">
               <div className="row w-full gap-2 flex-wrap">
                 {filteredCategories[category].map((preset) => {
-                  if (!preset) return null
+                  if (!preset) return null;
                   return (
                     <div
                       key={`${category}-${preset}`}
@@ -241,7 +241,7 @@ const StylePresetModal = ({
                         alignItems: 'center'
                       }}
                       onClick={() => {
-                        handleOnClick(preset)
+                        handleOnClick(preset);
                       }}
                     >
                       <ImageWithFallback
@@ -267,15 +267,15 @@ const StylePresetModal = ({
                         {preset}
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default StylePresetModal
+export default StylePresetModal;
