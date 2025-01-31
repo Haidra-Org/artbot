@@ -1,30 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useRef } from 'react'
-import styles from './loraSearch.module.css'
+import { useRef } from 'react';
+import styles from './loraSearch.module.css';
 import {
   Embedding,
   SavedEmbedding,
   SavedLora
-} from '@/app/_data-models/Civitai'
-import LoraDetails from './LoraDetails'
-import NiceModal from '@ebay/nice-modal-react'
-import { IconBox } from '@tabler/icons-react'
-import { AppSettings } from '@/app/_data-models/AppSettings'
-import useResizeObserver from '@/app/_hooks/useResizeObserver'
+} from '@/app/_data-models/Civitai';
+import LoraDetails from './LoraDetails';
+import NiceModal from '@ebay/nice-modal-react';
+import { IconBox } from '@tabler/icons-react';
+import { AppSettings } from '@/app/_data-models/AppSettings';
+import useResizeObserver from '@/app/_hooks/useResizeObserver';
 
 interface LoraImageProps {
-  civitAiType?: 'LORA' | 'TextualInversion'
-  onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void
+  civitAiType?: 'LORA' | 'TextualInversion';
+  onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void;
   image: {
-    key: string
-    name: string
-    baseModel: string
-    src: string
-    width: number
-    height: number
-    details: Embedding
-    nsfwLevel: number
-  }
+    key: string;
+    name: string;
+    baseModel: string;
+    src: string;
+    width: number;
+    height: number;
+    details: Embedding;
+    nsfwLevel: number;
+  };
 }
 
 const LoraImage = ({
@@ -32,13 +32,13 @@ const LoraImage = ({
   onUseLoraClick = () => {},
   image
 }: LoraImageProps) => {
-  const baseFilters = AppSettings.get('civitAiBaseModelFilter')
-  const containerRef = useRef<HTMLDivElement>(null)
-  const containerWidth = useResizeObserver(containerRef)
-  if (!image) return null
+  const baseFilters = AppSettings.get('civitAiBaseModelFilter');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const containerWidth = useResizeObserver(containerRef);
+  if (!image) return null;
 
   // Maintain aspect ratio 320:400 -> 4:5
-  const height = (containerWidth / 4) * 5
+  const height = (containerWidth / 4) * 5;
 
   return (
     <div
@@ -53,7 +53,7 @@ const LoraImage = ({
             />
           ),
           id: 'LoraDetails'
-        })
+        });
       }}
       ref={containerRef}
       style={{
@@ -126,7 +126,7 @@ const LoraImage = ({
         ></div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoraImage
+export default LoraImage;

@@ -1,12 +1,11 @@
-'use client'
+'use client';
 
-import { useInput } from '@/app/_providers/PromptInputProvider'
-import React from 'react'
-import NumberInput from '../NumberInput'
-import OptionLabel from './OptionLabel'
+import { useInput } from '@/app/_providers/PromptInputProvider';
+import NumberInput from '../NumberInput';
+import OptionLabel from './OptionLabel';
 
 export default function ImageCount() {
-  const { input, setInput } = useInput()
+  const { input, setInput } = useInput();
 
   return (
     <OptionLabel
@@ -21,33 +20,33 @@ export default function ImageCount() {
           max={20}
           onBlur={() => {
             if (isNaN(input.numImages)) {
-              setInput({ numImages: 1 })
+              setInput({ numImages: 1 });
             } else {
               setInput({
                 numImages: parseFloat(Number(input.numImages).toFixed(0))
-              })
+              });
             }
           }}
           onChange={(num) => {
-            setInput({ numImages: num as unknown as number })
+            setInput({ numImages: num as unknown as number });
           }}
           onMinusClick={() => {
             if (Number(input.numImages) - 1 < 1) {
-              return
+              return;
             }
 
-            setInput({ numImages: Number(input.numImages) - 1 })
+            setInput({ numImages: Number(input.numImages) - 1 });
           }}
           onPlusClick={() => {
             if (Number(input.numImages) + 1 > 20) {
-              return
+              return;
             }
 
-            setInput({ numImages: Number(input.numImages) + 1 })
+            setInput({ numImages: Number(input.numImages) + 1 });
           }}
           value={input.numImages}
         />
       </div>
     </OptionLabel>
-  )
+  );
 }

@@ -94,7 +94,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     const allowNsfw = AppSettings.get('allowNsfwImages') || false;
 
     // explicitly check if prompt-replacement filter is disabled by user. Otherwise, set to true.
-    let replacement_filter =
+    const replacement_filter =
       AppSettings.get('useReplacementFilter') === false ? false : true;
 
     let allow_downgrade =
@@ -558,9 +558,9 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
       hideBase64String?: boolean;
       hasError?: boolean;
     } = {
-      hideBase64String: false,
-      hasError: false
-    }
+        hideBase64String: false,
+        hasError: false
+      }
   ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput }> {
     const instance = new ImageParamsForHordeApi(imageDetails);
     instance.setEmbeddings();

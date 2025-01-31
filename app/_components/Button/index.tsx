@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import clsx from 'clsx'
-import React, { CSSProperties, ReactNode, ElementType, forwardRef } from 'react'
-import styles from './button.module.css'
+import clsx from 'clsx';
+import { CSSProperties, ReactNode, ElementType, forwardRef } from 'react';
+import styles from './button.module.css';
 
 // Extend this as needed
-type ButtonTheme = 'default' | 'danger' | 'warning' | 'success'
+type ButtonTheme = 'default' | 'danger' | 'warning' | 'success';
 
 interface ButtonProps<T extends ElementType = 'button'> {
-  as?: T
-  className?: string
-  children: ReactNode
-  disabled?: boolean
-  onClick?: () => void
-  outline?: boolean
-  style?: CSSProperties
-  title?: string
-  type?: 'button' | 'submit'
-  theme?: ButtonTheme
+  as?: T;
+  className?: string;
+  children: ReactNode;
+  disabled?: boolean;
+  onClick?: () => void;
+  outline?: boolean;
+  style?: CSSProperties;
+  title?: string;
+  type?: 'button' | 'submit';
+  theme?: ButtonTheme;
 }
 
 type PolymorphicRef<C extends ElementType> =
-  React.ComponentPropsWithRef<C>['ref']
+  React.ComponentPropsWithRef<C>['ref'];
 
 const Button = forwardRef(
   <T extends ElementType = 'button'>(
@@ -40,7 +40,7 @@ const Button = forwardRef(
     }: ButtonProps<T>,
     ref: PolymorphicRef<T>
   ) => {
-    const Component = as || 'button'
+    const Component = as || 'button';
 
     return (
       <Component
@@ -53,8 +53,8 @@ const Button = forwardRef(
           className
         )}
         onClick={() => {
-          if (disabled) return
-          onClick()
+          if (disabled) return;
+          onClick();
         }}
         style={{ ...style }}
         title={title}
@@ -63,9 +63,9 @@ const Button = forwardRef(
       >
         <span className={styles.ButtonText}>{children}</span>
       </Component>
-    )
+    );
   }
-)
+);
 
-Button.displayName = 'Button'
-export default Button
+Button.displayName = 'Button';
+export default Button;
