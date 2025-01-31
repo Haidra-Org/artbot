@@ -109,6 +109,11 @@ export default function Footer() {
             Utilities
           </div>
           <div>
+            <Link className={styles.LinkWrapper} href="/create/json">
+              JSON payload tool
+            </Link>
+          </div>
+          <div>
             <Link className={styles.LinkWrapper} href="/settings/workers">
               Manage workers
             </Link>
