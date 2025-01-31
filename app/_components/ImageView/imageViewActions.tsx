@@ -23,7 +23,7 @@ import {
   deleteImageFromDexie,
   deleteJobFromDexie
 } from '@/app/_db/jobTransactions';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Section from '../Section';
 import DropdownMenu from '../DropdownMenu';
 import { MenuDivider, MenuItem } from '@szhsin/react-menu';

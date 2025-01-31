@@ -15,6 +15,7 @@ import ParticleAnimation from '../ParticleAnimation';
 import styles from './pendingImageOverlay.module.css';
 import { formatPendingPercentage } from '@/app/_utils/numberUtils';
 import { appBasepath } from '@/app/_utils/browserUtils';
+import React from 'react';
 
 function PendingImageOverlay({
   artbot_id,

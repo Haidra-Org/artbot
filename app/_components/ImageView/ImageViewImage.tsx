@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useImageView } from './ImageViewProvider';
 import CarouselImage from '../Carousel/CarouselImage';
 import Carousel from '../Carousel';
