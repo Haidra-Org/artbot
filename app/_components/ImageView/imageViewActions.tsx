@@ -26,7 +26,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Section from '../Section';
 import DropdownMenu from '../DropdownMenu';
-import { MenuDivider, MenuItem } from '@szhsin/react-menu';
+import { MenuDivider, MenuItem, SubMenu } from '@szhsin/react-menu';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils';
 import { toastController } from '@/app/_controllers/toastController';
@@ -41,6 +41,13 @@ import { AppConstants } from '@/app/_data-models/AppConstants';
 import { ImageBlobBuffer, ImageType } from '@/app/_data-models/ImageFile_Dexie';
 import Image from '../Image';
 import { sleep } from '@/app/_utils/sleep';
+import { ImageRequest, WebhookUrl } from '@/app/_types/ArtbotTypes';
+import { getWebhookUrlsFromDexie } from '@/app/_db/appSettings';
+
+const createJsonAttachment = (imageRequest: ImageRequest): Blob => {
+  const prettyJson = JSON.stringify(imageRequest, null, 2);
+  return new Blob([prettyJson], { type: 'application/json' });
+};
 
 function ImageViewActions({
   currentImageId,
@@ -52,6 +59,7 @@ function ImageViewActions({
   const router = useRouter();
 
   const showFullScreen = useFullScreenHandle();
+  const [webhookUrls, setWebhookUrls] = useState<WebhookUrl[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const {
     artbot_id,
@@ -84,6 +92,14 @@ function ImageViewActions({
   });
 
   const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    const fetchWebhookUrls = async () => {
+      const webhookUrls = await getWebhookUrlsFromDexie();
+      setWebhookUrls(webhookUrls);
+    };
+    fetchWebhookUrls();
+  }, []);
 
   useEffect(() => {
     workerRef.current = new Worker(
@@ -181,6 +197,57 @@ function ImageViewActions({
       });
     },
     [downloadImage]
+  );
+
+  const handleWebhookClick = useCallback(
+    async (webhookObj: WebhookUrl) => {
+      if (!imageBlobBuffer) return;
+
+      const imageBlob = bufferToBlob(imageBlobBuffer);
+      const jsonBlob = createJsonAttachment(imageData.imageRequest);
+      const formData = new FormData();
+
+      formData.append('files[0]', imageBlob, `${imageId}.png`);
+      formData.append('files[1]', jsonBlob, `${imageId}.json`);
+
+      const payload = {
+        username: 'ArtBot',
+        content: `Image shared from ArtBot:\n\n${
+          imageData.imageRequest.prompt.length > 1950
+            ? imageData.imageRequest.prompt.substring(0, 1947) + '...'
+            : imageData.imageRequest.prompt
+        }`,
+        attachments: [
+          {
+            id: 0,
+            description: 'Generated image'
+          },
+          {
+            id: 1,
+            description: 'Generation parameters'
+          }
+        ]
+      };
+      formData.append('payload_json', JSON.stringify(payload));
+
+      try {
+        await fetch(webhookObj.url, {
+          method: 'POST',
+          body: formData
+        });
+
+        toastController({
+          message: 'Image and parameters sent to webhook!'
+        });
+      } catch (error) {
+        console.error('Error sending to webhook:', error);
+        toastController({
+          message: 'Failed to send to webhook.',
+          type: 'error'
+        });
+      }
+    },
+    [imageData.imageRequest, imageBlobBuffer, imageId]
   );
 
   useEffect(() => {
@@ -299,7 +366,7 @@ function ImageViewActions({
               </Button>
             }
           >
-            <MenuItem>Share image (creates URL)</MenuItem>
+            {/* <MenuItem>Share image (creates URL)</MenuItem> */}
             <MenuItem
               onClick={() => {
                 const encodedData = compressAndEncode(imageData.imageRequest);
@@ -313,6 +380,20 @@ function ImageViewActions({
             >
               Share parameters (creates URL)
             </MenuItem>
+            {webhookUrls.length > 0 && (
+              <SubMenu label="Webhooks">
+                {webhookUrls.map((webhookObj) => {
+                  return (
+                    <MenuItem
+                      key={webhookObj.id}
+                      onClick={() => handleWebhookClick(webhookObj)}
+                    >
+                      {webhookObj.name}
+                    </MenuItem>
+                  );
+                })}
+              </SubMenu>
+            )}
             <MenuDivider />
             <MenuItem>Submit to ArtBot showcase</MenuItem>
           </DropdownMenu>

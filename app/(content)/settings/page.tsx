@@ -6,6 +6,7 @@ import SharedKeys from './_component/SharedKeys';
 import SectionTitle from '../../_components/SectionTitle';
 import Section from '../../_components/Section';
 import Linker from '../../_components/Linker';
+import WebhookUrls from './_component/WebhookUrls';
 
 export const metadata: Metadata = {
   title: 'Settings | ArtBot for Stable Diffusion'
@@ -34,6 +35,7 @@ export default async function SettingsPage() {
               to manage your workers.
             </div>
           </Section>
+          <WebhookUrls />
         </div>
       </div>
     </div>

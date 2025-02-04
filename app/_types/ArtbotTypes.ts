@@ -6,12 +6,14 @@ export type AppSettingsTableKeys =
   | 'favoriteModels'
   | 'imageSize'
   | 'readMessagesIds'
-  | 'userInput';
+  | 'userInput'
+  | 'webhookUrls';
 
 export type AppSettingsTable = {
   id?: number;
   key: AppSettingsTableKeys;
-  value: string[] | string | number | boolean | object;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any
 };
 
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
@@ -139,3 +141,10 @@ export type WorkflowPosition =
   | 'top right'
   | 'bottom left'
   | 'bottom right';
+
+export interface WebhookUrl {
+  id: string;
+  name: string;
+  url: string;
+  timestamp: string;
+}

@@ -1,6 +1,6 @@
 import PromptInput from '../_data-models/PromptInput';
 import { db } from './dexie';
-import { AppSettingsTableKeys } from '../_types/ArtbotTypes';
+import { AppSettingsTableKeys, WebhookUrl } from '../_types/ArtbotTypes';
 
 export const addFavoriteModelToDexie = async (model: string) => {
   await db.transaction('rw', db.appSettings, async () => {
@@ -152,4 +152,32 @@ export const updateReadMessagesIdsInDexie = async (ids: string[]) => {
       value: updatedIds
     });
   }
+};
+
+export const getWebhookUrlsFromDexie = async () => {
+  const webhookUrlsEntry = await db.appSettings
+    .where({ key: 'webhookUrls' })
+    .first();
+  return webhookUrlsEntry?.value as WebhookUrl[] || [];
+};
+
+export const saveWebhookUrlsToDexie = async (urls: WebhookUrl[]) => {
+  await db.transaction('rw', db.appSettings, async () => {
+    const webhookUrlsEntry = await db.appSettings
+      .where({ key: 'webhookUrls' })
+      .first();
+
+    if (webhookUrlsEntry && webhookUrlsEntry.id !== undefined) {
+      await db.appSettings.update(webhookUrlsEntry.id, {
+        value: urls
+      });
+    }
+
+    if (!webhookUrlsEntry) {
+      await db.appSettings.add({
+        key: 'webhookUrls',
+        value: urls
+      });
+    }
+  });
 };
