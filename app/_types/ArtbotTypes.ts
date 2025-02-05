@@ -4,6 +4,7 @@ import PromptInput from '../_data-models/PromptInput';
 
 export type AppSettingsTableKeys =
   | 'favoriteModels'
+  | 'googleAuth'
   | 'imageSize'
   | 'readMessagesIds'
   | 'userInput'
