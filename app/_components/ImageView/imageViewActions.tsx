@@ -340,6 +340,7 @@ function ImageViewActions({
             )}
             <MenuDivider />
             <MenuItem
+              disabled={!window.gapi || !window.gapi.client}
               onClick={() =>
                 uploadToGoogleDrive(
                   imageBlobBuffer ?? null,

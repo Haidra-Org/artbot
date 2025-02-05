@@ -19,6 +19,16 @@ function useGoogleDriveUpload() {
       imageId: string
     ) => {
       try {
+        // Check if gapi client is initialized
+        if (!window.gapi || !window.gapi.client) {
+          toastController({
+            message: 'Please connect your Google Account in Settings first',
+            type: 'error'
+          });
+
+          return;
+        }
+
         // Check if we have a valid token
         const tokenObj = window.gapi.client.getToken();
         if (!tokenObj) {
