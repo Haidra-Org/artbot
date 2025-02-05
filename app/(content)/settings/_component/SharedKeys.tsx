@@ -192,10 +192,10 @@ export default function SharedKeys() {
           />
         )}
         {sharedKeys.length > 0 &&
-          sharedKeys.map((sharedKey) => (
+          sharedKeys.map((sharedKey, index) => (
             <>
               <div
-                key={sharedKey.id}
+                key={sharedKey.id + '_' + index}
                 className="row w-full items-start justify-start gap-6"
               >
                 <div className="pt-1 flex flex-row gap-1">

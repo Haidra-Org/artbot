@@ -2,6 +2,8 @@ export { };
 
 
 declare global {
+  declare module 'dirty-json'
+
   interface Blob {
     toPNG(callback?: () => void): Promise<Blob | undefined>
     toWebP(callback?: () => void): Promise<Blob | undefined>
@@ -56,5 +58,3 @@ declare global {
     };
   }
 }
-
-declare module 'dirty-json'
