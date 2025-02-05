@@ -26,7 +26,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Section from '../Section';
 import DropdownMenu from '../DropdownMenu';
-import { MenuDivider, MenuItem } from '@szhsin/react-menu';
+import { MenuDivider, MenuItem, SubMenu } from '@szhsin/react-menu';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { compressAndEncode, getBaseUrl } from '@/app/_utils/urlUtils';
 import { toastController } from '@/app/_controllers/toastController';
@@ -41,6 +41,8 @@ import { AppConstants } from '@/app/_data-models/AppConstants';
 import { ImageBlobBuffer, ImageType } from '@/app/_data-models/ImageFile_Dexie';
 import Image from '../Image';
 import { sleep } from '@/app/_utils/sleep';
+import useGoogleDriveUpload from './_hooks/useGoogleDriveUpload';
+import useWebhookUpload from './_hooks/useWebhookUpload';
 
 function ImageViewActions({
   currentImageId,
@@ -50,6 +52,8 @@ function ImageViewActions({
   onDelete: () => void;
 }) {
   const router = useRouter();
+  const uploadToGoogleDrive = useGoogleDriveUpload();
+  const { handleWebhookClick, webhookUrls } = useWebhookUpload();
 
   const showFullScreen = useFullScreenHandle();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -299,7 +303,7 @@ function ImageViewActions({
               </Button>
             }
           >
-            <MenuItem>Share image (creates URL)</MenuItem>
+            {/* <MenuItem>Share image (creates URL)</MenuItem> */}
             <MenuItem
               onClick={() => {
                 const encodedData = compressAndEncode(imageData.imageRequest);
@@ -313,8 +317,40 @@ function ImageViewActions({
             >
               Share parameters (creates URL)
             </MenuItem>
+            {webhookUrls.length > 0 && (
+              <SubMenu label="Webhooks">
+                {webhookUrls.map((webhookObj) => {
+                  return (
+                    <MenuItem
+                      key={webhookObj.id}
+                      onClick={() =>
+                        handleWebhookClick(
+                          webhookObj,
+                          imageBlobBuffer ?? null,
+                          imageData.imageRequest,
+                          imageId
+                        )
+                      }
+                    >
+                      {webhookObj.name}
+                    </MenuItem>
+                  );
+                })}
+              </SubMenu>
+            )}
             <MenuDivider />
-            <MenuItem>Submit to ArtBot showcase</MenuItem>
+            <MenuItem
+              disabled={!window.gapi || !window.gapi.client}
+              onClick={() =>
+                uploadToGoogleDrive(
+                  imageBlobBuffer ?? null,
+                  imageData.imageRequest,
+                  imageId
+                )
+              }
+            >
+              Save to Google Drive
+            </MenuItem>
           </DropdownMenu>
 
           <Button

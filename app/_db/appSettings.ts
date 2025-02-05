@@ -1,6 +1,6 @@
 import PromptInput from '../_data-models/PromptInput';
 import { db } from './dexie';
-import { AppSettingsTableKeys } from '../_types/ArtbotTypes';
+import { AppSettingsTableKeys, WebhookUrl } from '../_types/ArtbotTypes';
 
 export const addFavoriteModelToDexie = async (model: string) => {
   await db.transaction('rw', db.appSettings, async () => {
@@ -153,3 +153,65 @@ export const updateReadMessagesIdsInDexie = async (ids: string[]) => {
     });
   }
 };
+
+export const getWebhookUrlsFromDexie = async () => {
+  const webhookUrlsEntry = await db.appSettings
+    .where({ key: 'webhookUrls' })
+    .first();
+  return webhookUrlsEntry?.value as WebhookUrl[] || [];
+};
+
+export const saveWebhookUrlsToDexie = async (urls: WebhookUrl[]) => {
+  await db.transaction('rw', db.appSettings, async () => {
+    const webhookUrlsEntry = await db.appSettings
+      .where({ key: 'webhookUrls' })
+      .first();
+
+    if (webhookUrlsEntry && webhookUrlsEntry.id !== undefined) {
+      await db.appSettings.update(webhookUrlsEntry.id, {
+        value: urls
+      });
+    }
+
+    if (!webhookUrlsEntry) {
+      await db.appSettings.add({
+        key: 'webhookUrls',
+        value: urls
+      });
+    }
+  });
+};
+
+export const removeGoogleAuthFromDexie = async () => {
+  await db.transaction('rw', db.appSettings, async () => {
+    await db.appSettings
+      .where({ key: 'googleAuth' })
+      .delete();
+  })
+}
+
+export const getGoogleAuthFromDexie = async () => {
+  const googleAuthEntry = await db.appSettings
+    .where({ key: 'googleAuth' })
+    .first();
+  return googleAuthEntry?.value as { name?: string, email?: string, accessToken: string, idToken?: string, expiresAt: number };
+};
+
+export const saveGoogleAuthToDexie = async (authObj: { name?: string, email?: string, accessToken: string, idToken?: string, expiresAt: number }) => {
+  await db.transaction('rw', db.appSettings, async () => {
+    const googleAuthEntry = await db.appSettings
+      .where({ key: 'googleAuth' })
+      .first();
+
+    if (googleAuthEntry && googleAuthEntry.id !== undefined) {
+      await db.appSettings.update(googleAuthEntry.id, {
+        value: authObj
+      });
+    } else {
+      await db.appSettings.add({
+        key: 'googleAuth',
+        value: authObj
+      });
+    }
+  })
+}

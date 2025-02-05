@@ -2,11 +2,22 @@ import TotalImagesGeneratedLive from './TotalImagesGeneratedLive';
 const statusApi = process.env.ARTBOT_STATUS_API;
 
 async function getImageCount() {
-  const response = await fetch(`${statusApi}/images/total`, {
-    cache: 'no-cache'
-  });
-  const data = await response.json();
-  return data.totalCount || 0;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+  try {
+    const response = await fetch(`${statusApi}/images/total`, {
+      next: { revalidate: 5 },
+      signal: controller.signal
+    });
+    const data = await response.json();
+    clearTimeout(timeoutId);
+    return data.totalCount || 0;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    console.log('Failed to fetch total image count:', error);
+    return 0;
+  }
 }
 
 export default async function TotalImagesGenerated() {

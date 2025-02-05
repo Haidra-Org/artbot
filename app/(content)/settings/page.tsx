@@ -6,6 +6,8 @@ import SharedKeys from './_component/SharedKeys';
 import SectionTitle from '../../_components/SectionTitle';
 import Section from '../../_components/Section';
 import Linker from '../../_components/Linker';
+import WebhookUrls from './_component/WebhookUrls';
+import GoogleAuth from './_component/GoogleAuth';
 
 export const metadata: Metadata = {
   title: 'Settings | ArtBot for Stable Diffusion'
@@ -34,6 +36,11 @@ export default async function SettingsPage() {
               to manage your workers.
             </div>
           </Section>
+        </div>
+        <div className="col gap-2">
+          <SectionTitle anchor="connections">Connections</SectionTitle>
+          <WebhookUrls />
+          <GoogleAuth />
         </div>
       </div>
     </div>

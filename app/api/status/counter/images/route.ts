@@ -4,7 +4,7 @@ export async function GET() {
   try {
     const response = await fetch(`${statusApi}/images/total`, {
       method: 'GET',
-      cache: 'no-store',
+      next: { revalidate: 2 },
       headers: {
         'Content-Type': 'application/json'
       }

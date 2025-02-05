@@ -70,8 +70,6 @@ export default function SharedKeys() {
           sharedKeyPromises
         )) as SharedApiKey[];
 
-        console.log(`sharedKeyData`, sharedKeyData);
-
         // Update the state with the fetched shared keys
         setSharedKeys(sharedKeyData);
       } catch (error) {
@@ -194,10 +192,10 @@ export default function SharedKeys() {
           />
         )}
         {sharedKeys.length > 0 &&
-          sharedKeys.map((sharedKey) => (
+          sharedKeys.map((sharedKey, index) => (
             <>
               <div
-                key={sharedKey.id}
+                key={sharedKey.id + '_' + index}
                 className="row w-full items-start justify-start gap-6"
               >
                 <div className="pt-1 flex flex-row gap-1">
