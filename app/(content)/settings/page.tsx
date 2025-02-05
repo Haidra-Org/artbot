@@ -7,6 +7,7 @@ import SectionTitle from '../../_components/SectionTitle';
 import Section from '../../_components/Section';
 import Linker from '../../_components/Linker';
 import WebhookUrls from './_component/WebhookUrls';
+import GoogleAuth from './_component/GoogleAuth';
 
 export const metadata: Metadata = {
   title: 'Settings | ArtBot for Stable Diffusion'
@@ -21,6 +22,12 @@ export default async function SettingsPage() {
           <SectionTitle anchor="api-keys">API Keys</SectionTitle>
           <Apikey />
           <SharedKeys />
+        </div>
+        <div className="col gap-2">
+          <SectionTitle anchor="google-integration">
+            Google Integration
+          </SectionTitle>
+          <GoogleAuth />
         </div>
         <div className="col gap-2">
           <SectionTitle anchor="workers">Workers</SectionTitle>

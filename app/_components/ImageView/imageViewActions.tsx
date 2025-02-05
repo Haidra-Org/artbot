@@ -41,13 +41,8 @@ import { AppConstants } from '@/app/_data-models/AppConstants';
 import { ImageBlobBuffer, ImageType } from '@/app/_data-models/ImageFile_Dexie';
 import Image from '../Image';
 import { sleep } from '@/app/_utils/sleep';
-import { ImageRequest, WebhookUrl } from '@/app/_types/ArtbotTypes';
-import { getWebhookUrlsFromDexie } from '@/app/_db/appSettings';
-
-const createJsonAttachment = (imageRequest: ImageRequest): Blob => {
-  const prettyJson = JSON.stringify(imageRequest, null, 2);
-  return new Blob([prettyJson], { type: 'application/json' });
-};
+import useGoogleDriveUpload from './_hooks/useGoogleDriveUpload';
+import useWebhookUpload from './_hooks/useWebhookUpload';
 
 function ImageViewActions({
   currentImageId,
@@ -57,9 +52,10 @@ function ImageViewActions({
   onDelete: () => void;
 }) {
   const router = useRouter();
+  const uploadToGoogleDrive = useGoogleDriveUpload();
+  const { handleWebhookClick, webhookUrls } = useWebhookUpload();
 
   const showFullScreen = useFullScreenHandle();
-  const [webhookUrls, setWebhookUrls] = useState<WebhookUrl[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const {
     artbot_id,
@@ -92,14 +88,6 @@ function ImageViewActions({
   });
 
   const workerRef = useRef<Worker | null>(null);
-
-  useEffect(() => {
-    const fetchWebhookUrls = async () => {
-      const webhookUrls = await getWebhookUrlsFromDexie();
-      setWebhookUrls(webhookUrls);
-    };
-    fetchWebhookUrls();
-  }, []);
 
   useEffect(() => {
     workerRef.current = new Worker(
@@ -197,57 +185,6 @@ function ImageViewActions({
       });
     },
     [downloadImage]
-  );
-
-  const handleWebhookClick = useCallback(
-    async (webhookObj: WebhookUrl) => {
-      if (!imageBlobBuffer) return;
-
-      const imageBlob = bufferToBlob(imageBlobBuffer);
-      const jsonBlob = createJsonAttachment(imageData.imageRequest);
-      const formData = new FormData();
-
-      formData.append('files[0]', imageBlob, `${imageId}.png`);
-      formData.append('files[1]', jsonBlob, `${imageId}.json`);
-
-      const payload = {
-        username: 'ArtBot',
-        content: `Image shared from ArtBot:\n\n${
-          imageData.imageRequest.prompt.length > 1950
-            ? imageData.imageRequest.prompt.substring(0, 1947) + '...'
-            : imageData.imageRequest.prompt
-        }`,
-        attachments: [
-          {
-            id: 0,
-            description: 'Generated image'
-          },
-          {
-            id: 1,
-            description: 'Generation parameters'
-          }
-        ]
-      };
-      formData.append('payload_json', JSON.stringify(payload));
-
-      try {
-        await fetch(webhookObj.url, {
-          method: 'POST',
-          body: formData
-        });
-
-        toastController({
-          message: 'Image and parameters sent to webhook!'
-        });
-      } catch (error) {
-        console.error('Error sending to webhook:', error);
-        toastController({
-          message: 'Failed to send to webhook.',
-          type: 'error'
-        });
-      }
-    },
-    [imageData.imageRequest, imageBlobBuffer, imageId]
   );
 
   useEffect(() => {
@@ -386,7 +323,14 @@ function ImageViewActions({
                   return (
                     <MenuItem
                       key={webhookObj.id}
-                      onClick={() => handleWebhookClick(webhookObj)}
+                      onClick={() =>
+                        handleWebhookClick(
+                          webhookObj,
+                          imageBlobBuffer ?? null,
+                          imageData.imageRequest,
+                          imageId
+                        )
+                      }
                     >
                       {webhookObj.name}
                     </MenuItem>
@@ -395,7 +339,17 @@ function ImageViewActions({
               </SubMenu>
             )}
             <MenuDivider />
-            <MenuItem>Submit to ArtBot showcase</MenuItem>
+            <MenuItem
+              onClick={() =>
+                uploadToGoogleDrive(
+                  imageBlobBuffer ?? null,
+                  imageData.imageRequest,
+                  imageId
+                )
+              }
+            >
+              Save to Google Drive
+            </MenuItem>
           </DropdownMenu>
 
           <Button

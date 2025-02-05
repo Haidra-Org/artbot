@@ -1,10 +1,59 @@
-interface Blob {
-  toPNG(callback?: () => void): Promise<Blob | undefined>
-  toWebP(callback?: () => void): Promise<Blob | undefined>
-  toJPEG(callback?: () => void): Promise<Blob | undefined>
-  addOrUpdateExifData(userComment: string): Promise<Blob>
-}
+export { };
 
-declare global {}
+
+declare global {
+  interface Blob {
+    toPNG(callback?: () => void): Promise<Blob | undefined>
+    toWebP(callback?: () => void): Promise<Blob | undefined>
+    toJPEG(callback?: () => void): Promise<Blob | undefined>
+    addOrUpdateExifData(userComment: string): Promise<Blob>
+  }
+
+  interface Window {
+    gapi: {
+      load: (api: string, callback: () => void) => void;
+      client: {
+        init: (config: {
+          apiKey: string;
+          discoveryDocs: string[];
+        }) => Promise<void>;
+        getToken: () => { access_token: string } | null;
+        setToken: (token: string) => void;
+        drive: {
+          files: {
+            create: (params: {
+              resource: DriveFileResource;
+              media?: DriveFileMedia;
+              fields: string;
+              uploadType?: string;
+            }) => Promise<{ result: { id: string; name: string } }>;
+            list: (params: DriveListParams) => Promise<{
+              result: {
+                files: Array<{ id: string; name: string }>;
+              };
+            }>;
+          };
+        };
+      };
+    };
+    google: {
+      accounts: {
+        oauth2: {
+          initTokenClient: (config: {
+            client_id: string;
+            scope: string;
+            callback: (response: {
+              access_token?: string;
+              error?: string;
+            }) => void;
+          }) => {
+            requestAccessToken: (params?: { prompt?: string }) => void;
+          };
+          revoke: (token: string) => void;
+        };
+      };
+    };
+  }
+}
 
 declare module 'dirty-json'
