@@ -194,10 +194,10 @@ export const getGoogleAuthFromDexie = async () => {
   const googleAuthEntry = await db.appSettings
     .where({ key: 'googleAuth' })
     .first();
-  return googleAuthEntry?.value as { name: string, email: string, accessToken: string, idToken: string, expiresAt: number };
+  return googleAuthEntry?.value as { name?: string, email?: string, accessToken: string, idToken?: string, expiresAt: number };
 };
 
-export const saveGoogleAuthToDexie = async (authObj: { name: string, email: string, accessToken: string, idToken: string, expiresAt: number }) => {
+export const saveGoogleAuthToDexie = async (authObj: { name?: string, email?: string, accessToken: string, idToken?: string, expiresAt: number }) => {
   await db.transaction('rw', db.appSettings, async () => {
     const googleAuthEntry = await db.appSettings
       .where({ key: 'googleAuth' })

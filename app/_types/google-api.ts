@@ -29,7 +29,7 @@ export interface DriveFile {
 }
 
 export const GOOGLE_API_CONFIG = {
-  API_KEY: 'AIzaSyD1eYeuYWH3MFmRKd7-oB8C_fozA2KWJwU',
+  API_KEY: (process.env.NODE_ENV === 'development' ? process.env.NEXT_PUBLIC_DEV_GOOGLE_CLOUD_KEY : 'AIzaSyD1eYeuYWH3MFmRKd7-oB8C_fozA2KWJwU') || '',
   CLIENT_ID: '773317214900-qo83bui0bdh2kdkhkn6iafq2uvb1dsdr.apps.googleusercontent.com',
   DISCOVERY_DOC: 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
   SCOPES: 'https://www.googleapis.com/auth/drive.file'

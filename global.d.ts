@@ -17,8 +17,8 @@ declare global {
           apiKey: string;
           discoveryDocs: string[];
         }) => Promise<void>;
-        getToken: () => { access_token: string } | null;
-        setToken: (token: string) => void;
+        getToken: () => { access_token: string, expires_in: number } | null;
+        setToken: (token: { access_token: string }) => void;
         drive: {
           files: {
             create: (params: {
@@ -43,6 +43,7 @@ declare global {
             client_id: string;
             scope: string;
             callback: (response: {
+              expires_in?: number;
               access_token?: string;
               error?: string;
             }) => void;

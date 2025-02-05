@@ -112,7 +112,6 @@ export default function WebhookUrls() {
         {webhookUrls && Object.keys(webhookUrls).length > 0 && (
           <div className="col gap-2">
             {webhookUrls.map((webhookObj) => {
-              console.log(`url`, webhookObj);
               return (
                 <div
                   className="row w-full items-start justify-start gap-6"

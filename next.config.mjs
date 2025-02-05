@@ -18,6 +18,7 @@ const nextConfig = {
   basePath: BASE_PATH,
   env: {
     NEXT_PUBLIC_API_BASE_PATH: BASE_PATH,
+    NEXT_PUBLIC_DEV_GOOGLE_CLOUD_KEY: process.env.GOOGLE_CLOUD_KEY || '',
     NEXT_HORDE_API_HOST: HORDE_API_HOST,
     NEXT_PUBLIC_DEXIE_DB: DEXIE_DB,
     NEXT_PUBLIC_SAVE_DEBUG_LOGS: 'false', // "true" or "false"

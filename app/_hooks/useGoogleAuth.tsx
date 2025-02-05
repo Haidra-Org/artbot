@@ -1,23 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { GOOGLE_API_CONFIG, GoogleAuthState } from '@/app/_types/google-api';
-
-// Define a type for your stored auth info
-type StoredAuthData = {
-  isSignedIn: boolean;
-  user: {
-    name: string;
-    email: string;
-  } | null;
-  accessToken: string;
-  idToken: string;
-  expiresAt: number; // Unix timestamp in milliseconds
-};
+import {
+  getGoogleAuthFromDexie,
+  removeGoogleAuthFromDexie,
+  saveGoogleAuthToDexie
+} from '../_db/appSettings';
 
 type TokenClient = {
   requestAccessToken: (params?: { prompt?: string }) => void;
 };
-
-const STORAGE_KEY = 'google_auth_data';
 
 export function useGoogleAuth() {
   const [authState, setAuthState] = useState<GoogleAuthState>({
@@ -29,13 +20,31 @@ export function useGoogleAuth() {
   const [error, setError] = useState<string | null>(null);
   const [tokenClient, setTokenClient] = useState<TokenClient | null>(null);
 
-  // Initialize GAPI client
+  // Initialize GAPI client and restore auth state
   const initializeGapiClient = useCallback(async () => {
     try {
       await window.gapi.client.init({
         apiKey: GOOGLE_API_CONFIG.API_KEY,
         discoveryDocs: [GOOGLE_API_CONFIG.DISCOVERY_DOC]
       });
+
+      // Try to restore auth state from Dexie
+      const savedAuth = await getGoogleAuthFromDexie();
+      if (
+        savedAuth?.accessToken &&
+        savedAuth.expiresAt &&
+        Date.now() < savedAuth.expiresAt
+      ) {
+        window.gapi.client.setToken({
+          access_token: savedAuth.accessToken
+        });
+
+        setAuthState((prev) => ({
+          ...prev,
+          isSignedIn: true
+        }));
+      }
+
       setAuthState((prev) => ({ ...prev, gapiInited: true }));
     } catch (err) {
       setError('Failed to initialize GAPI client');
@@ -43,36 +52,7 @@ export function useGoogleAuth() {
     }
   }, []);
 
-  // Load auth state from localStorage on mount
-  useEffect(() => {
-    try {
-      const savedAuth = localStorage.getItem(STORAGE_KEY);
-      if (savedAuth) {
-        const authData: StoredAuthData = JSON.parse(savedAuth);
-        // Check if the token is still valid
-        if (Date.now() < authData.expiresAt) {
-          setAuthState((prev) => ({
-            ...prev,
-            isSignedIn: authData.isSignedIn,
-            user: authData.user
-          }));
-          // Restore tokens
-          localStorage.setItem('google_access_token', authData.accessToken);
-          localStorage.setItem('google_id_token', authData.idToken);
-        } else {
-          // Clear expired tokens
-          localStorage.removeItem(STORAGE_KEY);
-          localStorage.removeItem('google_access_token');
-          localStorage.removeItem('google_id_token');
-        }
-      }
-    } catch (err) {
-      console.error('Error loading auth state:', err);
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, []);
-
-  // Load the GAPI client
+  // Load the GAPI client and restore auth state
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://apis.google.com/js/api.js';
@@ -98,42 +78,31 @@ export function useGoogleAuth() {
       const client = window.google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_API_CONFIG.CLIENT_ID,
         scope: GOOGLE_API_CONFIG.SCOPES,
-        callback: (response) => {
+        callback: async (response) => {
           if (response.error) {
             setError('Failed to obtain access token');
             console.error('Access token error:', response);
             return;
           }
-          if (response.access_token) {
-            const accessToken = response.access_token;
-            localStorage.setItem('google_access_token', accessToken);
-            setAuthState((prev) => ({ ...prev, isSignedIn: true }));
 
-            // Decode the JWT token to get user info
-            const token = localStorage.getItem('google_id_token');
-            if (token) {
-              const decodedToken = JSON.parse(atob(token.split('.')[1]));
-              const user = {
-                name: decodedToken.name,
-                email: decodedToken.email
-              };
-              setAuthState((prev) => ({
-                ...prev,
-                user
-              }));
+          let { expiresAt } = (await getGoogleAuthFromDexie()) || {};
 
-              // Save auth data with expiration
-              const authData: StoredAuthData = {
-                isSignedIn: true,
-                user,
-                accessToken,
-                idToken: token,
-                // Set expiresAt to 1 hour from now (or use the value provided by Google)
-                expiresAt: Date.now() + 3600 * 1000
-              };
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(authData));
-            }
+          if (response.expires_in) {
+            expiresAt = Date.now() + Number(response.expires_in || 3600) * 1000;
           }
+
+          if (response.access_token) {
+            window.gapi.client.setToken({
+              access_token: response.access_token
+            });
+
+            await saveGoogleAuthToDexie({
+              accessToken: response.access_token,
+              expiresAt
+            });
+          }
+
+          setAuthState((prev) => ({ ...prev, isSignedIn: true }));
         }
       });
       setTokenClient(client);
@@ -156,13 +125,29 @@ export function useGoogleAuth() {
       // Subsequent sign ins
       tokenClient.requestAccessToken({ prompt: '' });
     }
+
+    setTimeout(async () => {
+      const token = window.gapi.client.getToken();
+      if (token) {
+        await saveGoogleAuthToDexie({
+          accessToken: token.access_token,
+          expiresAt: Date.now() + Number(token.expires_in || 3600) * 1000
+        });
+
+        setAuthState((prev) => ({
+          ...prev,
+          isSignedIn: true
+        }));
+      }
+    }, 500);
   }, [tokenClient]);
 
-  const handleSignOut = useCallback(() => {
+  const handleSignOut = useCallback(async () => {
     const token = window.gapi.client.getToken();
     if (token) {
       window.google.accounts.oauth2.revoke(token.access_token);
-      window.gapi.client.setToken('');
+      // @ts-expect-error - GAPI types expect string but actually accepts object
+      window.gapi.client.setToken({});
     }
     setAuthState({
       isSignedIn: false,
@@ -170,9 +155,9 @@ export function useGoogleAuth() {
       gapiInited: true,
       gisInited: true
     });
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem('google_id_token');
-    localStorage.removeItem('google_access_token');
+
+    // Remove from Dexie
+    await removeGoogleAuthFromDexie();
   }, []);
 
   return {
