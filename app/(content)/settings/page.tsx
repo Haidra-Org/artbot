@@ -24,12 +24,6 @@ export default async function SettingsPage() {
           <SharedKeys />
         </div>
         <div className="col gap-2">
-          <SectionTitle anchor="google-integration">
-            Google Integration
-          </SectionTitle>
-          <GoogleAuth />
-        </div>
-        <div className="col gap-2">
           <SectionTitle anchor="workers">Workers</SectionTitle>
           <WorkerList type="allow" />
           <WorkerList type="block" />
@@ -42,7 +36,11 @@ export default async function SettingsPage() {
               to manage your workers.
             </div>
           </Section>
+        </div>
+        <div className="col gap-2">
+          <SectionTitle anchor="connections">Connections</SectionTitle>
           <WebhookUrls />
+          <GoogleAuth />
         </div>
       </div>
     </div>
