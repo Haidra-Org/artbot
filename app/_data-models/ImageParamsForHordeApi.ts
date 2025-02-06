@@ -1,3 +1,4 @@
+import { ImageDetails } from '../_components/ImageView/ImageViewProvider';
 import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles';
 import {
   ControlTypes,
@@ -97,11 +98,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     const replacement_filter =
       AppSettings.get('useReplacementFilter') === false ? false : true;
 
-    let allow_downgrade =
+    const allow_downgrade =
       AppSettings.get('autoDowngrade') === false ? false : true;
-    if (allow_downgrade) {
-      allow_downgrade = false;
-    }
 
     const {
       cfg_scale,
@@ -561,7 +559,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         hideBase64String: false,
         hasError: false
       }
-  ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput }> {
+  ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput | ImageDetails }> {
     const instance = new ImageParamsForHordeApi(imageDetails);
     instance.setEmbeddings();
     instance.setWorkerPreferences();
