@@ -1,4 +1,3 @@
-import { ImageDetails } from '../_components/ImageView/ImageViewProvider';
 import { getImagesForArtbotJobFromDexie } from '../_db/ImageFiles';
 import {
   ControlTypes,
@@ -559,7 +558,7 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
         hideBase64String: false,
         hasError: false
       }
-  ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput | ImageDetails }> {
+  ): Promise<{ apiParams: HordeApiParams; imageDetails: PromptInput }> {
     const instance = new ImageParamsForHordeApi(imageDetails);
     instance.setEmbeddings();
     instance.setWorkerPreferences();

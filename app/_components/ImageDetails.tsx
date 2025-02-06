@@ -1,48 +1,49 @@
 import {
   HordeApiParams,
   ImageParamsForHordeApi
-} from '@/app/_data-models/ImageParamsForHordeApi'
+} from '@/app/_data-models/ImageParamsForHordeApi';
 import {
   IconChevronDown,
   IconChevronRight,
   IconCopy,
   IconSettings
-} from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
-import PromptInput from '../_data-models/PromptInput'
-import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails'
-import NiceModal from '@ebay/nice-modal-react'
-import { toastController } from '../_controllers/toastController'
-import { JobDetails } from '../_hooks/useImageDetails'
-import { ImageFileInterface } from '../_data-models/ImageFile_Dexie'
-import { JobStatus } from '../_types/ArtbotTypes'
-import DropdownMenu from './DropdownMenu'
-import { MenuButton, MenuItem } from '@szhsin/react-menu'
-import { formatJobStatus } from '../_utils/hordeUtils'
-import { calculateTimeDifference } from '../_utils/numberUtils'
+} from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
+import PromptInput from '../_data-models/PromptInput';
+import LoraDetails from './AdvancedOptions/LoRAs/LoraDetails';
+import NiceModal from '@ebay/nice-modal-react';
+import { toastController } from '../_controllers/toastController';
+import { JobDetails } from '../_hooks/useImageDetails';
+import { ImageFileInterface } from '../_data-models/ImageFile_Dexie';
+import { JobStatus } from '../_types/ArtbotTypes';
+import DropdownMenu from './DropdownMenu';
+import { MenuButton, MenuItem } from '@szhsin/react-menu';
+import { formatJobStatus } from '../_utils/hordeUtils';
+import { calculateTimeDifference } from '../_utils/numberUtils';
+import type { ImageDetails as IImageDetails } from './ImageView/ImageViewProvider';
 
 export default function ImageDetails({
   imageDetails
 }: {
-  imageDetails: JobDetails
+  imageDetails: JobDetails;
 }) {
   const [display, setDisplay] = useState<
     'info' | 'job' | 'job-response' | 'request' | 'image-response'
-  >('info')
+  >('info');
   const [rawParams, setRawParams] = useState<{
-    apiParams: HordeApiParams
-    imageDetails: PromptInput
-  }>()
+    apiParams: HordeApiParams;
+    imageDetails: PromptInput | IImageDetails;
+  }>();
 
   const {
     jobDetails,
     imageFile = {} as ImageFileInterface,
     imageRequest
-  } = imageDetails || ({} as JobDetails)
+  } = imageDetails || ({} as JobDetails);
 
   useEffect(() => {
     async function fetchParams() {
-      if (!imageFile || !imageRequest) return
+      if (!imageFile || !imageRequest) return;
 
       const raw = await ImageParamsForHordeApi.build(
         {
@@ -52,55 +53,55 @@ export default function ImageDetails({
         {
           hideBase64String: true
         }
-      )
+      );
 
-      delete raw.apiParams.workers
-      delete raw.apiParams.worker_blacklist
+      delete raw.apiParams.workers;
+      delete raw.apiParams.worker_blacklist;
 
-      setRawParams(raw)
+      setRawParams(raw);
     }
 
-    fetchParams()
-  }, [imageFile, imageRequest])
+    fetchParams();
+  }, [imageFile, imageRequest]);
 
-  if (!imageDetails || !jobDetails) return null
+  if (!imageDetails || !jobDetails) return null;
 
   const handleCopy = async () => {
-    const prettyJson = JSON.stringify(rawParams?.apiParams, null, 2)
+    const prettyJson = JSON.stringify(rawParams?.apiParams, null, 2);
 
     if (!navigator.clipboard) {
       toastController({
         message:
           'Unable to copy image parameters to clipboard. JSON output to browser console.',
         type: 'error'
-      })
+      });
 
-      return
+      return;
     }
 
     try {
-      await navigator.clipboard.writeText(prettyJson)
+      await navigator.clipboard.writeText(prettyJson);
       toastController({
         message: 'Image request parameters copied to clipboard',
         type: 'success'
-      })
+      });
     } catch (err) {
-      console.log(`Err. Unable to copy text to clipboard`, err)
+      console.log(`Err. Unable to copy text to clipboard`, err);
     }
-  }
+  };
 
-  let sectionTitle = 'Image details'
+  let sectionTitle = 'Image details';
 
   if (display === 'job') {
-    sectionTitle = 'Job details'
+    sectionTitle = 'Job details';
   }
 
   if (display === 'request') {
-    sectionTitle = 'Request parameters'
+    sectionTitle = 'Request parameters';
   }
 
   if (display === 'image-response' || display === 'job-response') {
-    sectionTitle = 'API response'
+    sectionTitle = 'API response';
   }
 
   return (
@@ -283,11 +284,11 @@ export default function ImageDetails({
                     <div
                       className="row"
                       onClick={() => {
-                        if (lora.isArtbotManualEntry) return
+                        if (lora.isArtbotManualEntry) return;
 
                         NiceModal.show('embeddingDetails', {
                           children: <LoraDetails details={lora} />
-                        })
+                        });
                       }}
                     >
                       <strong>LoRA: </strong>
@@ -311,7 +312,7 @@ export default function ImageDetails({
                       {lora.clip}
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           )}
@@ -338,7 +339,7 @@ export default function ImageDetails({
                       <strong>Position: {workflow.position}</strong>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           )}
@@ -386,7 +387,7 @@ export default function ImageDetails({
                       <strong>Ref: {gen.ref}</strong>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           )}
@@ -465,5 +466,5 @@ export default function ImageDetails({
         Copy JSON request parameters
       </button>
     </div>
-  )
+  );
 }

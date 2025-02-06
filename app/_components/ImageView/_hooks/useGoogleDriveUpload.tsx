@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
 import { bufferToBlob } from '@/app/_utils/imageUtils';
 import { toastController } from '@/app/_controllers/toastController';
-import { ImageRequest } from '@/app/_types/ArtbotTypes';
 import { ImageBlobBuffer } from '@/app/_data-models/ImageFile_Dexie';
 import { createJsonAttachmentFromImageDetails } from '@/app/_utils/fileUtils';
+import { ImageDetails } from '../ImageViewProvider';
 
 /**
  * A custom hook that returns an `uploadToGoogleDrive` function.
@@ -15,7 +15,7 @@ function useGoogleDriveUpload() {
   const uploadToGoogleDrive = useCallback(
     async (
       imageBlobBuffer: ImageBlobBuffer | null,
-      imageRequest: ImageRequest,
+      imageData: ImageDetails,
       imageId: string
     ) => {
       try {
@@ -49,7 +49,10 @@ function useGoogleDriveUpload() {
 
         // Convert buffer to blobs
         const imageBlob = bufferToBlob(imageBlobBuffer);
-        const jsonBlob = createJsonAttachmentFromImageDetails(imageRequest);
+        const jsonBlob = await createJsonAttachmentFromImageDetails(
+          imageId,
+          imageData
+        );
 
         // Get (or create) the folder ID for "ArtBot Images"
         let folderId: string;
