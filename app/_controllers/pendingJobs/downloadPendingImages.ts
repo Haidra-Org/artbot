@@ -128,22 +128,32 @@ export const downloadImages = async ({
         kudos
       });
 
-      // Check if this was the final update
-      const isComplete =
-        response.done && response.finished === response.generations.length;
+      // Determine the current status
+      let currentStatus = jobDetails.status;
+      if (response.done && response.finished === response.generations.length) {
+        currentStatus = JobStatus.Done;
+      } else if (response.processing > 0) {
+        currentStatus = JobStatus.Processing;
+      } else if (
+        response.waiting > 0 ||
+        (response.queue_position !== null && response.queue_position > 0)
+      ) {
+        currentStatus = JobStatus.Queued;
+      }
 
       // Update the job status
       await updatePendingImage(jobDetails.artbot_id, {
-        status: isComplete ? JobStatus.Done : jobDetails.status,
+        status: currentStatus,
         images_completed,
         images_failed,
         errors: imageErrors,
         gen_metadata,
-        api_response: response
+        api_response: response,
+        processing: response.processing || 0
       });
 
       // Clean up the queue if we're done
-      if (isComplete) {
+      if (currentStatus === JobStatus.Done) {
         queueSystems.delete(jobDetails.artbot_id);
       }
 
