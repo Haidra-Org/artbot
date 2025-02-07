@@ -30,11 +30,9 @@ const getQueueSystem = (jobId: string): TaskQueue<{ success: boolean }> => {
   if (!queueSystems.has(jobId)) {
     queueSystems.set(
       jobId,
-      new TaskQueue<{ success: boolean }>(
-        `DownloadQueue-${jobId}`,
-        STATUS_CHECK_INTERVAL,
-        { preventDuplicates: true }
-      )
+      new TaskQueue<{ success: boolean }>(STATUS_CHECK_INTERVAL, {
+        preventDuplicates: true
+      })
     );
   }
   return queueSystems.get(jobId)!;
