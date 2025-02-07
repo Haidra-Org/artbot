@@ -1,104 +1,111 @@
-import { AppConstants } from '@/app/_data-models/AppConstants'
-import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests'
-import { getPendingImagesByStatusFromAppState } from '@/app/_stores/PendingImagesStore'
-import { ImageError, JobStatus } from '@/app/_types/ArtbotTypes'
-import { ImageParamsForHordeApi } from '@/app/_data-models/ImageParamsForHordeApi'
-import generateImage, { GenerateErrorResponse } from '@/app/_api/horde/generate'
-import { sleep } from '@/app/_utils/sleep'
-import checkImage from '@/app/_api/horde/check'
-import { updatePendingImage } from './updatePendingImage'
-import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
-import { transitionJobFromWaitingToRequested } from '@/app/_db/hordeJobs'
+import { AppConstants } from '@/app/_data-models/AppConstants';
+import { getImageRequestsFromDexieById } from '@/app/_db/imageRequests';
+import { getPendingImagesByStatusFromAppState } from '@/app/_stores/PendingImagesStore';
+import { ImageError, JobStatus } from '@/app/_types/ArtbotTypes';
+import { ImageParamsForHordeApi } from '@/app/_data-models/ImageParamsForHordeApi';
+import generateImage, {
+  GenerateErrorResponse
+} from '@/app/_api/horde/generate';
+import { sleep } from '@/app/_utils/sleep';
+import checkImage from '@/app/_api/horde/check';
+import { updatePendingImage } from './updatePendingImage';
+import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob';
+import { transitionJobFromWaitingToRequested } from '@/app/_db/hordeJobs';
 
-const INITIAL_WAIT_TIME = 750
+const INITIAL_WAIT_TIME = 750;
 
 export const checkForWaitingJobs = async (): Promise<void> => {
-  const pendingJobs = getPendingImagesByStatusFromAppState([
-    JobStatus.Requested,
-    JobStatus.Queued,
-    JobStatus.Processing
-  ])
+  // Only count jobs that are actually using the remote API
+  const activeJobs = getPendingImagesByStatusFromAppState([
+    JobStatus.Requested, // Just sent to API, waiting for initial response
+    JobStatus.Queued, // In API queue
+    JobStatus.Processing // Currently being processed by API
+  ]);
 
-  if (pendingJobs.length >= AppConstants.MAX_CONCURRENT_JOBS) {
-    return
+  if (activeJobs.length >= AppConstants.MAX_CONCURRENT_JOBS) {
+    return;
   }
 
-  const [waitingJob] = getPendingImagesByStatusFromAppState([JobStatus.Waiting])
+  const [waitingJob] = getPendingImagesByStatusFromAppState([
+    JobStatus.Waiting
+  ]);
 
   if (!waitingJob) {
-    return
+    return;
   }
 
   // Try to atomically transition the job from Waiting to Requested
-  const transitionedJob = await transitionJobFromWaitingToRequested(waitingJob.artbot_id)
+  const transitionedJob = await transitionJobFromWaitingToRequested(
+    waitingJob.artbot_id
+  );
 
   // If null, another instance already picked up this job
   if (!transitionedJob) {
-    return
+    return;
   }
 
   const [imageRequest] =
-    (await getImageRequestsFromDexieById([waitingJob.artbot_id])) || []
+    (await getImageRequestsFromDexieById([waitingJob.artbot_id])) || [];
 
   if (!imageRequest) {
     // If no image request found, revert the job status
     await updatePendingImage(waitingJob.artbot_id, {
       status: JobStatus.Error,
       errors: [{ type: 'other', message: 'Image request not found' }]
-    })
-    return
+    });
+    return;
   }
 
   try {
-    const { apiParams } = await ImageParamsForHordeApi.build(imageRequest)
-    const apiResponse = await generateImage(apiParams)
+    const { apiParams } = await ImageParamsForHordeApi.build(imageRequest);
+    const apiResponse = await generateImage(apiParams);
 
     if (!apiResponse || 'errors' in apiResponse) {
       await handleApiError(
         waitingJob.artbot_id,
         apiResponse || { errors: [{ error: 'unknown error' }] }
-      )
-      return
+      );
+      return;
     }
 
     if ('id' in apiResponse) {
-      await processSuccessfulResponse(waitingJob.artbot_id, apiResponse.id)
+      await processSuccessfulResponse(waitingJob.artbot_id, apiResponse.id);
     }
   } catch (error) {
-    console.error('Unexpected error:', error)
+    console.error('Unexpected error:', error);
     await updatePendingImage(waitingJob.artbot_id, {
       status: JobStatus.Error,
       errors: [{ type: 'other', message: 'Unexpected error occurred' }]
-    })
+    });
   }
-}
+};
 
 const handleApiError = async (
   jobId: string,
   apiResponse: GenerateErrorResponse
 ) => {
-  const errorMessages: ImageError[] = []
+  const errorMessages: ImageError[] = [];
   const hasErrors =
-    'errors' in apiResponse && Object.keys(apiResponse.errors).length > 0
+    'errors' in apiResponse && Object.keys(apiResponse.errors).length > 0;
 
   // Add the main error message
   if (apiResponse.message && hasErrors) {
-    errorMessages.push({ type: 'default', message: apiResponse.message })
+    errorMessages.push({ type: 'default', message: apiResponse.message });
   }
 
   // Add specific errors from the errors object
   if (apiResponse.errors && typeof apiResponse.errors === 'object') {
     Object.entries(apiResponse.errors).forEach(([key, value]) => {
       if (typeof value === 'string') {
-        errorMessages.push({ type: 'specific', field: key, message: value })
+        errorMessages.push({ type: 'specific', field: key, message: value });
       } else {
         errorMessages.push({
           type: 'specific',
           field: key,
           message: JSON.stringify(value)
-        })
+        });
       }
-    })
+    });
   }
 
   // If no error fields were added, add a default 'other' error
@@ -106,28 +113,28 @@ const handleApiError = async (
     errorMessages.push({
       type: 'other',
       message: apiResponse.message || 'An unknown error occurred'
-    })
+    });
   }
 
   await updatePendingImage(jobId, {
     status: JobStatus.Error,
     errors: errorMessages
-  })
+  });
 
-  console.error(`API error: ${JSON.stringify(apiResponse)}`)
-}
+  console.error(`API error: ${JSON.stringify(apiResponse)}`);
+};
 
 const processSuccessfulResponse = async (jobId: string, hordeId: string) => {
-  await sleep(INITIAL_WAIT_TIME)
-  const jobDetails = await checkImage(hordeId)
+  await sleep(INITIAL_WAIT_TIME);
+  const jobDetails = await checkImage(hordeId);
 
   if ('is_possible' in jobDetails && jobDetails.is_possible === false) {
     await handleImpossibleJob(
       jobId,
       hordeId,
       jobDetails as unknown as ArtBotHordeJob
-    )
-    return
+    );
+    return;
   }
 
   if ('wait_time' in jobDetails) {
@@ -135,9 +142,9 @@ const processSuccessfulResponse = async (jobId: string, hordeId: string) => {
       jobId,
       hordeId,
       jobDetails as unknown as ArtBotHordeJob
-    )
+    );
   }
-}
+};
 
 const handleImpossibleJob = async (
   jobId: string,
@@ -153,18 +160,18 @@ const handleImpossibleJob = async (
       'There are currently no GPU workers that can complete this request. Continue waiting or try changing settings.',
     wait_time: jobDetails.wait_time,
     api_response: { ...jobDetails }
-  })
-}
+  });
+};
 
 const updateJobStatus = async (
   jobId: string,
   hordeId: string,
   jobDetails: ArtBotHordeJob
 ) => {
-  let status = JobStatus.Queued
+  let status = JobStatus.Queued;
 
   if (jobDetails.processing >= 1) {
-    status = JobStatus.Processing
+    status = JobStatus.Processing;
   }
 
   await updatePendingImage(jobId, {
@@ -174,5 +181,5 @@ const updateJobStatus = async (
     status,
     wait_time: jobDetails.wait_time,
     api_response: { ...jobDetails }
-  })
-}
+  });
+};
