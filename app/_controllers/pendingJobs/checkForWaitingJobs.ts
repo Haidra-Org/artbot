@@ -8,6 +8,7 @@ import { sleep } from '@/app/_utils/sleep'
 import checkImage from '@/app/_api/horde/check'
 import { updatePendingImage } from './updatePendingImage'
 import { ArtBotHordeJob } from '@/app/_data-models/ArtBotHordeJob'
+import { transitionJobFromWaitingToRequested } from '@/app/_db/hordeJobs'
 
 const INITIAL_WAIT_TIME = 750
 
@@ -28,14 +29,25 @@ export const checkForWaitingJobs = async (): Promise<void> => {
     return
   }
 
+  // Try to atomically transition the job from Waiting to Requested
+  const transitionedJob = await transitionJobFromWaitingToRequested(waitingJob.artbot_id)
+
+  // If null, another instance already picked up this job
+  if (!transitionedJob) {
+    return
+  }
+
   const [imageRequest] =
     (await getImageRequestsFromDexieById([waitingJob.artbot_id])) || []
 
-  if (!imageRequest) return
-
-  await updatePendingImage(waitingJob.artbot_id, {
-    status: JobStatus.Requested
-  })
+  if (!imageRequest) {
+    // If no image request found, revert the job status
+    await updatePendingImage(waitingJob.artbot_id, {
+      status: JobStatus.Error,
+      errors: [{ type: 'other', message: 'Image request not found' }]
+    })
+    return
+  }
 
   try {
     const { apiParams } = await ImageParamsForHordeApi.build(imageRequest)

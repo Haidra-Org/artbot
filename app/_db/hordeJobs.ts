@@ -39,12 +39,12 @@ export const fetchCompletedJobsFromDexie = async (
 
       return imageFile.length > 0 && imageRequest
         ? {
-            ...job,
-            height: imageRequest.height,
-            width: imageRequest.width,
-            image_id: imageFile[0].image_id,
-            image_count: imageFile.length
-          }
+          ...job,
+          height: imageRequest.height,
+          width: imageRequest.width,
+          image_id: imageFile[0].image_id,
+          image_count: imageFile.length
+        }
         : null
     })
   )
@@ -86,12 +86,12 @@ export const fetchCompletedJobsByArtbotIdsFromDexie = async (
 
       return imageFile.length > 0 && imageRequest
         ? {
-            ...job,
-            height: imageRequest.height,
-            width: imageRequest.width,
-            image_id: imageFile[0].image_id,
-            image_count: imageFile.length
-          }
+          ...job,
+          height: imageRequest.height,
+          width: imageRequest.width,
+          image_id: imageFile[0].image_id,
+          image_count: imageFile.length
+        }
         : { ...job, height: imageRequest.height, width: imageRequest.width }
     })
   )
@@ -244,3 +244,28 @@ export const updateHordeJobById = async (
     await db.hordeJobs.where({ artbot_id }).modify(updateData)
   })
 }
+
+/**
+ * Atomically transitions a job from Waiting to Requested status.
+ * Returns the job if successful, null if the job was already transitioned.
+ */
+export const transitionJobFromWaitingToRequested = async (artbot_id: string): Promise<ArtBotHordeJob | null> => {
+  let transitionedJob: ArtBotHordeJob | null = null;
+
+  await db.transaction('rw', db.hordeJobs, async () => {
+    const job = await db.hordeJobs
+      .where({ artbot_id })
+      .and((j) => j.status === JobStatus.Waiting)
+      .first();
+
+    if (job) {
+      await db.hordeJobs.where({ artbot_id }).modify({
+        status: JobStatus.Requested,
+        updated_timestamp: Date.now()
+      });
+      transitionedJob = job;
+    }
+  });
+
+  return transitionedJob;
+};
