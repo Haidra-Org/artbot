@@ -88,6 +88,20 @@ export const downloadImages = async ({
         return { success: false };
       }
 
+      // Safety check - if we're expecting more images than we've seen, don't mark as done
+      const totalExpectedImages = jobDetails.images_requested || 0;
+      const totalProcessedImages =
+        (response.finished || 0) +
+        (response.processing || 0) +
+        (response.waiting || 0);
+
+      if (totalProcessedImages < totalExpectedImages) {
+        console.log(
+          `Warning: Expected ${totalExpectedImages} images but only found ${totalProcessedImages} in response. Job ${jobDetails.artbot_id} might have more pending images.`
+        );
+        // Don't return here, continue processing what we have but don't mark as done
+      }
+
       // Check if all images already exist
       const allExist = await Promise.all(
         response.generations.map((gen) =>
@@ -95,15 +109,17 @@ export const downloadImages = async ({
         )
       );
 
-      if (allExist.every((exists) => exists)) {
-        // All images already exist, mark job as done and clean up
+      if (
+        allExist.every((exists) => exists) &&
+        response.finished === totalExpectedImages
+      ) {
+        // All images already exist and we have all expected images, mark job as done and clean up
         await updatePendingImage(jobDetails.artbot_id, {
           status: JobStatus.Done,
           images_completed: response.generations.length,
           images_failed: 0,
-          api_response: response // Include the final API response
+          api_response: response
         });
-        // Clean up the queue since we're done with this job
         queueSystems.delete(jobDetails.artbot_id);
         return { success: true };
       }
@@ -130,7 +146,13 @@ export const downloadImages = async ({
 
       // Determine the current status
       let currentStatus = jobDetails.status;
-      if (response.done && response.finished === response.generations.length) {
+      const isReallyDone =
+        response.done &&
+        response.finished === totalExpectedImages &&
+        response.processing === 0 &&
+        response.waiting === 0;
+
+      if (isReallyDone) {
         currentStatus = JobStatus.Done;
       } else if (response.processing > 0) {
         currentStatus = JobStatus.Processing;
@@ -161,7 +183,15 @@ export const downloadImages = async ({
     }, jobDetails.artbot_id);
   } catch (error) {
     console.error('Error in downloadImages:', error);
-    // Make sure to clean up the queue on error
+    // On network error, don't clean up the queue - let it retry
+    if (
+      error instanceof TypeError &&
+      error.message.includes('Connection is closed')
+    ) {
+      console.log('Network error occurred, will retry on next interval');
+      return { success: false };
+    }
+    // For other errors, clean up the queue
     queueSystems.delete(jobDetails.artbot_id);
     return { success: false };
   }
@@ -363,16 +393,15 @@ const handleSettledImageDownloads = async (params: {
         currentJob.images_completed + successfulDownloads;
       const newImagesFailed =
         currentJob.images_failed + (jobDetails.images_failed || 0);
-      const allImagesProcessed =
-        newImagesCompleted + newImagesFailed === jobDetails.images_requested;
 
+      // Important: Don't change the job status here - let the main downloadImages function
+      // handle that based on the API response. Just update the counts.
       await db.hordeJobs
         .where('artbot_id')
         .equals(jobDetails.artbot_id)
         .modify({
           images_completed: newImagesCompleted,
           images_failed: newImagesFailed,
-          status: allImagesProcessed ? JobStatus.Done : currentJob.status,
           updated_timestamp: Date.now()
         });
     }
