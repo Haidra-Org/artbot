@@ -2,17 +2,17 @@
 import withSerwistInit from '@serwist/next';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 
+const BASE_PATH = process.env.BASE_PATH || ''; // Should be '' or '/artbot'
+const DEXIE_DB = process.env.DEXIE_DB || 'ArtBot_beta_v2';
+const HORDE_API_HOST = process.env.HORDE_API_HOST || 'https://aihorde.net';
+
 const withSerwist = withSerwistInit({
   cacheOnNavigation: true,
   reloadOnOnline: true,
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js',
-  swUrl: '/sw.js'
+  swUrl: `./sw.js`
 });
-
-const BASE_PATH = process.env.BASE_PATH || ''; // Should be '' or '/artbot'
-const DEXIE_DB = process.env.DEXIE_DB || 'ArtBot_beta_v2';
-const HORDE_API_HOST = process.env.HORDE_API_HOST || 'https://aihorde.net';
 
 const nextConfig = {
   basePath: BASE_PATH,

@@ -327,8 +327,8 @@ function ImageViewActions({
                         handleWebhookClick(
                           webhookObj,
                           imageBlobBuffer ?? null,
-                          imageData.imageRequest,
-                          imageId
+                          imageId,
+                          imageData
                         )
                       }
                     >
@@ -342,11 +342,7 @@ function ImageViewActions({
             <MenuItem
               disabled={!window.gapi || !window.gapi.client}
               onClick={() =>
-                uploadToGoogleDrive(
-                  imageBlobBuffer ?? null,
-                  imageData.imageRequest,
-                  imageId
-                )
+                uploadToGoogleDrive(imageBlobBuffer ?? null, imageData, imageId)
               }
             >
               Save to Google Drive

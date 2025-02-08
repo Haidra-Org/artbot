@@ -97,11 +97,8 @@ class ImageParamsForHordeApi implements HordeApiParamsBuilderInterface {
     const replacement_filter =
       AppSettings.get('useReplacementFilter') === false ? false : true;
 
-    let allow_downgrade =
+    const allow_downgrade =
       AppSettings.get('autoDowngrade') === false ? false : true;
-    if (allow_downgrade) {
-      allow_downgrade = false;
-    }
 
     const {
       cfg_scale,
