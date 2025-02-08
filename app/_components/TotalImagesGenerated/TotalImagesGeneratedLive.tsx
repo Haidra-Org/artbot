@@ -1,5 +1,6 @@
 'use client';
 
+import { appBasepath } from '@/app/_utils/browserUtils';
 import { useEffect, useState } from 'react';
 
 export default function TotalImagesGeneratedLive({
@@ -11,9 +12,12 @@ export default function TotalImagesGeneratedLive({
 
   const fetchImageCount = async () => {
     try {
-      const response = await fetch('/api/status/counter/images', {
-        cache: 'no-store'
-      });
+      const response = await fetch(
+        `${appBasepath()}/api/status/counter/images`,
+        {
+          cache: 'no-store'
+        }
+      );
       const data = await response.json();
       if (data.totalCount) setImageCount(data.totalCount);
     } catch (error) {

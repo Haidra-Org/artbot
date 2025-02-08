@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE
   },
   description: APP_DESCRIPTION,
-  // manifest: `${appBasepath()}/manifest.json`,
+  manifest: `${appBasepath()}/manifest.json`,
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -63,9 +63,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="manifest" href={`${appBasepath()}/manifest.json`}></link>
-      </head>
       <body className="flex flex-col min-h-screen" id="__app">
         <ModalProvider>
           <Toaster />
