@@ -1,10 +1,7 @@
 import { checkPendingJobs } from './checkPendingJobs';
-import { JobStatus } from '@/app/_types/ArtbotTypes';
 import * as PendingImagesStore from '@/app/_stores/PendingImagesStore';
-import checkImage, { CheckErrorResponse, CheckSuccessResponse } from '@/app/_api/horde/check';
-import * as DownloadModule from './downloadPendingImages';
+import checkImage, { CheckSuccessResponse } from '@/app/_api/horde/check';
 import * as UpdateModule from './updatePendingImage';
-import { db } from '@/app/_db/dexie';
 
 jest.mock('@/app/_stores/PendingImagesStore');
 jest.mock('@/app/_api/horde/check');
@@ -41,15 +38,6 @@ describe('checkPendingJobs', () => {
     (PendingImagesStore.getPendingImagesByStatusFromAppState as jest.Mock).mockReturnValue([dummyJob]);
     
     // simulate checkImage returning a successful response that is still processing (not finished)
-    const successResponse: CheckSuccessResponse = {
-      success: true,
-      finished: 0,
-      done: false,
-      processing: 1,
-      queue_position: 5,
-      wait_time: 1000,
-      kudos: 0
-    };
     (checkImage as jest.Mock).mockResolvedValue(successResponse);
     
     const result = await checkPendingJobs();
