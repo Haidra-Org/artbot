@@ -37,6 +37,19 @@ describe('checkPendingJobs', () => {
     };
     (PendingImagesStore.getPendingImagesByStatusFromAppState as jest.Mock).mockReturnValue([dummyJob]);
     
+    const successResponse: CheckSuccessResponse = {
+      success: true,
+      finished: 0,
+      done: false,
+      processing: 1,
+      queue_position: 5,
+      wait_time: 1000,
+      kudos: 0,
+      faulted: false,
+      is_possible: true,
+      restarted: 0,
+      waiting: 0
+    };
     // simulate checkImage returning a successful response that is still processing (not finished)
     (checkImage as jest.Mock).mockResolvedValue(successResponse);
     
