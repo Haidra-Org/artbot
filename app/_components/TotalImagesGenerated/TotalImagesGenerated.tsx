@@ -2,6 +2,10 @@ import TotalImagesGeneratedLive from './TotalImagesGeneratedLive';
 const statusApi = process.env.ARTBOT_STATUS_API;
 
 async function getImageCount() {
+  if (!statusApi) {
+    console.log("ARTBOT_STATUS_API environment variable is not defined");
+    return 0;
+  }
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 2000);
 
