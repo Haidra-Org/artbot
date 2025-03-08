@@ -1,3 +1,4 @@
+process.noDeprecation = true;
 module.exports = {
   roots: ['<rootDir>'],
   testEnvironment: 'jest-environment-jsdom',
