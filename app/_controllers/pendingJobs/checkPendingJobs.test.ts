@@ -9,7 +9,7 @@ jest.mock('./downloadPendingImages');
 jest.mock('./updatePendingImage');
 jest.mock('@/app/_db/dexie', () => ({
   db: {
-    transaction: jest.fn((fn: Function) => fn())
+    transaction: jest.fn((mode, stores, callback) => callback())
   }
 }));
 
@@ -72,6 +72,7 @@ describe('checkPendingJobs', () => {
     (checkImage as jest.Mock).mockRejectedValue(errorObj);
     
     console.error = jest.fn();
+    jest.advanceTimersByTime(1501);
     
     const result = await checkPendingJobs();
     expect(result).toBe('processing');
