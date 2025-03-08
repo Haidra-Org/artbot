@@ -9,7 +9,7 @@ jest.mock('./downloadPendingImages');
 jest.mock('./updatePendingImage');
 jest.mock('@/app/_db/dexie', () => ({
   db: {
-    transaction: jest.fn((mode, stores, callback) => callback())
+    transaction: jest.fn((_mode, _stores, callback) => callback())
   }
 }));
 
