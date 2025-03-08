@@ -45,7 +45,10 @@ let worker: Worker | null = null;
 
 function getWorker() {
   if (!worker && typeof Worker !== 'undefined') {
-    worker = new Worker(new URL('./check_webworker.ts', import.meta.url));
+    const workerUrl = typeof import.meta !== 'undefined'
+      ? new URL('./check_webworker.ts', import.meta.url)
+      : './check_webworker.js';
+    worker = new Worker(workerUrl);
   }
   return worker;
 }
