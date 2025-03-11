@@ -63,12 +63,16 @@ const performCheckUsingWorker = (
     const workerInstance = getWorker();
     workerInstance?.postMessage({ jobId, url, headers });
 
-    workerInstance?.addEventListener('message', (event) => {
-      const { jobId: returnedJobId, result } = event.data;
-      if (returnedJobId === jobId) {
-        resolve(result);
-      }
-    });
+    workerInstance?.addEventListener(
+      'message',
+      (event) => {
+        const { jobId: returnedJobId, result } = event.data;
+        if (returnedJobId === jobId) {
+          resolve(result);
+        }
+      },
+      { once: true }
+    );
   });
 };
 
