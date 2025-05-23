@@ -3,6 +3,7 @@ import { AppSettings } from '@/app/_data-models/AppSettings';
 import { clientHeader } from '@/app/_data-models/ClientHeader';
 import { HordeApiParams } from '@/app/_data-models/ImageParamsForHordeApi';
 import { debugSaveApiResponse } from '../artbot/debugSaveResponse';
+import { hordeRateLimiter } from './rateLimiter';
 
 export interface GenerateSuccessResponse {
   success: boolean;
@@ -27,40 +28,6 @@ interface HordeErrorResponse {
   errors: Array<{ [key: string]: string }>;
 }
 
-// Simple rate limiter that allows concurrent requests
-class RateLimiter {
-  private requestTimes: number[] = [];
-  private readonly maxRequests: number;
-  private readonly windowMs: number;
-
-  constructor(maxRequests: number, windowMs: number) {
-    this.maxRequests = maxRequests;
-    this.windowMs = windowMs;
-  }
-
-  async waitForSlot(): Promise<void> {
-    const now = Date.now();
-    // Remove old entries outside the window
-    this.requestTimes = this.requestTimes.filter(time => now - time < this.windowMs);
-    
-    if (this.requestTimes.length >= this.maxRequests) {
-      // Wait until the oldest request is outside the window
-      const oldestRequest = this.requestTimes[0];
-      const waitTime = this.windowMs - (now - oldestRequest) + 10; // +10ms buffer
-      if (waitTime > 0) {
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-      }
-      // Recursive call to check again
-      return this.waitForSlot();
-    }
-    
-    this.requestTimes.push(now);
-  }
-}
-
-// Allow 3 requests per second
-const rateLimiter = new RateLimiter(3, 1000);
-
 let taskCounter = 0;
 
 export default async function generateImage(
@@ -69,7 +36,7 @@ export default async function generateImage(
   const taskId = `generate_${taskCounter++}`;
   
   // Wait for rate limit slot
-  await rateLimiter.waitForSlot();
+  await hordeRateLimiter.waitForSlot();
   
   let statusCode = 0; // Initialize statusCode with a default value
   try {

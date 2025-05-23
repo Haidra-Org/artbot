@@ -2,6 +2,7 @@ import { AppConstants } from '@/app/_data-models/AppConstants'
 import { clientHeader } from '@/app/_data-models/ClientHeader'
 import { HordeJobResponse } from '@/app/_types/HordeTypes'
 import { debugSaveApiResponse } from '../artbot/debugSaveResponse'
+import { hordeRateLimiter } from './rateLimiter'
 
 interface HordeErrorResponse {
   message: string
@@ -29,6 +30,9 @@ export default async function imageStatus(
       message: 'jobId is required'
     }
   }
+
+  // Wait for rate limit slot
+  await hordeRateLimiter.waitForSlot();
 
   try {
     const res = await fetch(
