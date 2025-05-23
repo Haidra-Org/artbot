@@ -103,15 +103,23 @@ const processResults = async (
 ): Promise<void> => {
   for (let index = 0; index < results.length; index++) {
     const result = results[index];
+    const hordeId = filteredHordeIds[index];
+    const job = pendingJobs.find(j => j.horde_id === hordeId);
+    
+    if (!job) {
+      console.error(`Could not find job for horde ID ${hordeId}`);
+      continue;
+    }
+    
     if (result.status === 'fulfilled') {
-      await handleFulfilledResult(result.value, pendingJobs[index]);
+      await handleFulfilledResult(result.value, job);
     } else {
       console.error(
-        `Error checking image with ID ${filteredHordeIds[index]}:`,
+        `Error checking image with ID ${hordeId}:`,
         result.reason
       );
     }
-    scheduleIdUnblocking(filteredHordeIds[index]);
+    scheduleIdUnblocking(hordeId);
   }
 };
 
