@@ -204,8 +204,8 @@ export const downloadImages = async ({
         processing: response.processing || 0
       });
 
-      // Clean up the queue if we're done
-      if (currentStatus === JobStatus.Done) {
+      // Clean up the queue if we're done or in error state
+      if (currentStatus === JobStatus.Done || currentStatus === JobStatus.Error) {
         queueSystems.delete(jobDetails.artbot_id);
       }
 
