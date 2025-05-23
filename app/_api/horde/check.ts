@@ -2,7 +2,7 @@ import { AppConstants } from '@/app/_data-models/AppConstants';
 import { clientHeader } from '@/app/_data-models/ClientHeader';
 import { HordeJobResponse } from '@/app/_types/HordeTypes';
 import { debugSaveApiResponse } from '../artbot/debugSaveResponse';
-import { hordeRateLimiter } from './rateLimiter';
+import { checkRateLimiter } from './rateLimiter';
 
 interface HordeErrorResponse {
   message: string;
@@ -74,7 +74,7 @@ export default async function checkImage(
   jobId: string
 ): Promise<CheckSuccessResponse | CheckErrorResponse> {
   // Wait for rate limit slot
-  await hordeRateLimiter.waitForSlot();
+  await checkRateLimiter.waitForSlot();
   
   const result = await performCheckUsingWorker(jobId);
   if (result.success) {

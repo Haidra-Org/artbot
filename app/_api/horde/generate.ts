@@ -3,7 +3,7 @@ import { AppSettings } from '@/app/_data-models/AppSettings';
 import { clientHeader } from '@/app/_data-models/ClientHeader';
 import { HordeApiParams } from '@/app/_data-models/ImageParamsForHordeApi';
 import { debugSaveApiResponse } from '../artbot/debugSaveResponse';
-import { hordeRateLimiter } from './rateLimiter';
+import { generateRateLimiter } from './rateLimiter';
 
 export interface GenerateSuccessResponse {
   success: boolean;
@@ -36,7 +36,7 @@ export default async function generateImage(
   const taskId = `generate_${taskCounter++}`;
   
   // Wait for rate limit slot
-  await hordeRateLimiter.waitForSlot();
+  await generateRateLimiter.waitForSlot();
   
   let statusCode = 0; // Initialize statusCode with a default value
   try {

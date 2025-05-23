@@ -1,4 +1,4 @@
-// Shared rate limiter for all Horde API calls
+// Shared rate limiter for Horde API calls
 class RateLimiter {
   private requestTimes: number[] = [];
   private readonly maxRequests: number;
@@ -29,7 +29,16 @@ class RateLimiter {
   }
 }
 
-// Global rate limiter shared across all API endpoints
-// API limit is "10 per 1 minute"
+// Different rate limiters for different endpoint types
+
+// /generate/async endpoint - shares the same limit as /status (10 per minute)
 // Using 9 per minute to have a safety buffer
-export const hordeRateLimiter = new RateLimiter(9, 60000);
+export const generateRateLimiter = new RateLimiter(9, 60000);
+
+// /generate/check endpoint - 1 request per 2 seconds (30 per minute)
+// Using 1 per 2.1 seconds for safety buffer
+export const checkRateLimiter = new RateLimiter(1, 2100);
+
+// /generate/status endpoint - 10 requests per minute
+// Using 9 per minute to have a safety buffer
+export const statusRateLimiter = new RateLimiter(9, 60000);
