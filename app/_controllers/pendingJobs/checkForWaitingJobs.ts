@@ -72,10 +72,14 @@ export const checkForWaitingJobs = async (): Promise<void> => {
       await processSuccessfulResponse(waitingJob.artbot_id, apiResponse.id);
     }
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('Unexpected error in checkForWaitingJobs:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     await updatePendingImage(waitingJob.artbot_id, {
       status: JobStatus.Error,
-      errors: [{ type: 'other', message: 'Unexpected error occurred' }]
+      errors: [{ 
+        type: 'other', 
+        message: `Unexpected error occurred: ${errorMessage}` 
+      }]
     });
   }
 };

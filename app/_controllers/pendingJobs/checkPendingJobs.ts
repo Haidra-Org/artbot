@@ -119,10 +119,15 @@ const processResults = async (
 
     if (result.status === 'fulfilled') {
       await handleFulfilledResult(result.value, job);
+      // Don't schedule unblocking if job is done (already cleared in handleFinishedJob)
+      const response = result.value as StatusSuccessResponse;
+      if (!('success' in response && response.success && response.done)) {
+        scheduleIdUnblocking(hordeId);
+      }
     } else {
       console.error(`Error checking image with ID ${hordeId}:`, result.reason);
+      scheduleIdUnblocking(hordeId);
     }
-    scheduleIdUnblocking(hordeId);
   }
 };
 
@@ -147,6 +152,8 @@ const handleNotFound = async (job: ArtBotHordeJob): Promise<void> => {
         await updatePendingImage(job.artbot_id, {
           status: JobStatus.Done
         });
+        // Clear cache for completed job
+        requestCache.delete(job.horde_id);
       }
     }
   );
@@ -216,7 +223,11 @@ const handleFinishedJob = async (
   job: ArtBotHordeJob,
   response: StatusSuccessResponse
 ): Promise<void> => {
-  await sleep(ARTIFICIAL_DELAY);
+  // Skip artificial delay when job is done to improve responsiveness
+  if (!response.done) {
+    await sleep(ARTIFICIAL_DELAY);
+  }
+  
   await downloadImages({
     jobDetails: job,
     kudos: response.kudos
@@ -232,6 +243,9 @@ const handleFinishedJob = async (
           status: success ? JobStatus.Done : JobStatus.Error
         });
         updateCompletedJobInPendingImagesStore();
+        
+        // Clear cache immediately so job won't be rate-limited if checked again
+        requestCache.delete(job.horde_id);
       } else {
         await updatePendingImage(job.artbot_id, {
           queue_position: response.queue_position,
