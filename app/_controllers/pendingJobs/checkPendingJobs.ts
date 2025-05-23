@@ -104,10 +104,13 @@ const processResults = async (
   pendingJobs: ArtBotHordeJob[],
   filteredHordeIds: string[]
 ): Promise<void> => {
+  // Create a map for O(1) lookups instead of O(n) finds
+  const jobMap = new Map(pendingJobs.map(job => [job.horde_id, job]));
+  
   for (let index = 0; index < results.length; index++) {
     const result = results[index];
     const hordeId = filteredHordeIds[index];
-    const job = pendingJobs.find((j) => j.horde_id === hordeId);
+    const job = jobMap.get(hordeId);
 
     if (!job) {
       console.error(`Could not find job for horde ID ${hordeId}`);
