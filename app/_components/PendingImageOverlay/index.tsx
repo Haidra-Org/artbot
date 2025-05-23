@@ -181,15 +181,12 @@ function PendingImageOverlay({
                   {pctComplete}% / ({pendingJob.wait_time}s remaining)
                 </div>
               </div>
-            ) : (
-              <span></span>
-            )}
-            {pendingJob.init_wait_time &&
-            pendingJob.wait_time === 0 &&
-            pendingJob.wait_time < pendingJob.init_wait_time ? (
+            ) : pendingJob.init_wait_time &&
+              pendingJob.wait_time === 0 &&
+              pendingJob.wait_time < pendingJob.init_wait_time ? (
               <span>Finishing up... {imagesProcessingMsg}</span>
             ) : (
-              <span></span>
+              <span>{serverWorkingMessage}</span>
             )}
           </div>
         </>

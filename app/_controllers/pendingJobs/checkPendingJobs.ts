@@ -107,14 +107,14 @@ const processResults = async (
   // Create a map for O(1) lookups instead of O(n) finds
   const jobMap = new Map(pendingJobs.map(job => [job.horde_id, job]));
   
-  for (let index = 0; index < results.length; index++) {
-    const result = results[index];
+  // Process all results in parallel to avoid blocking completed jobs
+  const processingPromises = results.map(async (result, index) => {
     const hordeId = filteredHordeIds[index];
     const job = jobMap.get(hordeId);
 
     if (!job) {
       console.error(`Could not find job for horde ID ${hordeId}`);
-      continue;
+      return;
     }
 
     if (result.status === 'fulfilled') {
@@ -128,7 +128,10 @@ const processResults = async (
       console.error(`Error checking image with ID ${hordeId}:`, result.reason);
       scheduleIdUnblocking(hordeId);
     }
-  }
+  });
+  
+  // Wait for all processing to complete
+  await Promise.all(processingPromises);
 };
 
 const handleNotFound = async (job: ArtBotHordeJob): Promise<void> => {

@@ -45,3 +45,4 @@ public/swe-worker*
 # Don't ignore buildId.json
 !buildId.json
 .aider*
+.claude/
