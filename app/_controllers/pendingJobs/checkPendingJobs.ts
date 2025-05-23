@@ -77,10 +77,10 @@ const updatePendingLastChecked = (): void => {
 
 const getFilteredHordeIds = (pendingJobs: ArtBotHordeJob[]): string[] => {
   const hordeIds = pendingJobs.map((job) => job.horde_id);
+  const now = Date.now();
   return hordeIds.filter((id) => {
     const lastChecked = requestCache.get(id);
-    if (!lastChecked || Date.now() - lastChecked > REQUEST_INTERVAL) {
-      requestCache.set(id, Date.now());
+    if (!lastChecked || now - lastChecked > REQUEST_INTERVAL) {
       return true;
     }
     return false;
@@ -92,6 +92,9 @@ const checkImagesStatus = async (
 ): Promise<
   PromiseSettledResult<CheckSuccessResponse | CheckErrorResponse>[]
 > => {
+  const now = Date.now();
+  filteredHordeIds.forEach((id) => requestCache.set(id, now));
+
   const imageCheckPromises = filteredHordeIds.map((id) => checkImage(id));
   return Promise.allSettled(imageCheckPromises);
 };
@@ -104,20 +107,17 @@ const processResults = async (
   for (let index = 0; index < results.length; index++) {
     const result = results[index];
     const hordeId = filteredHordeIds[index];
-    const job = pendingJobs.find(j => j.horde_id === hordeId);
-    
+    const job = pendingJobs.find((j) => j.horde_id === hordeId);
+
     if (!job) {
       console.error(`Could not find job for horde ID ${hordeId}`);
       continue;
     }
-    
+
     if (result.status === 'fulfilled') {
       await handleFulfilledResult(result.value, job);
     } else {
-      console.error(
-        `Error checking image with ID ${hordeId}:`,
-        result.reason
-      );
+      console.error(`Error checking image with ID ${hordeId}:`, result.reason);
     }
     scheduleIdUnblocking(hordeId);
   }
