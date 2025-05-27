@@ -39,6 +39,13 @@ class ArtBot_v2 extends Dexie {
         '++id, artbot_id, hash_id, *promptWords, promptType, favorited, [promptType+favorited]',
       promptsJobMap: '++id, artbot_id, prompt_id'
     })
+    
+    this.version(2).stores({
+      imageEnhancementModules:
+        '++id, model_id, modifier, type, timestamp, [modifier+type], [modifier+type+timestamp], [model_id+modifier], [model_id+type]'
+    }).upgrade(() => {
+      // No data migration needed, just adding indexes
+    })
   }
 }
 
