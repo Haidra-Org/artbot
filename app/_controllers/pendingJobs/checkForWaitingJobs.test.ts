@@ -230,7 +230,7 @@ describe('checkForWaitingJobs', () => {
 
     expect(updatePendingImage).toHaveBeenCalledWith('test-id', {
       status: JobStatus.Error,
-      errors: [{ type: 'other', message: 'Unexpected error occurred' }]
+      errors: [{ type: 'other', message: 'Unexpected error occurred: Unexpected error' }]
     });
   });
 

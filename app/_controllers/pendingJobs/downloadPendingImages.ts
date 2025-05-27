@@ -24,38 +24,68 @@ import { db } from '@/app/_db/dexie';
 
 const STATUS_CHECK_INTERVAL = 6050; // ms
 
-const queueSystems = new Map<string, TaskQueue<{ success: boolean }>>();
-const queueSystemLocks = new Map<string, Promise<void>>();
+class Mutex {
+  private _locked: boolean = false;
+  private _waiting: (() => void)[] = [];
 
+  /**
+   * Acquires the mutex. If the mutex is already locked, waits until it is released.
+   * @returns {Promise<void>}
+   */
+  async acquire(): Promise<void> {
+    if (this._locked) {
+      await new Promise<void>((resolve) => this._waiting.push(resolve));
+    } else {
+      this._locked = true;
+    }
+  }
+
+  /**
+   * Releases the mutex. If there are pending acquisitions, resolves the next one.
+   */
+  release(): void {
+    if (this._waiting.length > 0) {
+      const resolve = this._waiting.shift();
+      resolve && resolve();
+    } else {
+      this._locked = false;
+    }
+  }
+}
+
+const queueSystems = new Map<string, TaskQueue<{ success: boolean }>>();
+const queueSystemMutexes = new Map<string, Mutex>();
+
+/**
+ * Gets or creates a TaskQueue for a given job id using a Mutex for synchronization.
+ *
+ * This function checks if a queue already exists for the given job id and returns it if available.
+ * Otherwise, it acquires a Mutex (from queueSystemMutexes) to ensure that only one TaskQueue is created
+ * for the job id. It uses a double-check within the critical section to avoid race conditions.
+ *
+ * @param {string} jobId - A unique identifier for the job.
+ * @returns {Promise<TaskQueue<{ success: boolean }>>} A promise that resolves to a TaskQueue.
+ */
 const getQueueSystem = async (
   jobId: string
 ): Promise<TaskQueue<{ success: boolean }>> => {
-  // If a queue already exists, return it immediately
+  // If a queue already exists, return it immediately.
   const existingQueue = queueSystems.get(jobId);
-  if (existingQueue) {
-    return existingQueue;
+  if (existingQueue) return existingQueue;
+
+  // Get the Mutex for the job, or create one if it doesn't exist.
+  let mutex = queueSystemMutexes.get(jobId);
+  if (!mutex) {
+    mutex = new Mutex();
+    queueSystemMutexes.set(jobId, mutex);
   }
 
-  // If there's a lock for this jobId, wait for it
-  const existingLock = queueSystemLocks.get(jobId);
-  if (existingLock) {
-    await existingLock;
-    return queueSystems.get(jobId)!;
-  }
-
-  // Create a new lock
-  let resolveLock: () => void;
-  const lockPromise = new Promise<void>((resolve) => {
-    resolveLock = resolve;
-  });
-  queueSystemLocks.set(jobId, lockPromise);
-
+  // Acquire the mutex.
+  await mutex.acquire();
   try {
-    // Double-check if queue was created while we were waiting
+    // Double-check if the queue was created while waiting.
     const queueAfterLock = queueSystems.get(jobId);
-    if (queueAfterLock) {
-      return queueAfterLock;
-    }
+    if (queueAfterLock) return queueAfterLock;
 
     // Create new queue
     const newQueue = new TaskQueue<{ success: boolean }>(
@@ -67,8 +97,8 @@ const getQueueSystem = async (
     queueSystems.set(jobId, newQueue);
     return newQueue;
   } finally {
-    queueSystemLocks.delete(jobId);
-    resolveLock!();
+    // Always release the mutex.
+    mutex.release();
   }
 };
 
@@ -174,8 +204,8 @@ export const downloadImages = async ({
         processing: response.processing || 0
       });
 
-      // Clean up the queue if we're done
-      if (currentStatus === JobStatus.Done) {
+      // Clean up the queue if we're done or in error state
+      if (currentStatus === JobStatus.Done || currentStatus === JobStatus.Error) {
         queueSystems.delete(jobDetails.artbot_id);
       }
 
