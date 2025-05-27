@@ -11,33 +11,33 @@ export const filterEnhancements = async (
 ) => {
   const offset = (page - 1) * itemsPerPage
 
-  const filtered = await db.imageEnhancementModules
+  const query = db.imageEnhancementModules
     .where('[modifier+type]')
     .equals([modifier, type])
+
+  // Get all items for counting
+  const allItems = await query
     .filter(
       (item) =>
         item.model.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
         item.model.description?.toLowerCase().includes(filterTerm.toLowerCase())
     )
-    .offset(offset)
-    .limit(itemsPerPage)
     .toArray()
 
-  const totalCount = await db.imageEnhancementModules
-    .where('[modifier+type]')
-    .equals([modifier, type])
-    .filter(
-      (item) =>
-        item.model.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-        item.model.description?.toLowerCase().includes(filterTerm.toLowerCase())
-    )
-    .count()
+  // Sort by timestamp for recent items (newest first)
+  let sortedItems = allItems
+  if (type === 'recent') {
+    sortedItems = allItems.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+  }
+
+  // Apply pagination
+  const filtered = sortedItems.slice(offset, offset + itemsPerPage)
 
   return {
     items: filtered,
-    totalCount,
+    totalCount: allItems.length,
     currentPage: page,
-    totalPages: Math.ceil(totalCount / itemsPerPage)
+    totalPages: Math.ceil(allItems.length / itemsPerPage)
   }
 }
 
@@ -106,24 +106,23 @@ export const getRecentlyUsedEnhancements = async (
 ) => {
   const offset = (page - 1) * itemsPerPage
 
-  const recent = await db.imageEnhancementModules
+  // Get all recent items and sort by timestamp
+  const allRecent = await db.imageEnhancementModules
     .where('[modifier+type]')
     .equals([modifier, 'recent'])
-    .reverse()
-    .offset(offset)
-    .limit(itemsPerPage)
     .toArray()
 
-  const totalCount = await db.imageEnhancementModules
-    .where('[modifier+type]')
-    .equals([modifier, 'recent'])
-    .count()
+  // Sort by timestamp (newest first)
+  const sortedRecent = allRecent.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+
+  // Apply pagination
+  const recent = sortedRecent.slice(offset, offset + itemsPerPage)
 
   return {
     items: recent,
-    totalCount,
+    totalCount: allRecent.length,
     currentPage: page,
-    totalPages: Math.ceil(totalCount / itemsPerPage)
+    totalPages: Math.ceil(allRecent.length / itemsPerPage)
   }
 }
 

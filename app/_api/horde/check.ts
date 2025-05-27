@@ -22,7 +22,7 @@ let worker: Worker | null = null;
 
 function getWorker() {
   if (!worker && typeof Worker !== 'undefined') {
-    worker = new Worker(new URL('./check_webworker.ts', import.meta.url));
+    worker = new Worker('./check_webworker.js');
   }
   return worker;
 }
