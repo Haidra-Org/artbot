@@ -126,16 +126,21 @@ export default function useCivitAi({
           )
         } else {
           setSearchResults(result.items)
-          setPaginationState((prev) =>
-            updatePaginationState(
-              prev.currentPage,
-              result.metadata.nextPage || null,
-              prev.previousPages
-            )
-          )
+          const nextPageUrl = result.metadata.nextPage || null
+          
           if (!url) {
+            // New search - reset to page 1 but keep the nextPageUrl
             setCurrentSearchTerm(input)
-            setPaginationState(() => updatePaginationState(1, null, []))
+            setPaginationState(() => updatePaginationState(1, nextPageUrl, []))
+          } else {
+            // Pagination - update with current page info
+            setPaginationState((prev) =>
+              updatePaginationState(
+                prev.currentPage,
+                nextPageUrl,
+                prev.previousPages
+              )
+            )
           }
         }
       } catch (error) {
