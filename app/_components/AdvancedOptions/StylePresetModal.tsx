@@ -202,7 +202,7 @@ const StylePresetModal = ({
           return null;
         return (
           <div key={category} className="w-full col mb-6">
-            <h3 className="font-[700] text-[18px] row gap-2">
+            <h3 className="font-bold text-[18px] row gap-2">
               {category}
               <button
                 onClick={() => {

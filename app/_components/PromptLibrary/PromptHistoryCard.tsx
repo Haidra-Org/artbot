@@ -39,7 +39,7 @@ export default function PromptHistoryCard({
       }}
     >
       {prompt.prompt}
-      <div className="row justify-between !items-end">
+      <div className="row justify-between items-end!">
         <div
           style={{
             color: 'gray',

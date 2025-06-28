@@ -69,7 +69,7 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
       <h2 className="row font-bold">Keywords</h2>
       {usedTags.length > 0 && (
         <Section className="w-full col mb-4">
-          <h3 className="font-[700] text-[16px]">Used tags</h3>
+          <h3 className="font-bold text-[16px]">Used tags</h3>
           <div className="row w-full gap-2 flex-wrap">
             {usedTags.map((tag) => {
               const active = usedTags.includes(tag)
@@ -102,7 +102,7 @@ export default function LoraKeywords({ input, setInput }: LoraKeywordsProps) {
       )}
       {categories?.map((category) => (
         <div key={category} className="w-full col mb-4">
-          <h3 className="font-[700] text-[16px] row gap-2">
+          <h3 className="font-bold text-[16px] row gap-2">
             {category}
             <button
               onClick={() => {

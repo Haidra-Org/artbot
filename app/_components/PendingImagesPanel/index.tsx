@@ -210,7 +210,7 @@ export default function PendingImagesPanel({
         {filteredImages.length !== 1 ? 's' : ''})
       </div>
       {images.length === 0 && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center z-[1]">
+        <div className="absolute top-0 left-0 right-0 bottom-0 col justify-center z-1">
           <p className="text-gray-400 w-full text-center  ">
             No pending images. Create something new!
           </p>
@@ -220,7 +220,7 @@ export default function PendingImagesPanel({
         className={
           !scrollContainer
             ? ''
-            : 'absolute left-[8px] right-0 bottom-[8px] col justify-start z-[2] overflow-auto pr-[12px]'
+            : 'absolute left-[8px] right-0 bottom-[8px] col justify-start z-2 overflow-auto pr-[12px]'
         }
         ref={scrollableDivRef}
         style={{ top: `${topOffset + 152}px` }}

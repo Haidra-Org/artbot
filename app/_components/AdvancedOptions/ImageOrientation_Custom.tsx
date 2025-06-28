@@ -218,7 +218,7 @@ export default function CustomImageOrientation({
         />
       </div>
 
-      <div className="w-full text-right row !justify-end">
+      <div className="w-full text-right row justify-end!">
         <Button
           onClick={() => {
             updateAspectRatio(width, height)

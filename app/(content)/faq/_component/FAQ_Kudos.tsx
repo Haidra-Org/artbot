@@ -17,7 +17,7 @@ const MonoFont = ({ children }: { children: React.ReactNode }) => {
 
 const Question = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-row justify-start items-start gap-[8px] mb-[8px] text-[20px] font-[700]">
+    <div className="flex flex-row justify-start items-start gap-[8px] mb-[8px] text-[20px] font-bold">
       {children}
     </div>
   );

@@ -190,7 +190,7 @@ export default function LoraDetails({
             </div>
           </Link>
         </div>
-        <div className="col md:row gap-4 !items-start justify-start">
+        <div className="col md:row gap-4 items-start! justify-start">
           <div className="w-full md:max-w-[512px]">
             <Carousel
               controls="top"

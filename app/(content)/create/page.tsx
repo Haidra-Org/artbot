@@ -20,7 +20,7 @@ export default function CreatePage() {
       <Suspense fallback={null}>
         <CustomQueryParamsHandler />
       </Suspense>
-      <div className="col md:row justify-start !items-start !gap-4">
+      <div className="col md:row justify-start items-start! gap-4!">
         <div className="sm:min-w-[448px] w-full md:max-w-[512px] col gap-2">
           <PageTitle>Create</PageTitle>
           <PromptInputForm />
