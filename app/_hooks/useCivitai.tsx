@@ -32,8 +32,10 @@ export default function useCivitAi({
 }) {
   const [paginationState, setPaginationState] = useState({
     currentPage: 1,
+    currentPageUrl: null as string | null,
     nextPageUrl: null as string | null,
-    previousPages: [] as string[]
+    previousPages: [] as string[],
+    previousPageUrls: [] as string[]
   })
   const [localFilterTerm, setLocalFilterTerm] = useState('')
   const [pendingSearch, setPendingSearch] = useState(false)
@@ -58,8 +60,10 @@ export default function useCivitAi({
     ) => {
       return {
         currentPage,
+        currentPageUrl: currentPage === 1 ? null : previousPages[previousPages.length - 1],
         nextPageUrl,
-        previousPages
+        previousPages,
+        previousPageUrls: []
       }
     },
     []
@@ -75,29 +79,34 @@ export default function useCivitAi({
           page
         )
         setSearchResults(filtered.items as unknown as Embedding[])
-        setPaginationState((prev) =>
-          updatePaginationState(
-            page,
-            filtered.currentPage < filtered.totalPages ? 'next' : null,
-            page > 1 ? [...prev.previousPages, `page=${page - 1}`] : []
-          )
-        )
+        setPaginationState((prev) => ({
+          currentPage: page,
+          currentPageUrl: page === 1 ? null : `page=${page}`,
+          nextPageUrl: filtered.currentPage < filtered.totalPages ? 'next' : null,
+          previousPages: page > 1 ? [...prev.previousPages, `page=${page - 1}`] : [],
+          previousPageUrls: prev.previousPageUrls
+        }))
       }
     },
-    [searchType, type, updatePaginationState]
+    [searchType, type]
   )
 
   const setLocalFilterTermAndResetPage = useCallback(
     (term: string) => {
       setLocalFilterTerm(term)
-      setPaginationState(() => updatePaginationState(1, null, []))
+      setPaginationState(() => ({
+        currentPage: 1,
+        currentPageUrl: null,
+        nextPageUrl: null,
+        previousPages: [],
+        previousPageUrls: []
+      }))
     },
-    [updatePaginationState]
+    []
   )
 
   const fetchCivitAiResults = useCallback(
     async (input?: string, url?: string) => {
-      console.log('fetchCivitAiResults start:', { input, url, isFetching: isFetchingRef.current })
       
       // Cancel any pending debounced calls
       if (debouncedSearchRef.current) {
@@ -105,7 +114,6 @@ export default function useCivitAi({
       }
 
       if (isFetchingRef.current) {
-        console.log('fetchCivitAiResults - already fetching, returning')
         return
       }
 
@@ -121,7 +129,6 @@ export default function useCivitAi({
       abortControllerRef.current = createAbortController()
 
       try {
-        console.log('fetchCivitAiResults - calling getCivitaiSearchResults')
         const result = await getCivitaiSearchResults({
           input,
           page: url ? undefined : paginationState.currentPage, // Don't pass page when using URL
@@ -129,7 +136,6 @@ export default function useCivitAi({
           signal: abortControllerRef.current.signal,
           url
         })
-        console.log('fetchCivitAiResults - got result:', { error: result.error, itemCount: result.items?.length })
 
         if (result.error) {
           setHasError(
@@ -142,29 +148,30 @@ export default function useCivitAi({
           if (!url) {
             // New search - reset to page 1 but keep the nextPageUrl
             setCurrentSearchTerm(input || '')
-            setPaginationState(() => updatePaginationState(1, nextPageUrl, []))
+            setPaginationState(() => ({
+              currentPage: 1,
+              currentPageUrl: null,
+              nextPageUrl: nextPageUrl,
+              previousPages: [],
+              previousPageUrls: []
+            }))
           } else {
             // Pagination - we're fetching a new page
-            // Don't update currentPage here as it will trigger the effect
-            // The page number will be updated when user clicks next/prev
+            // Check if we've reached the end (same URL returned)
+            const hasReachedEnd = url === nextPageUrl
             setPaginationState((prev) => {
-              console.log('fetchCivitAiResults - updating pagination state for URL fetch:', { 
-                prevNextPageUrl: prev.nextPageUrl, 
-                newNextPageUrl: nextPageUrl 
-              })
               return {
                 ...prev,
-                nextPageUrl
+                currentPageUrl: url,
+                nextPageUrl: hasReachedEnd ? null : nextPageUrl
               }
             })
           }
         }
       } catch (error) {
-        console.log('fetchCivitAiResults - error caught:', error)
         const errorMessage = handleSearchError(error)
         if (errorMessage) setHasError(errorMessage)
       } finally {
-        console.log('fetchCivitAiResults - finally block, resetting flags')
         isFetchingRef.current = false
         isPaginatingRef.current = false
         setPendingSearch(false)
@@ -190,34 +197,65 @@ export default function useCivitAi({
   }, [])
 
   const goToNextPage = useCallback(async () => {
-    console.log('goToNextPage - checking conditions:', {
-      hasNextPageUrl: !!paginationState.nextPageUrl,
-      isFetching: isFetchingRef.current,
-      nextPageUrl: paginationState.nextPageUrl
-    })
     
     if (paginationState.nextPageUrl && !isFetchingRef.current) {
       isPaginatingRef.current = true
-      // Update page number optimistically
+      // Store the current page's URL before moving to next
+      const currentPageUrl = paginationState.currentPageUrl
+      
+      // Update page number and store previous page URL
       setPaginationState((prev) => ({
         ...prev,
         currentPage: prev.currentPage + 1,
-        previousPages: [...prev.previousPages, `page=${prev.currentPage}`]
+        previousPages: [...prev.previousPages, `page=${prev.currentPage}`],
+        previousPageUrls: [...prev.previousPageUrls, currentPageUrl || 'page=1']
       }))
-      console.log('goToNextPage - calling fetchCivitAiResults')
       await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
       isPaginatingRef.current = false
     }
-  }, [paginationState.nextPageUrl, fetchCivitAiResults])
+  }, [paginationState.nextPageUrl, paginationState.currentPageUrl, fetchCivitAiResults])
 
-  const goToPreviousPage = useCallback(() => {
-    // For now, just go back to page 1
-    // TODO: Implement proper previous page navigation
-    if (paginationState.currentPage > 1) {
-      setCurrentSearchTerm(currentSearchTerm || '')
-      setPaginationState(() => updatePaginationState(1, null, []))
+  const goToPreviousPage = useCallback(async () => {
+    
+    if (paginationState.currentPage > 1 && !isFetchingRef.current) {
+      isPaginatingRef.current = true
+      
+      if (paginationState.previousPageUrls.length > 0) {
+        // Get the last previous page URL
+        const previousUrl = paginationState.previousPageUrls[paginationState.previousPageUrls.length - 1]
+        const isFirstPage = paginationState.currentPage === 2
+        
+        // Update state
+        setPaginationState((prev) => ({
+          ...prev,
+          currentPage: prev.currentPage - 1,
+          currentPageUrl: previousUrl === 'page=1' ? null : previousUrl,
+          previousPages: prev.previousPages.slice(0, -1),
+          previousPageUrls: prev.previousPageUrls.slice(0, -1)
+        }))
+        
+        
+        // If going back to page 1, fetch without URL
+        if (isFirstPage || previousUrl === 'page=1') {
+          await fetchCivitAiResults(currentSearchTerm || '')
+        } else {
+          await fetchCivitAiResults(undefined, previousUrl)
+        }
+      } else {
+        // Fallback to page 1
+        setPaginationState(() => ({
+          currentPage: 1,
+          currentPageUrl: null,
+          nextPageUrl: null,
+          previousPages: [],
+          previousPageUrls: []
+        }))
+        await fetchCivitAiResults(currentSearchTerm || '')
+      }
+      
+      isPaginatingRef.current = false
     }
-  }, [paginationState.currentPage, currentSearchTerm, updatePaginationState])
+  }, [paginationState.currentPage, paginationState.previousPageUrls, currentSearchTerm, fetchCivitAiResults])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -251,9 +289,15 @@ export default function useCivitAi({
 
   useEffect(() => {
     if (searchType === 'favorite' || searchType === 'recent') {
-      setPaginationState(() => updatePaginationState(1, null, []))
+      setPaginationState(() => ({
+        currentPage: 1,
+        currentPageUrl: null,
+        nextPageUrl: null,
+        previousPages: [],
+        previousPageUrls: []
+      }))
     }
-  }, [searchType, updatePaginationState])
+  }, [searchType])
 
   useEffect(() => {
     return () => {
