@@ -41,6 +41,17 @@ html {
   scroll-padding-top: 58px;
 }
 
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* lol. need this z-index so popover displays over existing modal */
 #headlessui-portal-root {
   z-index: 9999;
