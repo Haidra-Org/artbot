@@ -78,40 +78,53 @@ const getCivitaiSearchResults = async (
   let fetchUrl: string
 
   if (searchParams.url) {
+    console.log('[worker] Using provided URL:', searchParams.url)
     fetchUrl = searchParams.url
   } else {
     const queryParams = buildQuery(searchParams, userBaseModelFilters)
     fetchUrl = `${API_BASE_URL}/models?${queryParams}`
+    console.log('[worker] Built URL:', fetchUrl)
   }
 
+  console.log('[worker] Fetching:', fetchUrl)
   const response = await fetch(fetchUrl)
 
   if (!response.ok) {
+    console.error('[worker] HTTP error:', response.status, response.statusText)
     throw new Error(`HTTP error! status: ${response.status}`)
   }
 
-  return await response.json()
+  const data = await response.json()
+  console.log('[worker] Response data:', { itemCount: data.items?.length, hasMetadata: !!data.metadata })
+  return data
 }
 
 self.addEventListener('message', async (event: MessageEvent) => {
   const { searchParams, userBaseModelFilters, API_BASE_URL } = event.data
-  const cacheKey = buildQuery(searchParams, userBaseModelFilters)
+  console.log('[worker] Received message:', { searchParams, userBaseModelFilters })
+  
+  // Use URL as cache key if provided, otherwise build from params
+  const cacheKey = searchParams.url || buildQuery(searchParams, userBaseModelFilters)
 
   const cachedData = searchCache.get<CivitAiApiResponse>(cacheKey)
   if (cachedData) {
+    console.log('[worker] Returning cached data for key:', cacheKey)
     self.postMessage({ type: 'result', data: cachedData, cached: true })
     return
   }
 
   try {
+    console.log('[worker] Fetching from API...')
     const result = await getCivitaiSearchResults(
       searchParams,
       userBaseModelFilters,
       API_BASE_URL
     )
+    console.log('[worker] API result:', { itemCount: result.items?.length, hasMetadata: !!result.metadata })
     searchCache.set(cacheKey, result)
     self.postMessage({ type: 'result', data: result, cached: false })
   } catch (error: unknown) {
+    console.error('[worker] Error:', error)
     if (error instanceof Error) {
       self.postMessage({ type: 'error', error: error.message })
     } else {

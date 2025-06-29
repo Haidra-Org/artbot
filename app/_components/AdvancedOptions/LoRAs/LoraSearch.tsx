@@ -73,8 +73,12 @@ export default function LoraSearch({
 
   // Load default results from API on mount to enable pagination
   useEffect(() => {
-    if (searchType === 'search') {
-      debouncedSearchRequest('')
+    if (searchType === 'search' && !searchInput) {
+      // Use a small delay to ensure the component is fully mounted
+      const timer = setTimeout(() => {
+        debouncedSearchRequest('')
+      }, 100)
+      return () => clearTimeout(timer)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

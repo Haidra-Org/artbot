@@ -37,16 +37,22 @@ export const getCivitaiSearchResults = async ({
     }, AppConstants.CIVITAI_API_TIMEOUT_MS)
 
     const messageHandler = (event: MessageEvent) => {
+      console.log('[models.ts] Received message from worker:', event.data.type)
       clearTimeout(timeoutId)
 
       if (event.data.type === 'result') {
+        console.log('[models.ts] Got result:', { 
+          itemCount: event.data.data.items?.length,
+          hasMetadata: !!event.data.data.metadata,
+          nextPage: event.data.data.metadata?.nextPage 
+        })
         resolve({
           items: event.data.data.items || [],
           metadata: event.data.data.metadata || {},
           error: false
         })
       } else if (event.data.type === 'error') {
-        console.error('Error in worker:', event.data.error)
+        console.error('[models.ts] Error in worker:', event.data.error)
         resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
       }
 
@@ -65,6 +71,7 @@ export const getCivitaiSearchResults = async ({
 
     const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter')
 
+    console.log('[models.ts] Posting message to worker:', { input, page, limit, type, url })
     worker.postMessage({
       searchParams: { input, page, limit, type, url },
       userBaseModelFilters,
