@@ -2,8 +2,8 @@ import { CivitAiSearchParams } from '@/app/_types/ArtbotTypes'
 import CacheMap from '../../_data-models/CacheMap'
 import { CivitAiApiResponse } from '../../_types/CivitaiTypes'
 
-const SEARCH_CACHE_LIMIT = 30
-const SEARCH_CACHE_EXPIRE_MINUTES = 20
+const SEARCH_CACHE_LIMIT = 50
+const SEARCH_CACHE_EXPIRE_MINUTES = 60
 
 const searchCache = new CacheMap({
   limit: SEARCH_CACHE_LIMIT,
@@ -78,12 +78,15 @@ const getCivitaiSearchResults = async (
   let fetchUrl: string
 
   if (searchParams.url) {
+    console.log('[getCivitaiSearchResults] Using provided URL:', searchParams.url)
     fetchUrl = searchParams.url
   } else {
     const queryParams = buildQuery(searchParams, userBaseModelFilters)
     fetchUrl = `${API_BASE_URL}/models?${queryParams}`
+    console.log('[getCivitaiSearchResults] Built URL:', fetchUrl)
   }
 
+  console.log('[getCivitaiSearchResults] Fetching:', fetchUrl)
   const response = await fetch(fetchUrl)
 
   if (!response.ok) {
@@ -94,27 +97,35 @@ const getCivitaiSearchResults = async (
   return data
 }
 
+let messageId = 0
 self.addEventListener('message', async (event: MessageEvent) => {
+  const currentMessageId = ++messageId
   const { searchParams, userBaseModelFilters, API_BASE_URL } = event.data
+  console.log(`[Worker ${currentMessageId}] Received message:`, { searchParams, userBaseModelFilters })
   
   // Use URL as cache key if provided, otherwise build from params
   const cacheKey = searchParams.url || buildQuery(searchParams, userBaseModelFilters)
+  console.log('[Worker] Cache key:', cacheKey)
 
   const cachedData = searchCache.get<CivitAiApiResponse>(cacheKey)
   if (cachedData) {
+    console.log('[Worker] Returning cached data')
     self.postMessage({ type: 'result', data: cachedData, cached: true })
     return
   }
 
   try {
+    console.log('[Worker] Fetching from API...')
     const result = await getCivitaiSearchResults(
       searchParams,
       userBaseModelFilters,
       API_BASE_URL
     )
+    console.log('[Worker] Got result:', { itemCount: result.items?.length })
     searchCache.set(cacheKey, result)
     self.postMessage({ type: 'result', data: result, cached: false })
   } catch (error: unknown) {
+    console.error('[Worker] Error:', error)
     if (error instanceof Error) {
       self.postMessage({ type: 'error', error: error.message })
     } else {

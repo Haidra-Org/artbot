@@ -25,27 +25,43 @@ export const getCivitaiSearchResults = async ({
   items: Embedding[]
   metadata: CivitAiMetadata
   error?: boolean
+  cached?: boolean
 }> => {
+  console.log('[getCivitaiSearchResults] Called with:', { input, page, limit, type, url })
   return new Promise((resolve) => {
     if (!worker) {
+      console.log('[getCivitaiSearchResults] Creating new worker')
       worker = new Worker(new URL('./civitaiWorker.ts', import.meta.url))
+    } else {
+      console.log('[getCivitaiSearchResults] Using existing worker')
     }
 
     const timeoutId = setTimeout(() => {
-      resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+      if (!hasResolved) {
+        console.log('[getCivitaiSearchResults] Request timed out')
+        hasResolved = true
+        resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+      }
     }, AppConstants.CIVITAI_API_TIMEOUT_MS)
 
     const messageHandler = (event: MessageEvent) => {
+      console.log('[getCivitaiSearchResults] Received message from worker:', event.data.type)
       clearTimeout(timeoutId)
 
-      if (event.data.type === 'result') {
-        resolve({
-          items: event.data.data.items || [],
-          metadata: event.data.data.metadata || {},
-          error: false
-        })
-      } else if (event.data.type === 'error') {
-        resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+      if (!hasResolved) {
+        if (event.data.type === 'result') {
+          console.log('[getCivitaiSearchResults] Got successful result from worker')
+          hasResolved = true
+          resolve({
+            items: event.data.data.items || [],
+            metadata: event.data.data.metadata || {},
+            error: false,
+            cached: event.data.cached || false
+          })
+        } else if (event.data.type === 'error') {
+          hasResolved = true
+          resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+        }
       }
 
       // Remove the event listener after handling the message
@@ -62,6 +78,11 @@ export const getCivitaiSearchResults = async ({
     }
 
     const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter')
+    
+    console.log('[getCivitaiSearchResults] Posting to worker:', {
+      searchParams: { input, page, limit, type, url },
+      userBaseModelFilters
+    })
 
     worker.postMessage({
       searchParams: { input, page, limit, type, url },
@@ -69,13 +90,27 @@ export const getCivitaiSearchResults = async ({
       API_BASE_URL
     })
 
+    // Track if we've already resolved
+    let hasResolved = false
+    
     // Handle abort signal
     if (signal) {
-      signal.addEventListener('abort', () => {
-        clearTimeout(timeoutId)
-        console.log('Request was aborted')
+      // Check if already aborted
+      if (signal.aborted) {
+        console.log('[getCivitaiSearchResults] Request already aborted on start')
+        hasResolved = true
         resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
-        worker?.removeEventListener('message', messageHandler)
+        return
+      }
+      
+      signal.addEventListener('abort', () => {
+        if (!hasResolved) {
+          clearTimeout(timeoutId)
+          console.log('[getCivitaiSearchResults] Request was aborted - signal received')
+          hasResolved = true
+          resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+          worker?.removeEventListener('message', messageHandler)
+        }
       })
     }
   })
