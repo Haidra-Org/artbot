@@ -34,6 +34,7 @@ export default function LoraSearch({
   const {
     currentPage,
     debouncedSearchRequest,
+    fetchCivitAiResults,
     pendingSearch,
     searchResults,
     goToNextPage,
@@ -70,6 +71,13 @@ export default function LoraSearch({
       }, 400)
     }
   }, [])
+
+  // Load default results from API on mount to enable pagination
+  useEffect(() => {
+    if (searchType === 'search') {
+      debouncedSearchRequest('')
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const transformedData = searchResults.map(
     (item: Embedding | SavedEmbedding | SavedLora) => {

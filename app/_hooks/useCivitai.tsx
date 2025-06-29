@@ -43,15 +43,14 @@ export default function useCivitAi({
   })
   const [localFilterTerm, setLocalFilterTerm] = useState('')
   const [pendingSearch, setPendingSearch] = useState(false)
-  const [searchResults, setSearchResults] = useState<Embedding[]>(() =>
-    getDefaultResults(type)
-  )
+  const [searchResults, setSearchResults] = useState<Embedding[]>([])
   const [hasError, setHasError] = useState<string | boolean>(false)
   const [currentSearchTerm, setCurrentSearchTerm] = useState<
     string | undefined
   >(undefined)
 
   const abortControllerRef = useRef<AbortController | null>(null)
+  const isFetchingRef = useRef(false)
   const debouncedSearchRef = useRef<DebouncedFunction<
     typeof fetchCivitAiResults
   > | null>(null)
@@ -103,16 +102,18 @@ export default function useCivitAi({
 
   const fetchCivitAiResults = useCallback(
     async (input?: string, url?: string) => {
-      setHasError(false)
+      // Cancel any pending debounced calls
+      if (debouncedSearchRef.current) {
+        debouncedSearchRef.current.cancel()
+      }
 
-      // If empty input and no url, reset to default results
-      if (!input && !url) {
-        setSearchResults(getDefaultResults(type))
-        setCurrentSearchTerm(undefined)
-        setPaginationState(() => updatePaginationState(1, null, []))
-        setPendingSearch(false)
+      if (isFetchingRef.current) {
         return
       }
+
+      isFetchingRef.current = true
+      setHasError(false)
+      setPendingSearch(true)
 
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
@@ -139,7 +140,7 @@ export default function useCivitAi({
           
           if (!url) {
             // New search - reset to page 1 but keep the nextPageUrl
-            setCurrentSearchTerm(input)
+            setCurrentSearchTerm(input || '')
             setPaginationState(() => updatePaginationState(1, nextPageUrl, []))
           } else {
             // Pagination - update with current page info
@@ -155,6 +156,9 @@ export default function useCivitAi({
       } catch (error) {
         const errorMessage = handleSearchError(error)
         if (errorMessage) setHasError(errorMessage)
+      } finally {
+        isFetchingRef.current = false
+        setPendingSearch(false)
       }
     },
     [paginationState.currentPage, type, updatePaginationState]
@@ -176,46 +180,40 @@ export default function useCivitAi({
     }
   }, [])
 
-  const goToNextPage = useCallback(() => {
-    if (paginationState.nextPageUrl) {
+  const goToNextPage = useCallback(async () => {
+    if (paginationState.nextPageUrl && !isFetchingRef.current) {
       setPaginationState((prev) =>
         updatePaginationState(prev.currentPage + 1, prev.nextPageUrl, [
           ...prev.previousPages,
           `page=${prev.currentPage}`
         ])
       )
+      await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
     }
-  }, [paginationState.nextPageUrl, updatePaginationState])
+  }, [paginationState.nextPageUrl, fetchCivitAiResults, updatePaginationState])
 
   const goToPreviousPage = useCallback(() => {
-    if (paginationState.previousPages.length > 0) {
-      const prevPage =
-        paginationState.previousPages[paginationState.previousPages.length - 1]
-      setPaginationState((prev) =>
-        updatePaginationState(
-          parseInt(prevPage.split('=')[1]),
-          prev.nextPageUrl,
-          prev.previousPages.slice(0, -1)
-        )
-      )
+    // For now, just go back to page 1
+    // TODO: Implement proper previous page navigation
+    if (paginationState.currentPage > 1) {
+      setCurrentSearchTerm(currentSearchTerm || '')
+      setPaginationState(() => updatePaginationState(1, null, []))
     }
-  }, [paginationState.previousPages, updatePaginationState])
+  }, [paginationState.currentPage, currentSearchTerm, updatePaginationState])
 
   useEffect(() => {
     const fetchData = async () => {
-      setPendingSearch(true)
       try {
         if (searchType === 'favorite' || searchType === 'recent') {
+          setPendingSearch(true)
           await filterLocalResults(localFilterTerm, paginationState.currentPage)
-        } else if (paginationState.nextPageUrl) {
-          await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
-        } else if (currentSearchTerm) {
+          setPendingSearch(false)
+        } else if (currentSearchTerm !== undefined) {
           await fetchCivitAiResults(currentSearchTerm)
         }
       } catch (error) {
         console.error('Error fetching data:', error)
         setHasError('An error occurred while fetching data.')
-      } finally {
         setPendingSearch(false)
       }
     }
@@ -226,7 +224,6 @@ export default function useCivitAi({
     localFilterTerm,
     currentSearchTerm,
     paginationState.currentPage,
-    paginationState.nextPageUrl,
     filterLocalResults,
     fetchCivitAiResults
   ])
@@ -234,10 +231,8 @@ export default function useCivitAi({
   useEffect(() => {
     if (searchType === 'favorite' || searchType === 'recent') {
       setPaginationState(() => updatePaginationState(1, null, []))
-    } else if (searchType === 'search') {
-      setSearchResults(getDefaultResults(type))
     }
-  }, [searchType, type, updatePaginationState])
+  }, [searchType, updatePaginationState])
 
   useEffect(() => {
     return () => {
