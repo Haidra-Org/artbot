@@ -41,7 +41,6 @@ export default function useCivitAi({
   searchType?: SearchType
   type: CivitAiEnhancementType
 }) {
-  console.log('[useCivitai] Hook initialized with:', { searchType, type })
   const [paginationState, setPaginationState] = useState({
     currentPage: 1,
     currentPageUrl: null as string | null,
@@ -121,11 +120,9 @@ export default function useCivitAi({
 
   const fetchCivitAiResults = useCallback(
     async (input?: string, url?: string) => {
-      console.log('[fetchCivitAiResults] Called with:', { input, url, searchType })
       
       // Generate a unique request ID for this request
-      const currentRequestId = ++requestIdRef.current
-      console.log('[fetchCivitAiResults] Request ID:', currentRequestId)
+      ++requestIdRef.current
       
       // Cancel any pending debounced calls
       if (debouncedSearchRef.current) {
@@ -137,14 +134,9 @@ export default function useCivitAi({
       
       // Skip if we just fetched this exact URL (but allow if not fetching)
       if (lastFetchedUrlRef.current === effectiveUrl && searchResults.length > 0) {
-        console.log('[fetchCivitAiResults] Skipping - already have results for this URL:', {
-          effectiveUrl,
-          resultsCount: searchResults.length
-        })
         return
       }
 
-      console.log('[fetchCivitAiResults] Starting fetch...')
       isFetchingRef.current = true
       lastFetchedUrlRef.current = effectiveUrl
       setHasError(false)
@@ -155,7 +147,6 @@ export default function useCivitAi({
       
       // Only abort if it's a NEW search (not pagination or same search)
       if (abortControllerRef.current && !url && input !== lastSearchTermRef.current && input !== undefined) {
-        console.log('[fetchCivitAiResults] Aborting previous request for new search')
         abortControllerRef.current.abort()
       }
       
@@ -163,12 +154,6 @@ export default function useCivitAi({
       abortControllerRef.current = currentAbortController
 
       try {
-        console.log('[fetchCivitAiResults] Calling getCivitaiSearchResults with:', {
-          input,
-          page: url ? undefined : paginationState.currentPage,
-          type,
-          url
-        })
         const result = await getCivitaiSearchResults({
           input,
           page: url ? undefined : paginationState.currentPage, // Don't pass page when using URL
@@ -177,18 +162,9 @@ export default function useCivitAi({
           url
         })
 
-        console.log('[fetchCivitAiResults] Got result:', {
-          error: result.error,
-          itemCount: result.items?.length,
-          hasMetadata: !!result.metadata,
-          requestId: currentRequestId,
-          currentRequestId: requestIdRef.current,
-          isMounted: isMountedRef.current
-        })
         
         // Only process results if component is still mounted
         if (!isMountedRef.current) {
-          console.log('[fetchCivitAiResults] Component unmounted, ignoring results')
           return
         }
         
@@ -233,7 +209,6 @@ export default function useCivitAi({
         const errorMessage = handleSearchError(error)
         if (errorMessage) setHasError(errorMessage)
       } finally {
-        console.log('[fetchCivitAiResults] Finally block - cleaning up')
         // Always clear the fetching flag
         isFetchingRef.current = false
         isPaginatingRef.current = false
@@ -258,7 +233,6 @@ export default function useCivitAi({
   }, [fetchCivitAiResults])
 
   const debouncedSearchRequest = useCallback((input?: string) => {
-    console.log('[debouncedSearchRequest] Called with:', input)
     if (debouncedSearchRef.current) {
       debouncedSearchRef.current(input)
     }
@@ -271,7 +245,6 @@ export default function useCivitAi({
       // Store the current page's URL before moving to next
       const currentPageUrl = paginationState.currentPageUrl
       
-      console.log('[goToNextPage] Storing current page URL:', currentPageUrl)
       
       // Update page number and store previous page URL
       setPaginationState((prev) => ({
@@ -295,7 +268,6 @@ export default function useCivitAi({
         const previousUrl = paginationState.previousPageUrls[paginationState.previousPageUrls.length - 1]
         const isFirstPage = paginationState.currentPage === 2
         
-        console.log('[goToPreviousPage] Using previous URL:', previousUrl, 'isFirstPage:', isFirstPage)
         
         // Update state
         setPaginationState((prev) => ({
@@ -335,15 +307,6 @@ export default function useCivitAi({
   }, [paginationState.currentPage, paginationState.previousPageUrls, currentSearchTerm, fetchCivitAiResults])
 
   useEffect(() => {
-    console.log('[Main Effect] Running with:', {
-      searchType,
-      localFilterTerm,
-      currentSearchTerm,
-      currentPage: paginationState.currentPage,
-      isPaginating: isPaginatingRef.current,
-      hasResults: searchResults.length > 0,
-      lastSearchTerm: lastSearchTermRef.current
-    })
     
     const fetchData = async () => {
       try {
@@ -356,20 +319,11 @@ export default function useCivitAi({
           // Check if we have results or if this is a new search term
           const shouldFetch = searchResults.length === 0 || currentSearchTerm !== lastSearchTermRef.current
           
-          console.log('[Main Effect] Search type check:', {
-            shouldFetch,
-            hasResults: searchResults.length > 0,
-            currentSearchTerm,
-            lastSearchTerm: lastSearchTermRef.current
-          })
           
           if (shouldFetch) {
-            console.log('[Main Effect] Fetching for search type...')
             lastSearchTermRef.current = currentSearchTerm
             lastFetchedUrlRef.current = null // Reset to allow fetch
             await fetchCivitAiResults(currentSearchTerm)
-          } else {
-            console.log('[Main Effect] Skipping fetch - already have results for this search term')
           }
         }
       } catch (error) {
@@ -406,10 +360,8 @@ export default function useCivitAi({
   // Track mounted state
   useEffect(() => {
     isMountedRef.current = true
-    console.log('[useCivitai] Component mounted')
     
     return () => {
-      console.log('[useCivitai] Cleanup effect - component unmounting')
       isMountedRef.current = false
       
       // Only cancel debounced calls, not active requests
@@ -422,15 +374,6 @@ export default function useCivitAi({
     }
   }, [])
 
-  // Log the state we're returning
-  console.log('[useCivitai] Returning state:', {
-    currentPage: paginationState.currentPage,
-    hasError,
-    pendingSearch,
-    searchResultsCount: searchResults.length,
-    hasNextPage: !!paginationState.nextPageUrl,
-    hasPreviousPage: paginationState.previousPages.length > 0
-  })
   
   return {
     currentPage: paginationState.currentPage,

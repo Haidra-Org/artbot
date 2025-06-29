@@ -30,7 +30,6 @@ const getCivitaiSearchResults = async (
   let fetchUrl: string
 
   if (searchParams.url) {
-    console.log('[getCivitaiSearchResults] Using provided URL:', searchParams.url)
     // Check if it's a full URL or just the query params
     if (searchParams.url.startsWith('http')) {
       fetchUrl = searchParams.url
@@ -41,10 +40,8 @@ const getCivitaiSearchResults = async (
   } else {
     const queryParams = buildCivitaiQuery(searchParams, userBaseModelFilters)
     fetchUrl = `${API_BASE_URL}/models?${queryParams}`
-    console.log('[getCivitaiSearchResults] Built URL:', fetchUrl)
   }
 
-  console.log('[getCivitaiSearchResults] Fetching:', fetchUrl)
   const response = await fetch(fetchUrl)
 
   if (!response.ok) {
@@ -55,34 +52,24 @@ const getCivitaiSearchResults = async (
   return data
 }
 
-let messageId = 0
 self.addEventListener('message', async (event: MessageEvent) => {
-  const currentMessageId = ++messageId
   const { searchParams, userBaseModelFilters, API_BASE_URL } = event.data
-  console.log(`[Worker ${currentMessageId}] Received message:`, { searchParams, userBaseModelFilters })
   
   // Use URL as cache key if provided, otherwise build from params
   const cacheKey = searchParams.url || buildCivitaiQuery(searchParams, userBaseModelFilters)
-  console.log('[Worker] Cache key:', cacheKey, 'URL provided:', !!searchParams.url)
 
   const cachedData = searchCache.get<CivitAiApiResponse>(cacheKey)
   if (cachedData) {
-    console.log('[Worker] Cache HIT! Returning cached data for key:', cacheKey)
     self.postMessage({ type: 'result', data: cachedData, cached: true })
     return
-  } else {
-    console.log('[Worker] Cache MISS for key:', cacheKey)
   }
 
   try {
-    console.log('[Worker] Fetching from API...')
     const result = await getCivitaiSearchResults(
       searchParams,
       userBaseModelFilters,
       API_BASE_URL
     )
-    console.log('[Worker] Got result:', { itemCount: result.items?.length })
-    console.log('[Worker] Storing in cache with key:', cacheKey)
     searchCache.set(cacheKey, result)
     self.postMessage({ type: 'result', data: result, cached: false })
   } catch (error: unknown) {
