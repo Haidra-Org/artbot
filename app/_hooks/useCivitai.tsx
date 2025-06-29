@@ -23,6 +23,15 @@ const handleSearchError = (error: unknown): string => {
   }
 }
 
+// Helper function to build cache key for page 1
+const buildPage1CacheKey = (input: string | undefined, type: CivitAiEnhancementType): string => {
+  const query = input ? `&query=${input}` : ''
+  const searchTypes = type === 'TextualInversion' ? 'types=TextualInversion' : 'types=LORA&types=LoCon'
+  const page = '&page=1'
+  // This matches the buildQuery function in civitaiWorker.ts
+  return `${searchTypes}&sort=Highest%20Rated&limit=20${query}${page}&nsfw=false&baseModel=SD%201.4&baseModel=SD%201.5&baseModel=SD%201.5%20LCM&baseModel=SD%202.0&baseModel=SD%202.0%20768&baseModel=SD%202.1&baseModel=SD%202.1%20768&baseModel=SD%202.1%20Unclip&baseModel=SDXL%200.9&baseModel=SDXL%201.0&baseModel=SDXL%201.0%20LCM&baseModel=SDXL%20Turbo&baseModel=Pony&baseModel=Flux.1%20S&baseModel=Flux.1%20D&baseModel=NoobAI&baseModel=Illustrious`
+}
+
 export default function useCivitAi({
   searchType = 'search',
   type = 'LORA'
@@ -194,9 +203,13 @@ export default function useCivitAi({
             // Update search term
             setCurrentSearchTerm(input || '')
             lastFetchedUrlRef.current = null // Reset the last fetched URL for new searches
+            
+            // Store the actual cache key that was used for page 1
+            const page1CacheKey = buildPage1CacheKey(input, type)
+            
             setPaginationState(() => ({
               currentPage: 1,
-              currentPageUrl: null,
+              currentPageUrl: page1CacheKey,
               nextPageUrl: nextPageUrl,
               previousPages: [],
               previousPageUrls: []
@@ -256,12 +269,14 @@ export default function useCivitAi({
       // Store the current page's URL before moving to next
       const currentPageUrl = paginationState.currentPageUrl
       
+      console.log('[goToNextPage] Storing current page URL:', currentPageUrl)
+      
       // Update page number and store previous page URL
       setPaginationState((prev) => ({
         ...prev,
         currentPage: prev.currentPage + 1,
         previousPages: [...prev.previousPages, `page=${prev.currentPage}`],
-        previousPageUrls: [...prev.previousPageUrls, currentPageUrl || 'page=1']
+        previousPageUrls: [...prev.previousPageUrls, currentPageUrl]
       }))
       await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
       isPaginatingRef.current = false
@@ -278,21 +293,28 @@ export default function useCivitAi({
         const previousUrl = paginationState.previousPageUrls[paginationState.previousPageUrls.length - 1]
         const isFirstPage = paginationState.currentPage === 2
         
+        console.log('[goToPreviousPage] Using previous URL:', previousUrl, 'isFirstPage:', isFirstPage)
+        
         // Update state
         setPaginationState((prev) => ({
           ...prev,
           currentPage: prev.currentPage - 1,
-          currentPageUrl: previousUrl === 'page=1' ? null : previousUrl,
+          currentPageUrl: previousUrl,
           previousPages: prev.previousPages.slice(0, -1),
           previousPageUrls: prev.previousPageUrls.slice(0, -1)
         }))
         
-        
-        // If going back to page 1, fetch without URL
-        if (isFirstPage || previousUrl === 'page=1') {
-          await fetchCivitAiResults(currentSearchTerm || '')
-        } else {
+        // For cached pages, check if we're going back to page 1
+        if (isFirstPage) {
+          // Going back to page 1 - use the stored cache key as URL parameter
+          const page1CacheKey = buildPage1CacheKey(currentSearchTerm, type)
+          await fetchCivitAiResults(undefined, page1CacheKey)
+        } else if (previousUrl) {
+          // This is an actual URL from the API for pages > 1
           await fetchCivitAiResults(undefined, previousUrl)
+        } else {
+          // Fallback - shouldn't happen
+          await fetchCivitAiResults(currentSearchTerm || '')
         }
       } else {
         // Fallback to page 1
