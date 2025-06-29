@@ -27,20 +27,20 @@ const buildQuery = (
   let baseModelFilter
 
   baseModelFilter = userBaseModelFilters.includes('SD 1.x')
-    ? ['1.4', '1.5', '1.5 LCM'].map((e) => '&baseModels=SD ' + e).join('')
+    ? ['1.4', '1.5', '1.5 LCM'].map((e) => '&baseModel=SD ' + e).join('')
     : ''
   baseModelFilter += userBaseModelFilters.includes('SD 2.x')
     ? ['2.0', '2.0 768', '2.1', '2.1 768', '2.1 Unclip']
-        .map((e) => '&baseModels=SD ' + e)
+        .map((e) => '&baseModel=SD ' + e)
         .join('')
     : ''
   baseModelFilter += userBaseModelFilters.includes('SDXL')
     ? ['0.9', '1.0', '1.0 LCM', 'Turbo']
-        .map((e) => '&baseModels=SDXL ' + e)
+        .map((e) => '&baseModel=SDXL ' + e)
         .join('')
     : ''
   baseModelFilter += userBaseModelFilters.includes('Pony')
-    ? '&baseModels=Pony'
+    ? '&baseModel=Pony'
     : ''
   baseModelFilter = baseModelFilter.replace(/ /g, '%20')
 
@@ -51,7 +51,9 @@ const buildQuery = (
   }
 
   const query = input ? `&query=${input}` : ''
-  const searchKey = `limit=${limit}${query}&page=${page}&nsfw=${userBaseModelFilters.includes('NSFW')}${baseModelFilter}`
+  // Don't include page parameter when there's a query search
+  const paginationParam = input ? '' : `&page=${page}`
+  const searchKey = `limit=${limit}${query}${paginationParam}&nsfw=${userBaseModelFilters.includes('NSFW')}${baseModelFilter}`
   const searchParams = `${searchTypes}&sort=Highest%20Rated&${searchKey}`
 
   return searchParams
