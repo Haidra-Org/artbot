@@ -132,7 +132,7 @@ export default function PromptInputForm() {
           <div className="row gap-2">
             {hasTrainedWords && (
               <Button
-                className="!h-[36px]"
+                className="h-[36px]!"
                 onClick={() => {
                   NiceModal.show('modal', {
                     children: <LoraKeywords input={input} setInput={setInput} />
@@ -147,7 +147,7 @@ export default function PromptInputForm() {
               </Button>
             )}
             <Button
-              className="!h-[36px]"
+              className="h-[36px]!"
               onClick={() => {
                 NiceModal.show('modal', {
                   children: (
@@ -171,7 +171,7 @@ export default function PromptInputForm() {
               </span>
             </Button>
             <Button
-              className="!h-[36px]"
+              className="h-[36px]!"
               onClick={() => {
                 NiceModal.show('modal', {
                   children: <StyleTagsWrapper />,
@@ -187,7 +187,7 @@ export default function PromptInputForm() {
           </div>
           <div className="row">
             <Button
-              className="!h-[36px]"
+              className="h-[36px]!"
               type="button"
               theme="danger"
               disabled={!input.prompt && !undoPrompt}
@@ -260,7 +260,7 @@ export default function PromptInputForm() {
                 <div className="row gap-2">
                   <Button
                     disabled={!input.negative.trim()}
-                    className="!h-[36px]"
+                    className="h-[36px]!"
                     onClick={async () => {
                       if (input.negative.trim() === '') return;
                       await addPromptToDexie({
@@ -280,7 +280,7 @@ export default function PromptInputForm() {
                     </span>
                   </Button>
                   <Button
-                    className="!h-[36px]"
+                    className="h-[36px]!"
                     onClick={() => {
                       NiceModal.show('modal', {
                         children: (
@@ -307,7 +307,7 @@ export default function PromptInputForm() {
                 </div>
                 <div className="row">
                   <Button
-                    className="!h-[36px]"
+                    className="h-[36px]!"
                     theme="danger"
                     disabled={!input.negative && !undoNegative}
                     onClick={() => {

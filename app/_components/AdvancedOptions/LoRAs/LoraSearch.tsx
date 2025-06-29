@@ -21,6 +21,7 @@ import {
 } from '@/app/_data-models/Civitai'
 import { MasonryLayout } from '../../Masonry'
 import clsx from 'clsx'
+import Spinner from '../../Spinner'
 
 export default function LoraSearch({
   civitAiType = 'LORA',
@@ -31,6 +32,14 @@ export default function LoraSearch({
   onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void
   searchType?: 'search' | 'favorite' | 'recent'
 }) {
+  console.log('[LoraSearch] Component rendered with:', { civitAiType, searchType })
+  
+  useEffect(() => {
+    console.log('[LoraSearch] Component mounted')
+    return () => {
+      console.log('[LoraSearch] Component unmounting')
+    }
+  }, [])
   const {
     currentPage,
     debouncedSearchRequest,
@@ -45,6 +54,14 @@ export default function LoraSearch({
     searchType,
     type: civitAiType
   })
+  
+  console.log('[LoraSearch] Hook returned:', {
+    currentPage,
+    pendingSearch,
+    searchResultsCount: searchResults.length,
+    hasNextPage,
+    hasPreviousPage
+  })
 
   const modalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -54,15 +71,19 @@ export default function LoraSearch({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim()
+    console.log('[LoraSearch] handleInputChange:', { value, searchType })
     setSearchInput(e.target.value)
     if (searchType === 'favorite' || searchType === 'recent') {
       setLocalFilterTermAndResetPage(value.trim())
-    } else if (value) {
+    } else {
+      // Always call debouncedSearchRequest, even with empty string to load defaults
+      console.log('[LoraSearch] Calling debouncedSearchRequest with:', value.trim())
       debouncedSearchRequest(value.trim())
     }
   }
 
   useEffect(() => {
+    console.log('[LoraSearch] Focus effect running')
     if (inputRef.current) {
       setTimeout(() => {
         inputRef.current!.focus()
@@ -70,6 +91,10 @@ export default function LoraSearch({
     }
   }, [])
 
+  // Note: Initial load is handled by useCivitai hook
+  // We don't need to trigger it here to avoid race conditions
+
+  console.log('[LoraSearch] Transforming data, searchResults:', searchResults.length)
   const transformedData = searchResults.map(
     (item: Embedding | SavedEmbedding | SavedLora) => {
       let photoData
@@ -165,6 +190,8 @@ export default function LoraSearch({
           theme="danger"
           onClick={() => {
             setSearchInput('')
+            // Reset search to load default results
+            debouncedSearchRequest('')
           }}
         >
           <IconArrowBarLeft />
@@ -223,50 +250,62 @@ export default function LoraSearch({
             No results found.
           </div>
         )}
-      {!inputVersionId && pendingSearch && (
-        <div className="w-full row justify-center items-center">
-          Loading results...
-        </div>
-      )}
-      <div>
-        <MasonryLayout containerRef={modalRef}>
-          {filteredData.map((image) => (
-            <div
-              key={`${image.key}`}
-              style={{ width: '100%', marginBottom: '20px' }}
-            >
-              <LoraImage
-                civitAiType={civitAiType}
-                onUseLoraClick={onUseLoraClick}
-                image={image}
-              />
+      <div className="relative min-h-[200px]">
+        {pendingSearch && !inputVersionId && (
+          <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 z-10 flex items-center justify-center rounded-lg backdrop-blur-sm">
+            <div className="flex flex-col items-center gap-4">
+              <Spinner size={60} />
+              <div className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                Loading results...
+              </div>
             </div>
-          ))}
-        </MasonryLayout>
+          </div>
+        )}
+        <div className={clsx(pendingSearch && 'opacity-50')}>
+          <MasonryLayout containerRef={modalRef}>
+            {filteredData.map((image) => (
+              <div
+                key={`${image.key}`}
+                style={{ width: '100%', marginBottom: '20px' }}
+              >
+                <LoraImage
+                  civitAiType={civitAiType}
+                  onUseLoraClick={onUseLoraClick}
+                  image={image}
+                />
+              </div>
+            ))}
+          </MasonryLayout>
+        </div>
       </div>
       {(hasPreviousPage || hasNextPage) && (
-        <div className="w-full row justify-center gap-2">
+        <div className="w-full row justify-center gap-2 items-center">
           <div
             className={clsx(
-              'cursor-pointer',
-              hasPreviousPage ? 'primary-color' : 'text-gray-400'
+              'cursor-pointer transition-opacity',
+              hasPreviousPage && !pendingSearch ? 'primary-color' : 'text-gray-400',
+              pendingSearch && 'opacity-50 cursor-not-allowed'
             )}
             onClick={() => {
-              if (hasPreviousPage) {
+              if (hasPreviousPage && !pendingSearch) {
                 goToPreviousPage()
               }
             }}
           >
             <IconChevronLeft />
           </div>
-          <div>{currentPage}</div>
+          <div className="flex items-center gap-2">
+            <span>{currentPage}</span>
+            {pendingSearch && <Spinner size={16} />}
+          </div>
           <div
             className={clsx(
-              'cursor-pointer',
-              hasNextPage ? 'primary-color' : 'text-gray-400'
+              'cursor-pointer transition-opacity',
+              hasNextPage && !pendingSearch ? 'primary-color' : 'text-gray-400',
+              pendingSearch && 'opacity-50 cursor-not-allowed'
             )}
             onClick={() => {
-              if (hasNextPage) {
+              if (hasNextPage && !pendingSearch) {
                 goToNextPage()
               }
             }}

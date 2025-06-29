@@ -1,6 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@reference {
+  @import 'tailwindcss/utilities' layer(utilities);
+}
 
 :root {
   --background-color: rgb(242, 242, 242);
@@ -39,19 +41,33 @@ html {
   scroll-padding-top: 58px;
 }
 
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* lol. need this z-index so popover displays over existing modal */
 #headlessui-portal-root {
   z-index: 9999;
 }
 
-@layer components {
-  .col {
-    @apply flex flex-col gap-2
-  }
+@utility col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* equivalent to gap-2 */
+}
 
-  .row {
-    @apply flex flex-row gap-2 items-center
-  }
+@utility row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem; /* equivalent to gap-2 */
+  align-items: center;
 }
 
 @layer utilities {

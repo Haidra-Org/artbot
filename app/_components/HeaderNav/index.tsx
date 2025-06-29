@@ -31,7 +31,7 @@ export default function HeaderNav() {
               alt="AI ArtBot logo"
               className="min-w-[30px] max-w-[30px]"
             />
-            <div className="font-[700] text-[20px] primary-color">
+            <div className="font-bold text-[20px] primary-color">
               ArtBot{' '}
               <sup
                 className="hidden md:inline"

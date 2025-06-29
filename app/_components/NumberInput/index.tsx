@@ -74,7 +74,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
       />
       <div className="row gap-0">
         <Button
-          className="!rounded-l-none !rounded-r-none !border !border-gray-300 dark:!border-gray-600"
+          className="rounded-l-none! rounded-r-none! border! border-gray-300! dark:border-gray-600!"
           onClick={() => {
             // e.preventDefault()
             handleMinusClick();
@@ -83,7 +83,7 @@ const NumberInput: React.FC<NumberInputProps> = ({
           <IconMinus />
         </Button>
         <Button
-          className="!rounded-l-none !border !border-l-0 !border-gray-300 dark:!border-gray-600"
+          className="rounded-l-none! border! border-l-0! border-gray-300! dark:border-gray-600!"
           onClick={() => {
             // e.preventDefault()
             handlePlusClick();

@@ -25,6 +25,7 @@ export const getCivitaiSearchResults = async ({
   items: Embedding[]
   metadata: CivitAiMetadata
   error?: boolean
+  cached?: boolean
 }> => {
   return new Promise((resolve) => {
     if (!worker) {
@@ -32,22 +33,28 @@ export const getCivitaiSearchResults = async ({
     }
 
     const timeoutId = setTimeout(() => {
-      console.log('Request timed out')
-      resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+      if (!hasResolved) {
+        hasResolved = true
+        resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+      }
     }, AppConstants.CIVITAI_API_TIMEOUT_MS)
 
     const messageHandler = (event: MessageEvent) => {
       clearTimeout(timeoutId)
 
-      if (event.data.type === 'result') {
-        resolve({
-          items: event.data.data.items || [],
-          metadata: event.data.data.metadata || {},
-          error: false
-        })
-      } else if (event.data.type === 'error') {
-        console.error('Error in worker:', event.data.error)
-        resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+      if (!hasResolved) {
+        if (event.data.type === 'result') {
+          hasResolved = true
+          resolve({
+            items: event.data.data.items || [],
+            metadata: event.data.data.metadata || {},
+            error: false,
+            cached: event.data.cached || false
+          })
+        } else if (event.data.type === 'error') {
+          hasResolved = true
+          resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+        }
       }
 
       // Remove the event listener after handling the message
@@ -64,20 +71,32 @@ export const getCivitaiSearchResults = async ({
     }
 
     const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter')
-
+    
     worker.postMessage({
       searchParams: { input, page, limit, type, url },
       userBaseModelFilters,
       API_BASE_URL
     })
 
+    // Track if we've already resolved
+    let hasResolved = false
+    
     // Handle abort signal
     if (signal) {
-      signal.addEventListener('abort', () => {
-        clearTimeout(timeoutId)
-        console.log('Request was aborted')
+      // Check if already aborted
+      if (signal.aborted) {
+        hasResolved = true
         resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
-        worker?.removeEventListener('message', messageHandler)
+        return
+      }
+      
+      signal.addEventListener('abort', () => {
+        if (!hasResolved) {
+          clearTimeout(timeoutId)
+          hasResolved = true
+          resolve({ items: [], metadata: {} as CivitAiMetadata, error: true })
+          worker?.removeEventListener('message', messageHandler)
+        }
       })
     }
   })
