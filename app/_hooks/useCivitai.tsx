@@ -1,8 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { DebouncedFunction, debounce } from '../_utils/debounce'
 import { filterEnhancements } from '../_db/imageEnhancementModules'
-import LORASJson from '../_components/AdvancedOptions/LoRAs/_LORAs.json'
-import EmbeddingsJson from '../_components/AdvancedOptions/LoRAs/_Embeddings.json'
 import { Embedding } from '../_data-models/Civitai'
 import { getCivitaiSearchResults } from '../_api/civitai/models'
 import { CivitAiEnhancementType } from '../_types/ArtbotTypes'
@@ -10,10 +8,6 @@ import { CivitAiEnhancementType } from '../_types/ArtbotTypes'
 export type SearchType = 'search' | 'favorite' | 'recent'
 
 // Utility functions
-const getDefaultResults = (type: CivitAiEnhancementType): Embedding[] => {
-  const defaultResults = type === 'LORA' ? LORASJson : EmbeddingsJson
-  return defaultResults.items as unknown as Embedding[]
-}
 
 const createAbortController = (): AbortController => {
   return new AbortController()

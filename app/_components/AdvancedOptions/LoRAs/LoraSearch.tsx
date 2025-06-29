@@ -34,7 +34,6 @@ export default function LoraSearch({
   const {
     currentPage,
     debouncedSearchRequest,
-    fetchCivitAiResults,
     pendingSearch,
     searchResults,
     goToNextPage,
