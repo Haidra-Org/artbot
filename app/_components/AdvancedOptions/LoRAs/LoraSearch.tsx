@@ -57,7 +57,8 @@ export default function LoraSearch({
     setSearchInput(e.target.value)
     if (searchType === 'favorite' || searchType === 'recent') {
       setLocalFilterTermAndResetPage(value.trim())
-    } else if (value) {
+    } else {
+      // Always call debouncedSearchRequest, even with empty string to load defaults
       debouncedSearchRequest(value.trim())
     }
   }
@@ -165,6 +166,8 @@ export default function LoraSearch({
           theme="danger"
           onClick={() => {
             setSearchInput('')
+            // Reset search to load default results
+            debouncedSearchRequest('')
           }}
         >
           <IconArrowBarLeft />

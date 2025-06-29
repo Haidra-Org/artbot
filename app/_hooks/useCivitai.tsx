@@ -105,6 +105,15 @@ export default function useCivitAi({
     async (input?: string, url?: string) => {
       setHasError(false)
 
+      // If empty input and no url, reset to default results
+      if (!input && !url) {
+        setSearchResults(getDefaultResults(type))
+        setCurrentSearchTerm(undefined)
+        setPaginationState(() => updatePaginationState(1, null, []))
+        setPendingSearch(false)
+        return
+      }
+
       if (abortControllerRef.current) {
         abortControllerRef.current.abort()
       }
