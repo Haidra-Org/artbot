@@ -45,10 +45,10 @@ export default function LoraFilter({
   }
 
   return (
-    <Section className="row items-center justify-center px-4">
-      <div className="row w-full justify-between items-center px-4">
+    <Section className="flex items-center justify-center px-4">
+      <div className="flex flex-wrap justify-center items-center gap-4 w-full max-w-4xl">
         {options.map((option) => (
-          <div key={option.value} className="row gap-1">
+          <div key={option.value} className="flex items-center gap-1 whitespace-nowrap">
             <input
               id={`checkbox-${option.value}`}
               type="checkbox"
@@ -58,7 +58,7 @@ export default function LoraFilter({
             />
             <label
               htmlFor={`checkbox-${option.value}`}
-              className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              className="text-sm font-medium text-gray-900 dark:text-gray-300"
             >
               {option.label}
             </label>
