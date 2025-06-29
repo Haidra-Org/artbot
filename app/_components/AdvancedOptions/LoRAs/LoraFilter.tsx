@@ -20,6 +20,9 @@ export default function LoraFilter({
     { label: 'SD 2.x', value: 'SD 2.x' },
     { label: 'SDXL', value: 'SDXL' },
     { label: 'Pony', value: 'Pony' },
+    { label: 'Flux.1', value: 'Flux' },
+    { label: 'NoobAI', value: 'NoobAI' },
+    { label: 'Illustrious', value: 'Illustrious' },
     { label: 'Show NSFW?', value: 'NSFW' }
   ]
 

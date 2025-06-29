@@ -42,6 +42,17 @@ const buildQuery = (
   baseModelFilter += userBaseModelFilters.includes('Pony')
     ? '&baseModel=Pony'
     : ''
+  baseModelFilter += userBaseModelFilters.includes('Flux')
+    ? ['Flux.1 S', 'Flux.1 D']
+        .map((e) => '&baseModel=' + e)
+        .join('')
+    : ''
+  baseModelFilter += userBaseModelFilters.includes('NoobAI')
+    ? '&baseModel=NoobAI'
+    : ''
+  baseModelFilter += userBaseModelFilters.includes('Illustrious')
+    ? '&baseModel=Illustrious'
+    : ''
   baseModelFilter = baseModelFilter.replace(/ /g, '%20')
 
   let searchTypes = 'types=LORA&types=LoCon'

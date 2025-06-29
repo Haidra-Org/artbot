@@ -18,7 +18,7 @@ export type AppSettingsTable = {
 };
 
 // Simplified CivitAi types that ArtBot will use to cast API requests to the proper type
-export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW';
+export type CivitAiBaseModels = 'SDXL' | 'Pony' | 'SD 1.x' | 'SD 2.x' | 'NSFW' | 'Flux' | 'NoobAI' | 'Illustrious';
 
 export type CivitAiEnhancementType = 'LORA' | 'LoCon' | 'TextualInversion';
 
