@@ -4,6 +4,8 @@ import { filterEnhancements } from '../_db/imageEnhancementModules'
 import { Embedding } from '../_data-models/Civitai'
 import { getCivitaiSearchResults } from '../_api/civitai/models'
 import { CivitAiEnhancementType } from '../_types/ArtbotTypes'
+import { buildPage1CacheKey as buildDynamicPage1CacheKey } from '../_utils/civitaiCacheKey'
+import { AppSettings } from '../_data-models/AppSettings'
 
 export type SearchType = 'search' | 'favorite' | 'recent'
 
@@ -25,11 +27,11 @@ const handleSearchError = (error: unknown): string => {
 
 // Helper function to build cache key for page 1
 const buildPage1CacheKey = (input: string | undefined, type: CivitAiEnhancementType): string => {
-  const query = input ? `&query=${input}` : ''
-  const searchTypes = type === 'TextualInversion' ? 'types=TextualInversion' : 'types=LORA&types=LoCon'
-  const page = '&page=1'
-  // This matches the buildQuery function in civitaiWorker.ts
-  return `${searchTypes}&sort=Highest%20Rated&limit=20${query}${page}&nsfw=false&baseModel=SD%201.4&baseModel=SD%201.5&baseModel=SD%201.5%20LCM&baseModel=SD%202.0&baseModel=SD%202.0%20768&baseModel=SD%202.1&baseModel=SD%202.1%20768&baseModel=SD%202.1%20Unclip&baseModel=SDXL%200.9&baseModel=SDXL%201.0&baseModel=SDXL%201.0%20LCM&baseModel=SDXL%20Turbo&baseModel=Pony&baseModel=Flux.1%20S&baseModel=Flux.1%20D&baseModel=NoobAI&baseModel=Illustrious`
+  // Get user's base model filters from AppSettings
+  const userBaseModelFilters = AppSettings.get('civitAiBaseModelFilter') || []
+  
+  // Use the shared utility to build the cache key with dynamic filters
+  return buildDynamicPage1CacheKey(input, type, userBaseModelFilters)
 }
 
 export default function useCivitAi({
