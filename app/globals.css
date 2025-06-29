@@ -46,14 +46,17 @@ html {
   z-index: 9999;
 }
 
-@layer components {
-  .col {
-    @apply flex flex-col gap-2
-  }
+@utility col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* equivalent to gap-2 */
+}
 
-  .row {
-    @apply flex flex-row gap-2 items-center
-  }
+@utility row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem; /* equivalent to gap-2 */
+  align-items: center;
 }
 
 @layer utilities {
