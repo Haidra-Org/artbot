@@ -251,7 +251,7 @@ export default function useCivitAi({
         ...prev,
         currentPage: prev.currentPage + 1,
         previousPages: [...prev.previousPages, `page=${prev.currentPage}`],
-        previousPageUrls: [...prev.previousPageUrls, currentPageUrl]
+        previousPageUrls: [...prev.previousPageUrls, ...(currentPageUrl ? [currentPageUrl] : [])]
       }))
       await fetchCivitAiResults(undefined, paginationState.nextPageUrl)
       isPaginatingRef.current = false
