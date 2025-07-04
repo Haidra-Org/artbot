@@ -233,9 +233,8 @@ export default function LoraSearch({
       {showFilter && !inputVersionId && (
         <LoraFilter
           onSelectionChange={() => {
-            if (searchInput.trim()) {
-              debouncedSearchRequest(searchInput.trim())
-            }
+            // Trigger search with current input (even if empty) to apply new filters
+            debouncedSearchRequest(searchInput.trim())
           }}
         />
       )}
