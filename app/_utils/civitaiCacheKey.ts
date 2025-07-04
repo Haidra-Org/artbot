@@ -70,10 +70,6 @@ export const buildCivitaiQuery = (
   const searchKey = `limit=${limit}${query}${paginationParam}${nsfwParam}${baseModelFilter}`
   const searchParams = `${searchTypes}&sort=Highest%20Rated&${searchKey}`
 
-  // Debug logging
-  console.log('[CivitAI] Building query with filters:', userBaseModelFilters)
-  console.log('[CivitAI] Final query string:', searchParams)
-
   return searchParams
 }
 

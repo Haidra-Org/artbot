@@ -42,8 +42,6 @@ const getCivitaiSearchResults = async (
     fetchUrl = `${API_BASE_URL}/models?${queryParams}`
   }
 
-  console.log('[CivitAI Worker] Fetching URL:', fetchUrl)
-
   const response = await fetch(fetchUrl)
 
   if (!response.ok) {
@@ -51,12 +49,6 @@ const getCivitaiSearchResults = async (
   }
 
   const data = await response.json()
-  
-  console.log('[CivitAI Worker] Response items count:', data.items?.length || 0)
-  if (data.items?.length > 0) {
-    console.log('[CivitAI Worker] First item base model:', data.items[0].modelVersions?.[0]?.baseModel)
-  }
-  
   return data
 }
 
