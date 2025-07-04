@@ -32,14 +32,6 @@ export default function LoraSearch({
   onUseLoraClick?: (savedLora: SavedEmbedding | SavedLora) => void
   searchType?: 'search' | 'favorite' | 'recent'
 }) {
-  console.log('[LoraSearch] Component rendered with:', { civitAiType, searchType })
-  
-  useEffect(() => {
-    console.log('[LoraSearch] Component mounted')
-    return () => {
-      console.log('[LoraSearch] Component unmounting')
-    }
-  }, [])
   const {
     currentPage,
     debouncedSearchRequest,
@@ -54,14 +46,6 @@ export default function LoraSearch({
     searchType,
     type: civitAiType
   })
-  
-  console.log('[LoraSearch] Hook returned:', {
-    currentPage,
-    pendingSearch,
-    searchResultsCount: searchResults.length,
-    hasNextPage,
-    hasPreviousPage
-  })
 
   const modalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -71,7 +55,6 @@ export default function LoraSearch({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim()
-    console.log('[LoraSearch] handleInputChange:', { value, searchType })
     setSearchInput(e.target.value)
     if (searchType === 'favorite' || searchType === 'recent') {
       setLocalFilterTermAndResetPage(value.trim())
@@ -233,9 +216,8 @@ export default function LoraSearch({
       {showFilter && !inputVersionId && (
         <LoraFilter
           onSelectionChange={() => {
-            if (searchInput.trim()) {
-              debouncedSearchRequest(searchInput.trim())
-            }
+            // Trigger search with current input (even if empty) to apply new filters
+            debouncedSearchRequest(searchInput.trim())
           }}
         />
       )}

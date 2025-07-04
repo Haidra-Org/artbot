@@ -24,7 +24,7 @@ export class AppConstants {
    */
   static MAX_IMAGE_PIXELS = 4194304
 
-  static MAX_LORA_SIZE_MB = 220
+  static MAX_LORA_SIZE_MB = 400
 
   static MAX_LORAS = 5
 

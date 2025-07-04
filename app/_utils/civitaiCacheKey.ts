@@ -15,38 +15,38 @@ export const buildCivitaiQuery = (
 
   if (userBaseModelFilters.includes('SD 1.x')) {
     baseModelFilter += ['1.4', '1.5', '1.5 LCM']
-      .map((e) => '&baseModel=SD ' + e)
+      .map((e) => '&baseModels=SD ' + e)
       .join('')
   }
 
   if (userBaseModelFilters.includes('SD 2.x')) {
     baseModelFilter += ['2.0', '2.0 768', '2.1', '2.1 768', '2.1 Unclip']
-      .map((e) => '&baseModel=SD ' + e)
+      .map((e) => '&baseModels=SD ' + e)
       .join('')
   }
 
   if (userBaseModelFilters.includes('SDXL')) {
     baseModelFilter += ['0.9', '1.0', '1.0 LCM', 'Turbo']
-      .map((e) => '&baseModel=SDXL ' + e)
+      .map((e) => '&baseModels=SDXL ' + e)
       .join('')
   }
 
   if (userBaseModelFilters.includes('Pony')) {
-    baseModelFilter += '&baseModel=Pony'
+    baseModelFilter += '&baseModels=Pony'
   }
 
   if (userBaseModelFilters.includes('Flux')) {
     baseModelFilter += ['Flux.1 S', 'Flux.1 D']
-      .map((e) => '&baseModel=' + e)
+      .map((e) => '&baseModels=' + e)
       .join('')
   }
 
   if (userBaseModelFilters.includes('NoobAI')) {
-    baseModelFilter += '&baseModel=NoobAI'
+    baseModelFilter += '&baseModels=NoobAI'
   }
 
   if (userBaseModelFilters.includes('Illustrious')) {
-    baseModelFilter += '&baseModel=Illustrious'
+    baseModelFilter += '&baseModels=Illustrious'
   }
 
   // URL encode spaces

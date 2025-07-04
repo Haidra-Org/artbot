@@ -65,22 +65,6 @@ export default function useCivitAi({
     typeof fetchCivitAiResults
   > | null>(null)
 
-  const updatePaginationState = useCallback(
-    (
-      currentPage: number,
-      nextPageUrl: string | null,
-      previousPages: string[]
-    ) => {
-      return {
-        currentPage,
-        currentPageUrl: currentPage === 1 ? null : previousPages[previousPages.length - 1],
-        nextPageUrl,
-        previousPages,
-        previousPageUrls: []
-      }
-    },
-    []
-  )
 
   const filterLocalResults = useCallback(
     async (input: string, page: number = 1) => {
@@ -129,8 +113,10 @@ export default function useCivitAi({
         debouncedSearchRef.current.cancel()
       }
 
-      // Build the effective URL for tracking
-      const effectiveUrl = url || `search:${input || ''}_page:${paginationState.currentPage}_type:${type}`
+      // Build the effective URL for tracking, including filters
+      const currentFilters = AppSettings.get('civitAiBaseModelFilter')
+      const filterString = currentFilters.sort().join(',')
+      const effectiveUrl = url || `search:${input || ''}_page:${paginationState.currentPage}_type:${type}_filters:${filterString}`
       
       // Skip if we just fetched this exact URL (but allow if not fetching)
       if (lastFetchedUrlRef.current === effectiveUrl && searchResults.length > 0) {
@@ -219,7 +205,7 @@ export default function useCivitAi({
         }
       }
     },
-    [paginationState.currentPage, type, searchResults.length, updatePaginationState]
+    [paginationState.currentPage, type, searchResults.length]
   )
 
   useEffect(() => {
@@ -304,7 +290,7 @@ export default function useCivitAi({
       
       isPaginatingRef.current = false
     }
-  }, [paginationState.currentPage, paginationState.previousPageUrls, currentSearchTerm, fetchCivitAiResults])
+  }, [paginationState.currentPage, paginationState.previousPageUrls, currentSearchTerm, fetchCivitAiResults, type])
 
   useEffect(() => {
     

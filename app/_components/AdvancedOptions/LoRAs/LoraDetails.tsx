@@ -324,7 +324,7 @@ export default function LoraDetails({
                       </div>
                       <div>
                         The selected version is larger than the AI Horde limit
-                        of 220 MB. Most GPU workers will not be able to utilize
+                        of 400 MB. Most GPU workers will not be able to utilize
                         this {civitAiType === 'LORA' ? 'LoRA' : 'embedding'}.
                       </div>
                     </div>
