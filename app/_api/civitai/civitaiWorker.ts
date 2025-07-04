@@ -14,7 +14,7 @@ const searchCache = new CacheMap({
 // TODO: Figure out these questions
 // do sd14 loras/tis work on sd15 models? sd0.9 stuff works with sd1.0 models...
 // what about Turbo and LCM? 2.0 and 2.1? I'm just assuming 2.0 and 2.1 can be mixed, and 1.4 and 1.5 can be mixed, and lcm/turbo/not can be mixed. leave the rest to the user, maybe display that baseline somewhere.
-// I dont think civitai lets you filter by model size, maybe you want to put that filter in the display code (allow 220mb loras only)
+// I dont think civitai lets you filter by model size, maybe you want to put that filter in the display code (allow 400mb loras only)
 //  - except some workers have modified this. the colab worker has the limit removed, and my runpod is set to 750mb...
 
 // Per this discussion on GitHub, this is an undocumented feature:
