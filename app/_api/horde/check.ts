@@ -22,6 +22,11 @@ let worker: Worker | null = null;
 
 function getWorker() {
   if (!worker && typeof Worker !== 'undefined') {
+    // Check if we're in a test environment
+    if (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') {
+      // Return null in test environment to avoid import.meta.url error
+      return null;
+    }
     worker = new Worker(new URL('./check_webworker.ts', import.meta.url));
   }
   return worker;
@@ -39,7 +44,29 @@ const performCheckUsingWorker = (
 
     const workerInstance = getWorker();
     if (!workerInstance) {
-      reject(new Error('Worker not available'));
+      // Fallback to regular fetch in test environment
+      fetch(url, { headers })
+        .then(response => {
+          return response.json().then(result => ({
+            ok: response.ok,
+            status: response.status,
+            result
+          }));
+        })
+        .then(({ ok, status, result }) => {
+          if (ok) {
+            resolve({ ...result, success: true });
+          } else {
+            resolve({
+              success: false,
+              statusCode: status,
+              message: result.message || 'Unknown error'
+            });
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
       return;
     }
 
